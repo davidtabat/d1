@@ -1,0 +1,3 @@
+<?php /* added automatically by conflict fixing tool */ if (Mage::getConfig()->getNode('modules/MDN_MarketPlace/active')) {
+                class Wee_AdvancedProductManagement_Block_Adminhtml_Catalog_Product_Grid_Amasty_Pure extends MDN_MarketPlace_Block_Adminhtml_Catalog_Product_Grid {}
+            } else { class Wee_AdvancedProductManagement_Block_Adminhtml_Catalog_Product_Grid_Amasty_Pure extends Wee_AdvancedProductManagement_Block_Adminhtml_Catalog_Product_Grid_Extended {} } ?>

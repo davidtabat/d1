@@ -1,0 +1,22 @@
+<ul class="thumbnail-view-banner">
+		<?php foreach ($banners as $banner):?>
+				<li>
+						<img title="<?php if($isShowTitle): ?><?php echo '<h3>'.$banner->title.'</h3>' ?><?php endif;?><?php if($isShowDescription): ?><?php echo '<p>'.$banner->content.'</p>' ?><?php endif;?>" src="<?php echo $imgLink.$banner->bannerimage ?>" alt="" />
+				</li>
+		<?php endforeach ?>
+</ul>
+<div id="thumbnail-img">
+	<?php $i=0; foreach ($banners as $banner):?>
+		<a data-slide-index="<?php echo $i?>" href=""><img src="<?php echo $imgLink.$banner->bannerimage ?>" width="100" /></a>
+	<?php $i++; endforeach ?>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery('.thumbnail-view-banner').bxSlider({
+			auto: true,
+			speed: <?php echo $transitionSpeedSlider ?>,
+			preloadImages: 'visible',
+			pagerCustom: '#thumbnail-img'
+		});
+	});
+</script>

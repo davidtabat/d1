@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<config>
+	<extendware>
+		<quickaccess>
+			<ewemail>
+                <resource>extendware/ewemail</resource>
+				<inherit>menu/system/children/tools/children/ewemail</inherit>
+				<title/>
+			</ewemail>
+		</quickaccess>
+	</extendware>
+	<menu>
+	    <ewcore translate="title" module="ewemail">
+			<title>Extendware</title>
+			<sort_order>89</sort_order>
+			<resource>extendware/ewcore</resource>
+			<class>ewcore-main</class>
+	        <children>
+	            <quickaccess translate="title" module="ewemail">
+	                <title>Manage Extensions</title>
+	                <sort_order>1</sort_order>
+	                <resource>extendware/ewemail</resource>
+	                <children>
+	                	<ewemail translate="title" module="ewemail">
+			                <title>SMTP Email</title>
+			                <sort_order>55552</sort_order>
+			                <resource>extendware/ewemail</resource>
+			                <children>
+			                	<log translate="title" module="ewemail">
+			                        <title>Log</title>
+			                        <action>adminhtml/ewemail_log</action>
+			                        <resource>extendware/ewemail/log</resource>
+			                    </log>
+			                    <email translate="title" module="ewemail">
+			                        <title>E-mail</title>
+			                        <action>adminhtml/ewemail_email</action>
+			                        <resource>extendware/ewemail/email</resource>
+			                    </email>
+			                    <blacklist translate="title" module="ewemail">
+									<title>Blacklist</title>
+									<sort_order>3</sort_order>
+									<action>adminhtml/ewemail_blacklist</action>
+									<resource>extendware/ewemail/blacklist</resource>
+								</blacklist>
+								<configure translate="title" module="ewemail">
+									<title>Configure</title>
+									<sort_order>9999999</sort_order>
+									<action>adminhtml/ewemail_config/index</action>
+									<resource>extendware/ewemail/configure</resource>
+								</configure>
+			                </children>
+			            </ewemail>
+	                </children>
+	            </quickaccess>
+	            <userguides translate="title" module="ewemail">
+	                <title>User Guides / Help</title>
+	                <sort_order>9</sort_order>
+	                <action>adminhtml/ewemail_config/gotoExtendwareUserguides</action>
+	                <resource>extendware/ewcore/redirect/userguide</resource>
+	                <class>ewcore-extendware-userguide</class>
+	            </userguides>
+	            <storelink translate="title" module="ewemail">
+		            <title>Improve Your Store</title>
+		            <sort_order>9999</sort_order>
+		            <action>adminhtml/ewemail_config/gotoExtendware</action>
+		            <resource>extendware/ewcore/redirect/extendware</resource>
+		            <class>ewcore-extendware-link</class>
+		        </storelink>
+	        </children>
+	    </ewcore>
+	    <system>
+	        <children>
+	            <tools translate="title" module="ewemail">
+	                <children>
+	                    <ewemail translate="title" module="ewemail">
+	                        <title>Email</title>
+	                        <sort_order>9999</sort_order>
+	                        <resource>extendware/ewemail</resource>
+	                        <children>
+	                        	<log translate="title" module="ewemail">
+			                        <title>Log</title>
+			                        <action>adminhtml/ewemail_log</action>
+			                        <resource>extendware/ewemail/log</resource>
+			                    </log>
+			                    <email translate="title" module="ewemail">
+			                        <title>E-mail</title>
+			                        <action>adminhtml/ewemail_email</action>
+			                        <resource>extendware/ewemail/email</resource>
+			                    </email>
+			                    <blacklist translate="title" module="ewemail">
+									<title>Blacklist</title>
+									<sort_order>3</sort_order>
+									<action>adminhtml/ewemail_blacklist</action>
+									<resource>extendware/ewemail/blacklist</resource>
+								</blacklist>
+	                        </children>
+	                    </ewemail>
+	                </children>
+	            </tools>
+	        </children>
+	    </system>
+	</menu>
+	<acl>
+		<resources>
+            <admin>
+                <children>
+                    <extendware translate="title" module="ewemail">
+                    	<title>Extendware</title>
+                    	<sort_order>0</sort_order>
+                        <children>
+                        	<ewemail translate="title" module="ewemail">
+                        		<title>E-Mail Plus</title>
+                        		<children>
+                        			<email translate="title">
+                        				<title>E-mail</title>
+			            			</email>
+			            			<log translate="title">
+                        				<title>Log</title>
+			            			</log>
+                        			<settings translate="title">
+                        				<title>Settings</title>
+                        				<children>
+				                            <main translate="title">
+				                                <title>Main</title>
+				                                <children>
+					                                <ewemail translate="title">
+						                                <title>General</title>
+						                            </ewemail>
+					                            </children>
+				                            </main>
+			                            </children>
+			            			</settings>
+			            		</children>
+			            	</ewemail>
+                        </children>
+                    </extendware>
+                </children>
+            </admin>
+        </resources>
+	</acl>
+</config>

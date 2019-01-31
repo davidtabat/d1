@@ -1,0 +1,654 @@
+/**
+ * Stylesheet of calculate shipping form
+ * @author Pham Hong Thanh
+ * @email thanhpham0990@gmail.com
+ *
+ */
+
+.block1-shipping-estimate select,
+.block1-shipping-estimate input { width:100%; padding:0; }
+.block1-shipping-estimate .radio input { width: 20px; }
+.block1-shipping-estimate .radio div.input-box { clear:both; text-align: left; }
+.block1-shipping-estimate .block1-content li.item { padding:8px; margin: 5px 0px; overflow: hidden;}
+.block1-shipping-estimate .block1-content li.last { padding-bottom: 7px;}
+.block1-shipping-estimate .block1-content li label { float:left; color:#666; font-weight:bold; position:relative; z-index:0; }
+.block1-shipping-estimate .block1-content li label.include_cart_label{ float:left; color:#666; font-weight:bold; position:relative; z-index:0; }
+.block1-shipping-estimate .block1-content li label.required em { float:right; font-style:normal; color:#eb340a; position:absolute; top:0; right:-8px; }
+.block1-shipping-estimate .block1-content li.odd { background: transparent;  }
+.block1-shipping-estimate .block1-content li.even { background: transparent; }
+.block1-shipping-results .block1-content { padding: 3px 0px;}
+.block1-shipping-results .block1-content dl dt,
+.block1-shipping-results .block1-content .price { font-weight:bold;}
+.block1-shipping-results .block1-content dl dd { padding: 0px 0px 5px 10px; }
+
+.shipping_price a:link, .shipping_price a:visited, .block1-shipping-calculator a:link, .block1-shipping-calculator a:visited {
+    /*background: url("calc.gif") no-repeat scroll 5px 50% #F5F5F5;*/
+    background: url("calculate.gif")  no-repeat scroll 10px 50% #f16033;
+    /*border: 0px solid #DADADA;*/
+    border-radius: 5px;
+    color: #ffffff;
+    /*color: #A78C5D;*/
+    font-size: 13px;
+    font-weight: bold;
+    padding: 10px 10px 10px 35px;
+    text-transform: none;
+    background-size: 15px;
+}
+
+#result-calculate-shipping .block1-title{
+    text-align: center;
+}
+
+#result-calculate-shipping .block1-content li, #result-calculate-shipping .block1-content dt{
+    display: block;
+    text-align: left;
+}
+
+.switch-item {
+    color: #1E7EC8;
+    margin: 5px;
+    padding: 5px;
+    float: left;
+}
+
+.product-view .switch-item{
+    width: 45%;
+}
+
+#calculate-shipping-result li.odd{
+    background-color: ghostwhite;
+}
+
+#calculate-shipping-result dl li.odd{
+    padding:3px 0px;
+}
+
+#calculate-shipping-result dl li.even{
+    padding:3px 0px;
+}
+
+.fancybox-inner .block1-form {
+    display: inline-block;
+    width: 49%;
+}
+
+.fancybox-inner .block1-result {
+    display: inline-block;
+    padding: 0 30px;
+    vertical-align: top;
+    width: 40%;
+}
+
+.calculate-shipping-form .block1 .block1-subtitle {
+    margin:0;
+    font-size:1em;
+    font-weight:normal;
+    color:#0a263c;
+    display: block;
+    width: 95%;
+    text-align: left;
+    padding-left:8px;
+}
+
+.block1-shipping-results .shipping-rates {
+    border-bottom: 1px solid #C4C1BC;
+    padding: 3px 9px;
+    max-height: 185px;
+}
+
+#mini-products-list {
+    margin-top: 10px;
+}
+
+.calculate-shipping-form input[type="text"]{
+    height: 25px;
+    /*border-radius: 5px;*/
+    /*margin: 5px 0px;*/
+}
+
+.calculate-shipping-form .block1 .block1-title {
+    /*background-color: #F16033;*/
+    background: #85d122;
+    padding: 5px 0;
+    text-align: center;
+}
+
+
+.calculate-shipping-form button.button > span{
+      width: 116px;
+    background: none repeat scroll 0 0 #000;
+    border: 0px solid #85D122;
+    color: #FFFFFF;
+    display: block;
+    font: bold 13px/25px Arial,Helvetica,sans-serif;
+    height: 25px;
+    padding: 0 0px;
+    text-align: center;
+    white-space: nowrap;
+    margin-bottom: 8px;
+}
+.calculate-shipping-form select option{
+    width: 100px;
+}
+
+.calculate-shipping-form select {
+    /*background: url("select-icons.png") no-repeat scroll 96% -170px #FFFFFF;*/
+    /*border-radius: 5px;*/
+    height: 30px;
+    padding: 5px;
+    /*text-indent: 0.01px;*/
+    text-overflow: "";
+}
+
+.calculate-shipping-form button.button span span{
+      width: 110px;
+    /* background: none repeat scroll 0 0 #85d122; */
+    color: #FFFFFF;
+    display: block;
+    font: bold 13px/25px Arial,Helvetica,sans-serif;
+    height: 19px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.fancybox-inner #calculate-shipping-form {
+    border: 0px solid #c5c5c5;
+}
+
+.ajax_loader {
+    display: block;
+    padding: 10% 0;
+}
+
+#ajax_loader > img {
+    display: block;
+    margin: 0 auto;
+}
+
+.catalog-product-view #calculate-shipping-form .block1 {
+    border: 0px solid #C4C1BC;
+}
+
+.catalog-product-view .fancybox-inner #calculate-shipping-form .block1 {
+    border: none;
+}
+
+.input-text.disabled, select.disabled {
+    background-color: #F8F7F5;
+}
+
+.gh-green-highlight {
+    background: url("calculate.gif") no-repeat scroll 5px 50% / 13px auto #f16033;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 5px 5px 5px 23px;
+}
+
+.category-shipping-form a, .shipping_price a{
+    text-decoration: none;
+}
+
+.block1-shipping-results dt, .block1-shipping-results dd{
+    text-align: left;
+}
+
+.fancybox-inner .block1 .block1-title strong {
+    color: #FFFFFF;
+}
+
+.fancybox-skin {
+    background: none repeat scroll 0 0 #FFFFFF;
+}
+
+.fancybox-inner .block1 .block1-content {
+    background: none repeat scroll 0 0 #FFFFFF;
+}
+
+.fancybox-inner .block1 .block1-content-fields {
+    border-right: 1px solid #e6e6e6;
+    padding-right: 30px;
+}
+
+
+
+.fancybox-inner .block1 .actions {
+    background: none repeat scroll 0 0 #FFFFFF;
+    padding: 6px 9px;
+    text-align: right;
+}
+
+.fancybox-inner .f-right, .right {
+    float: right !important;
+}
+
+.shipping-product-list {
+    display: block;
+    overflow: auto;
+    max-height: 145px;
+}
+
+.block1-switch {
+    display: block;
+}
+
+input[type="radio"] {
+    opacity: 0;
+    position:absolute;
+}
+input[type="radio"] + label::before,
+input[type="radio"] + .custom-tick::before {
+    display: inline-block;
+    width: 19px;
+    height: 19px;
+
+    margin: 0 5px 5px 0;
+
+    line-height: 19px;
+    content: "";
+    vertical-align: middle;
+
+    background-image: url('yes.gif');
+    background-repeat: no-repeat;
+    /*background-position: 0 -14px;*/
+}
+input[type="radio"] + .custom-tick::before {
+    margin-right:4px;
+}
+input[type="radio"]:disabled + label,
+input[type="radio"]:disabled + .custom-tick{
+    opacity: 0.5;
+    cursor: default;
+}
+input[type="radio"]:disabled:not(:checked) + label::before {
+    background-position: 0 -42px;
+}
+input[type="radio"]:checked:disabled + label::before {
+    background-position: 0 -56px;
+}
+/*input[type="radio"]:not(:checked):not(:disabled):hover + label:before,*/
+/*input[type="radio"]:not(:checked):not(:disabled):hover + .custom-tick:before {*/
+    /*background-position: 0 -28px;*/
+/*}*/
+input[type="radio"]:checked + label:before,
+input[type="radio"]:checked + .custom-tick:before {
+    background-image: url('no.gif');
+}
+
+.wrap_radio {
+    display: block;
+    margin: 10px;
+    padding: 0;
+    text-align: left;
+}
+
+.fancybox-inner .input-box .wrap_radio {
+    display: inline-block;
+    margin: 10px 70px 10px 0;
+    padding: 0;
+    text-align: left;
+}
+
+.input-box .wrap_radio {
+    display: inline-block;
+    margin: 10px 40px 10px 0;
+    padding: 0;
+    text-align: left;
+}
+
+.block1-shipping-results .price {
+    /*color: #E44C1B;*/
+    color: #F37F7F;
+    font-weight: bold;
+}
+
+.destination {
+    color: #303030;
+    display: block;
+    font-size: 17px;
+    margin-bottom: -5px;
+    text-shadow: 1px 0 #808080;
+}
+
+.block1-shipping-results .block1-title strong{
+    text-transform: capitalize;
+    font-size: 13px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.fancybox-inner .block1 {
+    border:none;
+}
+
+.calculate-shipping-form .block1 .block1-title strong {
+    color: #ffffff;
+}
+
+.calculate-shipping-form .block1 .block1-content {
+    background: none repeat scroll 0 0 #ffffff;
+    padding-top: 10px;
+}
+
+.calculate-shipping-form .block1 .actions {
+    background: #ffffff;
+}
+
+.calculate-shipping-form .f-right, .calculate-shipping-form .right {
+    float: right !important;
+ }
+
+.shipping-rates {
+    display: block;
+    overflow: auto;
+}
+
+.calculate-shipping-form .left-radio{
+    float: left;
+    margin-left: 20%;
+}
+
+.calculate-shipping-form .right-radio{
+    float: right;
+    margin-right: 20%;
+}
+
+.calculate-shipping-form .auto-ip-button{
+    float: left;
+}
+
+.calculate-shipping-form .calculate-button{
+    float: right;
+}
+
+.calculate-shipping-form .bottom-button {
+    display: block;
+    margin: 2px 0px;
+    overflow: hidden;
+}
+
+.block1-title.block1-title-parent span {
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.mini1-products-list .product-image {
+    border: 1px solid #A9A9A9;
+    float: left;
+    width: 50px;
+}
+
+.mini1-products-list li .product-details {
+    margin-left: 70px;
+}
+
+.block1.block1-shipping-estimate.block1-shipping-results {
+    margin: 15px 0px;
+}
+
+
+.mfp-content .calculate-shipping-form {
+    border: 0px solid;
+    height: 85%;
+    margin: 3% auto;
+    overflow: hidden;
+    width: 60%;
+    background-color: white;
+}
+
+.mfp-content .main-form {
+    border: 0px solid #FF0000;
+    width: 100%;
+}
+
+.mfp-content .main-title-form {
+    height: 8%;
+    background-color: #F16033;
+    overflow: hidden;
+}
+
+.mfp-content .main-content-form {
+    height: 92%;
+}
+
+.mfp-content .calculate-shipping-form .block1 .block1-title-parent {
+    border: 0px solid #0000FF;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+.mfp-content .calculate-shipping-form .block1 .block1-title strong {
+    border: 0px solid;
+    color: #FFFFFF;
+    display: block;
+    height: 100%;
+    vertical-align: middle;
+    width: 100%;
+    text-align: center;
+}
+
+.mfp-content .block1-title.block1-title-parent span {
+    border: 0px solid;
+    display: block;
+    font-size: 13px;
+    height: 100%;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.mfp-content .block1-result {
+    border: 0 solid #0000FF;
+    float: right;
+    height: 90%;
+    margin: 3% auto;
+    width: 49%;
+}
+
+.mfp-content .block1.block1-shipping-estimate.block1-form {
+    border: 0px solid #0000FF;
+    height: 90%;
+    margin: 3% auto;
+    width: 50%;
+    float:left;
+}
+
+.mfp-content .calculate-shipping-form .block1 .block1-content-fields {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-right: 1px solid #C4C1BC;
+    height: 100%;
+    width: 100%;
+}
+
+
+.mfp-content .calculate-shipping-form .block1 .block1-subtitle {
+    color: #0A263C;
+    display: block;
+    font-size: 1em;
+    font-weight: normal;
+    height: 15%;
+    text-align: left;
+    width: 100%;
+    padding:0px;
+}
+
+.mfp-content .block1-form ul{
+    border: 0px solid;
+    height: 99%;
+    list-style: none outside none;
+    margin: 0 auto;
+    width: 80%;
+}
+
+.mfp-content .text-description {
+    border: 0px solid;
+    display: block;
+    margin: 0 auto;
+    width: 80%;
+}
+
+.mfp-content .detail-form-fields {
+    border: 0px solid;
+    height: 85%;
+    width: 100%;
+}
+
+.mfp-content .block1-shipping-estimate .block1-content li.item {
+    border: 0px solid #FF0000;
+    height: 17%;
+    overflow: hidden;
+    width: 100%;
+    margin:0px 0px;
+    padding:0px 0px;
+}
+
+.mfp-content .block1-shipping-estimate .block1-content li label {
+    border: 0px solid;
+    color: #666666;
+    float: none;
+    font-weight: bold;
+    height: 30%;
+    position: relative;
+    width: 100%;
+    z-index: 0;
+}
+
+.mfp-content .input-box {
+    border: 0px solid #0000FF;
+    height: 40%;
+    width: 99%;
+}
+
+.mfp-content .calculate-shipping-form input[type="text"] {
+    height: 100%;
+}
+
+.mfp-content .calculate-shipping-form select {
+    height: 100%;
+    padding: 0px;
+}
+
+.mfp-content .calculate-shipping-form .left-radio {
+    border: 0px solid #FF0000;
+    float: left;
+    height: 100%;
+    text-align: center;
+    width: 49%;
+    margin:0px;
+}
+
+.mfp-content .calculate-shipping-form .right-radio {
+    border: 0px solid #FF0000;
+    float: right;
+    height: 100%;
+    text-align: center;
+    width: 49%;
+    margin:0px;
+}
+
+.mfp-content .calculate-shipping-form .bottom-button {
+    border: 0px solid;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.mfp-content .calculate-shipping-form .calculate-button {
+    border: 0px solid;
+    float: right;
+    height: 100%;
+    text-align: center;
+    width: 50%;
+}
+
+.mfp-content .calculate-shipping-form button.button > span {
+    background: none repeat scroll 0 0 #85D122;
+    border: 0px solid #85D122;
+    border-radius: 0px;
+    color: #FFFFFF;
+    display: block;
+    font: bold 13px/25px Arial,Helvetica,sans-serif;
+    height: auto;
+    padding: 4% 8%;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.mfp-content .calculate-shipping-form button.button span span {
+    background: none repeat scroll 0 0 #F16033;
+    color: #FFFFFF;
+    display: block;
+    font: bold 13px/25px Arial,Helvetica,sans-serif;
+    height: 100%;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.mfp-content .block1.block1-shipping-estimate.block1-shipping-results {
+    border: 0 solid #FF0000;
+    height: 100%;
+    width: 100%;
+    margin:0px;
+}
+
+.mfp-content .block1-shipping-results .block1-title strong{
+    text-transform: capitalize;
+    font-size: 13px;
+    text-align: left;
+    padding-left: 0px;
+}
+
+.mfp-content .block1-title.result-title {
+    background-color: #F16033;
+    height: 5%;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.mfp-content .calculate-shipping-form .block1 .shipping-rates {
+    background: none repeat scroll 0 0 #FFFFFF;
+    max-height: 40%;
+    margin: 3% auto;
+    width: 75%;
+
+}
+
+.mfp-content .calculate-shipping-form .block1 .shipping-product-list {
+    background: none repeat scroll 0 0 #FFFFFF;
+    max-height: 35%;
+    margin: 3% auto 0px;
+    width: 80%;
+}
+
+.mfp-content .calculate-shipping-form .block1 .block1-content {
+    padding-top: 0px;
+}
+
+.calculate-shipping-form {
+    border: 1px solid #C4C6C8;
+    margin-bottom: 10px;
+}
+
+.mfp-content .block1-shipping-results .shipping-rates {
+    border-bottom: 0px solid #C4C1BC;
+}
+
+.mini1-products-list {
+    margin-right: 8px;
+}
+
+.mfp-content .mini1-products-list .product-image {
+    border: 1px solid #B6B6B6;
+    float: left;
+    height: 100%;
+    margin: 3%;
+    width: 16%;
+}
+
+.mfp-content .mini1-products-list li .product-details {
+    margin: 3%;
+}
+
+.mfp-content .product-image > img {
+    height: 100%;
+    width: 100%;
+}

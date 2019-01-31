@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Market
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <modules>
+        <Mageshops_Market>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Mageshops_Market>
+    </modules>
+</config>

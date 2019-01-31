@@ -1,0 +1,93 @@
+<?php
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Rakuten
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+?>
+<?php
+$mappings = Mage::helper('rakuten')->getProductMappings();
+$attributes = $this->getAttributes();
+?>
+<form action="<?php echo $this->getActionUrl() ?>" method="post" id="rakuten_sync_form">
+    <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
+    <div class="content-header">
+        <h3 class="icon-head head-products"><?php echo $this->__('Rakuten Synchronization Mappings') ?></h3>
+        <p class="content-buttons form-buttons"><?php echo $this->getButtonHtml() ?></p>
+    </div>
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Product Attributes Mapping') ?></h4>
+        </div>
+        <fieldset id="sync_fields" class="grid">
+            <table cellspacing="0">
+                <tr class="headings">
+                    <th><?php echo $this->__('Rakuten Attribute') ?></th>
+                    <th><?php echo $this->__('Magento Attribute') ?></th>
+                    <th class="last"><?php echo $this->__('New Mapping') ?></th>
+                </tr>
+                <?php foreach ($mappings as $key => $mapping): ?>
+                    <tr>
+                        <td><?php echo $key ?></td>
+                        <td><?php echo $mapping ?></td>
+                        <td class="last">
+                            <select name="attribute_mapping[<?php echo $key ?>]">
+                                <?php if ($this->hasEmptyValue($key)): ?>
+                                    <option value=""></option>
+                                <?php endif ?>
+                                <?php foreach ($attributes as $attribute): ?>
+                                    <?php
+                                        if (!$this->isOptionAvailable($key, $attribute)) {
+                                                continue;
+                                        }
+                                        $code = $attribute->getAttributeCode();
+                                        if ($code == $mapping) {
+                                            $selected = ' selected="selected"';
+                                        } else {
+                                            $selected = '';
+                                        }
+                                        $label = $attribute->getFrontendLabel();
+                                        if (empty($label)) {
+                                            $label = $code;
+                                        } else {
+                                            $label .= ' (' . $code . ')';
+                                        }
+                                    ?>
+                                    <option value="<?php echo $code ?>"<?php echo $selected ?>><?php echo $label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            </table>
+        </fieldset>
+    </div>
+    <?php // Variant definitions mapping ?>
+    <?php $variantMappings = Mage::helper('rakuten')->getVariantDefinitionMappings() ?>
+    <?php if (count($variantMappings) > 0): ?>
+        <div class="entry-edit">
+            <div class="entry-edit-head">
+                <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Product Variations Mapping') ?></h4>
+            </div>
+            <p><?php echo $this->__('Variant definitions are limited to 20 chars only. Here is the list of values that do not meet this criteria.') ?></p>
+            <fieldset id="sync_fields" class="grid">
+                <table cellspacing="0">
+                    <tr class="headings">
+                        <th><?php echo $this->__('Variant Definition') ?></th>
+                        <th class="last"><?php echo $this->__('New Mapping') ?></th>
+                    </tr>
+                    <?php foreach ($variantMappings as $code => $mapping): ?>
+                        <tr>
+                            <td><?php echo $code ?></td>
+                            <td class="last">
+                                <input name="variant_mapping[<?php echo $code ?>]" type="text" value="<?php echo $mapping ?>" />
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                </table>
+            </fieldset>
+        </div>
+    <?php endif ?>
+</form>

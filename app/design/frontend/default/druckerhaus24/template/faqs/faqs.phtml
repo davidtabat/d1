@@ -1,0 +1,308 @@
+<?php
+/**
+ * FAQs And Product Questions
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   FME
+ * @package    FAQs And Product Questions
+ * @author     Asif Hussain <support@fmeextensions.com>
+ * 	       
+ * @copyright  Copyright 2012 © www.fmeextensions.com All right reserved
+ */
+
+?>
+<?php
+
+$faqs = $this->getFaqs();
+
+$num_of_faqs = count($faqs);
+
+$allowed_rating_customers = Mage::getStoreConfig('faqs/rating/allow_customers');
+
+//Faqs that already has been rated, in that session
+$faqs_already_rated = Mage::getSingleton('customer/session')->getRatedFaqsId();
+
+
+?>
+
+<?php if(Mage::getStoreConfig('faqs/rating/enable')) : ?>
+	<script type="text/javascript">
+	
+		Event.observe(window, 'load', function() {
+			
+			var faq = '<?= $num_of_faqs; ?>';
+			//var is_rated = '<?= $is_rated; ?>';
+			
+			
+				for(f=1; f<=faq; f++){
+					
+					var rating_element = $('rating_'+f);
+					if($('has_rated_'+f) != undefined){
+						var is_rated = $('has_rated_'+f).readAttribute('title');
+						if(is_rated == 'yes') is_rated = true;
+						else if(is_rated == 'no') is_rated = false;
+					}
+					if(rating_element != undefined){
+						
+							rating = new Control.Rating(rating_element,
+									{
+										rated: is_rated,
+										value: parseFloat($('stars_'+f).readAttribute('title')),
+										faq_id: parseInt($('faq_id_'+f).readAttribute('title')),
+										updateUrl:'<?php echo $this->getUrl('*/*/rating') ?>',
+										updateOptions : {
+											method: 'post',
+											onSuccess: function(transport) {
+												$('rating-success').appear();
+												$('rating_message').update(transport.responseText);												
+												},
+											onFailure: function(transport) {
+												$('rating-fail').appear();
+												$('rating_message').update(transport.responseText);
+												}
+											}
+									});
+					}			
+				}			
+		});
+	</script>
+
+<?php endif; ?>
+
+<?php
+
+// like/unlike
+$t_session = Mage::getSingleton('customer/session');
+if($t_session->isLoggedIn()){
+    
+    $customer = $t_session->getCustomer();
+    $customer_name = $customer->getFirstname();
+    $customer_id = $customer->getId();
+    
+    $customer_thumb_path = $this->getJsUrl('faqs/like/dman.png'); 
+    $customer_thumb = "<img src='$customer_thumb_path' style='width:15px; height:15px; margin:0 5px;'>";
+
+}
+
+?>
+
+<?php if(Mage::helper('customer')->isLoggedIn() && Mage::helper('faqs')->isGeneralFaqLikeEnable()): ?>
+
+<script type="text/javascript">
+	
+    Event.observe(window, 'load', function() {
+		
+		var total_faqs = '<?= $num_of_faqs; ?>';
+		var customer_name = '<?= $customer_name; ?>';
+		var customer_id = '<?= $customer_id; ?>';
+		
+		for(f=1; f<=total_faqs; f++){
+		    
+		    if($('like_faq_id_'+f) != undefined){
+			
+			like = new Control.Like($('like_container_'+f),$('like_element_'+f),$('like_result_'+f),$('likeby_text_'+f),$('count_elements_'+f),
+				{
+				    likeby_name		: customer_name,
+				    likeby_id 		: customer_id,
+				    liked_obj_id 	: parseInt($('like_faq_id_'+f).readAttribute('title')),
+				    likeby_avatar 	: '<?php echo $customer_thumb_path; ?>',
+				    updateUrl		:'<?php echo $this->getUrl('faqs/index/like') ?>',
+				    updateOptions 	: {					
+							    method:'post',
+							    onSuccess: function(transport) {}
+							   }
+				    
+				});
+			
+		    }
+		    
+		}
+	
+    });
+
+</script>
+
+<?php endif; ?>
+
+<?php
+	$current_theme = Mage::getStoreConfig('faqs/themes/select_theme');
+	if($current_theme == ''){
+			
+			$current_theme = 'theme1';
+	}	
+?>
+
+<?php if($current_theme == 'theme1' || $current_theme == 'theme3' || $current_theme == 'theme4'):?> <style type="text/css">.rating_container a { background-image: url("<?php echo $this->getSkinUrl('images/faqs/rating.png'); ?>") !important; </style> <?php endif; ?>
+
+<?php if($current_theme == 'theme2' || $current_theme == 'theme5'):?> <style type="text/css">.rating_container a { background-image: url("<?php echo $this->getSkinUrl('images/faqs/rating2.png'); ?>") !important; </style> <?php endif; ?>
+
+
+<?php if(Mage::getStoreConfig('faqs/list/enable_accordion')) : ?>
+
+<script type="text/javascript">
+	
+	Event.observe(window, 'load', function() {
+		
+		var default_accor_open = $('default_accordion_opened');
+		if(default_accor_open != undefined){
+			new Accordion('accordion-container',default_accor_open.title);
+		}else{
+				accordian = new Accordion('accordion-container',1);
+		}
+	});
+	
+</script>
+
+<?php endif; ?>
+
+
+
+
+<div id="wrapper">
+
+
+<div id="messages"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+	
+	<div class="success-msg" id="rating-success" style="display:none;"><p id="rating_message"></p></div>
+	<div class="error-msg" id="rating-fail" style="display:none;"><p id="rating_message"></p></div>
+	
+	
+<?php if (!isset($faqs[0]['faqs_id'])) : ?>
+	<p><?php echo $this->__('No Faqs Found !'); ?></p>
+<?php else : ?>
+    <div class="<?php echo $current_theme; ?>" id="accordion-container">
+	
+	<h1><?php if($faqs[0]["cat"] != ''){ echo $faqs[0]["cat"]; } ?></h1>
+	
+	<ul>
+		<?php $i=0; $has_default_opened = '';
+		
+		foreach ($faqs as $_faqs): $i++; ?>
+		<li>	
+		
+			<?php if($_faqs['accordion_opened'] == 1 && $has_default_opened == ''):  ?>
+					<span id="default_accordion_opened" title="<?php echo $i; ?>" style="display:none;">
+						<?php $has_default_opened = 'yes'; ?>
+					</span>
+			<?php endif; ?>
+							
+			<div class="accordion-toggle"><?php echo $_faqs["title"]; ?></div>
+			<div class="accordion-content">
+				<?php
+				
+					$cmshelper = Mage::helper('cms');
+					$processor = $cmshelper->getPageTemplateProcessor();				
+				
+				?>
+				
+
+				<div class="answer"><?php echo Mage::helper('cms')->getPageTemplateProcessor()->filter($_faqs["faq_answar"]); ?></div>
+		
+				<?php if(Mage::getStoreConfig('faqs/rating/enable')) : ?>
+					<div class="rating_dv">											
+						<span id="<?php echo 'faq_id_'.$i; ?>" style="display:none;" title="<?php echo $_faqs['faqs_id']; ?>" ></span>
+						<span id="<?php echo 'stars_'.$i; ?>" style="display:none;" title="<?php echo $_faqs['rating_stars']; ?>" ></span>
+						<div class="helpful">
+													
+							<span class="helpful-text" ><?php echo $this->__('How much this was helpful ') ?></span>
+						
+							<?php if($allowed_rating_customers == 'all' || ($allowed_rating_customers == 'registered' && Mage::helper('customer')->isLoggedIn())): ?>
+					
+								<?php if(in_array($_faqs['faqs_id'],$faqs_already_rated)): ?>	
+										<span id="<?php echo 'has_rated_'.$i; ?>" style="display:none;" title="yes" ></span>
+								<?php else: ?>
+										<span id="<?php echo 'has_rated_'.$i; ?>" style="display:none;" title="no" ></span>
+								<?php endif; ?>
+								
+							<?php else: ?>
+							
+								<span id="<?php echo 'has_rated_'.$i; ?>" style="display:none;" title="yes" ></span>
+								
+							<?php endif; ?>						
+							
+															
+							<div id="<?php echo 'rating_'.$i; ?>" class="rating_container" style="float:right;"> </div>
+						</div>
+						<div class="clear"></div>
+					</div>
+				<?php endif; ?>
+				
+				
+				<!-- LIKE / UNLIKE STARTS-->
+				<?php if(Mage::helper('customer')->isLoggedIn() && Mage::helper('faqs')->isGeneralFaqLikeEnable()): ?>
+				
+					<div class="like_dv" id="<?php echo 'like_container_'.$i; ?>">
+							<?php //check customer alrady has liked
+							    
+							    $like_customer_ids = $_faqs['faq_like'];
+							    $like_customer_ids_arr = explode(',',$like_customer_ids);
+							    
+							if(in_array($customer_id,$like_customer_ids_arr)){  ?>	
+								
+								<a href="javascript:" id="<?php echo 'like_element_'.$i; ?>"><?php echo $this->__('Unlike') ?></a><br />
+								<div style="float:left;" id="<?php echo 'likeby_text_'.$i; ?>"><?php echo $this->__('Liked by '); ?></div>
+								<div id="<?php echo 'like_result_'.$i; ?>"  class="like_on"><?php echo $this->__($customer_thumb.'You'); ?></div>				    
+								
+								<span id="<?php echo 'like_faq_id_'.$i; ?>" style="display:none;" title="<?php echo $_faqs['faqs_id']; ?>" ></span>
+								<span id="<?php echo 'count_elements_'.$i; ?>" title="<?php if($like_customer_ids!= ''){ echo count($like_customer_ids_arr); }else{ echo 0; } ?>" style="display:none;" ><?php echo count($like_customer_ids_arr);?></span>
+							    
+							    
+							<?php }else{    ?>			
+						    
+							    
+								
+								<a href="javascript:" id="<?php echo 'like_element_'.$i; ?>"><?php echo $this->__('Like') ?></a><br />
+								<div style="float:left;">
+								    <div style="float:left;" id="<?php echo 'likeby_text_'.$i; ?>"><?php if($like_customer_ids != '') echo $this->__('Liked by '); ?></div>
+								    <div id="<?php echo 'like_result_'.$i; ?>"></div>
+								</div>
+												    
+								<span id="<?php echo 'like_faq_id_'.$i; ?>" style="display:none;" title="<?php echo $_faqs['faqs_id']; ?>" ></span>
+								<span id="<?php echo 'count_elements_'.$i; ?>" title="<?php if($like_customer_ids!= ''){ echo count($like_customer_ids_arr); }else{ echo 0; } ?>" ></span>
+							    
+							
+							<?php } ?>
+						
+						    
+							
+							<?php foreach($like_customer_ids_arr as $c_id): ?>
+							    
+								<?php  $customer_data = Mage::getModel('customer/customer')->load($c_id);
+								
+								if($c_id != '' && $c_id != $customer_id) { ?>
+							    
+								    <div class="like-customers-view"><?php echo $customer_thumb.$customer_data->getFirstname(); ?></div>
+								
+								
+								<?php } ?>	
+							    
+							
+							<?php endforeach; ?>
+							
+							
+						    
+						
+					</div>
+				<?php endif; ?>
+				<!-- LIKE / UNLIKE ENDS-->
+				
+				
+			</div>
+		
+		
+		
+		</li>	
+		<?php endforeach; ?>
+	</ul>
+	
+    </div>
+<?php endif; ?>
+
+
+</div>

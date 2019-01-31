@@ -1,0 +1,60 @@
+<?php
+/** @var Mirasvit_Helpdesk_Block_Adminhtml_Ticket_Edit_Tab_Messages $this */
+?>
+<div class="helpdesk-messages">
+<?php foreach ($this->getMessages(true) as $message): ?>
+    <a name="message<?php echo $message->getId()?>"></a>
+    <?php if ($this->isShowSatisfactions()): ?>
+    <?php foreach ($this->getSatisfactions($message) as $satisfaction): ?>
+    <div class="satisfaction">
+        <div class="satisfaction-head"><?php echo $this->__('Satisfaction survey') ?></div>
+        <img src="<?php echo $this->getSkinUrl('images/mst_helpdesk/smile/'.$satisfaction->getRate().'.png', array('_area' => 'frontend'))?>" width="40" height="40" alt="<?php echo $this->__('Great')?>" border="0">
+        <?php if ($satisfaction->getComment()) :?>
+        <div class="comment">
+            <?php echo $this->escapeHtml($satisfaction->getComment()) ?>
+        </div>
+        <?php endif;?>
+    </div>
+    <?php endforeach; ?>
+    <?php endif;?>
+
+    <div class="message <?php if ($message->getIsInternal()): ?>internal<?php endif ?> <?php echo $message->getType()?> <?php if ($message->getCustomerEmail()): ?>user<?php else: ?>staff<?php endif ?> ">
+        <div class="message-header">
+            <div class="source">
+                <a target="_blank" href="<?php echo $this->getSourceUrl($message) ?>"><?php echo $this->__('show source') ?></a>
+            </div>
+            <?php if (Mage::helper('helpdesk/permission')->isMessageRemoveAllowed()): ?>
+                <div class="source">
+                        <span onclick="deleteTicketMessage(this)" data-delete-url="<?php echo $this->getDeleteUrl($message) ?>">
+                            <?php echo $this->__('delete') ?>
+                        </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                </div>
+            <?php endif; ?>
+            <?php if (Mage::helper('helpdesk/permission')->isMessageEditAllowed()): ?>
+                <div class="source">
+                    <a target="_blank" href="<?php echo $this->getMessageUrl($message) ?>">
+                        <?php echo $this->__('edit') ?>
+                    </a>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                </div>
+            <?php endif; ?>
+            <?php echo Mage::helper('helpdesk/output')->getMessageAuthor($message); ?>
+            &nbsp;&nbsp;|&nbsp;&nbsp;
+            <?php echo Mage::helper('core')->formatDate($message->getCreatedAt(), 'medium') ?> <?php echo Mage::helper('core')->formatTime($message->getCreatedAt(), 'short') ?>
+        </div>
+
+        <div class="message-text"><?php echo $message->getBodyHtml() ?></div>
+
+        <?php $_attachments = $message->getAttachments() ?>
+        <?php if (count($_attachments)): ?>
+            <div class="attachment <?php if ($message->getIsInternal()):?>internal<?php endif ?>">
+                <?php foreach ($_attachments as $_attachment):?>
+                    <a href="<?php echo $_attachment->getBackendUrl()?>"><?php echo $_attachment->getName()?></a>
+                <?php endforeach ?>
+            </div>
+        <?php endif?>
+    </div>
+    <!-- message-<?php echo $message->getId()?> -->
+<?php endforeach ?>
+</div>

@@ -1,0 +1,26 @@
+<?php
+$_switcher = $this->getStoreSwitcherHtml();
+$_toolbar = $this->getToolbarHtml();
+$_grid = $this->getGridHtml();
+$_chart = $this->getChartHtml();
+?>
+
+<div class="helpdesk-report-ticket-container">
+    <div class="content-header">
+        <h3><?php echo $this->getHeaderText() ?></h3>
+        <sup style="display:none;"><?php echo Mage::getSingleton('core/date')->date() ?> (GMT <?php echo Mage::getSingleton('core/date')->getGmtOffset('hours') ?>)</sup>
+    </div>
+
+    <?php //echo $_switcher ?>
+
+    <?php echo $_chart ?>
+    <?php echo $_toolbar ?>
+    <?php echo $_grid ?>
+
+</div>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script>
+    google.load("visualization", '1.1', {packages:['corechart'], 'language': 'en'});
+    google.setOnLoadCallback(drawCharts);
+</script>

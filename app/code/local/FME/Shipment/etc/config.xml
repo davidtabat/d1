@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+    <modules>
+        <FME_Shipment>
+            <version>0.1.0</version>
+        </FME_Shipment>
+    </modules>
+    
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <FME_Shipment after="FME_Shipment">FME_Shipment_Adminhtml</FME_Shipment>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>    
+
+    <adminhtml>
+
+        <layout>
+            <updates>
+                <shipment>
+                    <file>fmeshipment.xml</file>
+                </shipment>
+            </updates>
+        </layout>
+    </adminhtml>
+    
+    <global>
+
+        <blocks>
+            <shipment>
+                <class>FME_Shipment_Block</class>
+            </shipment>
+            
+            <adminhtml>
+                <rewrite>
+                    <sales_shipment_grid>FME_Shipment_Block_Adminhtml_Sales_Shipment_Grid</sales_shipment_grid>
+                </rewrite>
+            </adminhtml>
+        </blocks>
+        
+        <helpers>
+            <shipment>
+                <class>FME_Shipment_Helper</class>
+            </shipment>
+        </helpers>
+
+    </global>
+    
+</config>

@@ -1,0 +1,324 @@
+
+<div class="col-main">
+    <form method="post" id="kaufberatung" action="<?php echo Mage::getUrl("kaufberatung/index/save") ?>">
+        <h1><?php echo $this->__("In 3 Minuten zu Ihrem individuellen Angebot"); ?></h1>
+        <div class="box-2col">
+            <div class="hd"></div>
+            <div class="bd">
+                <div id="b1" class="fieldset first">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">1</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Möchten Sie nur Schwarz/Weiß oder auch in Farbe drucken?"); ?></h3>
+                                    <div class="answers">
+
+                                        <label><input type="radio" value="Schwarz / Weiß" id="question_type-SchwarzWeiß" name="color"><?php echo $this->__("Schwarz / Weiß"); ?></label><br><label><input type="radio" value="Farbe und S/W" id="question_type-FarbeundSW" name="color"><?php echo $this->__("Farbe und S/W"); ?></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b2" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">2</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Welche Formate möchten Sie drucken?"); ?> <span class="info"><?php echo $this->__("(Mehrfachnennung möglich)"); ?></span></h3>
+                                    <div class="answers">
+
+                                        <label><input type="checkbox" checked="checked" value="A4" id="question_format-A4" name="print[]"><?php echo $this->__("A4"); ?></label><br><label><input type="checkbox" value="A3" id="question_format-A3" name="print[]"><?php echo $this->__("A3"); ?></label><br><label><input type="checkbox" value="Etiketten" id="question_format-Etiketten" name="print[]"><?php echo $this->__("Etiketten"); ?></label><br><label><input type="checkbox" value="Broschüren" id="question_format-Broschüren" name="print[]"><?php echo $this->__("Broschüren"); ?></label>	<div style="clear: both;" class="formatmisc"><?php echo $this->__("Andere Formate:"); ?>
+                                            <input type="text" value="" id="question_formatmisc" name="other_print">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b3" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">3</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Welche Funktionen soll der Kopierer haben?"); ?> <span class="info"><?php echo $this->__("(Mehrfachnennung möglich)"); ?></span></h3>
+                                    <div class="answers">
+
+                                        <label><input type="checkbox" checked="checked" value="Kopieren" id="question_function-Kopieren" name="features[]"><?php echo $this->__("Kopieren"); ?></label><br><label><input type="checkbox" value="Drucken" id="question_function-Drucken" name="features[]"><?php echo $this->__("Drucken"); ?></label><br><label><input type="checkbox" value="Faxen" id="question_function-Faxen" name="features[]"><?php echo $this->__("Faxen"); ?></label><br><label><input type="checkbox" value="Scannen" id="question_function-Scannen" name="features[]"><?php echo $this->__("Scannen"); ?></label><br><label><input type="checkbox" value="Duplex-Druck/-Scan (Beidseitig)" id="question_function-Duplex-Druck-ScanBeidseitig" name="features[]"><?php echo $this->__("Duplex-Druck/-Scan (Beidseitig)"); ?></label><br><label><input type="checkbox" value="Lochen und heften (Finisher)" id="question_function-LochenundheftenFinisher" name="features[]"><?php echo $this->__("Lochen und heften (Finisher)"); ?></label><br><label><input type="checkbox" value="Stapeln und sortieren (Sorter)" id="question_function-StapelnundsortierenSorter" name="features[]"><?php echo $this->__("Stapeln und sortieren (Sorter)"); ?></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b4" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">4</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Wie viele Papierfächer benötigen Sie?"); ?></h3>
+                                    <div class="answers">
+
+                                        <label><input type="radio" value="2" id="question_papertray-2" name="paper_trays"><?PHP echo $this->__("2"); ?></label><br><label><input type="radio" value="4" id="question_papertray-4" name="paper_trays"><?PHP echo $this->__("4"); ?></label><br><label><input type="radio" value="mehr" id="question_papertray-mehr" name="paper_trays"><?PHP echo $this->__("mehr"); ?></label><br><label><input type="radio" value="weiß ich nicht" id="question_papertray-weißichnicht" name="paper_trays"><?PHP echo $this->__("weiß ich nicht"); ?></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b5" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">5</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Wie möchten Sie den Kopierer anschließen?"); ?></h3>
+                                    <div class="answers">
+
+                                        <label><input type="radio" value="Netzwerk" id="question_connect-Netzwerk" name="connect"><?php echo $this->__("Netzwerk"); ?></label><br><label><input type="radio" value="Lokal" id="question_connect-Lokal" name="connect"><?php echo $this->__("Lokal"); ?></label><br><label><input type="radio" value="Standalone" id="question_connect-Standalone" name="connect"><?php echo $this->__("Standalone"); ?></label><br><label><input type="radio" value="weiß ich nicht" id="question_connect-weißichnicht" name="connect"><?php echo $this->__("weiß ich nicht"); ?></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b6" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">6</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Wie hoch ist Ihr monatliches Kopiervolumen?"); ?></h3>
+                                    <div class="answers">
+
+                                        <label><input type="radio" value="bis zu 2.500" id="question_volume-biszu2500" name="volumes"><?php echo $this->__("bis zu 2.500"); ?></label><br><label><input type="radio" value="2.500 - 5.000" id="question_volume-2500-5000" name="volumes"><?php echo $this->__("2.500 - 5.000"); ?></label><br><label><input type="radio" value="5.000 - 10.000" id="question_volume-5000-10000" name="volumes"><?php echo $this->__("5.000 - 10.000"); ?></label><br><label><input type="radio" value="10.000 - 25.000" id="question_volume-10000-25000" name="volumes"><?php echo $this->__("10.000 - 25.000"); ?></label><br><label><input type="radio" value="mehr als 25.000" id="question_volume-mehrals25000" name="volumes"><?php echo $this->__("mehr als 25.000"); ?></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b7" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">7</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Bevorzugen Sie ein Tischgerät oder lieber einen Standkopierer?"); ?></h3>
+                                    <div class="answers">
+
+                                        <label><input type="radio" value="Tischgerät" id="question_unit-Tischgerät" name="desktop"><?php echo $this->__("Tischgerät"); ?></label><br><label><input type="radio" value="Standkopierer" id="question_unit-Standkopierer" name="desktop"><?php echo $this->__("Standkopierer"); ?></label><br><label><input type="radio" value="weiß ich nicht" id="question_unit-weißichnicht" name="desktop"><?php echo $this->__("weiß ich nicht"); ?></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+                <div id="b8" class="fieldset">
+                    <table cellpadding="0">
+                        <tbody><tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">8</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Ihr Budget in Euro"); ?></h3>
+                                    <div class="answers">
+                                        <label><input type="radio" checked="checked" value="Budget ca." id="question_budget-1" name="budget"><?php echo $this->__("Budget ca."); ?></label><br><label><input type="radio" value="Keine Budgetvorgaben" id="question_budget-0" name="budget"><?php echo $this->__("Keine Budgetvorgaben"); ?></label>
+                                        <br>
+                                        <input type="text" value="" id="question_budgetamount" name="question_budgetamount">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="b9" class="fieldset last">
+                    <table cellpadding="0">
+                        <tbody>
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no">9</div>
+                                </td>
+                                <td class="question">
+                                    <h3><?php echo $this->__("Haben Sie sonstige Anmerkungen oder Wünsche?"); ?> <span class="info"><?php echo $this->__("(Optional)"); ?></span></h3>
+                                    <div class="answers">
+                                        <textarea cols="72" rows="24" id="question_note" name="comments"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                </div>
+            </div>
+            <div class="ft"></div>
+        </div>
+        <div id="next" class="next">
+            <a href="javascript:void(0);"><img height="28" width="116" alt="Weiter" src="http://www.kopiererhaus.de/skin/frontend/default/kopiererhaus/images/btn_weiter.png"></a>
+        </div>
+        <div class="box-2col hide personal">
+            <div class="hd"></div>
+            <div class="bd">
+                <div id="guide">
+                    <div id="b9" class="fieldset">
+                        <h3><?PHP echo $this->__("An wen soll das Angebot gehen?"); ?></h3>
+                        <div class="field-row">
+                            <label class="required"><?PHP echo $this->__("Anrede"); ?> <em>*</em></label>
+                            <select class="required-entry" id="title" name="Salutation">
+                                <option value="Herr"><?PHP echo $this->__("Herr"); ?></option>
+                                <option value="Frau"><?PHP echo $this->__("Frau"); ?></option>
+                            </select>
+                        </div>
+
+                        <div class="field-row">
+                            <label class="required"><?PHP echo $this->__("Ihr Name"); ?> <em>*</em></label>
+                            <input type="text" class="required-entry" value="" id="name" name="name">
+                        </div>
+
+                        <div class="field-row">
+                            <label><?PHP echo $this->__("Firma (optional)"); ?></label>
+                            <input type="text" value="" id="company" name="company">
+                        </div>
+
+                        <div class="field-row">
+                            <label class="required"><?PHP echo $this->__("Telefon"); ?> <em>*</em></label>
+                            <input type="text" class="required-entry" value="" id="telephone" name="phone">
+                        </div>
+
+                        <div class="field-row">
+                            <label class="required"><?PHP echo $this->__("E-Mail-Adresse"); ?> <em>*</em></label>
+                            <input type="text" class="required-entry validate-email" value="" id="email" name="email">
+                        </div>
+
+                        <div class="field-row submit">
+                            <input type="submit" id="send" value="Anfrage absenden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ft"></div>
+        </div>
+    </form>
+    <script type="text/javascript">
+        //<![CDATA[
+        //var contactForm = new VarienForm('purchaseAdviceForm', true);
+        //]]>
+        $(document).ready(function () {
+            $("#guide").hide();
+            $("#next").click(function () {
+                $("#guide").show();
+                $("#next").hide();
+            });
+        });
+    </script>
+</div>
+<div class="col-right sidebar">
+    <div class="banner-small consultant" style="display: block; text-align: center;">
+        <img src="<?php echo $this->getSkinUrl('images/banner-kaufberatung_277x171.png'); ?>" width="254" alt="" /></a>
+    </div>
+    <h3>Kopiererhaus.de</h3>
+    <p>Ihr Shop für generalüberholte, voll funktionsfähige Gebrauchtkopierer und Rebuild Toner zu günstigen Preisen.</p>
+    <br />
+    <h3>Wir führen Kopiergeräte von</h3>
+
+    <ul class="manufacturer-list">
+        <li class="first"><a href="/hp-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_hp.png'); ?>" /></a></li>
+        <li><a href="/minolta-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_konicaminolta.png'); ?>" /></a></li>
+        <li><a href="/kyocera-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_kyocera.png'); ?>" /></a></li>
+        <li><a href="/canon-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_canon.png'); ?>" /></a></li>
+        <li class="last"><a href="/ricoh-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_ricoh.png'); ?>" /></a></li>
+    </ul>
+</div>
+
+<?php
+/*
+  This shows how to load specific fields from a record in the database.
+  1) Note the load(15), this corresponds to saying "select * from table where table_id = 15"
+  2) You can then just use the get(fieldname) to pull specific data from the table.
+  3) If you have a field named news_id, then it becomes getNewsId, etc.
+ */
+/*
+  $news = Mage::getModel('kaufberatung/kaufberatung')->load(15);
+  echo $news->getNewsId();
+  echo $news->getTitle();
+  echo $news->getContent();
+  echo $news->getStatus();
+ */
+
+/*
+  This shows an alternate way of loading datas from a record using the database the "Magento Way" (using blocks and controller).
+  Uncomment blocks in /app/code/local/Namespace/Module/controllers/IndexController.php if you want to use it.
+
+ */
+/*
+  $object = $this->getKaufberatung();
+  echo 'id: '.$object['test_id'].'<br/>';
+  echo 'title: '.$object['title'].'<br/>';
+  echo 'content: '.$object['content'].'<br/>';
+  echo 'status: '.$object['status'].'<br/>';
+ */
+
+
+/*
+  This shows how to load multiple rows in a collection and save a change to them.
+  1) The setPageSize function will load only 5 records per page and you can set the current Page with the setCurPage function.
+  2) The $collection->walk('save') allows you to save everything in the collection after all changes have been made.
+ */
+/*
+  $i = 0;
+
+  $collection = Mage::getModel('kaufberatung/kaufberatung')->getCollection();
+  $collection->setPageSize(5);
+  $collection->setCurPage(2);
+  $size = $collection->getSize();
+  $cnt = count($collection);
+  foreach ($collection as $item) {
+  $i = $i+1;
+  $item->setTitle($i);
+  echo $item->getTitle();
+  }
+
+  $collection->walk('save');
+ */
+
+/*
+  This shows how to load a single record and save a change.
+  1) Note the setTitle, this corresponds to the table field name, title, and then you pass it the text to change.
+  2) Call the save() function only on a single record.
+ */
+/*
+  $object = Mage::getModel('kaufberatung/kaufberatung')->load(1);
+  $object->setTitle('This is a changed title');
+  $object->save();
+ */
+?> 

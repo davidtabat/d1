@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<config>
+    <modules>
+        <FME_Shipment>
+            <active>true</active>
+            <codePool>local</codePool>
+        </FME_Shipment>
+    </modules>
+</config>

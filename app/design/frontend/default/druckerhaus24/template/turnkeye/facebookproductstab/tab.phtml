@@ -1,0 +1,85 @@
+<?php
+/**
+ * TurnkeyE Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0).
+ * It is available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you are unable to obtain it through the world-wide-web, please send
+ * an email to info@turnkeye.com so we can send you a copy immediately.
+ *
+ * @category   Turnkeye
+ * @package    Turnkeye_FacebookProductsTab
+ * @copyright  Copyright (c) 2010-2012 TurnkeyE Co. (http://turnkeye.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/**
+ * Template for tab
+ *
+ * @category   Turnkeye
+ * @package    Turnkeye_FacebookProductsTab
+ * @author     Viacheslav Fedorenko <v.fedorenko@turnkeye.com>
+ */
+
+/**
+ * @var $this Turnkeye_FacebookProductsTab_Block_View
+ * @var $_helper Mage_Catalog_Helper_Output
+ */
+
+$_productCollection = $this->getProducts();
+$_helper = $this->helper('catalog/output');
+
+?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->getSkinUrl('css/facebookproductstab.css'); ?>" media="all"/>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('js/facebookproductstab.js'); ?>"></script>
+<div class="fb-list">
+    <div class="category-products">
+        <?php if (!$_productCollection->count()): ?>
+            <p class="note-msg"><?php echo $this->__('There are no products matching the selection.') ?></p>
+            <?php else: ?>
+            <div class="category-products">
+                <?php $_iterator = 0; ?>
+                <ol class="products-list">
+                    <?php foreach ($_productCollection as $_product): ?>
+                    <li class="item<?php if (++$_iterator == sizeof($_productCollection)): ?> last<?php endif; ?>">
+                        <div class="left_column">
+                            <?php // Product Image ?>
+                            <a href="<?php echo $_product->getProductUrl() ?>" target="_blank"
+                               title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>"
+                               class="product-image"><img
+                                src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(135); ?>"
+                                width="135" height="135"
+                                alt="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>"/></a>
+                        </div>
+                        <div class="right_column">
+                            <h2 class="product-name"><a href="<?php echo $_product->getProductUrl() ?>"
+                                                        title="<?php echo $this->stripTags($_product->getName(), null, true) ?>"
+                                                        target="_blank"><?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?></a>
+                            </h2>
+                            <?php // Product description ?>
+                            <?php echo $this->getPriceHtml($_product, true) ?>
+                            <div class="product-shop">
+                                <div class="f-fix">
+                                    <?php if ($_product->getRatingSummary()): ?>
+                                    <?php echo $this->getReviewsSummaryHtml($_product, 'short') ?>
+                                    <?php endif; ?>
+                                    <div class="desc std">
+                                        <?php echo $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
+                                    </div>
+                                    <ul class="add-to-links">
+                                        <li><span><a href="<?php echo $_product->getProductUrl() ?>" target="_blank"
+                                                     class="view_details"><?php echo $this->__("View details"); ?></a></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <?php endforeach; ?>
+                </ol>
+            </div>
+            <?php endif; ?>
+    </div>
+</div>

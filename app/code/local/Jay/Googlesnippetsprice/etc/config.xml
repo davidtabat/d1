@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Override Helper fprotected function _formatPrice 
+    in  Mirasvit_Seo_Helper_Data  used to format the price for Google Snippets
+
+   07.11.2017 - Genivaldo Pinheiro
+
+    Depends on Module Mirasvit_Seo
+
+  ./app/etc/modules/Mirasvit_Seo.xml
+  ./app/etc/modules/Jay_Googlesnippetsprice.xml
+
+-->
+<config>
+    <modules>
+        <Jay_Googlesnippetsprice>
+            <version>1</version>
+        </Jay_Googlesnippetsprice>
+    </modules>
+    <global>
+	<helpers>
+        	<seo>
+           	 <rewrite>
+               		 <data>Jay_Googlesnippetsprice_Helper_Data</data>
+           	 </rewrite>
+        	</seo>
+    	</helpers>
+    </global>
+</config>

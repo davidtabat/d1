@@ -1,0 +1,371 @@
+<?php
+/**
+ * Calculate Shipping Form
+ *
+ * @author Pham Hong Thanh
+ * @email thanhpham0990@gmail.com
+ * @var $this Cmsmart_CalculateShipping_Block_Form
+ */
+?>
+
+
+    <?php if ($this->isEnabled()): ?>
+
+    <div class="calculate-shipping-form" id="calculate-shipping-form">
+
+        <div class="block1 main-title-form main-form">
+            <div class="block1-title block1-title-parent">
+                <strong>
+                    <span>
+                        <?php echo Mage::helper('calculateshipping')->__('Shipping Cost Calculator') ?>
+                    </span>
+                </strong>
+            </div>
+        </div>
+
+        <div class="main-content-form main-form">
+
+            <div class="block1 block1-shipping-estimate block1-form">
+
+                <div class="block1-content block1-content-fields">
+
+                    <div class="block1-subtitle block1-subtitle-calculate">
+
+                        <div class="text-description">
+                            <p class="destination"><?php echo Mage::helper('calculateshipping')->__('Destination') ?></p>
+                            <p><?php echo Mage::helper('calculateshipping')->__('Enter destination to get a shipping cost') ?></p>
+                        </div>
+
+                    </div>
+
+                    <div class="detail-form-fields">
+                        <ul>
+
+                            <?php if ($this->isFieldVisible('country')): ?>
+                                <li class="item">
+                                    <label for="estimate_country" class="required">
+                                        <em>*</em>
+                                        <?php echo Mage::helper('calculateshipping')->__('Country') ?>
+                                    </label>
+                                    <div class="input-box">
+                                        <?php echo Mage::getBlockSingleton('directory/data')->getCountryHtmlSelect(
+                                            ($this->getFieldValue('country') ? $this->getFieldValue('country') : $this->getConfig()->getDefaultCountry()),
+                                            'estimate[country_id]',
+                                            'estimate_country'
+                                        );
+                                        ?>
+                                    </div>
+                                </li>
+                            <?php else: ?>
+                                <input type="hidden" id="estimate_country" name="estimate[country_id]" value="<?php echo $this->htmlEscape($this->getConfig()->getDefaultCountry())?>" />
+                            <?php endif; ?>
+
+
+
+                            <?php if ($this->isFieldVisible('region')): ?>
+                                <li class="item">
+                                    <label for="estimate_region_id" <?php if ($this->isFieldRequired('region')):?> class="required" <?php endif;?>>
+                                        <?php if ($this->isFieldRequired('region')):?>
+                                            <em>*</em>
+                                        <?php endif;?>
+                                        <?php echo $this->__('State/Province') ?>
+                                    </label>
+
+                                    <div class="input-box">
+                                        <select id="estimate_region_id" name="estimate[region_id]" title="<?php echo Mage::helper('calculateshipping')->__('State/Province') ?>" style="display:none;"<?php echo ($this->isFieldRequired('region') ? ' class="validate-select"' : '') ?>>
+                                            <option value=""><?php echo  Mage::helper('calculateshipping')->__('Please select an option') ?></option>
+                                        </select>
+                                        <script type="text/javascript">
+                                            //<![CDATA[
+                                            $('estimate_region_id').setAttribute('defaultValue',  '<?php echo $this->jsQuoteEscape($this->getFieldValue('region_id')); ?>');
+                                            //]]>
+                                        </script>
+                                        <input type="text" id="estimate_region" name="estimate[region]" value="<?php echo $this->htmlEscape($this->getFieldValue('region')) ?>"  title="<?php echo  Mage::helper('calculateshipping')->__('State/Province') ?>" class="input-text" style="display:none;" />
+                                    </div>
+                                </li>
+                                <script type="text/javascript">
+                                    //<![CDATA[
+                                    new RegionUpdater('estimate_country', 'estimate_region', 'estimate_region_id', <?php echo $this->helper('directory')->getRegionJson() ?>);
+                                    //]]>
+                                </script>
+                            <?php endif; ?>
+
+
+
+                            <?php if($this->isFieldVisible('city')): ?>
+                                <li class="item">
+                                    <label for="city" <?php if ($this->isFieldRequired('city')):?> class="required" <?php endif;?>>
+                                        <?php if ($this->isFieldRequired('city')):?>
+                                            <em>*</em>
+                                        <?php endif;?>
+                                        <?php echo  Mage::helper('calculateshipping')->__('City') ?>
+                                    </label>
+
+                                    <div class="input-box">
+                                        <input class="input-text<?php if ($this->isFieldRequired('city')):?> required-entry<?php endif;?>" id="estimate_city" type="text" name="estimate[city]" value="<?php echo $this->htmlEscape($this->getFieldValue('city')) ?>" />
+                                    </div>
+                                </li>
+                            <?php endif; ?>
+
+
+
+                            <?php if ($this->isFieldVisible('post_code')): ?>
+                                <li class="item">
+                                    <label for="estimate_postcode"<?php if ($this->isFieldRequired('post_code')):?> class="required" <?php endif;?>>
+                                        <?php if ($this->isFieldRequired('post_code')):?>
+                                            <em>*</em>
+                                        <?php endif;?>
+                                        <?php echo Mage::helper('calculateshipping')->__('Zip/Postal Code') ?>
+                                    </label>
+
+                                    <div class="input-box">
+                                        <input class="input-text validate-postcode <?php if ($this->isFieldRequired('post_code')):?> required-entry<?php endif;?>" type="text" id="estimate_postcode" name="estimate[post_code]" value="<?php echo $this->htmlEscape($this->getFieldValue('post_code')) ?>" />
+                                    </div>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if ($this->isFieldVisible('include_cart')): ?>
+                                <li class="item radio">
+                                    <label class='include_cart_label'><?php echo Mage::helper('calculateshipping')->__('Include Cart Items') ?></label>
+                                    <div class="input-box">
+                                        <div class="left-radio">
+                                            <input type="radio" id="estimate_cart_yes" name="estimate[include_cart]" value="1" <?php if ($this->useIncludeCart()): ?> checked="checked"<?php endif;?> />
+                                            <label for="estimate_cart_yes"><?php echo Mage::helper('calculateshipping')->__('Yes') ?></label>
+                                        </div>
+                                        <div class="right-radio">
+                                            <input type="radio" id="estimate_cart_no" name="estimate[include_cart]" value="0" <?php if (!$this->useIncludeCart()): ?> checked="checked"<?php endif;?> />
+                                            <label for="estimate_cart_no"><?php echo Mage::helper('calculateshipping')->__('No') ?></label>
+                                        </div>
+                                    </div>
+                                </li>
+                            <?php elseif ($this->useIncludeCart()):?>
+                                <input id="estimate_cart_yes" type="hidden" name="estimate[include_cart]" value="1" />
+                            <?php endif; ?>
+
+                            <li class="item ">
+
+                                <div class="bottom-button">
+
+                                    <?php if($this->useAutoDetect()):?>
+
+                                        <div class="auto-ip-button" >
+
+                                            <button type="button" title="<?php echo Mage::helper('calculateshipping')->__('Calculate') ?>" onclick="getLocation()" class="button">
+                                                <span><span><?php echo Mage::helper('calculateshipping')->__('Auto IP') ?></span></span>
+                                            </button>
+
+                                            <div style="display: none;" class="ajax_auto_ip">
+                                                <img src='<?php echo $this->getSkinUrl('images/cmsmart/calculateshipping/ajax-auto-ip.gif')?>'/>
+                                            </div>
+
+                                        </div>
+
+                                    <?php endif;?>
+
+
+                                    <div class="calculate-button">
+                                        <button type="button" title="<?php echo Mage::helper('calculateshipping')->__('Calculate') ?>" onclick="calculateShipping()" class="button">
+                                            <span><span><?php echo Mage::helper('calculateshipping')->__('Calculate') ?></span></span>
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </li>
+
+                        </ul>
+                    </div>
+
+
+
+                    <script type="text/javascript">decorateList('shipping-estimation-form');</script>
+
+                </div>
+
+
+            </div>
+
+            <div id="calculate-shipping-result" class="block1-result">
+                <div class="block1 block1-shipping-estimate block1-shipping-results">
+                    <div class="block1-title result-title">
+                        <strong>
+                            <span class="capitalize">
+                                <?php echo Mage::helper('calculateshipping')->__('Shipping Rates'); ?>
+                            </span>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span class="ajax_loader" id="ajax_loader" style="display: none;">
+                            <img src='<?php echo $this->getSkinUrl('images/cmsmart/calculateshipping/ajax-loader.gif')?>'/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <?php endif;?>
+
+
+    <script type="text/javascript">
+
+        $j(document).ready(function(){
+
+
+            <?php if(Mage::app()->getRequest()->getControllerName() === 'product'): ?>
+
+                <?php $config = Mage::getModel('calculateshipping/system_config'); ?>
+
+                <?php if($config->getPosition() === $config::DISPLAY_POSITION_POPUP): ?>
+
+                    $j('<div class="shipping_price"><a class="fancybox" href="#calculate-shipping-form">Calculate Shipping</a></div>').insertAfter('.product-shop .short-description');
+//                    $j('<div class="shipping_price"><a class="fancybox" href="#calculate-shipping-form">Calculate Shipping</a></div>').insertAfter('.product-shop .price-box');
+
+                    $j('.product-calculate-shipping-form').hide();
+
+//                    $j('.fancybox').fancybox();
+
+                    $j('.fancybox').magnificPopup({
+                        type:'inline',
+                        midClick: true // Allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source in href.
+                    });
+
+
+            $j('.fancybox').click(function(){
+                        $j('#calculate-shipping-result .block1-shipping-results .block1-content').hide();
+                    });
+
+                <?php else:?>
+                    $j('#calculate-shipping-result').hide();
+                <?php endif;?>
+
+            <?php endif; ?>
+
+
+
+            <?php if(Mage::app()->getRequest()->getControllerName() === 'category'): ?>
+
+                <?php $config = Mage::getSingleton('calculateshipping/system_config'); ?>
+
+                <?php if($config->isApplyCategory()): ?>
+                    $j('<a class="fancybox" href="#calculate-shipping-form"><span class="gh-green-highlight">Calculate</span></a>').prependTo('.category-shipping-form');
+
+                <?php endif; ?>
+
+                $j('.category-calculate-shipping-form').hide();
+
+//                $j('.fancybox').fancybox();
+
+                $j('.fancybox').magnificPopup({
+                    type:'inline',
+                    midClick: true // Allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source in href.
+                });
+
+                $j('.fancybox').click(function(){
+
+                    $j('#calculate-shipping-result .block1-shipping-results .block1-content').hide();
+
+                    $j('.category-shipping-form').removeClass('category-shipping-form-active');
+
+                    $j(this).parent().addClass('category-shipping-form-active');
+
+                });
+
+            <?php endif; ?>
+
+        });
+
+
+
+        function getLocation(){
+
+            var url = "<?php echo Mage::getUrl('calculateshipping/index/index'); ?>";
+
+            $j('.auto-ip-button button').hide();
+
+            $j('.ajax_auto_ip').show();
+
+            $j.ajax({
+                url : url,
+                type : 'post',
+                dataType : 'json',
+                success: function(data){
+
+                    $j('.ajax_auto_ip').hide();
+
+                    $j('.auto-ip-button button').show();
+
+                    $j('#estimate_country').val(data.countryId);
+
+                    $j('#estimate_region').val(data.region).show();
+
+                    $j('#estimate_region_id').hide();
+
+                    $j('#estimate_city').val(data.city);
+
+                    $j('#estimate_postcode').val(data.zipcode);
+
+                }
+            });
+
+        }
+
+
+
+        //<![CDATA[
+        function calculateShipping(){
+
+            $j(".nicescroll-rails").remove();
+
+            var url = '<?php echo $this->jsQuoteEscape($this->getControllerSubmit());?>';
+
+            <?php if(Mage::app()->getRequest()->getControllerName() === 'product'): ?>
+                var elements = $j('#calculate-shipping-form input, #calculate-shipping-form select, #product_addtocart_form input, #product_addtocart_form select');
+            <?php elseif (Mage::app()->getRequest()->getControllerName() === 'category'): ?>
+                var elements = $j('#calculate-shipping-form input, #calculate-shipping-form select, .category-shipping-form-active input');
+            <?php endif;?>
+
+            var validFlag = false;
+
+            elements.each(function(){
+                if(!Validation.validate(this)){
+                    validFlag = true;
+                }
+            });
+
+            if(validFlag == true){
+                return;
+            }
+
+            var data = elements.serialize();
+
+            $j('#calculate-shipping-result').show();
+
+            $j('#ajax_loader').show();
+
+            $j('.calculate-shipping-form #calculate-shipping-result .block1-content').hide();
+
+            $j.ajax({
+                url : url,
+                type : 'post',
+                dataType : 'json',
+                data : data,
+                success: function(data){
+                    $j('#ajax_loader').hide();
+                    if(data.status == 0){
+                        alert(data.message);
+                    }else if(data.status == 1){
+                        alert(data.message);
+                        $j('.calculate-shipping-form #calculate-shipping-result').replaceWith(data.result);
+                    }else{
+                        $j('.calculate-shipping-form #calculate-shipping-result').replaceWith(data.result);
+                    }
+                }
+            });
+
+        }
+        //]]>
+    </script>

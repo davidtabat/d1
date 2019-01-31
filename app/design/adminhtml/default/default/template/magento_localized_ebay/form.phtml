@@ -1,0 +1,281 @@
+<?php
+/**
+ * Ebay edition package for Magento Localized
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedEbay
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+
+/**
+ * @see IntegerNet_MagentoLocalizedEbay_Block_Form
+ * @var $this IntegerNet_MagentoLocalizedEbay_Block_Form
+ */
+?>
+
+<?php $moduleTitle = Mage::helper('magento_localized')->__(Mage::getStoreConfig('magento_localized/module_title')) ?>
+
+    <div class="content-header">
+        <h3>
+            <?php echo Mage::helper('magento_localized')->__('%s Setup', $moduleTitle) ?><br />
+        </h3>
+    </div>
+    <h3><?php echo Mage::helper('magento_localized')->__('Page %s of %s', 3, 3) ?>: <?php echo $this->__('Setup of modules powered by ebay') ?></h3>
+
+<?php foreach($this->getSections() as $sectionName): ?>
+    <?php foreach($this->getModules($sectionName) as $moduleName): ?>
+        <?php if ($this->isModuleAvailable($moduleName)): ?>
+
+            <div class="entry-edit-head">
+                <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->getAreaHtml($moduleName, 'name') ?></h4>
+            </div>
+
+            <div class="fieldset magento-localized-ebay-setup" id="group_<?php echo $moduleName ?>">
+            <div class="hor-scroll">
+            <div class="col2-set">
+                <div class="col-1">
+                    <div class="short-description-area">
+                        <?php echo $this->getAreaHtml($moduleName, 'short_description') ?>
+                    </div>
+                    <div class="benefits-area">
+                        <?php echo $this->getAreaHtml($moduleName, 'benefits_description') ?>
+                    </div>
+                    <div class="general-lead-area">
+                        <?php echo $this->getAreaHtml($moduleName, 'general_lead_area') ?>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="logo-area">
+                        <?php echo $this->getAreaHtml($moduleName, 'partner_logo') ?>
+                    </div>
+                    <div class="image-graphic-area">
+                        <?php echo $this->getAreaHtml($moduleName, 'image_graphic') ?>
+                    </div>
+                </div>
+            </div>
+
+            <?php if ($moduleName == 'paypal'): ?>
+
+                <hr />
+
+                <table cellspacing="0" class="form-list">
+                    <tbody>
+
+                    <tr>
+                        <td class="label" rowspan="2"><label for="field_paypal_express_email"><?php echo $this->__('Email Associated with PayPal Merchant Account') ?></label></td>
+                        <td class="value">
+                            <input type="text" name="paypal_express_email" id="field_paypal_express_email" class="input-text" value="<?php echo Mage::getStoreConfig('paypal/general/business_account') ?>" />
+                        </td>
+                        <td class="comment" rowspan="9">
+                            <?php echo $this->getAreaHtml($moduleName, 'module_settings_description') ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="value">
+                            <div class="pp-buttons-container">
+                                <button id="payment_express_checkout_required_express_checkout_api_wizard" type="button" class="scalable" onclick="javascript:window.open('https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run', 'apiwizard','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, ,left=100, top=100, width=380, height=470'); return false;">
+                                    <span><span><span><?php echo Mage::helper('paypal')->__('Get Credentials from PayPal') ?></span></span></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_paypal_api_username"><?php echo Mage::helper('paypal')->__('API Username') ?></label></td>
+                        <td class="value">
+                            <input type="password" name="paypal_api_username" id="field_paypal_api_username" class="input-text" value="<?php echo Mage::getStoreConfig('paypal/wpp/api_username') ?>" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_paypal_api_password"><?php echo Mage::helper('paypal')->__('API Password') ?></label></td>
+                        <td class="value">
+                            <input type="password" name="paypal_api_password" id="field_paypal_api_password" class="input-text" value="<?php echo Mage::getStoreConfig('paypal/wpp/api_password') ?>" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label" rowspan="2"><label for="field_paypal_api_signature"><?php echo Mage::helper('paypal')->__('API Signature') ?></label></td>
+                        <td class="value">
+                            <input type="password" name="paypal_api_signature" id="field_paypal_api_signature" class="input-text" value="<?php echo Mage::getStoreConfig('paypal/wpp/api_signature') ?>" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">
+                            <div class="pp-buttons-container">
+                                <button id="sandbox_payment_express_checkout_required_express_checkout_api_wizard" type="button" class="scalable" onclick="javascript:window.open('https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run', 'apiwizard','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, ,left=100, top=100, width=380, height=470'); return false;">
+                                    <span><span><span><?php echo Mage::helper('paypal')->__('Sandbox Credentials') ?></span></span></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_paypal_active"><?php echo $this->__('Activate PayPal Express payment') ?></label></td>
+                        <td class="value">
+                            <select name="paypal_active" id="field_paypal_active">
+                                <option value="0" <?php if (!Mage::getStoreConfigFlag('payment/paypal_express/active')): ?>selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1" <?php if (Mage::getStoreConfigFlag('payment/paypal_express/active')): ?>selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_paypal_sandbox"><?php echo $this->__('Test mode (sandbox) for PayPal payment') ?></label></td>
+                        <td class="value">
+                            <select name="paypal_sandbox" id="field_paypal_sandbox">
+                                <option value="0" <?php if (!Mage::getStoreConfigFlag('paypal/wpp/sandbox_flag')): ?>selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1" <?php if (Mage::getStoreConfigFlag('paypal/wpp/sandbox_flag')): ?>selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label" colspan="2">
+                            <?php echo $this->__('You have the option to make further settings for PayPal after you finished the setup here.') ?>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            <?php elseif ($moduleName == 'billsafe'): ?>
+
+                <hr />
+
+                <table cellspacing="0" class="form-list">
+                    <tbody>
+
+                    <?php if (!Mage::getStoreConfig('magento_localized/installed_modules/billsafe/billsafe')): ?>
+                        <tr>
+                            <td class="label"><label for="field_billsafe_install"><?php echo $this->__('Install BillSAFE module') ?></label></td>
+                            <td class="value">
+                                <select name="billsafe_install" id="field_billsafe_install">
+                                    <option value="0"<?php if (Mage::getStoreConfig('magento_localized/is_initialized')): ?> selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                    <option value="1"<?php if (!Mage::getStoreConfig('magento_localized/is_initialized')): ?> selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                                </select>
+                            </td>
+                            <td class="comment" rowspan="4">
+                                <a href="<?php echo $this->getBillsafeRegisterUrl() ?>" target="_blank" id="billsafe_direct_info">
+                                    <img src="<?php echo $this->getSkinUrl('images/i_question-mark.png') ?>" alt="" />
+                                </a>
+
+                                <script type="text/javascript">
+                                    new Tooltip('billsafe_direct_info', '<?php echo $this->__('BillSAFE is the secure invoice payment service from PayPal. Klick here to get more info or register now.') ?>')
+                                </script>
+                            </td>
+                        </tr>
+                    <?php endif ?>
+
+                    <tr>
+                        <td class="label"><label for="field_billsafe_active"><?php echo $this->__('Activate BillSAFE payment') ?></label></td>
+                        <td class="value">
+                            <select name="billsafe_active" id="field_billsafe_active">
+                                <option value="0" <?php if (!Mage::getStoreConfigFlag('payment/billsafe/active')): ?>selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1" <?php if (Mage::getStoreConfigFlag('payment/billsafe/active')): ?>selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                        <?php if (Mage::getStoreConfig('magento_localized/installed_modules/billsafe/billsafe')): ?>
+                            <td class="comment" rowspan="3">
+                                <a href="<?php echo $this->getBillsafeRegisterUrl() ?>" target="_blank" id="billsafe_direct_info">
+                                    <img src="<?php echo $this->getSkinUrl('images/i_question-mark.png') ?>" alt="" />
+                                </a>
+
+                                <script type="text/javascript">
+                                    new Tooltip('billsafe_direct_info', '<?php echo $this->__('BillSAFE is the secure invoice payment service from PayPal. Klick here to get more info or register now.') ?>')
+                                </script>
+                            </td>
+                        <?php endif ?>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_billsafe_sandbox"><?php echo $this->__('Test mode (sandbox) for BillSAFE payment') ?></label></td>
+                        <td class="value">
+                            <select name="billsafe_sandbox" id="field_billsafe_sandbox">
+                                <option value="0" <?php if (!Mage::getStoreConfigFlag('payment/billsafe/sandbox')): ?>selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1" <?php if (Mage::getStoreConfigFlag('payment/billsafe/sandbox')): ?>selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_billsafe_merchant_id"><?php echo $this->__('Merchant ID') ?></label></td>
+                        <td class="value">
+                            <input type="text" name="billsafe_merchant_id" id="field_billsafe_merchant_id" class="input-text" value="<?php echo Mage::getStoreConfig('payment/billsafe/merchant_id') ?>" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_billsafe_merchant_license"><?php echo $this->__('License Key') ?></label></td>
+                        <td class="value">
+                            <input type="text" name="billsafe_merchant_license" id="field_billsafe_merchant_license" class="input-text" value="<?php echo Mage::getStoreConfig('payment/billsafe/merchant_license') ?>" />
+                            <p class="note">
+                                <?php echo $this->__('You can find this by logging in to the <a href="%s" target="_blank">BillSAFE payment backend</a>.', 'https://client.billsafe.de/main/mainmenu') ?>
+                            </p>
+                        </td>
+                        <td class="comment"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_billsafe_installment_active"><?php echo $this->__('Activate BillSAFE installment payment') ?></label></td>
+                        <td class="value">
+                            <select name="billsafe_installment_active" id="field_billsafe_installment_active">
+                                <option value="0" <?php if (!Mage::getStoreConfigFlag('payment/billsafe_installment/active')): ?>selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1" <?php if (Mage::getStoreConfigFlag('payment/billsafe_installment/active')): ?>selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="label"><label for="field_billsafe_installment_sandbox"><?php echo $this->__('Test mode (sandbox) for BillSAFE installment payment') ?></label></td>
+                        <td class="value">
+                            <select name="billsafe_installment_sandbox" id="field_billsafe_installment_sandbox">
+                                <option value="0" <?php if (!Mage::getStoreConfigFlag('payment/billsafe_installment/sandbox')): ?>selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1" <?php if (Mage::getStoreConfigFlag('payment/billsafe_installment/sandbox')): ?>selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            <?php elseif ($moduleName == 'm2e' && !Mage::getStoreConfig('magento_localized/installed_modules/ess/m2e-pro')): ?>
+
+                <hr />
+
+                <table cellspacing="0" class="form-list">
+                    <tbody>
+
+                    <tr>
+                        <td class="label"><label for="field_m2e_install"><?php echo $this->__('Install M2E module') ?></label></td>
+                        <td class="value">
+                            <select name="m2e_install" id="field_m2e_install">
+                                <option value="0"<?php if (Mage::getStoreConfig('magento_localized/is_initialized')): ?> selected="selected"<?php endif ?>><?php echo $this->__('No') ?></option>
+                                <option value="1"<?php if (!Mage::getStoreConfig('magento_localized/is_initialized')): ?> selected="selected"<?php endif ?>><?php echo $this->__('Yes') ?></option>
+                            </select>
+                        </td>
+                        <td class="comment">
+                            <a href="<?php echo $this->getM2EUrl() ?>" target="_blank" id="m2e_direct_info">
+                                <img src="<?php echo $this->getSkinUrl('images/i_question-mark.png') ?>" alt="" />
+                            </a>
+
+                            <script type="text/javascript">
+                                new Tooltip('m2e_direct_info', '<?php echo $this->__('M2E Pro - eBay / Amazon / Rakuten Magento Integration.') ?>')
+                            </script>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+
+            <?php endif ?>
+            </div>
+            </div>
+        <?php endif ?>
+    <?php endforeach ?>
+<?php endforeach ?>

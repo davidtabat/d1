@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Rakuten
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<layout>
+    <adminhtml_rakuten_category_index>
+        <update handle="editor"/>
+        <referense name="head">
+            <action method="setTitle" translate="title"><title>Rakuten Categories</title></action>
+        </referense>
+        <reference name="menu">
+            <action method="setActive"><menupath>nn_market/rakuten/categories</menupath></action>
+        </reference>
+        <reference name="js">
+            <block type="adminhtml/catalog_product_edit_js" template="catalog/product/js.phtml" name="catalog_product_js"/>
+            <block type="core/template" name="catalog.wysiwyg.js" template="catalog/wysiwyg/js.phtml"/>
+        </reference>
+        <reference name="content">
+            <block type="rakuten/catalog_category" name="rakuten_category_list" template="nn_market/rakuten/category.phtml"/>
+        </reference>
+    </adminhtml_rakuten_category_index>
+
+    <adminhtml_rakuten_product_index>
+        <referense name="head">
+            <action method="setTitle" translate="title"><title>Rakuten Products</title></action>
+        </referense>
+        <reference name="menu">
+            <action method="setActive"><menupath>nn_market/rakuten/products</menupath></action>
+        </reference>
+        <reference name="content">
+            <block type="rakuten/catalog_product" name="rakuten_product_list"/>
+        </reference>
+    </adminhtml_rakuten_product_index>
+
+    <adminhtml_rakuten_product_grid>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="rakuten/catalog_product_grid" name="rakuten.product.grid"/>
+        </block>
+    </adminhtml_rakuten_product_grid>
+
+    <adminhtml_rakuten_order_grid>
+        <update handle="formkey"/>
+        <block type="rakuten/order_grid" name="rakuten_order.grid" output="toHtml"/>
+    </adminhtml_rakuten_order_grid>
+
+    <adminhtml_rakuten_order_index>
+        <reference name="content">
+            <block type="rakuten/order" name="rakuten_order.grid.container"/>
+        </reference>
+    </adminhtml_rakuten_order_index>
+
+    <adminhtml_rakuten_sync_index>
+        <referense name="head">
+            <action method="setTitle" translate="title"><title>Rakuten Synchronization</title></action>
+        </referense>
+        <reference name="menu">
+            <action method="setActive"><menupath>nn_market/rakuten/sync</menupath></action>
+        </reference>
+        <reference name="content">
+            <block type="rakuten/sync" name="rakuten_sync" template="nn_market/rakuten/sync.phtml"/>
+            <!--<block type="rakuten/sync_request" name="rakuten_requests" />-->
+        </reference>
+    </adminhtml_rakuten_sync_index>
+
+    <adminhtml_rakuten_sync_mapping>
+        <referense name="head">
+            <action method="setTitle" translate="title"><title>Rakuten Product Mapping</title></action>
+        </referense>
+        <reference name="menu">
+            <action method="setActive"><menupath>nn_market/rakuten/mapping</menupath></action>
+        </reference>
+        <reference name="content">
+            <block type="rakuten/mapping" name="rakuten_mapping" template="nn_market/rakuten/mapping.phtml"/>
+        </reference>
+    </adminhtml_rakuten_sync_mapping>
+    
+    <adminhtml_catalog_product_new>
+        <reference name="head">
+            <action method="addJs"><script>mageshops/rakuten/search.js</script></action>       
+        </reference>
+    </adminhtml_catalog_product_new>
+    
+    <adminhtml_catalog_product_edit>
+        <reference name="head">
+            <action method="addJs"><script>mageshops/rakuten/search.js</script></action>       
+        </reference>
+    </adminhtml_catalog_product_edit>
+</layout>

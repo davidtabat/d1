@@ -1,0 +1,49 @@
+<?php
+/**
+ * @category  Trustedshops
+ * @package   Trustedshops_Trustedshops
+ * @author    Trusted Shops GmbH
+ * @copyright 2016 Trusted Shops GmbH
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @link      http://www.trustedshops.de/
+ */
+?>
+<?php /** @var Trustedshops_Trustedshops_Block_Product_Rating $this */ ?>
+<?php if ($this->isActive()) : ?>
+    <script type="text/javascript">
+        <?php
+        /**
+         * since magento does not provide a suitable layout block after the product name
+         * we inject the html div via javascript to the appropriate position
+         */
+        ?>
+        if ($$('.extra-info').size() > 0) {
+            // CE 1.9 and EE 1.14
+            $$('.extra-info')[0].insert({top: "<div id='ts_product_widget'></div>"});
+        } else if ($$('.product-view .product-shop .product-name').size() > 0) {
+            // CE < 1.9 and EE < 1.14
+            $$('.product-name')[0].insert({after: "<div id='ts_product_widget'></div>"});
+        }
+    </script>
+    <?php if ($this->isExpert()) : ?>
+        <?php echo $this->getCode() ?>
+    <?php else : ?>
+        <script type="text/javascript"
+                src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.js"></script>
+        <script type="text/javascript">
+            var summaryBadge = new productStickerSummary();
+            summaryBadge.showSummary(
+                {
+                    'tsId': '<?php echo $this->getTsId() ?>',
+                    'sku': ['<?php echo $this->getProductSku() ?>'],
+                    'element': '#ts_product_widget',
+                    'starColor': '<?php echo $this->getStarColor() ?>',
+                    'starSize': '<?php echo $this->getStarSize() ?>',
+                    'fontSize': '<?php echo $this->getFontSize() ?>',
+                    'showRating': true,
+                    'scrollToReviews': false
+                }
+            );
+        </script>
+    <?php endif; ?>
+<?php endif; ?>

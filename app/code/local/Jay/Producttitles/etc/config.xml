@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Override Product titles to add information.
+-->
+<config>
+    <modules>
+        <Jay_Producttitles>
+            <version>1</version>
+        </Jay_Producttitles>
+    </modules>
+    <global>
+        <models>
+            <Jay_Producttitles>
+                <class>Jay_Producttitles_Model</class>
+            </Jay_Producttitles>
+        </models>
+    </global>
+    <frontend>
+        <events>
+            <catalog_controller_product_view>
+                <observers>
+                    <Jay_Producttitles>
+                        <class>Jay_Producttitles_Model_Observer</class>
+                        <method>catalog_controller_product_view</method>
+                    </Jay_Producttitles>
+                </observers>
+            </catalog_controller_product_view>
+        </events>
+    </frontend>
+
+</config>

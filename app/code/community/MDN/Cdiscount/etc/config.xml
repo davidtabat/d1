@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <MDN_Cdiscount>
+            <version>2.1.7</version>
+        </MDN_Cdiscount>
+    </modules>
+    <global>
+        <helpers>
+            <Cdiscount>
+                <class>MDN_Cdiscount_Helper</class>
+            </Cdiscount>
+        </helpers>
+        <blocks>
+            <Cdiscount>
+                <class>MDN_Cdiscount_Block</class>
+            </Cdiscount>
+        </blocks>
+
+        <models>
+
+            <Cdiscount>
+                <class>MDN_Cdiscount_Model</class>
+                <resourceModel>Cdiscount_mysql4</resourceModel>
+            </Cdiscount>
+
+            <Cdiscount_mysql4>
+                <class>MDN_Cdiscount_Model_Mysql4</class>
+                <entities>
+                    <TokenHistory>
+                        <table>cdiscount_token_history</table>
+                    </TokenHistory>
+                </entities>
+           </Cdiscount_mysql4>
+
+        </models>
+        
+        <events>
+            <!--<marketplace_products_grid_addcolumns>
+                <observers>
+                    <MDN_Cdiscount_Observer>
+                        <type>Singleton</type>
+                        <class>MDN_Cdiscount_Model_Observer</class>
+                        <method>AddColumn</method>
+                    </MDN_Cdiscount_Observer>
+                </observers>
+            </marketplace_products_grid_addcolumns>-->
+            <marketplace_account_after_save>
+                <observers>
+                    <MDN_Cdiscount_Observer>
+                        <type>Singleton</type>
+                        <class>MDN_Cdiscount_Model_Observer</class>
+                        <method>testConnection</method>
+                    </MDN_Cdiscount_Observer>
+                </observers>
+            </marketplace_account_after_save>
+        </events>
+
+        <resources>
+            <Cdiscount_setup>
+                <setup>
+                    <module>MDN_Cdiscount</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </Cdiscount_setup>
+            <Cdiscount_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </Cdiscount_write>
+            <Cdiscount_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </Cdiscount_read>
+        </resources>
+
+    </global>
+
+    <adminhtml>
+        <menu>
+            <sales>
+                <children>
+                    <MarketPlace translate="title" module="MarketPlace">
+                        <children>
+                            <Cdiscount translate="title" module="Cdiscount">
+                                <title>Cdiscount</title>
+                                <action>adminhtml/main</action>
+                            </Cdiscount>
+                        </children>
+                    </MarketPlace>
+                </children>
+            </sales>
+        </menu>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <sales>
+                            <children>
+                                <MarketPlace translate="title" module="MarketPlace">
+                                    <children>
+                                        <Cdiscount  translate="title" module="Cdiscount">
+                                            <title>Cdiscount</title>
+                                        </Cdiscount>
+                                    </children>
+                                </MarketPlace>
+                            </children>
+                        </sales>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <translate>
+            <modules>
+                <MDN_Cdiscount>
+                    <files>
+                        <default>MDN_MarketPlace_Cdiscount.csv</default>
+                    </files>
+                </MDN_Cdiscount>
+            </modules>
+        </translate>
+        <layout>
+            <updates>
+                <Cdiscount>
+                    <file>MarketPlace_Cdiscount.xml</file>
+                </Cdiscount>
+            </updates>
+        </layout>
+    </adminhtml>
+    <admin>
+
+        <routers>
+
+            <adminhtml>
+
+                <args>
+
+                    <modules>
+                        <mdn_cdiscount after="Mage_Adminhtml">MDN_Cdiscount_Adminhtml</mdn_cdiscount>
+                    </modules>
+
+                  
+                </args>
+
+            </adminhtml>
+
+        </routers>
+
+    </admin>
+    <frontend>
+        <routers>
+            <Cdiscount>
+                <use>standard</use>
+                <args>
+                    <module>MDN_Cdiscount</module>
+                    <frontName>Cdiscount</frontName>
+                </args>
+            </Cdiscount>
+        </routers>
+        <layout>
+            <updates>
+                <Cdiscount>
+                    <file>MarketPlace_Cdiscount.xml</file>
+                </Cdiscount>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <MDN_Cdiscount>
+                    <files>
+                        <default>MDN_MarketPlace_Cdiscount.csv</default>
+                    </files>
+                </MDN_Cdiscount>
+            </modules>
+        </translate>
+    </frontend>
+
+    <marketplaces>
+
+        <Cdiscount>Cdiscount/Data</Cdiscount>
+
+    </marketplaces>
+
+</config>

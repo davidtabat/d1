@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <VladimirPopov_WebFormsMirasvitHD>
+            <active>false</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mirasvit_Helpdesk/>
+                <VladimirPopov_WebForms/>
+
+            </depends>
+        </VladimirPopov_WebFormsMirasvitHD>
+    </modules>
+</config>

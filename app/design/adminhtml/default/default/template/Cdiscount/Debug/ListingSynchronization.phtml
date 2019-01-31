@@ -1,0 +1,11 @@
+<center>
+<h1><?php echo $this->getMessage(); ?></h1>
+<h2><?php echo $this->getResult(); ?></h2>
+</center>
+
+<?php if ($this->getGoto()): ?>
+    <h2><i>Work in progress, please wait</i></h2>
+    <script>
+        document.location.href = '<?php echo $this->getGoto(); ?>';
+    </script>
+<?php endif; ?>

@@ -1,0 +1,78 @@
+<?php
+$config = $this->getConfig();
+$customer = $this->getCustomer();
+if (!$config->getContactFormIsActive()) {
+    return;
+}
+?>
+<div class="helpdesk-contact-form-button <?php echo $config->getPosition()?>" style="background-color: <?php echo $config->getColor() ?>;" onclick="helpdeskFormShow();">
+    <div id="helpdesk-contact-form-button" class="button-text"><?php echo $config->getTitle() ?></div>
+</div>
+<iframe class="helpdesk-contact-form-iframe" id="helpdesk-contact-form-iframe" frameborder="0" scrolling="auto" allowtransparency="true" style="display:none;"></iframe>
+<div class="helpdesk-contact-form-overlay" id="helpdesk-contact-form-overlay" style="display:none;">&nbsp;</div>
+<script type="text/javascript">
+//<![CDATA[
+    var dataForm = new VarienForm('helpdesk-contact-form', true);
+
+    function helpdeskFormShow()
+    {
+        if ($('helpdesk-contact-form-iframe').src == '') {
+            $('helpdesk-contact-form-iframe').src = "<?php echo $this->getContactUrl() ?>";
+        }
+        $('helpdesk-contact-form-iframe').show();
+        $('helpdesk-contact-form-overlay').show();
+    }
+    function helpdeskFormHide()
+    {
+        $('helpdesk-contact-form-iframe').hide();
+        $('helpdesk-contact-form-overlay').hide();
+        $('helpdesk-contact-form-iframe').src = "<?php echo $this->getContactUrl() ?>";
+    }
+
+    /*
+     * Gets offset of given HTML element on current page
+     *
+     * @param el - DOM or jQuery Element
+     */
+    function getOffset(el) {
+        var _x = 0;
+        var _y = 0;
+        while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+            _x += el.offsetLeft - el.scrollLeft;
+            _y += el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+        }
+        return { top: _y, left: _x };
+    }
+
+    /*
+     * Checks intersection of rectangle and point
+     *
+     * @param ax1, ay1, ax2, ay2 - rectangle coordinates
+     * @param px, py - point coordinates
+     */
+    function intersects(ax1, ay1, ax2, ay2, px, py) {
+        return !(ax2 < px || ax1 > px || ay2 < py || ay1 > py);
+    }
+
+    document.onclick = function(event) {
+        event = event || window.event;
+        var currentTarget = event.target || event.srcElement;
+        if (currentTarget.nodeType == 3) currentTarget = currentTarget.parentNode;
+
+        if($('helpdesk-contact-form-iframe').style.display != 'none' && currentTarget.id != 'helpdesk-contact-form-button') {
+            var dialog = document.getElementById('helpdesk-contact-form-iframe');
+            var offset = getOffset(dialog);
+            var ax1 = offset.left;
+            var ay1 = offset.top;
+            var ax2 = ax1 + dialog.getWidth();
+            var ay2 = ay1 + dialog.getHeight();
+
+            if(!intersects(ax1, ay1, ax2, ay2, event.pageX, event.pageY)) {
+                helpdeskFormHide();
+            }
+        }
+    };
+
+//]]>
+</script>

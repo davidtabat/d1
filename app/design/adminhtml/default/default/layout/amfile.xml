@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+-->
+<layout version="1.0.0">
+    <adminhtml_catalog_product_edit>
+        <reference name="head">
+            <action method="addJs"><script>amasty/amfile/admin_functions.js</script></action>
+            <action method="addJs"><script>amasty/amfile/admin.js</script></action>
+            <action method="addCss"><name>amasty/amfile/style.css</name></action>
+        </reference>
+
+        <reference name="product_tabs">
+            <action method="addTab"><name>product_attachments</name><block>amfile/adminhtml_catalog_product_edit_tab_file</block></action>
+        </reference>
+    </adminhtml_catalog_product_edit>
+
+    <adminhtml_catalog_product_index>
+        <reference name="head">
+            <action method="addJs"><script>amasty/amfile/admin_functions.js</script></action>
+            <action method="addJs"><script>amasty/amfile/admin_product_index.js</script></action>
+            <action method="addItem"><type>js_css</type><name>prototype/windows/themes/default.css</name></action>
+            <action method="addItem"><type>js_css</type><name>prototype/windows/themes/magento.css</name></action>
+            <action method="addCss"><name>amasty/amfile/style.css</name></action>
+        </reference>
+
+    </adminhtml_catalog_product_index>
+
+    <adminhtml_catalog_product_new>
+        <reference name="head">
+            <action method="addJs"><script>amasty/amfile/admin_functions.js</script></action>
+            <action method="addJs"><script>amasty/amfile/admin.js</script></action>
+            <action method="addCss"><name>amasty/amfile/style.css</name></action>
+        </reference>
+
+        <reference name="product_tabs">
+            <action method="addTab"><name>product_attachments</name><block>amfile/adminhtml_catalog_product_edit_tab_file</block></action>
+        </reference>
+    </adminhtml_catalog_product_new>
+
+    <adminhtml_amfile_import_index>
+        <reference name="head">
+            <action method="addJs"><script>amasty/amfile/admin_functions.js</script></action>
+            <action method="addJs"><script>amasty/amfile/ftp_upload.js</script></action>
+            <action method="addCss"><name>amasty/amfile/style.css</name></action>
+        </reference>
+    </adminhtml_amfile_import_index>
+</layout>

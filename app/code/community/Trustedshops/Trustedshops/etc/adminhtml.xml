@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  Trustedshops
+ * @package   Trustedshops_Trustedshops
+ * @author    Trusted Shops GmbH
+ * @copyright 2016 Trusted Shops GmbH
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @link      http://www.trustedshops.de/
+ */
+-->
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <trustedshops>
+                                <children>
+                                    <info translate="title" module="trustedshops">
+                                        <title>Information</title>
+                                        <sort_order>10</sort_order>
+                                    </info>
+                                    <trustbadge translate="title" module="trustedshops">
+                                        <title>Trustbadge</title>
+                                        <sort_order>20</sort_order>
+                                    </trustbadge>
+                                    <product translate="title" module="trustedshops">
+                                        <title>Product Reviews</title>
+                                        <sort_order>30</sort_order>
+                                    </product>
+                                </children>
+                            </trustedshops>
+                            <config>
+                                <children>
+                                    <trustedshops translate="title">
+                                        <title>Trusted Shops</title>
+                                        <sort_order>30</sort_order>
+                                    </trustedshops>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

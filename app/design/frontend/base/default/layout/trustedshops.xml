@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<layout version="1.0.0">
+    <default>
+        <reference name="before_body_end">
+            <block type="trustedshops/trustbadge" name="trustedshops.trustbadge" as="trustedshops_trustbadge"/>
+        </reference>
+    </default>
+
+    <catalog_product_view>
+        <reference name="product.info">
+            <block type="trustedshops/review_tab" name="trustedshops.review.tab" as="trustedshops_review_tab">
+                <action method="addToParentGroup">
+                    <group>detailed_info</group>
+                </action>
+                <action method="setTitle" translate="title" module="trustedshops">
+                    <title>Trusted Shops Reviews</title>
+                </action>
+            </block>
+        </reference>
+
+        <reference name="before_body_end">
+            <block type="trustedshops/review" name="trustedshops.review" as="trustedshops_review" />
+            <block type="trustedshops/rating" name="trustedshops.rating" as="trustedshops_rating"/>
+        </reference>
+    </catalog_product_view>
+
+    <checkout_onepage_success>
+        <reference name="before_body_end">
+            <block type="trustedshops/trustcard" name="trustedshops.trustcard" as="trustedshops_product" before="trustedshops.trustbadge" />
+        </reference>
+    </checkout_onepage_success>
+</layout>

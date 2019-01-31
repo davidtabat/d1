@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+    </default>
+    <kaufberatung_index_index>
+        <reference name="content">
+            <block type="kaufberatung/kaufberatung" name="kaufberatung" template="kaufberatung/kaufberatung.phtml" />
+        </reference>
+    </kaufberatung_index_index>
+</layout> 

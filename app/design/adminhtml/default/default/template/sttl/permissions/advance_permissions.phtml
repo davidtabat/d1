@@ -1,0 +1,312 @@
+<link rel="stylesheet" href="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS).'Tree/jquery.treeview.css';?>" />
+<link rel="stylesheet" href="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS).'Tree/screen.css';?>" />
+<script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS).'Tree/jquery.js';?>" type="text/javascript"></script>
+<script>jQuery.noConflict();</script>
+<script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS).'Tree/jquery.cookie.js';?>" type="text/javascript"></script>
+<script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS).'Tree/jquery.treeview.js';?>" type="text/javascript"></script>
+<?php $rid = $this->getRequest()->getParam('rid');?>
+<?php 
+	if($rid != ''){
+	$collection = Mage::getModel('permissions/advancedrole')->getCollection()->loadByRoleId($rid);
+	//$root = explode(',',$collection['root_cat_ids']);
+	//$sub = explode(',',$collection->getSubCatIds());
+	//$roleId = array_merge($root,$sub);
+	foreach($collection as $r)
+	{
+		$gws = $r['gws_is_all'];
+		$rootRoleIds = explode(',',$r['root_cat_ids']);
+		$subRoleIds = explode(',',$r['sub_cat_ids']);
+		$storeview_ids = explode(',',$r['storeview_ids']);
+		$store_id = explode(',',$r['store_id']);
+		$website_id = explode(',',$r['website_id']);
+	}
+	$roleIds = array_merge($rootRoleIds,$subRoleIds);
+	$roleIds1 = implode(' ',$roleIds);
+	$storeview_ids1 = implode(' ',$storeview_ids);
+	$store_id1 = implode(' ',$store_id);
+	/*echo '<pre>';
+	print_r($store_id1);
+	exit;*/
+	$website_id1 = implode(' ',$website_id);
+?>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+var gws = '<?php echo $gws;?>';
+var ids1 = '<?php echo $roleIds1;?>';
+var storeview_ids1 = '<?php echo $storeview_ids1;?>';
+var store_id1 = '<?php echo $store_id1;?>';
+var ids = ids1.split(" ");
+var storeview_ids = storeview_ids1.split(" ");
+var store_id = store_id1.split(" ");
+	if(gws != '')
+	{
+		var foo = document.getElementById('gws_is_all');
+		foo.selectedIndex = gws;
+		if(gws == 0)
+		{
+			$('gws_container').show();
+		}	
+	}
+	for(var i = 0; i < ids.length; i++){
+		if(ids[i] != '')
+		{
+			document.getElementById('rootcategory-'+ids[i]).checked=true;
+		}	
+	}
+	for(var i = 0; i < store_id.length; i++){
+		if(store_id[i] != '')
+		{
+			document.getElementById('group_'+store_id[i]).checked=true;
+			if(document.getElementById('group_'+store_id[i]).checked)
+			{
+				for(var j = 0; j < storeview_ids.length; j++){
+					if(storeview_ids[j] != '')
+					{
+						document.getElementById('store_'+storeview_ids[j]).checked=true;
+					}	
+				}
+			}	
+			$('root-category-'+store_id[i]).show();
+		}	
+	}
+});
+</script>
+<?php }?>
+<?php
+function get_categories() {
+    $category = Mage::getModel('catalog/category');
+    $tree = $category->getTreeModel();
+    $tree->load();
+    $ids = $tree->getCollection()->getAllIds();
+    $arr = array();
+    $arrayCategories = array();
+    if ($ids) {
+        foreach ($ids as $id) {
+            $cat = Mage::getModel('catalog/category');
+            $cat->load($id);
+			if ($cat->getIsActive()) {
+          //  if($id!=1){
+
+                $arrayCategories[$id] =
+                        array("parent_id" => $cat->getParentId(),
+                            "name" => $cat->getName(),
+                            "cat_id" => $cat->getId(),
+                            "cat_level" => $cat->getLevel(),
+                            "cat_url" => $cat->getUrl()
+                );
+			}	
+          //  }
+        }// for each ends
+        return $arrayCategories;
+        /*
+          echo 'PK<pre>';
+          print_r($arrayCategories);
+          echo '</pre>';
+         */
+    }//if ids present
+}
+$arrayCategories = get_categories();
+
+function createTree($array, $currentParent, $currLevel = 0, $prevLevel = -1) {
+    foreach ($array as $categoryId => $category) {
+        if ($currentParent == $category['parent_id']) {
+            if ($currLevel > $prevLevel)
+                echo "<ul id='ul_".$categoryId."'>";
+            if ($currLevel == $prevLevel)
+                echo " </li> ";
+
+                    $cat_id_hidden = array('1','2');//set category id hidden
+                    if(in_array($categoryId,$cat_id_hidden)){
+                       // $display = 'none';
+                    }
+                    else{
+                       // $display = 'block';
+                    }
+
+            //class="level_'.$category['cat_level'].' "
+            echo '<li id="li_'.$categoryId.'">';
+            echo '<input type="checkbox" name="sub-category[]" id="rootcategory-'.$categoryId.'" value="'.$categoryId.'">';
+            echo '<span id="span_'.$categoryId.'">'.$category['name'].'</span>';
+            
+            //echo '<input type="text" id="m_cat_id_'.$category['cat_id'].'" name="m_cat_id_'.$category['cat_id'].'" value="id = '.$category['cat_id'].' : level = '.$category['cat_level'].' "/>';
+            if ($currLevel > $prevLevel) {
+                $prevLevel = $currLevel;
+            }
+            $currLevel++;
+            createTree($array, $categoryId, $currLevel, $prevLevel);
+            $currLevel--;
+        }
+    }
+    if ($currLevel == $prevLevel)
+        echo " </li></ul> ";
+}
+
+?>
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Role Scopes') ?></h4>
+    </div>
+    <fieldset>
+        <span class="field-row">
+            <label for="gws_is_all"><?php echo $this->__('Role Scopes') ?></label>
+            <select id="gws_is_all" name="gws_is_all" onchange="$('gws_container').toggle()" class="select">
+                <option value="0"><?php echo $this->__('Custom') ?></option>
+                <option value="1" selected="selected"><?php echo $this->__('All') ?></option>
+            </select>
+        </span>
+		<div id="gws_container" style="display:none;">
+            <ul>
+			<?php foreach (Mage::app()->getWebsites() as $websiteId => $website): ?>
+			    <li>
+                    <!--<input name="website[]" type="checkbox" value="<?php //echo $website->getName() ?>" id="website_label_<?php //echo $website->getName() ?>">-->
+					<label for="website_label_<?php echo $websiteId ?>"><?php echo $website->getName() ?></label>
+					<?php if (count($website->getGroups())): ?>
+					<ul id="website_label_<?php echo $websiteId ?>_groups" style="margin-left:1.5em">
+                    <?php 
+					foreach ($website->getGroups() as $group):
+						$i = 0;					
+						$allStoreIds = array_values($group->getStoreIds());
+						$storeIds = implode(" ", $allStoreIds);
+						$store_model = Mage::getModel('core/store');
+						$storeRootCatId =  $store_model->load($allStoreIds[$i])->getRootCategoryId(); 
+						$cur_category = Mage::getModel('catalog/category')->load($storeRootCatId)->getName();?>
+						<li style="width:20%; float:left;clear:both;">
+							<input id="group_<?php echo $group->getId() ?>" class="StoreGroup" onclick="selectStore('<?php echo $storeIds;?>','group_<?php echo $group->getId() ?>','root-category-<?php echo $group->getId() ?>','sub-category-<?php echo $storeRootCatId; ?>');" type="checkbox" name="store_groups[]" value="<?php echo $group->getId() ?>"/>
+							<label for="group_<?php echo $group->getId() ?>"><?php echo $group->getName() ?></label>
+							<ul id="storename_label_<?php echo $group->getId() ?>_groups" style="margin-left:1.5em">
+								<?php foreach ($group->getStores() as $store): ?>
+									<li>
+										<input id="store_<?php echo $store->getId() ?>" onclick="selectGroup('store_<?php echo $store->getId() ?>','group_<?php echo $group->getId() ?>','root-category-<?php echo $group->getId() ?>','sub-category-<?php echo $storeRootCatId; ?>','<?php echo $storeIds;?>');" class="StoreView" type="checkbox" name="store_groups_name[]" value="<?php echo $store->getId() ?>"/>
+										<label><?php echo $store->getName();  ?></label>
+									</li>
+								<?php endforeach;?>
+							</ul>
+						</li>
+						<li style="width:80%;float:right;">
+							<div id="root-category-<?php echo $group->getId() ?>" style="display:none;" class="tree">
+								<script type="text/javascript">
+									function expand_prags(str){
+									   // alert(str);
+									}
+									jQuery(document).ready(function() {
+									//to remove default behaviour on category id 1 and 2
+									jQuery("#span_1").html('');
+									jQuery("#span_1").html('All Categories');
+									jQuery("#span_2").html('');
+									jQuery("#span_2").html('Root Category');
+
+									jQuery("#a_1").removeAttr("href");
+									jQuery("#a_1").removeAttr("target");
+									jQuery("#a_2").removeAttr("href");
+									jQuery("#a_2").removeAttr("target");
+
+									jQuery("#a_1").attr({'class':'expandable-hitarea','href':''});
+									jQuery("#a_2").attr({'class':'expandable-hitarea','href':''});
+
+									});
+									jQuery(function() {
+										jQuery("#tree_<?php echo $group->getId() ?>").treeview({
+											collapsed: true,
+											animated: "medium",
+											control:".sidetreecontrol<?php echo $group->getId() ?>",
+											persist: "location"
+										});
+									})
+								</script>
+								<div id="sidetree<?php echo $group->getId() ?>">
+									<div class="treeheader">&nbsp;</div>
+									<h3>Categories</h3>
+									<div class="sidetreecontrol<?php echo $group->getId() ?>"><a href="?#">Collapse All</a> | <a href="?#">Expand All</a></div>
+									<div id="tree_<?php echo $group->getId() ?>">
+										<?php $categoryId = $storeRootCatId;?>
+										<?php echo "<ul id='ul_".$categoryId."'>";?>
+										<?php 
+											echo '<li id="li_'.$categoryId.'">';
+											echo '<input type="checkbox" name="root-category[]" id="rootcategory-'.$categoryId.'" value="'.$categoryId.'">';
+											echo '<span id="span_'.$categoryId.'">'.$cur_category.'</span>';
+										?>
+										<?php createTree($arrayCategories, $categoryId); ?>
+										<?php echo " </li></ul> ";?>
+									</div>
+								</div>
+							</div>
+						</li>	
+                    <?php 
+					$i ++;
+					endforeach;?>
+					 </ul>
+                <?php endif; ?>
+			    </li>
+            <?php endforeach;?>
+			</ul>
+        </div>
+    </fieldset>
+</div>
+<script type="text/javascript">
+var baseurl = '<?php echo Mage::helper("permissions")->getFormActionUrl(); ?>';
+function selectStore(storeIds, groupid, grouproot, sub_cat_div){
+	var storeid = storeIds.split(" ");
+	if(document.getElementById(groupid).checked){
+		for(var i = 0; i < storeid.length; i++){
+			document.getElementById('store_'+storeid[i]).checked=true;
+		}
+		showrootcat(grouproot, sub_cat_div);
+	}else{
+		for(var i = 0; i < storeid.length; i++){
+			document.getElementById('store_'+storeid[i]).checked=false;
+		}
+		hiderootcat(grouproot, sub_cat_div);
+	}
+}
+
+function selectGroup(storeviewid,groupid,grouproot, sub_cat_div, allstoreids){
+	var allstoreid = allstoreids.split(" ");
+	var checkgroup = false;
+	for(var i = 0; i < allstoreid.length; i++){
+		if(document.getElementById('store_'+allstoreid[i]).checked){
+			checkgroup = true;
+		}
+	}
+	if(checkgroup){
+		document.getElementById(groupid).checked=true;
+		showrootcat(grouproot, sub_cat_div);
+	}else{
+		document.getElementById(groupid).checked=false;
+		hiderootcat(grouproot, sub_cat_div);
+	}
+}
+
+function showrootcat(id, sub_cat_div){
+ $(id).show();
+ //$(sub_cat_div).show();
+}
+
+function hiderootcat(id, sub_cat_div){
+ $(id).hide();
+ //$(sub_cat_div).hide();
+}
+function check(val)
+{
+	if(document.getElementById('rootcategory-'+val).checked)
+	{
+		new Ajax.Request(baseurl,
+			{
+				method:'post',
+				parameters: {id: val},
+				onComplete : function(xhr){
+					var data = xhr.responseText;
+					var data1 = data.split(",");
+					for(var i = 0; i < data1.length; i++){
+						document.getElementById('rootcategory-'+data1[i]).checked=true;
+						//hitarea expandable-hitarea hitarea collapsable-hitarea
+						/*if($('ul_'+data1[i]))
+						{
+							$('ul_'+data1[i]).show();
+						}*/
+					}
+				},
+				onFailure: function(){alert('Something went wrong...')}
+			});
+	}		
+}
+</script>

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+        <sales>
+            <children>
+                <MarketPlace translate="title" module="MarketPlace">
+                    <children>
+                        <Cdiscount translate="title" module="Cdiscount">
+                            <title>Cdiscount</title>
+                            <action>Cdiscount/Main/index</action>
+                        </Cdiscount>
+                    </children>
+                </MarketPlace>
+            </children>
+        </sales>
+    </menu>
+
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <sales>
+                        <children>
+                            <MarketPlace translate="title" module="MarketPlace">
+                                <children>
+                                    <Cdiscount  translate="title" module="Cdiscount">
+                                        <title>Cdiscount</title>
+                                    </Cdiscount>
+                                </children>
+                            </MarketPlace>
+                        </children>
+                    </sales>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+    <translate>
+        <modules>
+            <MDN_Cdiscount>
+                <files>
+                    <default>MDN_MarketPlace_Cdiscount.csv</default>
+                </files>
+            </MDN_Cdiscount>
+        </modules>
+    </translate>
+    <layout>
+        <updates>
+            <Cdiscount>
+                <file>MarketPlace_Cdiscount.xml</file>
+            </Cdiscount>
+        </updates>
+    </layout>
+</config>

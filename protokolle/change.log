@@ -1,0 +1,49 @@
+2016/03/01, SL, Changed text of base price in /htdocs/www.druckerfachhandel.de/app/locale/Mage_Sales.csv
+
+2016/02/10, SL, Changed H2/H3 font size (/home/cloudpanel/htdocs/www.druckerfachhandel.de/skin/frontend/default/druckerhaus24/css/styles.css)
+
+2016/02/10, SL, Replaced details tab with product name (/home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/druckerhaus24/template/catalog/product/view/description.phtml)
+
+2016/02/01, SL, Added HREF LANG tags function (/home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/druckerhaus24/template/page/html/head.phtml)
+
+2016/02/01, SL, Added TrustedShops variables, /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/checkout/success.phtml
+
+2016/02/01, SL, Added TrustedShops variables, /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/druckerhaus24/template/checkout/success.phtml
+
+2016/01/25, SL, Added custom field (top product list) in /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/catalog/group/view.phtml
+
+2016/01/25, SL, Renamed article attributes in /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/catalog/product/view.phtml
+
+2016/01/25, SL, Renamed article attributes in /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/catalog/product/list.phtml
+
+2016/01/25, SL, Added TrustedShops badge to footer.phtml (kopiererhaus / druckerhaus24)
+
+2016/01/25, SL, Added TrustedShops snippet, /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/druckerhaus24/template/checkout/success.phtml
+
+2016/01/25, SL, Added TrustedShops snippet, /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/checkout/success.phtml
+
+2016/01/20, SL, Added custom field (below product list), removed rich snippet in /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/seo
+
+2015/12/23, SL, Reversed changes in ga.html (kopiererhaus + druckerhaus)
+
+2015/12/22, SL, Fix cache bug, added "$this->_useCache = false;" in app/code/core/Mage/Core/Model/Config.php
+
+2015/12/21, SL, Fix for 2-column layout (Shipping calculator removed), added /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/layout/local.xml
+
+2015/12/21, SL, Changed Google Analytics Code in /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/googleanalytics/ga.html
+
+2015/12/21, SL, Changed Google Universal Analytics Code in /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/googleanalytics/ga.html
+
+2015/12/01, SL, Removed lowercase expression from buttons in /skin/frontend/default/kopiererhaus/css/styles.css
+
+2015/11/24, SL, Google AdWords conversation tracking code added to /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/druckerhaus24/template/checkout/success.phtml
+
+2015/11/24, SL, Google AdWords conversation tracking code added to /home/cloudpanel/htdocs/www.druckerfachhandel.de/app/design/frontend/default/kopiererhaus/template/checkout/success.phtml
+
+2015/11/19, SL, Changed Admin Base URL in /app/etc/local.xml
+
+2015/11/11, Altaf Ahmed, Issue resolved- empty order pdf, app/design/frontend/base/default/template/auit/pdf/print/auit_offer
+
+13.11.15 Altaf Ahmed , Error on printing pdf, Base.php  app/code/community/AuIt/Pdf/Model/Pdf
+
+13.11.15 Altaf Ahmed , Error getLable() on order print= app/design/frontend/base/default/template/sales/ordertotals.phtml (all storeviews)

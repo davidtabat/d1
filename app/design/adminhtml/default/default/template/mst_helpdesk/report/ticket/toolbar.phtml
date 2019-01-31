@@ -1,0 +1,156 @@
+<div class="helpdesk-report-ticket-toolbar">
+    <div class="group-by">
+        <?php echo $this->getForm()->getElement('period')->toHtml() ?>
+    </div>
+    <div class="group-by-2">
+        <?php echo $this->getForm()->getElement('group_by')->toHtml() ?>
+    </div>
+
+    <div class="date-control" style="position: relative;">
+        <div class="interval">
+            <?php echo $this->getForm()->getElement('interval')->toHtml() ?>
+        </div>
+
+        <div class="date-from">
+            <?php echo $this->getForm()->getElement('from')->toHtml() ?>
+        </div>
+
+        <div class="date-to">
+            <?php echo $this->getForm()->getElement('to')->toHtml() ?>
+        </div>
+
+        <button type="button" class="refresh scalable task" onclick="<?php echo $this->getGrid()->getId() ?>JsObject.doFilter();">
+            <span><span>Refresh</span></span>
+        </button>
+    </div>
+</div>
+
+    <script type="text/javascript">
+    var ReportToolbar = Class.create({
+
+        calendarDateFormat: '<?php echo Mage::helper('core')->jsQuoteEscape(Mage::helper('helpdesk/report')->calendarDateFormat()) ?>',
+        intervals:          <?php echo json_encode($this->getIntervals()) ?>,
+
+        initialize: function()
+        {
+            var self = this;
+
+            var inputs = $$('.group-by input, .group-by select, .group-by-2 input, .group-by-2 select');
+            inputs.forEach(function(input) {
+                input.observe('change', function() {
+                    self.apply();
+                });
+            });
+
+            self._initRanges();
+        },
+
+        _initRanges: function()
+        {
+            var self = this;
+
+            if ($('toolbar_interval')) {
+                $('toolbar_interval').observe('change', function(e) {
+                    self._updateInterval();
+
+                    if ($('toolbar_interval').value != 'custom') {
+                        self.apply();
+                    }
+                });
+            }
+
+            if ($('toolbar_from') && $('toolbar_to')) {
+                $('toolbar_from').observe('change', function(e) {
+                    self._updateIntervalType();
+                });
+
+                $('toolbar_to').observe('change', function(e) {
+                    self._updateIntervalType();
+                });
+
+                self._updateIntervalType();
+            }
+
+        },
+
+        _updateInterval: function()
+        {
+            var self = this;
+            var interval = $('toolbar_interval').value;
+            var from = '';
+            var to = '';
+
+            if (self.intervals[interval]) {
+                $('toolbar_from').value = self.intervals[interval][0];
+                $('toolbar_to').value   = self.intervals[interval][1];
+            }
+        },
+
+        _updateIntervalType: function()
+        {
+            var self = this;
+
+            var isCustom = true;
+            for(var i in self.intervals) {
+                if ($('toolbar_from').value == self.intervals[i][0]
+                    && $('toolbar_to').value == self.intervals[i][1]) {
+
+                    $('toolbar_interval').value = i;
+                    isCustom = false;
+                }
+            }
+
+            if (isCustom) {
+                $('toolbar_interval').value = 'custom';
+            }
+        },
+
+        apply: function()
+        {
+            <?php echo $this->getGrid()->getId() ?>JsObject.doFilter();
+        },
+
+        getFilterValues: function()
+        {
+            var inputs = $$('.helpdesk-report-ticket-toolbar input, .helpdesk-report-ticket-toolbar select');
+            var values = [];
+
+            for(var i in inputs) {
+                if(inputs[i].value && inputs[i].value.length) {
+                    values.push(inputs[i]);
+                }
+            }
+            return encode_base64(Form.serializeElements(values));
+        }
+    });
+    reportToolbar = new ReportToolbar();
+
+    varienGrid.prototype.doSort = function(event)
+    {
+        var element = Event.findElement(event, 'a');
+        if(element.name && element.title){
+            this.addVarToUrl(this.sortVar, element.name);
+            this.addVarToUrl(this.dirVar, element.title);
+            this.reload(this.url);
+        }
+        Event.stop(event);
+
+        return false;
+    }
+
+    varienGrid.prototype.doFilter = function()
+    {
+        var filters = $$('#'+this.containerId+' .filter input',
+            '#' + this.containerId +' .filter select',
+            '.helpdesk-report-ticket-toolbar input',
+            '.helpdesk-report-ticket-toolbar select');
+        var elements = [];
+
+        for(var i in filters){
+            if(filters[i].value && filters[i].value.length) elements.push(filters[i]);
+        }
+        if (!this.doFilterCallback || (this.doFilterCallback && this.doFilterCallback())) {
+            this.reload(this.addVarToUrl(this.filterVar, encode_base64(Form.serializeElements(elements))));
+        }
+    }
+    </script>

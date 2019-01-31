@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!--
+/**
+ * @category    GlobalBases
+ * @package     GlobalBases_AutoInvoice
+ * @copyright   Copyright (c) 2013 GlobalBases.com GmbH (http://www.globalbases.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     	GlobalBases.com GmbH <http://www.globalbases.com>
+ */
+-->
+
+<config>
+    <modules>
+        <GlobalBases_AutoInvoice>
+            <version>0.9.2</version>
+        </GlobalBases_AutoInvoice>
+    </modules>
+    <global>
+        <helpers>
+            <autoinvoice>
+				<class>GlobalBases_AutoInvoice_Helper</class>
+    		</autoinvoice>
+		</helpers>
+        <models>
+            <autoinvoice>
+				<class>GlobalBases_AutoInvoice_Model</class>
+    		</autoinvoice>
+			<sales>
+				<rewrite>
+					<order_payment>GlobalBases_AutoInvoice_Model_Order_Payment</order_payment>
+				</rewrite>
+			</sales>
+		</models>
+	</global>
+    <adminhtml>
+        <translate>
+            <modules>
+                <GlobalBases_AutoInvoice>
+                    <files>
+                        <default>GlobalBases_AutoInvoice.csv</default>
+                    </files>
+                </GlobalBases_AutoInvoice>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <default>
+        <invoiceconfig>
+            <autocreate>
+                <active>1</active>
+				<ordermail>0</ordermail>
+            </autocreate>
+        </invoiceconfig>
+    </default>
+</config>

@@ -1,0 +1,23 @@
+<?php
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+
+/** @var $this IntegerNet_MagentoLocalized_Block_Logo */
+?>
+
+<?php if ($this->isActive()): ?>
+
+<img class="logo" src="<?php echo $this->getLogoUrl() ?>" alt="<?php echo $this->getLogoAlt() ?>" />';
+
+<?php if (Mage::getStoreConfig('magento_localized/logo_2_filename')): ?>
+    <img class="logo" src="<?php echo $this->getSkinUrl(Mage::getStoreConfig('magento_localized/logo_2_filename')) ?>" alt="<?php echo Mage::getStoreConfig('magento_localized/module_title') . Mage::getStoreConfig('magento_localized/module_title_suffix') ?>" style="margin-left: 0; margin-top: 2px;"/>
+<?php endif ?>
+
+<?php endif ?>

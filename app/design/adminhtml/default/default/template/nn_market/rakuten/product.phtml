@@ -1,0 +1,64 @@
+<?php
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Rakuten
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+
+$_helper = Mage::helper('rakuten');
+$rakuten = $this->getRakuten();
+$success = $rakuten->getSuccess();
+?>
+<div class="content-header">
+    <table cellspacing="0" class="grid-header">
+        <tr>
+            <td><h3><?php echo $this->__('Rakuten Products')?></h3></td>
+            <td class="a-right">
+                <button onclick="window.location='<?php echo $this->getUrl('*/*/syncRakuten')?>'" class="scalable save" type="button"><span><?php echo $_helper->__('Sync product list with Rakuten') ?></span></button>
+                <button onclick="window.location='<?php echo $this->getUrl('*/*/syncToRakuten')?>'" class="scalable save" type="button"><span><?php echo $_helper->__('Sync Products to Rakuten') ?></span></button>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="nn-market-content">
+    <?php if ($success): ?>
+        <?php echo $_helper->__('Total %s records found', $rakuten->getTotal()) ?>
+        <div class="grid">
+        <table class="data" cellspacing="0">
+            <thead>
+                <tr class="headings">
+                    <td><?php echo $_helper->__('Rakuten ID') ?></td>
+                    <td><?php echo $_helper->__('Name') ?></td>
+                    <td><?php echo $_helper->__('Type') ?></td>
+                    <td><?php echo $_helper->__('SKU') ?></td>
+                    <td><?php echo $_helper->__('Price') ?></td>
+                    <td><?php echo $_helper->__('Qty') ?></td>
+                    <td><?php echo $_helper->__('Visible') ?></td>
+                    <td><?php echo $_helper->__('Status') ?></td>
+                    <td><?php echo $_helper->__('Created At') ?></td>
+                    <td><?php echo $_helper->__('Sync') ?></td>
+                </tr>
+            </thead>
+            <?php foreach ($rakuten->getProductCollection() as $product): ?>
+                <tr>
+                    <?php $productId = $product->getProductId(); ?>
+                    <td><?php echo $productId ?></td>
+                    <td><?php echo $product->getName() ?></td>
+                    <td><?php echo $product->getType() ?></td>
+                    <td><?php echo $product->getSku() ?></td>
+                    <td><?php echo $product->getPrice() ?></td>
+                    <td><?php echo $product->getQty() ?></td>
+                    <td><?php echo $product->getVisible() ? 'yes' : 'no' ?></td>
+                    <td><?php echo $product->getAvailable() ? 'Enabled' : 'Disabled' ?></td>
+                    <td><?php echo $product->getCreatedAt() ?></td>
+                    <td><a href="<?php echo $this->getUrl('*/*/sync', array('id' => $productId)) ?>"><?php echo $_helper->__('Sync Product') ?></a></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        </div>
+    <?php else: ?>
+        <p><?php echo $_helper->__('Can not retrieve any data about products.') ?></p>
+    <?php endif; ?>
+</div>

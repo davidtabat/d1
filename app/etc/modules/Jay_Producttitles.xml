@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Override the Product titles page to add info!
+-->
+<config>
+    <modules>
+        <Jay_Producttitles>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Jay_Producttitles>
+    </modules>
+</config>

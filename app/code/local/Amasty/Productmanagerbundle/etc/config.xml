@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_Productmanagerbundle
+ */
+-->
+<config>
+    <modules>
+        <Amasty_Productmanagerbundle>
+            <version>1.4.0</version>
+        </Amasty_Productmanagerbundle>
+    </modules>
+
+    <global>
+        <helpers>
+            <amproductmanagerbundle>
+                <class>Amasty_Productmanagerbundle_Helper</class>
+            </amproductmanagerbundle>
+        </helpers>
+    </global>
+</config>

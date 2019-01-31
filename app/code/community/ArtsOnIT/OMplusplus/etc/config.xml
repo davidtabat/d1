@@ -1,0 +1,443 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <ArtsOnIT_OMplusplus>
+            <version>2.0.2</version>
+        </ArtsOnIT_OMplusplus>
+    </modules>
+    <admin>
+      <routers>
+	<ompp>
+		<use>admin</use>
+		<args>
+			<module>ArtsOnIT_OMplusplus</module>
+			<frontName>ompp</frontName>
+		</args>
+	</ompp>
+       </routers>
+    </admin>
+    <adminhtml>
+	<translate>
+            <modules>
+                <ArtsOnIT_OMplusplus>
+                    <files>
+                        <default>ArtsOnIT_OMplusplus.csv</default>
+                    </files>
+                </ArtsOnIT_OMplusplus>
+            </modules>
+        </translate>
+	<layout>
+			<updates>
+				<ompp>
+					<file>ompp.xml</file>
+				</ompp>
+			</updates>
+		</layout>
+    </adminhtml>
+ 
+	<global>
+		<helpers>
+		    <ompp>
+		        <class>ArtsOnIT_OMplusplus_Helper</class>
+		    </ompp>
+		</helpers>
+		<models>
+		    <ompp>
+		        <class>ArtsOnIT_OMplusplus_Model</class>
+		    </ompp>
+		</models>
+		<blocks>
+		    <ompp>
+		        <class>ArtsOnIT_OMplusplus_Block</class>
+		    </ompp>
+		</blocks>
+	</global>
+	<stores>
+		<default>
+		    <web>
+		        <routers>
+		             <standard><area>frontend</area><class>ArtsOnIT_OMplusplus_Controller_Router_Standard</class></standard>
+		        </routers>
+		    </web>
+		</default>
+	</stores>
+	<default>
+		<web>
+		    <routers> 
+		        <standard><area>frontend</area><class>ArtsOnIT_OMplusplus_Controller_Router_Standard</class></standard>
+		    </routers>
+		</web>
+		<ompp>
+			<standardsettings>
+                		<enabled>0</enabled>
+				<message><![CDATA[
+		<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Offline Maintenance + </title>
+<script type="text/javascript" src="{{storeurl}}/js/index.php?c=auto&amp;f=,prototype/prototype.js,prototype/validation.js,scriptaculous/builder.js,scriptaculous/effects.js,scriptaculous/dragdrop.js,scriptaculous/controls.js,scriptaculous/slider.js,varien/js.js,varien/form.js,varien/menu.js,mage/translate.js,mage/cookies.js" ></script>
+<style type="text/css">
+body {
+background:#777777 none repeat scroll 0 0;
+color:#FFFFFF;
+font-family:Helvetica,Arial,Verdana,sans-serif;
+font-size:12px;
+ 
+margin:0;
+padding:0;
+text-align:center;
+}
+h1 
+{
+	margin:0px;
+	padding:0px;
+ 	margin-top:30%;
+ 	font-size: 25pt;
+ 	display:block;
+}
+h2
+{
+	padding:0px;
+ 	margin-top: 5px;
+ 	font-size: 18pt;
+}
+ol, ul {
+list-style-image:none;
+list-style-position:outside;
+list-style-type:none;
+}
+</style>
+</head>
+
+<body>
+{{messages}} {{newsletter}} {{contacts}}
+<h1>We're sorry, but our store is under maintenance.</h1>
+<h2>Please enjoy a quick cup of espresso and then try refreshing this page</h2>
+</body>
+</html>
+ 
+
+ ]]>
+</message>  
+<newsletterbox><![CDATA[ 
+	<form action="{{newsletterurl}}" method="post" id="newsletter-validate-detail">
+     
+            <label for="newsletter">Subscribe to our newsletter and you will be the first to know, when the website is online again!</label>
+<div style="margin-top:30px"></div>
+            <input name="email" id="newsletter" class="required-entry validate-email input-text" type="text">
+            <button type="submit" class="form-button-alt"><span>Subscribe</span></button>
+			{{multilanguages}}
+</form>
+<script type="text/javascript">
+    var newsletterSubscriberFormDetail = new VarienForm('newsletter-validate-detail');
+</script>
+ ]]>
+</newsletterbox>
+<contactsbox><![CDATA[ 
+ 
+<style type="text/css">
+.form-list li { margin:0 0 8px; }
+.form-list label { float:left; color:#666; font-weight:bold; position:relative; z-index:0; }
+.form-list label.required {}
+.form-list label.required em { float:right; font-style:normal; color:#eb340a; position:absolute; top:0; right:-8px; }
+.form-list li.control label { float:none; }
+.form-list li.control input.radio,
+.form-list li.control input.checkbox { margin-right:6px; }
+.form-list li.control .input-box { clear:none; display:inline; width:auto; }
+ 
+.form-list .input-box { display:block; clear:both; width:260px; }
+.form-list .field { float:left; width:275px; }
+.form-list input.input-text { width:254px; }
+.form-list textarea { width:254px; height:10em; }
+.form-list select { width:260px; }
+.form-list li.wide .input-box { width:535px; }
+.form-list li.wide input.input-text { width:529px; }
+.form-list li.wide textarea { width:529px; }
+.form-list li.wide select { width:535px; }
+.form-list li.additional-row { border-top:1px solid #ccc; margin-top:10px; padding-top:7px; }
+.form-list li.additional-row .btn-remove { float:right; margin:5px 0 0; }
+.form-list .input-range input.input-text { width:74px; }
+
+.buttons-set { clear:both; margin:auto; padding:8px 0 0; border-top:1px solid #e4e4e4; text-align:right; width:600px; }
+.buttons-set p.required { margin:0 0 10px; }
+.buttons-set .back-link { float:left; margin:0; }
+.buttons-set button.button { float:right; margin-left:5px; }
+
+.buttons-set-order { margin:10px 0 0; }
+.buttons-set-order .please-wait { padding:12px 7px 0 0; }
+
+.fieldset { width:600px; margin:auto;  border:none; padding:22px 25px 12px 0px;   }
+.fieldset .legend {   font-weight:bold;     padding:0 8px; position:relative; }
+
+ 
+.required { color: red;}
+#contactForm { clear:both;}
+</style>
+<form action="{{contactsurl}}" id="contactForm" method="post">
+    <div class="fieldset">
+        <h2 class="legend">Contact Information</h2>
+        <ul class="form-list">
+            <li class="fields">
+
+                <div class="field">
+                    <label for="name" class="required"><em>*</em>Name</label>
+                    <div class="input-box">
+                        <input name="name" id="name" title="Name" value="" class="input-text required-entry" type="text" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="email" class="required"><em>*</em>Email</label>
+
+                    <div class="input-box">
+                        <input name="email" id="email" title="Email" value="" class="input-text required-entry validate-email" type="text" />
+                    </div>
+                </div>
+            </li>
+            <li class="wide">
+                <label for="comment" class="required"><em>*</em>Comment</label>
+                <div class="input-box">
+
+                    <textarea name="comment" id="comment" title="Comment" class="required-entry input-text" cols="3" rows="2"></textarea>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="buttons-set">
+        <p class="required">* Required Fields</p>
+        <input type="text" name="hideit" id="hideit" value="" style="display:none !important;" />
+
+        <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
+    </div>
+</form>
+<script type="text/javascript">
+    var contactForm = new VarienForm('contactForm', true);
+</script>
+
+
+]]>
+</contactsbox>
+			</standardsettings>
+			<timesettings>
+                		<enabled>0</enabled>
+				<message><![CDATA[
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>Schedule Maintenance ++ </title>
+<script type="text/javascript" src="{{storeurl}}/js/index.php?c=auto&amp;f=,prototype/prototype.js,prototype/validation.js,scriptaculous/builder.js,scriptaculous/effects.js,scriptaculous/dragdrop.js,scriptaculous/controls.js,scriptaculous/slider.js,varien/js.js,varien/form.js,varien/menu.js,mage/translate.js,mage/cookies.js" ></script>
+<style type="text/css">
+body {
+background:#023059 none repeat scroll 0 0;
+color:#F2F2F2;
+font-family:Helvetica,Arial,Verdana,sans-serif;
+font-size:12px;
+ 
+margin:0;
+padding:0;
+text-align:center;
+}
+h1 
+{
+	margin:0px;
+margin-top:70px;
+	padding:0px;
+ 	font-size: 20pt;
+ 	display:block;
+	padding:0;
+}
+
+h2
+{
+	padding:0px;
+ 	margin-top: 5px;
+ 	font-size: 18pt;
+}
+.hasCountdown
+{
+	margin-top:20%;
+	position:absolute;
+}
+ol, ul {
+list-style-image:none;
+list-style-position:outside;
+list-style-type:none;
+}
+.countdown_section  {
+display:block;
+float:left;
+font-size:130%;
+font-size:200%;
+margin-top:30px;
+text-align:center;}
+
+.hasCountdown  {
+background-color:#3F7EA6;
+height:140px;
+position:relative;
+top:10%;
+width:100%;
+margin-top:20%;
+
+padding-top: 30px;
+}
+</style>
+</head>
+
+<body>
+{{messages}} {{newsletter}} 
+
+
+{{countdown}}
+
+<h1> <br />Our store is currently undergoing scheduled maintenance and upgrades.</h1>
+<h2>Thank you for your patience.</h2>
+
+{{contacts}}
+
+</body>
+</html>
+ 
+
+ ]]>
+</message>  
+<newsletterbox><![CDATA[ 
+	<form action="{{newsletterurl}}" method="post" id="newsletter-validate-detail">
+     
+            <label for="newsletter">Subscribe to our newsletter and you will be the first to know, when the website is online again!</label>
+<div style="margin-top:30px"></div>
+            <input name="email" id="newsletter" class="required-entry validate-email input-text" type="text">
+            <button type="submit" class="form-button-alt"><span>Subscribe</span></button>
+			{{multilanguages}}
+</form>
+<script type="text/javascript">
+    var newsletterSubscriberFormDetail = new VarienForm('newsletter-validate-detail');
+</script>
+ ]]>
+</newsletterbox>
+<contactsbox><![CDATA[  
+<style type="text/css">
+.form-list li { margin:0 0 8px; }
+.form-list label { float:left; color:#666; font-weight:bold; position:relative; z-index:0; }
+.form-list label.required {}
+.form-list label.required em { float:right; font-style:normal; color:#eb340a; position:absolute; top:0; right:-8px; }
+.form-list li.control label { float:none; }
+.form-list li.control input.radio,
+.form-list li.control input.checkbox { margin-right:6px; }
+.form-list li.control .input-box { clear:none; display:inline; width:auto; }
+ 
+.form-list .input-box { display:block; clear:both; width:260px; }
+.form-list .field { float:left; width:275px; }
+.form-list input.input-text { width:254px; }
+.form-list textarea { width:254px; height:10em; }
+.form-list select { width:260px; }
+.form-list li.wide .input-box { width:535px; }
+.form-list li.wide input.input-text { width:529px; }
+.form-list li.wide textarea { width:529px; }
+.form-list li.wide select { width:535px; }
+.form-list li.additional-row { border-top:1px solid #ccc; margin-top:10px; padding-top:7px; }
+.form-list li.additional-row .btn-remove { float:right; margin:5px 0 0; }
+.form-list .input-range input.input-text { width:74px; }
+
+.buttons-set { clear:both; margin:auto; padding:8px 0 0; border-top:1px solid #e4e4e4; text-align:right; width:600px; }
+.buttons-set p.required { margin:0 0 10px; }
+.buttons-set .back-link { float:left; margin:0; }
+.buttons-set button.button { float:right; margin-left:5px; }
+
+.buttons-set-order { margin:10px 0 0; }
+.buttons-set-order .please-wait { padding:12px 7px 0 0; }
+
+.fieldset { width:600px; margin:auto;  border:none; padding:22px 25px 12px 0px;   }
+.fieldset .legend {   font-weight:bold;     padding:0 8px; position:relative; }
+
+ 
+.required { color: red;}
+#contactForm { clear:both;}
+</style>
+<form action="{{contactsurl}}" id="contactForm" method="post">
+    <div class="fieldset">
+        <h2 class="legend">Contact Information</h2>
+        <ul class="form-list">
+            <li class="fields">
+
+                <div class="field">
+                    <label for="name" class="required"><em>*</em>Name</label>
+                    <div class="input-box">
+                        <input name="name" id="name" title="Name" value="" class="input-text required-entry" type="text" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="email" class="required"><em>*</em>Email</label>
+
+                    <div class="input-box">
+                        <input name="email" id="email" title="Email" value="" class="input-text required-entry validate-email" type="text" />
+                    </div>
+                </div>
+            </li>
+            <li class="wide">
+                <label for="comment" class="required"><em>*</em>Comment</label>
+                <div class="input-box">
+
+                    <textarea name="comment" id="comment" title="Comment" class="required-entry input-text" cols="3" rows="2"></textarea>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="buttons-set">
+        <p class="required">* Required Fields</p>
+        <input type="text" name="hideit" id="hideit" value="" style="display:none !important;" />
+
+        <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
+    </div>
+</form>
+<script type="text/javascript">
+    var contactForm = new VarienForm('contactForm', true);
+</script>
+]]>
+</contactsbox>
+			</timesettings>
+		
+		<countdown>
+			<textbefore>just</textbefore>
+			<textafter>to wait</textafter>
+		</countdown>
+		</ompp>
+	</default>
+ 
+  <adminhtml>
+        <translate>
+            <modules>
+                <ArtsOnIT_OMplusplus>
+                    <files>
+                        <default>ArtsOnIT_OMplusplus.csv</default>
+                    </files>
+                </ArtsOnIT_OMplusplus>
+            </modules>
+        </translate>
+        <acl>
+            <resources>
+		<all>
+			<title>Allow Everything</title>
+		</all>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <ompp>
+                                            <title>Offline Maintenance ++</title>
+                                        </ompp>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+     
+</config>

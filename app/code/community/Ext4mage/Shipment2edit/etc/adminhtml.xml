@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<acl>
+        <resources>
+           <admin>
+				<children>
+					<system>
+                        <children>
+                            <config>
+                                <children>
+                                    <shipment2edit translate="title" module="shipment2edit">
+                                        <title>Shipment2edit configuration</title>
+                                    </shipment2edit>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

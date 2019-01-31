@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+-->
+<layout>
+    <default>
+        <reference name="root">
+            <action method="unsetChild"><name>menu</name></action>
+            <block type="magento_localized/page_menu" name="menu" as="menu" />
+        </reference>
+        <reference name="head">
+            <action method="addCss"><name>magento_localized/magento_localized.css</name></action>
+        </reference>
+        <reference name="header">
+            <action method="setTemplate">
+                <template>magento_localized/header.phtml</template>
+            </action>
+            <block type="magento_localized/logo" name="magento_localized.logo" as="logo" template="magento_localized/logo.phtml" />
+        </reference>
+        <reference name="menu">
+            <action method="setTemplate">
+                <template>magento_localized/menu.phtml</template>
+            </action>
+        </reference>
+        <reference name="footer">
+            <action method="setTemplate">
+                <template>magento_localized/footer.phtml</template>
+            </action>
+        </reference>
+        <reference name="before_body_end">
+            <block type="magento_localized/tracking" name="magento_localized.tracking" template="magento_localized/tracking.phtml" after="*" />
+        </reference>
+    </default>
+
+    <adminhtml_dashboard_index>
+        <reference name="dashboard">
+            <action method="unsetChild"><name>sales</name></action>
+            <block type="adminhtml/text_list" name="dashboard.sales" as="sales">
+                <block type="magento_localized/dashboard_widget" name="dashboard.sales.magento_localized"
+                    template="magento_localized/dashboard/widget.phtml"/>
+                <block type="adminhtml/dashboard_sales" name="dashboard.sales.sales"/>
+            </block>
+        </reference>
+    </adminhtml_dashboard_index>
+
+    <adminhtml_magentolocalized_form>
+        <reference name="root">
+            <action method="unsetChild"><name>notifications</name></action>
+        </reference>
+        <reference name="content">
+            <block type="magento_localized/form" name="magento_localized.form" template="magento_localized/form.phtml">
+                <block type="magento_localized/form" name="magento_localized.form.page1" as="page1" template="magento_localized/form/page1.phtml" />
+                <block type="magento_localized/form" name="magento_localized.form.page2" as="page2" template="magento_localized/form/page2.phtml" />
+            </block>
+        </reference>
+    </adminhtml_magentolocalized_form>
+</layout>

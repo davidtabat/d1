@@ -1,0 +1,5 @@
+"Invoice Configuration","Rechnungen konfigurieren"
+"Automatic generation of invoices","Automatische Rechnungserstellung"
+"Standard is activated (yes). To switch off the auto generation of invoices caused by online payment like paypal, just disable (no) this field.","Falls aktiviert (Ja): Rechnung wird automatisch erstellt.<br>Falls deaktiviert (Nein): Rechnung wird nach der Online-Bezahlung (z.B. PayPal) nicht automatisch erstellt und der Bestellstatus bleibt 'NEU'."
+"Order Confirmation Email","Bestellbestätigung versenden"
+"Send order confirmation email.","Sende eine Bestellbestätigung per EMail."

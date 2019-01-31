@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Sttl_Permissions>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Sttl_Permissions>
+    </modules>
+</config>

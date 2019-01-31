@@ -1,0 +1,102 @@
+<?php
+?>
+<?php
+  $enablefacebook = $this->helper('sociallogin')->getEnableFacebook();
+  $enabletwitter = $this->helper('sociallogin')->getEnableTwitter();
+  $enablegoogle = $this->helper('sociallogin')->getEnableGoogle();
+	$enablelinkedin = $this->helper('sociallogin')->getEnableLinkedin();
+?>
+<div style="display: none;">
+  <div style="display: none;" class="allcontent" id="allcontent">
+    <div class="message-all" id="message-all" style="font-size: 13px; color: red; margin-top: 30px;"></div>
+<!--    <div id="divtwitter" style=" width: 300px; height: 150px;">    -->   
+    <div id="divtwitter">       
+      <div class="page-title">
+        <h3><?php echo $this->__('Please enter your Twitter email'); ?></h3>
+      </div>  
+      <div id="twitter_error" style="color: red;"></div>
+      <div class="socialpopup-input-box" style="margin-left: 25px;">
+	      <input type="text" id="tw_email" name="tw_email" value="" class="input-text required-entry validate-email"/>
+
+        <button type="button" onclick="return twitter_check();" style="float: right; " class="button" title="<?php echo $this->__('Login') ?>" name="twittermail" id="twittermail"><span><span><?php echo $this->__('Login') ?></span></span></button>
+        <button type="button" onclick="return backlogin();" style="float: right; margin-left: 10px; margin-right:
+        6px;"
+                class="button"
+                title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__('Back') ?></span></span></button>
+      </div>
+      <div id="twitter_error"></div>
+    </div>
+	  <div id="divgoogle">
+		  <div class="page-title">
+			  <h3><?php echo $this->__('Please enter your Google email'); ?></h3>
+		  </div>
+		  <div id="google_error" style="color: red;"></div>
+		  <div class="socialpopup-input-box" style="margin-left: 25px;">
+			  <input type="text" id="gg_email" name="gg_email" value="" class="input-text required-entry validate-email" />
+			  <button type="button" onclick="return google_check();" style="float: right; " class="button"  title="<?php
+				  echo $this->__('Login') ?>" name="googlemail" id="googlemail"><span><span><?php echo $this->__('Login')
+						  ?></span></span></button>
+			  <button type="button" onclick="return backlogin();" style="float: right; margin-left: 10px; margin-right: 6px;"
+			          class="button"title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__('Back') ?></span></span></button>
+		  </div>
+		  <div id="google_error"></div>
+	  </div>
+
+	  <div id="divfacebook">
+		  <div class="page-title">
+			  <h3><?php echo $this->__('Please enter your Faceboook email'); ?></h3>
+		  </div>
+		  <div id="facebook_error" style="color: red;"></div>
+		  <div class="sociallogin-input-box" style="margin-left: 25px;">
+			  <input type="text" id="fb_email" name="fb_email" value="" class="input-text
+			  required-entry validate-email" />
+			  <button type="button" onclick="return fb_check();" style="float: right; " class="button"  title="<?php
+				  echo $this->__('Login') ?>" name="facebookmail" id="facebookmail"><span><span><?php echo $this->__('Login')
+						  ?></span></span></button>
+			  <button type="button" onclick="return backlogin();" style="float: right; margin-left: 10px; margin-right: 6px;"
+			          class="button"title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__('Back') ?></span></span></button>
+		  </div>
+	  </div>
+
+  </div>
+</div>
+<div class="customer-login-with-social">   
+  <div class="content">    
+    <ul>
+      <?php if($enablefacebook):?>
+        <li>
+          <a href="#allcontent" onclick="facebooklogin()" class="facebook" id="facebook"><img src="<?php echo
+	          $this->helper('sociallogin')->getLoginImg()?>" alt="<?php echo $this->__('Connect with Facebook')?>" /></a>
+        </li>
+        <?php endif?>
+      <?php if($enabletwitter):?>
+        <li>
+          <a href="#allcontent" onclick="return checktwitter();" class="twitter"><img src="<?php echo $this->helper('sociallogin')->getTwitterImg()?>" alt="<?php echo $this->__('Connect with Twitter')?>" /></a> 
+        </li>
+        <?php endif?>
+      <?php if($enablegoogle):?>
+        <li>
+          <a href="#allcontent" onclick="return logingg()" class="google"><img src="<?php echo $this->helper
+		          ('sociallogin')->getGoogleImg()?>" alt="<?php echo $this->__('Connect with Google')?>" />
+          </a>
+        </li>
+        <?php endif?>
+	    <?php if($enablelinkedin): ?>
+	      <li>
+		      <a href="<?php  $block = $this->getLayout()->getBLockSingleton('sociallogin/sociallogin')->_getButtonUrl();
+			      echo $this-> escapeUrl($block);?>" class="linkedin"><img src="<?php echo
+			      $this->helper('sociallogin')->getLinkedinImg()?>" alt="<?php echo $this->__('Connect with Linkedin')?>" />
+		      </a>
+	      </li>
+	    <?php endif ?>
+    </ul>
+  </div>  
+</div>    
+<script type="text/javascript">
+  //<![CDATA[ 
+  function backlogin(){
+    document.getElementById('allcontent').style.display = "none";
+    jQuery.fancybox.close();
+  }  
+  //]]>
+    </script>

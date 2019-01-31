@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Magebuzz_Sociallogin>
+      <version>0.1.3</version>
+    </Magebuzz_Sociallogin>
+  </modules>
+
+  <frontend>
+    <!-- <secure_url>
+    <sociallogin>/sociallogin/</sociallogin>
+    </secure_url>	     -->
+    <routers>
+      <sociallogin>
+        <use>standard</use>
+        <args>
+          <module>Magebuzz_Sociallogin</module>
+          <frontName>sociallogin</frontName>
+        </args>
+      </sociallogin>
+    </routers>
+    <layout>
+      <updates>
+        <sociallogin>
+          <file>sociallogin.xml</file>
+        </sociallogin>
+      </updates>
+    </layout>
+    <translate>
+      <modules>
+        <Magebuzz_Sociallogin>
+          <files>
+            <default>Magebuzz_Sociallogin.csv</default>
+          </files>
+        </Magebuzz_Sociallogin>
+      </modules>
+    </translate>
+  </frontend>
+
+  <admin>  
+    <routers>
+      <adminhtml>
+        <args>
+          <use>standard</use>
+          <modules>
+            <Magebuzz_Sociallogin after="Mage_Adminhtml">Magebuzz_Sociallogin</Magebuzz_Sociallogin>
+          </modules>
+        </args>
+      </adminhtml>
+    </routers>
+  </admin>
+
+  <adminhtml>
+    <layout>
+      <updates>
+        <sociallogin>
+          <file>sociallogin.xml</file>
+        </sociallogin>
+      </updates>
+    </layout>
+    <translate>
+      <modules>
+        <Magebuzz_Sociallogin>
+          <files>
+            <default>Magebuzz_Sociallogin.csv</default>
+          </files>
+        </Magebuzz_Sociallogin>
+      </modules>
+    </translate>
+  </adminhtml>
+
+  <global>
+    <models>
+      <sociallogin>
+        <class>Magebuzz_Sociallogin_Model</class>
+        <resourceModel>sociallogin_mysql4</resourceModel>
+      </sociallogin>
+      <sociallogin_mysql4>
+        <class>Magebuzz_Sociallogin_Model_Mysql4</class>
+        <entities>
+          <sociallogin>
+            <table>sociallogin</table>
+          </sociallogin>
+        </entities>
+      </sociallogin_mysql4>
+    </models>
+    <resources>
+      <sociallogin_setup>
+        <setup>
+          <module>Magebuzz_Sociallogin</module>
+          <class>Mage_Customer_Model_Entity_Setup</class>
+          <class>Magebuzz_Sociallogin_Model_Resource_Setup</class>
+        </setup>
+        <connection>
+          <use>core_setup</use>
+        </connection>
+      </sociallogin_setup>
+      <sociallogin_write>
+        <connection>
+          <use>core_write</use>
+        </connection>
+      </sociallogin_write>
+      <sociallogin_read>
+        <connection>
+          <use>core_read</use>
+        </connection>
+      </sociallogin_read>
+    </resources>
+    <blocks>
+      <sociallogin>
+        <class>Magebuzz_Sociallogin_Block</class>
+      </sociallogin>		
+    </blocks>
+    <helpers>
+      <sociallogin>
+        <class>Magebuzz_Sociallogin_Helper</class>
+      </sociallogin>
+    </helpers>
+    <template>
+      <email>
+        <sociallogin_general_email_template>
+          <label>Title Email</label>
+          <file>sociallogin_example.html</file>
+          <type>html</type>
+        </sociallogin_general_email_template>
+      </email>
+    </template>			
+  </global>
+
+  <default>
+    <sociallogin>
+      <facebook>
+        <prefix>FB . </prefix>
+      </facebook>
+      <twitter>
+        <tw_key>Q8JQfBc54zqIkxX4fW3cGcAuf</tw_key>
+        <tw_secret>ti56Om83e8FeFb9TB8AzIEOkihjTcip7L5QZnjdIIJfltgbVvH</tw_secret>
+        <prefix>TW . </prefix>
+      </twitter>
+      <google>
+        <prefix>GG . </prefix>
+      </google>
+      <linkedin>
+        <prefix>LI . </prefix>
+      </linkedin>
+    </sociallogin>
+  </default>	
+</config>

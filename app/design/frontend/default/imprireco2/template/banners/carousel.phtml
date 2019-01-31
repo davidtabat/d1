@@ -1,0 +1,20 @@
+<ul class="banner-carousel">
+		<?php foreach ($banners as $banner):?>
+				<li>
+						<img title="<?php if($isShowTitle): ?><?php echo '<h3>'.$banner->title.'</h3>' ?><?php endif;?><?php if($isShowDescription): ?><?php echo '<p>'.$banner->content.'</p>' ?><?php endif;?>" src="<?php echo $imgLink.$banner->bannerimage ?>" alt="" />
+				</li>
+		<?php endforeach ?>
+</ul>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery('.banner-carousel').bxSlider({
+			auto: true,
+			mode: 'horizontal',
+			speed: <?php echo $transitionSpeedSlider ?>,
+			preloadImages: 'visible', 
+			pager: true,
+			captions: <?php if($isShowTitle || $isShowDescription): ?> true <?php else: ?> false <?php endif;?>,
+			controls:true
+		});
+	});
+</script>

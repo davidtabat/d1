@@ -1,0 +1,619 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Rakuten
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <sections>
+        <nn_market translate="label" module="rakuten">
+            <label>Rakuten Connector</label>
+            <sort_order>100</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <tab>mageshops_tab</tab>
+            <groups>
+                <rakuten>
+                    <label>Rakuten.de</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <module_version translate="label" module="rakuten">
+                            <label>mageSHOPS.com Rakuten Version</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>rakuten/version</frontend_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </module_version>
+                        <api_key translate="label comment" module="rakuten">
+                            <label>Rakuten API Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use '123456789a123456789a123456789a12' for testing purposes</comment>
+                        </api_key>
+                        <enable_cron translate="label comment" module="rakuten">
+                            <label>Enable cron synchronization</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>You may disable synchronization for products, categories or orders separately in
+                                corresponding sections</comment>
+                        </enable_cron>
+                        <sync_all_cron translate="label" module="rakuten">
+                            <label>Categories and products synchronization crontab</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use Crontab Format (Eg. "*/5 * * * *" for every 5 minutes)</comment>
+                            <depends>
+                                <enable_cron>1</enable_cron>
+                            </depends>
+                        </sync_all_cron>
+                        <sync_orders_cron translate="label" module="rakuten">
+                            <label>Orders synchronization crontab</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use Crontab Format (Eg. "*/5 * * * *" for every 5 minutes)</comment>
+                            <depends>
+                                <enable_cron>1</enable_cron>
+                            </depends>
+                        </sync_orders_cron>
+                        <sync_stock_price_cron translate="label" module="rakuten">
+                            <label>Stock price synchronization Crontab</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use Crontab Format (Eg. "*/5 * * * *" for every 5 minutes)</comment>
+                            <depends>
+                                <enable_cron>1</enable_cron>
+                            </depends>
+                        </sync_stock_price_cron>
+                        <request_cleanup_cron translate="label" module="rakuten">
+                            <label>Request cleanup Crontab</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use Crontab Format (Eg. "*/5 * * * *" for every 5 minutes)</comment>
+                            <depends>
+                                <enable_cron>1</enable_cron>
+                            </depends>
+                        </request_cleanup_cron>
+                        <lock_timeout translate="label comment" module="rakuten">
+                            <label>Lock Timeout</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>In some cases syncing process may hang leaving connector in locked state.
+                                Set time in hours to clear lock after. 0 or less to never clear lock.
+                                You may clear lock if you need then on manual synchronization page.</comment>
+                        </lock_timeout>
+                        <force_resave translate="label comment" module="rakuten">
+                            <label>Force resaving all products on next run</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>If 'Yes' all products will be synchronized to Rakuten even if they didn't change
+                                after last sync. If sync process run as cron job, this flag will be set to 'No' after
+                                all products were synced.</comment>
+                        </force_resave>
+                        <log translate="label comment" module="rakuten">
+                            <label>Log messages</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1000</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>if set, sync messages will be logged to var/logs/rakuten-sync.log</comment>
+                        </log>
+                        <log_database translate="label comment" module="rakuten">
+                            <label>Log messages to the database</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>if set, sync messages will be logged to the database</comment>
+                        </log_database>
+                        <tax_1 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 19%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>500</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_1>
+                        <tax_2 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 7%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>510</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_2>
+                        <tax_3 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 0%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>520</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_3>
+                        <tax_4 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 10,7%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>530</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_4>
+                        <tax_10 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 10%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>540</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_10>
+                        <tax_11 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 12%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>550</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_11>
+                        <tax_12 translate="label comment" module="rakuten">
+                            <label>Rakuten tax: 20%</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/taxclasses</source_model>
+                            <sort_order>560</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </tax_12>
+                    </fields>
+                </rakuten>
+                <rakuten_product>
+                    <label>Rakuten.de Product Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enable_sync translate="label" module="rakuten">
+                            <label>Enable automatic product synchronization</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable_sync>
+                        <products_from_categories translate="label comment" module="rakuten">
+                            <label>Synchronize products only from selected categories</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </products_from_categories>
+
+                        <sync_bundle translate="label comment" module="rakuten">
+                            <label>Synchronize bundle products as Rakuten variation products</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sync_bundle>
+
+                        <sync_bundle_prefix translate="label comment">
+                            <label>Bundle product sku prefix</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>35</sort_order>
+                            <comment>Warning! Change it only if you have no bundle products in rakuten and no Orders with bundled products. (If field will be empty then system will use "BR".)</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <sync_bundle>1</sync_bundle>
+                            </depends>
+                        </sync_bundle_prefix>
+
+                        <sync_grouped translate="label comment" module="rakuten">
+                            <label>Synchronize grouped products as Rakuten variation products</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sync_grouped>
+
+                        <unvailable_on_zero_stock translate="label comment" module="rakuten">
+                            <label>Product is unavailable if stock qty is 0</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Set product to unavailable if stock qty is 0 on export.</comment>
+                        </unvailable_on_zero_stock>
+                        <variant_price translate="label" module="rakuten">
+                            <label>Price source for variant products</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/system_config_source_variant</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </variant_price>
+                        <products_per_package translate="label" module="rakuten">
+                            <label>Products per package</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/system_config_source_packages</source_model>
+                            <sort_order>65</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </products_per_package>
+                        <create_csv translate="label comment" module="rakuten">
+                            <label>Create CSV file with export data</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Otherwise product data will be exported through web API.</comment>
+                        </create_csv>
+                        <stock_price_cron translate="label" module="rakuten">
+                            <label>Enable product stock and price synchronization</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <create_csv>1</create_csv>
+                            </depends>
+                        </stock_price_cron>
+                    </fields>
+                </rakuten_product>
+                <rakuten_category>
+                    <label>Rakuten.de Category Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>300</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enable_sync translate="label comment" module="rakuten">
+                            <label>Enable automatic category synchronization</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This setting is ignored if products are exported in csv file.</comment>
+                        </enable_sync>
+                        <force_recreate translate="label comment" module="rakuten">
+                            <label>Force recreate all categories</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This setting is ignored if products are exported in csv file.</comment>
+                        </force_recreate>
+                        <layout translate="label comment" module="rakuten">
+                            <label>Show Products in Category</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/system_config_source_categoryLayout</source_model>
+                            <sort_order>15</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>This setting is ignored if products are exported in csv file.</comment>
+                        </layout>
+                        <run translate="label">
+                            <label>Rakuten marketplace categories</label>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>rakuten/config</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </run>
+                    </fields>
+                </rakuten_category>
+                <rakuten_order>
+                    <label>Rakuten.de Order Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>400</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enable_sync translate="label" module="rakuten">
+                            <label>Enable automatic order synchronization</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable_sync>
+                        <enable_autocreate translate="label" module="rakuten">
+                            <label>Create new orders in magento on import from rakuten</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable_autocreate>
+                        <rakuten_store translate="label" module="rakuten">
+                            <label>Store used for imported orders</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_store</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </rakuten_store>
+                        <!-- DHL, Hermes, UPS, DPD, GLS or Post -->
+                        <carrier_dhl translate="label comment" module="rakuten">
+                            <label>Rakuten carrier: DHL</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/carrierList</source_model>
+                            <sort_order>500</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </carrier_dhl>
+                        <carrier_hermes translate="label comment" module="rakuten">
+                            <label>Rakuten carrier: Hermes</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/carrierList</source_model>
+                            <sort_order>510</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </carrier_hermes>
+                        <carrier_ups translate="label comment" module="rakuten">
+                            <label>Rakuten carrier: UPS</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/carrierList</source_model>
+                            <sort_order>520</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </carrier_ups>
+                        <carrier_dpd translate="label comment" module="rakuten">
+                            <label>Rakuten carrier: DPD</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/carrierList</source_model>
+                            <sort_order>530</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </carrier_dpd>
+                        <carrier_gls translate="label comment" module="rakuten">
+                            <label>Rakuten carrier: GLS</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/carrierList</source_model>
+                            <sort_order>540</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </carrier_gls>
+                        <carrier_post translate="label comment" module="rakuten">
+                            <label>Rakuten carrier: Post</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>rakuten/carrierList</source_model>
+                            <sort_order>550</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </carrier_post>
+                    </fields>
+                </rakuten_order>
+            </groups>
+        </nn_market>
+        <payment>
+            <groups>
+                <nnrakuten translate="label" module="rakuten">
+                    <label>Rakuten Payment Method</label>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                        <order_status translate="label">
+                            <label>New order status</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_order_status_processing</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        by
+                    </fields>
+                </nnrakuten>
+            </groups>
+        </payment>
+        <carriers>
+            <groups>
+                <nnrakuten translate="label">
+                    <label>Rakuten Shipping Method</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                        <name translate="label">
+                            <label>Method name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </name>
+                        <price translate="label">
+                            <label>Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </price>
+                        <handling_type translate="label">
+                            <label>Calculate Handling Fee</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>shipping/source_handlingType</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </handling_type>
+                        <handling_fee translate="label">
+                            <label>Handling Fee</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>8</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </handling_fee>
+                        <sort_order translate="label">
+                            <label>Sort order</label>
+                            <frontend_type>text</frontend_type>
+                        </sort_order>
+                        <sort_order>100</sort_order>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>0</show_in_store>
+                        <title translate="label">
+                            <label>Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+                        <type translate="label">
+                            <label>Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_shipping_flatrate</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </type>
+                        <sallowspecific translate="label">
+                            <label>Ship to applicable countries</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>90</sort_order>
+                            <frontend_class>shipping-applicable-country</frontend_class>
+                            <source_model>adminhtml/system_config_source_shipping_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sallowspecific>
+                        <specificcountry translate="label">
+                            <label>Ship to Specific countries</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>91</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </specificcountry>
+                        <showmethod translate="label">
+                            <label>Show method if not applicable</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>92</sort_order>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </showmethod>
+                        <specificerrmsg translate="label">
+                            <label>Displayed Error Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </specificerrmsg>
+                    </fields>
+                </nnrakuten>
+            </groups>
+        </carriers>
+    </sections>
+</config>

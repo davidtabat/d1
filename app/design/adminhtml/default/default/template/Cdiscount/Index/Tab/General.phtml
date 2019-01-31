@@ -1,0 +1,88 @@
+<?php echo $this->getChildHtml('marketplace_last_errors'); ?>
+
+<div class="entry-edit box-left">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Import Cdisount products'); ?></h4>
+        </div>
+        <fieldset>
+            <form method="POST" enctype="multipart/form-data" action="<?php echo mage::helper('adminhtml')->getUrl('MarketPlace/Manual/importProducts', array('mp' => 'cdiscount')); ?>">
+                <input id="form_key" name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+                <table border="0" style="margin-left: 30px;">
+                    <tr>
+                        <th width="200" align="center"><?php echo $this->__('File') ?> : </th>
+                        <td colspan="2"><input type="file" name="file"></td>
+                    </tr>
+                    <tr>
+                        <th width="200" align="center"><?php echo $this->__('Import') ?> : </th>
+                        <td colspan="2"><button class="scalable" ><?php echo $this->__('Import') ?></button></td>
+                    </tr>
+                </table>
+            </form>
+        </fieldset>
+    </div>
+
+    <div class="entry-edit box-right">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Import Cdiscount sales order'); ?></h4>
+        </div>
+        <fieldset>
+            <form method="POST" enctype="multipart/form-data" action="<?php echo mage::helper('adminhtml')->getUrl('MarketPlace/Manual/ImportSales', array('marketplace' => 'cdiscount')); ?>">
+                <input id="form_key" name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+                <table border="0" style="margin-left: 30px;">
+                    <tr>
+                        <th width="200" align="center"><?php echo $this->__('File') ?> : </th>
+                        <td colspan="2"><input type="file" name="file"></td>
+                    </tr>
+                    <tr>
+                        <th width="200" align="center"><?php echo $this->__('Import') ?> : </th>
+                        <td colspan="2"><button class="scalable" ><?php echo $this->__('Import') ?></button></td>
+                    </tr>
+                </table>
+            </form>
+        </fieldset>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-edit fieldset-legend"><?php echo $this->__('Products to export') ?></h4>
+        </div>
+        <fieldset>
+            <div align="right">
+                <button onclick="document.location.href='<?php echo mage::helper('adminhtml')->getUrl('MarketPlace/Manual/Export', array('marketplace' => 'cdiscount')); ?>'" class="scalable" type="button"><span><?php echo $this->__('Create export file') ?></span></button>
+                <button onclick="saveGrid(); return false;" class="scalable" type="button"><span><?php echo $this->__('Save') ?></span></button>
+            </div>
+            <div style="display:none;width:400px;margin:auto auto;height:50px;text-align:center;font-weight:bold;" id="save_process_message"><?php echo $this->__('Saving data, please wait......') ?></div>
+            <div id="product_grid"><?php echo $this->getChildHtml('marketplace_products'); ?></div>
+    </fieldset>
+</div>
+
+<?php // TODO : factoriser ce code pour tous les marketplaces ! ?>
+<script type="text/javascript">
+
+    function saveGrid(){
+
+        var form = document.getElementById('ProductsGrid_massaction-form');
+        form.setAttribute('action', "<?php echo mage::helper('adminhtml')->getUrl('Cdiscount/Main/Save'); ?>");
+        form.setAttribute('id', 'form_data');
+        form.setAttribute('method', 'POST');
+
+        var select = document.getElementById('ProductsGrid_massaction-select');
+        select.setAttribute('class', "");
+
+        var table_originale = document.getElementById('ProductsGrid_table');
+        var table = table_originale;
+        table.setAttribute('id', 'submitted_fieds');
+        table.setAttribute('style', 'display:none');
+        form.appendChild(table);
+
+        var formData = new varienForm('form_data');
+
+        document.getElementById('save_process_message').style.display = 'block';
+        document.getElementById('product_grid').style.display = 'none';
+
+        formData.submit();
+    }
+
+</script>

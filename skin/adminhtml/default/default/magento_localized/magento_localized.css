@@ -1,0 +1,20 @@
+#nav li.magento_localized > a {
+    background: url('flag.png') no-repeat 8px 4px !important;
+}
+#nav ul li.magento_localized > a {
+    background: url('flag.png') no-repeat 13px 3px !important;
+}
+#nav li.magento_localized > a span {
+    padding-left: 20px;
+}
+#nav ul li.magento_localized > a span {
+    padding-left: 35px;
+}
+
+.indent {
+    text-indent: 30px;
+}
+
+.adminhtml-magentolocalized-form .entry-edit .form-buttons {
+    margin-right: 0;
+}

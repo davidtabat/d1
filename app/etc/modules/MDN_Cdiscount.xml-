@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <MDN_Cdiscount>
+            <active>true</active>
+            <codePool>community</codePool>
+        </MDN_Cdiscount>
+        <depends>
+             <MDN_MarketPlace/>
+         </depends>
+    </modules>
+</config>

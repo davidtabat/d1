@@ -1,0 +1,28 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+
+/**
+ *@var array $files
+ */
+$files = $this->getFiles();
+?>
+<div id="attach-files-box-<?php echo $this->getProductId();?>">
+    <?php $iterator = 1;?>
+    <?php foreach ($files as $file): ?>
+        <span class="attach-name attach-name-<?php echo $this->getProductId();?> <?php echo $iterator++ > $this->_maxDisplay  ? 'no-display' : '';?>"
+              data-icon="<?php echo $file->getIcon();?>">
+
+            <a href='<?php echo $this->getUrl('adminhtml/amfile_file/download', array('file_id' => $file->getId()));?>'>
+                <?php echo $file->getFileName() ? $file->getFileName() : $file->getFileLink();?>
+            </a>
+        </span>
+    <?php endforeach;?>
+    <?php if ($iterator > ($this->_maxDisplay+1)): ?>
+        <br/>
+        <a href="#" onclick="return attachLoadMore('<?php echo $this->getProductId();?>');" class="am_load_more"><?php echo $this->__('See All...');?></a>
+    <?php endif;?>
+</div>

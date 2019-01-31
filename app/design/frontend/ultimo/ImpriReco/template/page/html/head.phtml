@@ -1,0 +1,91 @@
+<?php
+	$theme = Mage::helper('ultimo');
+?>
+<meta http-equiv="Content-Type" content="<?php echo $this->getContentType() ?>" />
+<title><?php echo $this->getTitle() ?></title>
+<?php if ($theme->getCfgLayout('responsive/responsive')): ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<?php //<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> ?>
+<?php endif; ?>
+<meta name="description" content="<?php echo htmlspecialchars($this->getDescription()) ?>" />
+<meta name="keywords" content="<?php echo htmlspecialchars($this->getKeywords()) ?>" />
+<meta name="robots" content="<?php echo htmlspecialchars($this->getRobots()) ?>" />
+<link rel="icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
+<link rel="shortcut icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
+<?php
+	$skinUrl = $this->getSkinUrl('');
+?>
+
+<!--[if lt IE 7]>
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = '<?php echo $this->helper('core/js')->getJsUrl('blank.html') ?>';
+    var BLANK_IMG = '<?php echo $this->helper('core/js')->getJsUrl('spacer.gif') ?>';
+//]]>
+</script>
+<![endif]-->
+
+<?php echo $this->getCssJsHtml() ?>
+<?php echo $this->getChildHtml() ?>
+<?php echo $this->helper('core/js')->getTranslatorScript() ?>
+<?php echo $this->getIncludes() ?>
+
+<?php
+/*
+* verify the product and link (printerpiloten) availability before printing on the page alternative Links
+*/
+if ($_product = Mage::registry('current_product')) {
+	$urls = array();
+	if ($_product->getData('var_hreflang_de')) {
+		$urls['de'] = str_replace(array('http://', 'https://'), '', $_product->getData('var_hreflang_de'));
+	}
+
+	if ($_product->getData('var_hreflang_de')) {
+		$urls['de-ch'] = str_replace(array('http://', 'https://'), '', $_product->getData('var_hreflang_ch'));
+	}
+
+	if (count($urls)) {
+		foreach ($urls as $langcode => $link) {
+			foreach (array(0 => 'printerpiloten.ch', 10 => 'druckerhaus24.de', 11 => 'kopiererhaus.de', 19 => 'imprireco.fr', 21 => 'tech-tiger.com') as $storeid => $domain) {
+				if (strpos($link, 'printerpiloten.ch') !== false) {
+					if (strpos(get_headers($link, 1)[0], '404') === false) {
+						echo "\r\n";
+						?>
+<link rel="alternate" href="https://<?php echo $link; ?>" hreflang="<?php echo $langcode; ?>" /><?php echo "\r\n";
+					}
+					break;
+				} else if (strpos($link, $domain) !== false) {
+					$prd = Mage::getModel('catalog/product')->setStoreId($storeid)->load($_product->getId());
+					$prdLink = str_replace(array('http://', 'https://'), '', $prd->getProductUrl());
+
+					if ($prd->getStatus() && $prd->getIsInStock() && strpos($prdLink, $link) !== false) {
+						echo "\r\n";
+						?>
+<link rel="alternate" href="https://<?php echo $link; ?>" hreflang="<?php echo $langcode; ?>" /><?php echo "\r\n";
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+?>
+
+<?php //Include Google Fonts
+	$amp = '&amp;';
+	$charSubset = '';
+	if ($subsets = $theme->getCfgDesign('font/primary_char_subset'))
+	{
+		$charSubset = "{$amp}subset={$subsets}";
+	}
+
+	$fontWeight = '';
+	if ($weight = $theme->getCfgDesign('font/primary_font_weight'))
+	{
+		$fontWeight = ':' . $weight;
+	}
+?>
+<?php if ($theme->getCfgDesign('font/primary_font_family_group') == 'google'): ?>
+	<link href='//fonts.googleapis.com/css?family=<?php echo str_replace(' ', '+', $theme->getCfgDesign('font/primary_font_family')); 
+		echo $fontWeight; echo $charSubset; ?>' rel='stylesheet' type='text/css' />
+<?php endif;?>

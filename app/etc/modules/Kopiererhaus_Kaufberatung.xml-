@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Kopiererhaus_Kaufberatung>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Kopiererhaus_Kaufberatung>
+    </modules>
+</config>

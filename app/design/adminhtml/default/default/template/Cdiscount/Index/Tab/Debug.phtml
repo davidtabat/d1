@@ -1,0 +1,139 @@
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Product creation'); ?></h4>
+    </div>
+    <fieldset class="form-list">
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_ProductCreation/checkProductCreationCron'); ?>');"><?php echo $this->__('Check product creation (CRON)'); ?></button>
+        <p class="note"><span><?php echo $this->__('Check EAN matching result and update product status in magento accordingly'); ?></span></p>
+
+        <br><button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_ProductCreation/generateCatalogCsv'); ?>');"><?php echo $this->__('Generate catalog'); ?></button>
+        <p class="note"><span><?php echo $this->__('Download products as csv file for product creation request to cdiscount'); ?></span></p>
+
+        <br><button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_ProductCreation/syncCatalog'); ?>');"><?php echo $this->__('Sync SKU and Cdiscount references'); ?></button>
+        <p class="note"><span><?php echo $this->__('Synchronize cdiscount product reference with Magento SKUS, run this at the very first use'); ?></span></p>
+    </fieldset>
+</div>
+
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Product update'); ?></h4>
+    </div>
+    <fieldset class="form-list">
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_CdiscountProductUpdate/cronExportStockAndPrice'); ?>');"><?php echo $this->__('Update stock / prices (CRON)'); ?></button>
+        <p class="note"><span><?php echo $this->__('Send stock and price updates to cdiscount'); ?></span></p>
+
+        <br><form method="POST" action="<?php echo $this->getUrlByAccount('Cdiscount/Debug_CdiscountProductUpdate/CheckSubmitOffer'); ?>">
+            <input id="form_key" name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <input type="text" name="offer_package_id" value="" />
+            <button class="scalable"><?php echo $this->__('Check Offer feed result'); ?></button>
+        </form>
+        <p class="note"><span><?php echo $this->__('Use this to get the result for matching / stock / price update feeds'); ?></span></p>
+
+
+        <br><form method="POST" action="<?php echo $this->getUrlByAccount('Cdiscount/Debug_ProductCreation/CheckSubmitProduct'); ?>">
+            <input id="form_key" name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <input type="text" name="offer_package_id" value="" />
+            <button class="scalable"><?php echo $this->__('Check Product feed result'); ?></button>
+        </form>
+        <p class="note"><span><?php echo $this->__('Use this to get the result for product creation feed'); ?></span></p>
+
+    </fieldset>
+</div>
+
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Orders'); ?></h4>
+    </div>
+    <fieldset class="form-list">
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_orders/importOrdersCron'); ?>');"><?php echo $this->__('Import orders (CRON)'); ?></button>
+        <p class="note"><span><?php echo $this->__('Import new orders'); ?></span></p>
+        <p>&nbsp;</p>
+        <table>
+        <form method="POST" action="<?php echo $this->getUrlByAccount('Cdiscount/Debug_Orders/UpdateOrder'); ?>">
+            <input id="form_key" name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <tr>
+                <td><label for="order_id"><?php echo $this->__('Order ID'); ?></label></td>
+                <td><input type="text" name="order_id" id="order_id" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="order_status_from"><?php echo $this->__('Order status from'); ?></label></td>
+                <td>
+                    <select name="order_status_from" name="order_status_from">
+                        <option value=""></option>
+                        <?php foreach(Mage::Helper('Cdiscount/Orders')->getAllOrderStatuses() as $code => $label): ?>
+                            <option value="<?php echo $code; ?>"><?php echo $label; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="order_status_to"><?php echo $this->__('Order status to'); ?></label></td>
+                <td>
+                    <select name="order_status_to" name="order_status_to">
+                        <option value=""></option>
+                        <?php foreach(Mage::Helper('Cdiscount/Orders')->getAllowedStatusesToUpdate() as $code => $label): ?>
+                            <option value="<?php echo $code; ?>"><?php echo $label; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button class="scalable"><?php echo $this->__('Update order'); ?></button></td>
+            </tr>
+        </form>
+        </table>
+        <p>&nbsp;</p>
+        <table>
+        <form method="POST" action="<?php echo $this->getUrlByAccount('Cdiscount/Debug_Orders/getOrders'); ?>">
+            <input id="form_key" name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+            <tr>
+                <td><label for="status"><?php echo $this->__('Order status'); ?></label></td>
+                <td>
+                    <select name="status" name="status">
+                        <option value=""></option>
+                        <?php foreach(Mage::Helper('Cdiscount/Orders')->getAllOrderStatuses() as $code => $label): ?>
+                            <option value="<?php echo $code; ?>"><?php echo $label; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button class="scalable"><?php echo $this->__('Get orders'); ?></button></td>
+            </tr>
+        </form>
+        </table>
+    </fieldset>
+</div>
+
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Trackings'); ?></h4>
+    </div>
+    <fieldset class="form-list">
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Trackings/sendTrackingsCron'); ?>');"><?php echo $this->__('Confirm dispatch (CRON)'); ?></button>
+        <p class="note"><span><?php echo $this->__('Confirm order dispatch to cdiscount. Note : if no tracking number is available, dispatch will be confirmed only after X hours (X can be set in sales > marketplace > account > delta tracking)'); ?></span></p>
+    </fieldset>
+</div>
+
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Services'); ?></h4>
+    </div>
+    <fieldset>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetProductList, 'params'=>array())); ?>');"><?php echo $this->__('Get product list'); ?></button>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetOfferList, 'params'=>array())); ?>');"><?php echo $this->__('Get offer list'); ?></button>
+        <!--<button type="button" class="scalable" onclick="setLocation('<?php //echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kSubmitProductPackage, 'params'=>array())); ?>');">Submit product package</button>-->
+        <!--<button type="button" class="scalable" onclick="setLocation('<?php //echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kSubmitOfferPackage, 'params'=>array())); ?>');">Submit offer package</button>-->
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetOrderList, 'params'=>array())); ?>');"><?php echo $this->__('Get order list'); ?></button>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetSellerInformation, 'params'=>array())); ?>');"><?php echo $this->__('Get seller information'); ?></button>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetModelList, 'params'=>array())); ?>');"><?php echo $this->__('Get model list'); ?></button>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetAllModelList, 'params'=>array())); ?>');"><?php echo $this->__('Get all model list'); ?></button>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetAllAllowedCategoryTree, 'params'=>array())); ?>');"><?php echo $this->__('Get all allowed category tree'); ?></button>
+        <button type="button" class="scalable" onclick="setLocation('<?php echo $this->getUrlByAccount('Cdiscount/Debug_Service/Operation', array('type'=>MDN_Cdiscount_Helper_Services::kGetAllowedCategoryTree, 'params'=>array())); ?>');"><?php echo $this->__('Get allowed category tree'); ?></button>
+    </fieldset>
+</div>
+
+
+
+
+

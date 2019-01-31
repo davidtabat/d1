@@ -1,0 +1,43 @@
+<?php
+    $categorySnippetsPrice  = $this->getCategorySnippetsPrice();
+    $categorySnippetsRating = $this->getCategorySnippetsRating();
+    if ($categorySnippetsPrice) {
+        $currencyCode           = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $ratingValue            = number_format($categorySnippetsRating/100*5, 1);
+        $ratingCount            = $this->getCategorySnippetsRatingCount();
+        $formattedPrice         = number_format($categorySnippetsPrice, 2);
+        $priceSymbol            = Mage::app()->getLocale()->currency($currencyCode)->getSymbol();
+        $currentCategoryName    = Mage::registry('current_category')->getName();
+    }
+?>
+<?php if ($categorySnippetsPrice):?>
+<div class="block block-list" itemtype="http://schema.org/Product" itemscope="">
+    <div class="block-title">
+        <strong>
+            <span itemprop="name"><?php echo $currentCategoryName ?></span>
+        </strong>
+    </div>
+    <div class="block-content">
+        <div id="m-snippets" class="category-sniippets">
+            <div class="minimal-price" itemprop="offers" itemscope="" itemtype="http://schema.org/AggregateOffer">
+                <span class="price-label"><?php echo Mage::helper('seo')->__('Minimal Price:') ?></span>
+                    <meta itemprop="priceCurrency"content="<?php echo $currencyCode ?>"/>
+                    <?php echo $priceSymbol ?><span class="price" itemprop="lowPrice"><?php echo $formattedPrice ?></span>
+            </div>
+            <?php if ($categorySnippetsRating):?>
+                <div class="ratings" itemtype="http://schema.org/AggregateRating" itemscope="" itemprop="aggregateRating">
+                    <div class="rating-box" style="float: left; margin-right: 5px;">
+                        <div class="rating" style="width: <?php echo $categorySnippetsRating ?>%"></div>
+                    </div>
+                    <div class="r-lnk">
+                        <span itemprop="ratingValue"><?php echo $ratingValue ?></span>
+                        <span> / </span>
+                        <span itemprop="reviewCount"><?php echo $ratingCount ?></span>
+                        <?php echo Mage::helper('seo')->__('Review(s)') ?>
+                    </div>
+                </div>
+            <?php endif?>
+        </div>
+    </div>
+</div>
+<?php endif?>

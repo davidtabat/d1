@@ -1,0 +1,105 @@
+<config>
+    <tabs>
+        <cmsmart_tab>
+            <label>Cmsmart Extensions</label>
+            <sort_order>1</sort_order>
+        </cmsmart_tab>
+    </tabs>
+    <sections>
+        <configsystem>
+            <label>Cmsmart Config System</label>
+            <tab>cmsmart_tab</tab>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <sort_order>1</sort_order>
+            <groups>
+                 <cmsmart_fontend>
+                    <label>Cmsmart Fontend Config</label>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enalbed_jquery>
+                            <label>Enabled Jquery</label>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enalbed_jquery>
+                        <enalbed_jquery_mirgate>
+                            <label>Enabled Jquery Migrate</label>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enalbed_jquery_mirgate>
+                        <enalbed_jquery_noconflig>
+                            <label>Enabled Jquery Noconflict</label>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>$j = jQuery.noConflict();</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enalbed_jquery_noconflig>
+                    </fields>
+                    <!-- Other Fields -->
+                </cmsmart_fontend>
+                <cmsmart_backend>
+                    <label>Cmsmart Backend Config</label>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enalbed_jquery>
+                            <label>Enabled Jquery</label>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enalbed_jquery>
+                        <enalbed_jquery_mirgate>
+                            <label>Enabled Jquery Migrate</label>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enalbed_jquery_mirgate>
+                        <enalbed_jquery_noconflig>
+                            <label>Enabled Jquery Noconflict</label>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>$j = jQuery.noConflict();</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enalbed_jquery_noconflig>
+                        <enabled_plugin_colorpicker>
+                            <label>Enabled Plugin Color Picker</label>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[&lt;frontend_model&gt;configsystem/adminhtml_system_config_form_field_color&lt;/frontend_model&gt;]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </enabled_plugin_colorpicker>
+                    </fields>
+                </cmsmart_backend>
+            </groups>
+        </configsystem>
+    </sections>
+</config>

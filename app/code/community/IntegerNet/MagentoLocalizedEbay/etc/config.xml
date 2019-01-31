@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Ebay edition package for Magento Localized
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedEbay
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+    <modules>
+        <IntegerNet_MagentoLocalizedEbay>
+            <version>0.1.0</version>
+        </IntegerNet_MagentoLocalizedEbay>
+    </modules>
+
+    <global>
+        <blocks>
+            <magento_localized_ebay>
+                <class>IntegerNet_MagentoLocalizedEbay_Block</class>
+            </magento_localized_ebay>
+            <adminhtml>
+                <rewrite>
+                    <page_head>IntegerNet_MagentoLocalizedEbay_Block_Adminhtml_Page_Head</page_head>
+                </rewrite>
+            </adminhtml>
+        </blocks>
+        <models>
+            <magento_localized_ebay>
+                <class>IntegerNet_MagentoLocalizedEbay_Model</class>
+            </magento_localized_ebay>
+        </models>
+        <helpers>
+            <magento_localized_ebay>
+                <class>IntegerNet_MagentoLocalizedEbay_Helper</class>
+            </magento_localized_ebay>
+        </helpers>
+    </global>
+
+    <adminhtml>
+        <events>
+            <magento_localized_form_save>
+                <observers>
+                    <magento_localized_ebay>
+                        <type>singleton</type>
+                        <class>magento_localized_ebay/observer</class>
+                        <method>magentoLocalizedFormSave</method>
+                    </magento_localized_ebay>
+                </observers>
+            </magento_localized_form_save>
+        </events>
+        <layout>
+            <updates>
+                <magento_localized_ebay>
+                    <file>magento_localized_ebay.xml</file>
+                </magento_localized_ebay>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <integernet_magentolocalizedebay>
+                    <files>
+                        <default>IntegerNet_MagentoLocalizedEbay.csv</default>
+                    </files>
+                </integernet_magentolocalizedebay>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <IntegerNet_MagentoLocalizedEbay after="Mage_Adminhtml">IntegerNet_MagentoLocalizedEbay_Adminhtml</IntegerNet_MagentoLocalizedEbay>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
+    <default>
+        <magento_localized>
+            <module_title_suffix> - ebay Edition</module_title_suffix>
+            <module_code_suffix>_ebay</module_code_suffix>
+            <module_url_override>http://www.ebay.de/</module_url_override>
+            <!--<logo_2_filename>magento_localized/logo_ebay.png</logo_2_filename>-->
+            <!--<logo_2_url>http://www.ebay.de/</logo_2_url>-->
+            <display_paypal_email_field>0</display_paypal_email_field>
+        </magento_localized>
+        <payment>
+            <billsafe>
+                <active>1</active>
+                <sandbox>1</sandbox>
+            </billsafe>
+            <billsafe_installment>
+                <sandbox>1</sandbox>
+            </billsafe_installment>
+            <express_checkout_required_express_checkout>
+                <sandbox_flag>1</sandbox_flag>
+            </express_checkout_required_express_checkout>
+            <paypal_express>
+                <title>PayPal</title>
+                <sort_order>20</sort_order>
+                <visible_on_cart>1</visible_on_cart>
+                <visible_on_product>0</visible_on_product>
+                <payment_action>Sale</payment_action>
+            </paypal_express>
+        </payment>
+        <billsafe>
+            <is_available>0</is_available>
+        </billsafe>
+    </default>
+</config>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Market
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <tabs>
+        <mageshops_tab module="nn_market">
+            <label>mageSHOPS.com</label>
+            <sort_order>150</sort_order>
+        </mageshops_tab>
+    </tabs>
+    <!--<sections>-->
+        <!--<nn_market translate="label" module="nn_market">-->
+            <!--<label>mageSHOPS Market</label>-->
+            <!--<sort_order>100</sort_order>-->
+            <!--<show_in_default>1</show_in_default>-->
+            <!--<show_in_website>1</show_in_website>-->
+            <!--<show_in_store>1</show_in_store>-->
+            <!--<tab>mageshops_tab</tab>-->
+            <!--<groups>-->
+                <!--<general>-->
+                    <!--<label>General</label>-->
+                    <!--<frontend_type>text</frontend_type>-->
+                    <!--<sort_order>10</sort_order>-->
+                    <!--<show_in_default>1</show_in_default>-->
+                    <!--<show_in_website>1</show_in_website>-->
+                    <!--<show_in_store>1</show_in_store>-->
+                    <!--<fields>-->
+                        <!--<module_version translate="label" module="nn_market">-->
+                            <!--<label>mageSHOPS.com Market Version</label>-->
+                            <!--<frontend_type>label</frontend_type>-->
+                            <!--<frontend_model>nn_market/version</frontend_model>-->
+                            <!--<sort_order>10</sort_order>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>1</show_in_store>-->
+                        <!--</module_version>-->
+                    <!--</fields>-->
+                <!--</general>-->
+            <!--</groups>-->
+        <!--</nn_market>-->
+    <!--</sections>-->
+</config>

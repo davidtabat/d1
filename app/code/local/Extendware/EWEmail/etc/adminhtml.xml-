@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<config>
+	<extendware>
+		<quickaccess>
+			<ewemail>
+                <resource>extendware/ewemail</resource>
+				<inherit>menu/system/children/tools/children/ewemail</inherit>
+				<title/>
+			</ewemail>
+		</quickaccess>
+	</extendware>
+	<menu>
+	    <system>
+	        <children>
+	            <tools translate="title" module="ewemail">
+	                <children>
+	                    <ewemail translate="title" module="ewemail">
+	                        <title>Email</title>
+	                        <sort_order>9999</sort_order>
+	                        <resource>extendware/ewemail</resource>
+	                        <children>
+	                        	<log translate="title" module="ewemail">
+			                        <title>Log</title>
+			                        <action>extendware_ewemail/adminhtml_log</action>
+			                        <resource>extendware/ewemail/log</resource>
+			                    </log>
+			                    <email translate="title" module="ewemail">
+			                        <title>E-mail</title>
+			                        <action>extendware_ewemail/adminhtml_email</action>
+			                        <resource>extendware/ewemail/email</resource>
+			                    </email>
+			                    <blacklist translate="title" module="ewemail">
+									<title>Blacklist</title>
+									<sort_order>3</sort_order>
+									<action>extendware_ewemail/adminhtml_blacklist</action>
+									<resource>extendware/ewemail/blacklist</resource>
+								</blacklist>
+	                        </children>
+	                    </ewemail>
+	                </children>
+	            </tools>
+	        </children>
+	    </system>
+	</menu>
+	<acl>
+		<resources>
+            <admin>
+                <children>
+                    <extendware translate="title" module="ewemail">
+                    	<title>Extendware</title>
+                    	<sort_order>0</sort_order>
+                        <children>
+                        	<ewemail translate="title" module="ewemail">
+                        		<title>E-Mail Plus</title>
+                        		<children>
+                        			<email translate="title">
+                        				<title>E-mail</title>
+			            			</email>
+			            			<log translate="title">
+                        				<title>Log</title>
+			            			</log>
+                        			<settings translate="title">
+                        				<title>Settings</title>
+                        				<children>
+				                            <main translate="title">
+				                                <title>Main</title>
+				                                <children>
+					                                <ewemail translate="title">
+						                                <title>General</title>
+						                            </ewemail>
+					                            </children>
+				                            </main>
+			                            </children>
+			            			</settings>
+			            		</children>
+			            	</ewemail>
+                        </children>
+                    </extendware>
+                </children>
+            </admin>
+        </resources>
+	</acl>
+</config>

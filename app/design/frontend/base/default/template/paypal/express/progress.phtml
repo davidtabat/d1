@@ -1,0 +1,174 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+/** @var $this Mage_Paypal_Block_Express_Review */
+?>
+
+<div class="block block-progress opc-block-progress">
+<div style="display:none">
+<?php echo $this->getMessagesBlock()->toHtml() ?>
+</div>
+<!-- /////////////////////////////////////////////////////////////// -->
+    <div class="block-title">
+        <strong><span style="text-align: center !important;"><?php echo $this->__('Review Order') ?></span></strong>
+    </div>
+    <div class="block-content">
+    <dl>
+    <?php if ($this->getShippingAddress()): ?>
+        <div id="billing-progress-opcheckout"><dt class="complete">
+              <?php echo $this->__('Shipping Information') ?>
+            </dt>
+            <dd class="complete">
+            <address>
+                <?php echo $this->renderAddress($this->getShippingAddress())?>
+    
+            </address>
+            </dd>
+        </div>
+    <?php endif; ?>
+            
+
+            
+         <div id="shipping_method-progress-opcheckout"><dt class="complete">
+             <?php echo $this->__('Shipping Method') ?>
+        </dt>
+        <dd class="complete">
+                 <?php if ($groups = $this->getShippingRateGroups()):?>
+                                <?php $currentRate = $this->getCurrentShippingRate(); ?>
+                                        <?php foreach ($groups as $code => $rates):?>
+                                        <?php foreach ($rates as $rate):?>
+                        
+                                        <?php echo $this->renderShippingRateOption($rate)?>
+                                    
+                                        <?php endforeach;?>
+                                        <?php endforeach;?>
+                            <?php endif;?>            
+            </dd>
+
+        </div>
+
+
+<!--         <div id="shipping_method-progress-opcheckout"><dt class="complete">
+             <?php //echo $this->__('Billing Information') ?>
+        </dt>
+         <dd class="complete">
+
+         </dd>
+        </div> -->
+
+        <div id="shipping_method-progress-opcheckout"><dt class="complete">
+             <?php echo $this->__('Payment Method') ?>
+        </dt>
+        <dd class="complete">
+
+            <?php echo $this->escapeHtml($this->getPaymentMethodTitle()) ?>
+                        
+            
+            </dd>
+
+        </div>
+            
+
+
+        </dl>
+    </div>
+</div>
+
+
+<!-- <div class="page-title">
+    <h1><?php //echo $this->__('Review Order') ?></h1>
+</div> -->
+
+<?php //if ($this->getShippingAddress()): ?>
+    
+    <!-- <div class="info-set col2-set opc">
+    <div class="step-title">
+        <h2 ><?php //echo $this->__('Shipping Information') ?></h2>
+        </div>
+        <div class="col-1">
+            <div class="box">
+                <div class="box-title">
+                    <h3><?php //echo $this->__('Shipping Address') ?><span class="separator"></h3>
+                </div>
+                <div class="box-content">
+                    <address><?php //echo $this->renderAddress($this->getShippingAddress())?></address>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="box">
+                <div class="box-title">
+                    <h3><?php //echo $this->__('Shipping Method') ?></h3>
+                </div>
+                <div class="box-content"> -->
+                <!--  <?php //if ($groups = $this->getShippingRateGroups()):?>
+          <?php //$currentRate = $this->getCurrentShippingRate(); ?>
+  
+        
+            <?php //if (!$currentRate):?>
+                <?php //echo $this->__('No shipping method selected') ?>
+            <?php //endif;?>
+            <?php //foreach ($groups as $code => $rates):?>
+                <?php //echo $this->escapeHtml($this->getCarrierName($code)) ?>
+                    <?php //foreach ($rates as $rate):?>
+                        <?php //echo ($currentRate === $rate) ?  $this->renderShippingRateOption($rate) : '' ;?>
+                            
+                        
+                    <?php //endforeach;?>
+        
+            <?php //endforeach;?>
+       
+<?php //endif; ?> -->
+                   
+                        
+                            <!-- <p><strong><?php //echo $this->getCurrentShippingRate(); ?></strong></p>
+                       
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+<?php //endif; ?>
+
+<!-- <div class="info-set col2-set opc ">
+<div class="step-title">
+    <h2 ><?php //echo $this->__('Billing Information') ?></h2>
+    </div>
+    <div class="col-1">
+        <div class="box">
+            <div class="box-title">
+                <h3><?php //echo $this->__('Payment Method') ?> <span class="separator">|</span>
+                    
+                </h3>
+            </div>
+            <div class="box-content">
+                <?php //echo $this->escapeHtml($this->getPaymentMethodTitle()) ?>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+

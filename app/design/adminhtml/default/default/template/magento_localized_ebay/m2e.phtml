@@ -1,0 +1,26 @@
+<?php
+/**
+ * Ebay edition package for Magento Localized
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedEbay
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+
+/**
+ * @see IntegerNet_MagentoLocalizedEbay_Block_Form
+ * @var $this IntegerNet_MagentoLocalizedEbay_Block_Form
+ */
+?>
+
+<div class="content-header">
+    <h3>
+        <?php echo Mage::helper('magento_localized_ebay')->__('Install M2E Pro') ?><br />
+    </h3>
+</div>
+<h3><?php echo $this->__('The M2E Pro module is not installed yet.') ?></h3>
+<p>
+    <?php echo $this->getButtonHtml($this->__('Install now'), 'window.location = \'' . $this->getUrl('adminhtml/magentoLocalizedEbay/installM2e') . '\'', 'save') ?>
+</p>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <SoulSurf_Import>
+            <active>true</active>
+            <codePool>local</codePool>
+        </SoulSurf_Import>
+    </modules>
+</config>

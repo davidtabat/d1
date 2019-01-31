@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+ <!-- 
+/**
+ * Advance FAQ Management Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   FME
+ * @package    Advance FAQ Management
+ * @author     Kamran Rafiq Malik <support@fmeextensions.com>
+ *                          
+ * 	       Asif Hussain <support@fmeextensions.com>
+ * 	       1 - Tabs - 09-04-2012
+ * 	       2 - Faqs Rating - 09-04-2012
+ * 	       1 - Faqs Themes - 09-04-2012
+ * 	       
+ * @copyright  Copyright 2012 © www.fmeextensions.com All right reserved
+ */
+ -->
+ 
+<config>
+    <tabs>
+        <FME translate="label" module="faqs">
+            <label>FME Extensions</label>
+            <sort_order>167</sort_order>
+        </FME>
+    </tabs>
+    <sections>
+        <faqs translate="label" module="faqs">
+            <label>Advance FAQ Management</label>
+            <tab>FME</tab>
+            <sort_order>201</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+			
+			<list translate="label comment" module="faqs">
+				<label>Faqs Page Settings</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>0</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+				<fields>
+					<enable_module translate="label">
+					    <label>Enable Module </label>
+					    <frontend_type>select</frontend_type>
+					    <source_model>adminhtml/system_config_source_yesno</source_model>
+					    <sort_order>0</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>enable Module</comment>
+				    </enable_module>
+				    <page_title translate="label">
+					    <label>Page Title</label>
+					    <frontend_type>text</frontend_type>
+					    <sort_order>0</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment></comment>
+				    </page_title>
+				    <identifier translate="label">
+					    <label>SEF URL Identifier</label>
+					    <frontend_type>text</frontend_type>
+					    <sort_order>1</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>(eg: domain.com/identifier)</comment>
+				    </identifier>
+				    <meta_keywords translate="label">
+					    <label>META Keywords</label>
+					    <frontend_type>textarea</frontend_type>
+					    <sort_order>2</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment></comment>
+				    </meta_keywords>
+				    <meta_description translate="label">
+					    <label>META Description</label>
+					    <frontend_type>textarea</frontend_type>
+					    <sort_order>3</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment></comment>
+				    </meta_description>
+				    <display_categories translate="label">
+					    <label>Display Topics</label>
+					    <frontend_type>select</frontend_type>
+					    <source_model>faqs/source_config_selectedall</source_model>
+					    <sort_order>4</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>display selected OR all topics on main page</comment>					
+				    </display_categories>
+				    <show_number_of_questions translate="label">
+					    <label>Number of Questions</label>
+					    <frontend_type>text</frontend_type>
+					    <sort_order>5</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>show number of selected questions with each category (0 for none)</comment>
+				    </show_number_of_questions>
+				    <enable_view_more translate="label">
+					    <label>Enable Read More </label>
+					    <frontend_type>select</frontend_type>
+					    <source_model>adminhtml/system_config_source_yesno</source_model>
+					    <sort_order>6</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>show read more link under category</comment>
+				    </enable_view_more>
+				    <enable_accordion translate="label">
+					    <label>Enable Accordion </label>
+					    <frontend_type>select</frontend_type>
+					    <source_model>adminhtml/system_config_source_yesno</source_model>
+					    <sort_order>7</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>enable accordion</comment>
+				    </enable_accordion>
+				    
+				    
+				    
+				    
+				</fields>
+			</list>
+			
+			<rating translate="label" module="faqs">
+				<label>Faqs Rating</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>1</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+				<fields>
+				    <enable translate="label">
+					    <label>Faqs Rating </label>
+					    <frontend_type>select</frontend_type>
+					    <source_model>adminhtml/system_config_source_enabledisable</source_model>
+					    <sort_order>0</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>enable/disable rating</comment>
+				    </enable>		    
+				    <allow_customers translate="label">
+					    <label>Allow Faqs Rating </label>
+					    <frontend_type>select</frontend_type>
+					    <source_model>faqs/source_config_ratingcustomers</source_model>
+					    <sort_order>1</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>allow faq rating for customers</comment>
+				    </allow_customers>
+				    
+				    
+				</fields>
+			    
+			</rating>
+			
+			<general translate="label" module="faqs">
+				<label>Faqs Block Settings</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>2</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+				<fields>
+					<faq_block translate="label">
+					        <label>FAQs Block</label>
+						<frontend_type>select</frontend_type>
+						<source_model>adminhtml/system_config_source_enabledisable</source_model>
+						<sort_order>0</sort_order>
+						<show_in_default>1</show_in_default>
+						<show_in_website>1</show_in_website>
+						<show_in_store>1</show_in_store>						    
+					</faq_block>
+					<faq_search_block translate="label">
+					        <label>FAQs Search Block</label>
+					        <frontend_type>select</frontend_type>
+					        <source_model>adminhtml/system_config_source_enabledisable</source_model>
+					        <sort_order>1</sort_order>
+					        <show_in_default>1</show_in_default>
+					        <show_in_website>1</show_in_website>
+					        <show_in_store>1</show_in_store>						    
+					</faq_search_block>
+					<faq_maxtopic translate="label">
+						<label>Maximum No of topics displayed in block </label>
+						<frontend_type>text</frontend_type>
+						<sort_order>2</sort_order>
+						<show_in_default>1</show_in_default>
+						<show_in_website>1</show_in_website>
+						<show_in_store>1</show_in_store>
+					</faq_maxtopic>    		
+				</fields>
+			</general>
+			
+			<themes translate="label comment" module="faqs">	
+				<label>Faqs Themes</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>3</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+				<fields>				    
+				    <select_theme translate="label">
+					<label>Select Theme</label>
+					<frontend_type>select</frontend_type>
+					<source_model>faqs/source_config_themeoptions</source_model>
+					<sort_order>0</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+				    </select_theme>
+				    <selected_image translate="label">
+					<label>Theme</label>
+					<frontend_type>imageviewerfaqs</frontend_type>
+					<sort_order>1</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+				    </selected_image>
+				        
+				</fields>
+			</themes>
+			
+			<seo translate="label comment" module="faqs">
+				<label>Search Engine Optimizations</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>4</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+				<fields>
+				    <url_suffix translate="label">
+					    <label>URL Suffix</label>
+					    <frontend_type>text</frontend_type>
+					    <sort_order>0</sort_order>
+					    <show_in_default>1</show_in_default>
+					    <show_in_website>1</show_in_website>
+					    <show_in_store>1</show_in_store>
+					    <comment>(eg: .html)</comment>
+				    </url_suffix>
+				</fields>
+			</seo>         
+				
+				
+            </groups>                        
+        </faqs>
+    </sections>
+</config>

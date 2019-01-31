@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_Imgupload
+ */
+-->
+<config>
+    <translate>
+        <modules>
+            <Amasty_Imgupload>
+                <files>
+                    <default>Amasty_Imgupload.csv</default>
+                </files>
+            </Amasty_Imgupload>
+        </modules>
+    </translate>
+    <acl>
+        <resources>
+            <all>
+                <title>Allow Everything</title>
+            </all>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <amimgupload translate="title" module="amimgupload">
+                                        <title>Image Upload</title>
+                                    </amimgupload>
+                                </children>
+                            </config>
+                        </children>
+                    </system> 
+                 </children>
+            </admin> 
+        </resources>
+    </acl>
+</config>

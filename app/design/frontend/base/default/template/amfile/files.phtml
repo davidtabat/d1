@@ -1,0 +1,31 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+?>
+<?php
+$_title = $this->getBlockTitle();
+?>
+
+<div class="box-collateral" id="amfile-list">
+    <?php if ($_title): ?>
+    <h2><?php echo $_title ?></h2>
+    <?php endif ?>
+
+    <?php foreach ($this->getFiles() as $file): ?>
+        <?php
+        /**
+         * @var Amasty_File_Model_File $file
+         */
+        $file = $file;?>
+        <?php $fileLink = $file->getFileUrl() ? $this->getUrl('amfile_front/file/download', array('file_id' => $file->getId())) : $file->getFileLink()?>
+        <a class='file' href="<?php echo $fileLink?>" target="_blank">
+            <?php if ($icon = $file->getIcon()):?>
+                <img src="<?php echo $icon?>" />
+            <?php endif?>
+            <span><?php echo $file->title()?> (<?php echo $file->getFullFileSize();?>) </span>
+        </a>
+    <?php endforeach ?>
+</div>

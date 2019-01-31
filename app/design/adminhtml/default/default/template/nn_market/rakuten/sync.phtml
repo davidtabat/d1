@@ -1,0 +1,198 @@
+<?php
+/**
+ * @category    Mageshops
+ * @package     Mageshops_Rakuten
+ * @license     http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright   mageSHOPS.com 2014 - 2015
+ * @author      Taras Kapushchak and Viktors Stepucevs & Kristaps Rjabovs with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+?>
+<form action="<?php echo $this->getActionUrl() ?>" method="post" id="rakuten_sync_form">
+    <input type="hidden" name="form_key" value="<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>"/>
+    <div class="content-header">
+        <h3 class="icon-head head-products"><?php echo $this->__('Rakuten Synchronization') ?></h3>
+    </div>
+    <?php if ($this->cronEnabled()): ?>
+        <div class="entry-edit">
+            <div class="entry-edit-head">
+                <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Cron status') ?></h4>
+            </div>
+            <fieldset id="rakuten-cron-status">
+                <?php if ($this->isCronRunning()): ?>
+                    <div class="notification-global notification-global-notice">
+                        <p><strong class="label"><?php echo $this->__('Last cron synchronization') ?>:</strong>
+                            <?php echo $this->getLastCronRun() ?></p>
+                        <p><strong class="label"><?php echo $this->__('Next scheduled run') ?>:</strong>
+                            <?php echo $this->getNextCronRun() ?></p>
+                        <?php if ($this->getCreateCsv() && $this->isCsvFileExists()): ?>
+                            <p><strong class="label"><?php echo $this->__('CSV generated at') ?>:</strong>
+                                <?php echo $this->getCsvFileMtime() ?></p>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="notification-global">
+                        <p><?php echo $this->__('It seems, cron is not settled properly in your magento installation.') ?></p>
+                    </div>
+                <?php endif; ?>
+            </fieldset>
+        </div>
+    <?php endif; ?>
+
+    <div class="notification-global notification-global-notice">
+        <p><?php echo $this->__('Synchronize products only from selected categories') ?>: <?php echo $this->isProductsFromCategories() ?></p>
+        <p><?php echo $this->__('Products to synchronize') ?>: <?php echo $this->getProductsCount() ?></p>
+    </div>
+
+    <?php if ($this->getMinExecutionTime() != 1800 && $this->getMemoryLimit() < 536870912): ?>
+        <div class="notification-global">
+            <?php if ($this->getMinExecutionTime() != 1800): ?>
+                <p><strong><?php echo $this->__('If you recieve the message "Process is running out of memory. Stopping.":') ?></strong></p>
+                <p><?php echo $this->__('Set PHP max_execution_time above %s (Contact your hosting provider if you don\'t know how to do it)', $this->getMinExecutionTime()) ?></p>
+            <?php endif; ?>
+            <?php if ($this->getMemoryLimit() < 536870912): ?>
+                <p><strong><?php echo $this->__('Process is reaches system execution time limit. Stopping.":') ?></strong></p>
+                <p><?php echo $this->__('Set PHP memory_limit above 512M (Contact your hosting provider if you don\'t know how to do it)') ?></p>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('State of Rakuten Synchronization') ?></h4>
+        </div>
+        <fieldset id="sync_fields">
+            <button onclick="startSync();
+                    return false" class="scalable save" type="button"><span><?php echo $this->__('Start Synchronization Now') ?></span></button>
+            <button onclick="clearSync();
+                    return false" class="scalable save" type="button"><span><?php echo $this->__('Clear Synchronization State') ?></span></button>
+            <button onclick="clearAll();
+                    return false" class="scalable save" type="button"><span><?php echo $this->__('Delete All Synchronization Data') ?></span></button>
+
+            <?php if ($this->getCreateCsv()): ?>
+                <button onclick="downloadCsv();
+                        return false" class="scalable save" type="button"<?php if (!$this->isCsvFileExists()) echo ' disabled="disabled" style="background:gray;"' ?>><span><?php echo $this->__('Download CSV') ?></span></button>
+                    <?php endif; ?>
+            <div id="sync-results" style="margin:1em 0;"></div>
+            <div style="border:1px solid #ccc; width:100%; height:20px; overflow:none; background:#eee;">
+                <div id="sync-progressor" style="background:#07c; width:0%; height:100%;"></div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script>
+    function startSync() {
+        var eId = 'sync', oRequest;
+        var oOptions = {
+            method: 'post',
+            onSuccess: function (oXHR) {
+                try {
+                    var result = oXHR.responseText.evalJSON();
+                    if (result.status === 'success') {
+                        displayExportResult(eId, result.message, result.time);
+                        document.getElementById(eId + '-progressor').style.width = result.percent * 100 + '%';
+                        checkState();
+                    } else {
+                        displayExportErrors(eId, '<?php echo $this->__('An error occurred') ?>: ' + result.message);
+                    }
+                } catch (e) {
+                    displayExportErrors(eId, '<?php echo $this->__('An error occurred') ?>: ' + oXHR.responseText);
+                }
+            },
+            onFailure: function (oXHR) {
+                displayExportErrors(eId, '<?php echo $this->__('An error occurred') ?>: ' + oXHR.statusText);
+            }
+        };
+        oRequest = new Ajax.Request('<?php echo $this->getUrl('*/*/startSync') ?>', oOptions);
+    }
+
+    function checkState() {
+        var eId = 'sync';
+        var oOptions = {
+            method: 'post',
+            onCreate: function (request) {
+                Ajax.Responders.unregister(varienLoaderHandler.handler);
+            },
+            onSuccess: function (oXHR, oJson) {
+                try {
+                    var result = oXHR.responseText.evalJSON();
+                    if (result.status == 'success') {
+                        displayExportResult(eId, result.message, result.time, result.sync_time);
+                        if (result.locked == 1) {
+                            document.getElementById(eId + '-progressor').style.width = result.percent * 100 + '%';
+                            startTimer();
+                        }
+                        if (result.locked == 0) {
+                            displayExportResult(eId, result.message, result.time);
+                            document.getElementById(eId + '-progressor').style.width = result.percent * 100 + '%';
+                        }
+                    } else {
+                        displayExportErrors(eId, '<?php echo $this->__('An error occurred') ?>: ' + result.message);
+                    }
+                } catch (e) {
+                    displayExportErrors(eId, '<?php echo $this->__('An error occurred') ?>: ' + oXHR.responseText);
+                }
+            },
+            onFailure: function (oXHR, oJson) {
+                displayExportErrors(eId, '<?php echo $this->__('An error occurred') ?>: ' + oXHR.statusText);
+            }
+        };
+        var oRequest = new Ajax.Request('<?php echo $this->getUrl('*/*/checkState') ?>', oOptions);
+    }
+
+    function displayExportResult(eId, sText, time, sync_time) {
+        var date = new Date(time * 1000);
+        var e = document.getElementById(eId + '-results');
+        var msg = date.toLocaleString() + ' --- ' + sText;
+        if (sync_time) {
+            msg += ' --- sync is running: ' + sync_time;
+        }
+        e.innerHTML = msg;
+    }
+
+    function displayExportErrors(eId, sText, clear) {
+        if (typeof clear === 'undefined') {
+            clear = false;
+        }
+        var e = document.getElementById(eId + '-errors');
+        if (clear === true) {
+            e.innerHTML = sText;
+        } else {
+            var content = e.innerHTML;
+            if (content.length > 0) {
+                content += '<br>';
+            }
+            e.innerHTML = content + sText;
+        }
+    }
+
+    function clearSync() {
+        window.location = '<?php echo $this->getUrl('*/*/clearSync') ?>';
+    }
+
+    function clearAll() {
+        var answer = confirm('<?php echo $this->__('This action will remove all products from Rakuten and synchronization data. Are you sure?') ?>');
+        
+        if (answer === true) {
+            Ajax.Responders.register(varienLoaderHandler.handler);
+            
+            new Ajax.Request('<?php echo $this->getUrl('*/*/clearAll') ?>', {
+                method: 'post',
+                onSuccess: function (oXHR, Response) {
+                    window.location = Response;
+                }
+            });
+        }
+    }
+
+    function downloadCsv() {
+        window.location = '<?php echo $this->getCsvFile() ?>';
+    }
+
+    function startTimer() {
+        setTimeout(function () {
+            checkState();
+        }, 1000);
+    }
+
+    checkState();
+</script>

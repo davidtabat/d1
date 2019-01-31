@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <tabs>
+        <sttl_extension translate="label" module="permissions">
+            <label>STTL Extension</label>
+            <sort_order>0</sort_order>
+        </sttl_extension>
+    </tabs>
+	<sections>
+        <sttl_tab translate="label" module="permissions">
+            <label>Multi Admin with Category Management</label>
+            <tab>sttl_extension</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>     
+			<groups>
+                <sttlpermissions translate="label">
+                    <label>Multi Admin with Category Management</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>    
+					<fields>
+						<enabled translate="Display All Products">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+					</fields>
+                </sttlpermissions>
+            </groups>
+        </sttl_tab>
+    </sections>     
+</config>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Market
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <menu>
+        <nn_market translate="title" module="nn_market">
+            <title>mageSHOPS Market</title>
+            <sort_order>85</sort_order>
+        </nn_market>
+    </menu>
+    <acl>
+        <resources>
+            <all><title>Allow Everything</title></all>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <nn_market>
+                                        <title>mageSHOPS.com Market</title>
+                                    </nn_market>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

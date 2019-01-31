@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+-->
+<config>
+    <api>
+        <resources>
+            <amasty_file translate="title" module="amfile">
+                <title>Amasty File API</title>
+                <model>amfile/api</model>
+                <acl>amfile</acl>
+                <methods>
+                    <getAttachments translate="title" module="amfile">
+                        <title>Get attachments for a product</title>
+                        <acl>amfile/get_attachments</acl>
+                    </getAttachments>
+                    <addAttachments translate="title" module="amfile">
+                        <title>Add attachments for a product</title>
+                        <acl>amfile/add_attachments</acl>
+                    </addAttachments>
+                    <deleteAttachments translate="title" module="amfile">
+                        <title>Delete attachments for a product</title>
+                        <acl>amfile/delete_attachments</acl>
+                    </deleteAttachments>
+                </methods>
+                <faults module="amfile">
+                    <file_not_uploaded>
+                        <code>100</code>
+                        <message>File haven't been uploaded</message>
+                    </file_not_uploaded>
+                    <incorrect_base64>
+                        <code>101</code>
+                        <message>File content must be in base64</message>
+                    </incorrect_base64>
+                    <file_not_found>
+                        <code>102</code>
+                        <message>File not found</message>
+                    </file_not_found>
+                </faults>
+            </amasty_file>
+        </resources>
+        <resources_alias>
+        </resources_alias>
+        <v2>
+            <resources_function_prefix>
+                <amasty_file>amastyFile</amasty_file>
+            </resources_function_prefix>
+        </v2>
+        <acl>
+            <resources>
+                <amfile translate="title" module="amfile">
+                    <title>Amasty File</title>
+                    <sort_order>1</sort_order>
+                    <get_attachments translate="title" module="amfile">
+                        <title>Get attachments for a product</title>
+                    </get_attachments>
+                    <add_attachments translate="title" module="amfile">
+                        <title>Add attachments to a product</title>
+                    </add_attachments>
+                    <delete_attachments translate="title" module="amfile">
+                        <title>Drop attachments from a product</title>
+                    </delete_attachments>
+                </amfile>
+            </resources>
+        </acl>
+    </api>
+</config>

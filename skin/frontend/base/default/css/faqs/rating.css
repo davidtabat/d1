@@ -1,0 +1,43 @@
+@charset "utf-8";
+/* CSS Document */
+
+.rating_container a {
+    background-image: url("../../images/prodfaqs/rating.png");
+    border: 0 none;
+    display: block;
+    float: left;
+    height: 25px;
+    width: 25px;
+}
+
+
+.rating_container a.rating_on {
+    background-position: 0 -50px;
+}
+
+
+.rating_container a.rating_half {
+    background-position: 0 -25px;
+}
+
+.thread_rating_container a {
+    background-image: url("../../images/prodfaqs/rating.png");
+    border: 0 none;
+    display: block;
+    float: left;
+    height: 25px;
+    width: 25px;
+}
+
+.thread_rating_container a.rating_on {
+    background-position: 0 -50px;
+}
+
+
+.thread_rating_container a.rating_half {
+    background-position: 0 -25px;
+}
+
+
+.rating_dv{ /*height:35px;*/ }
+

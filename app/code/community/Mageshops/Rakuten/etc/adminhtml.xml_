@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Rakuten
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <menu>
+        <nn_market>
+            <children>
+                <rakuten translate="title" module="rakuten">
+                    <title>Rakuten.de</title>
+                    <sort_order>100</sort_order>
+                    <children>
+                        <categories translate="title" module="rakuten">
+                            <title>Categories</title>
+                            <sort_order>100</sort_order>
+                            <action>adminhtml/category/index</action>
+                        </categories>
+                        <products translate="title" module="rakuten">
+                            <title>Products</title>
+                            <sort_order>200</sort_order>
+                            <action>adminhtml/product/index</action>
+                        </products>
+                        <mapping translate="title" module="rakuten">
+                            <title>Product attribute mapping</title>
+                            <sort_order>250</sort_order>
+                            <action>adminhtml/sync/mapping</action>
+                        </mapping>
+                        <orders translate="title" module="rakuten">
+                            <title>Orders</title>
+                            <sort_order>300</sort_order>
+                            <action>adminhtml/order/index</action>
+                        </orders>
+                        <sync translate="title" module="rakuten">
+                            <title>Synchronization state</title>
+                            <sort_order>400</sort_order>
+                            <action>adminhtml/sync/index</action>
+                        </sync>
+                    </children>
+                </rakuten>
+            </children>
+        </nn_market>
+    </menu>
+    <acl>
+        <resources>
+            <all><title>Allow Everything</title></all>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <rakuten>
+                                        <title>mageSHOPS.com Rakuten</title>
+                                    </rakuten>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

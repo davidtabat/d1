@@ -1,0 +1,97 @@
+<?php
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+
+/**
+ * Installation start page
+ *
+ * @see Mage_Install_Block_Begin
+ * @var $this Mage_Install_Block_Begin
+ */
+?>
+<div class="page-head">
+    <h3><?php echo $this->__("Welcome to Magento's Installation Wizard") ?>!</h3>
+</div>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<?php if(count($this->getMessagesBlock()->getMessages())==0): ?>
+<form action="<?php echo $this->getPostUrl() ?>" method="post" id="begin-form">
+
+<?php if (!Mage::getSingleton('install/session')->getIsCountrySelected()): ?>
+<div>
+    <h4><?php echo $this->__('Select your edition:') ?></h4>
+    <ul id="magento_localization">
+        <?php foreach ((array)Mage::getSingleton('install/config')->getNode('magento_localized/editions') as $editionCode => $editionData): ?>
+            <?php $editionData = (array)$editionData ?>
+        <li>
+            <label for="edition_<?php echo $editionCode ?>">
+                <img src="<?php echo $this->getSkinUrl($editionData['image_filename']) ?>" alt="<?php echo $editionData['name'] ?>" /><br />
+                <?php echo $editionData['name'] ?>
+            </label>
+            <input type="radio" name="edition" class="validate-one-required-by-name" id="edition_<?php echo $editionCode ?>" value="<?php echo $editionCode ?>" />
+        </li>
+        <?php endforeach ?>
+    </ul>
+
+    <div class="clear"></div>
+
+    <input type="hidden" name="ebay_edition" value="1" />
+
+</div>
+<script type="text/javascript">
+    //<![CDATA[
+    $('magento_localization').on('change', 'input', function(event) {
+        $$('#magento_localization li').each(function(liItem) {
+            liItem.select('input').each(function(inputElement) {
+                if (inputElement.checked) {
+                    liItem.addClassName('selected');
+                } else {
+                    liItem.removeClassName('selected');
+                }
+            });
+        });
+    });
+    //]]>
+</script>
+
+<?php endif ?>
+
+<div style="height:20em; border:1px solid #ccc; margin-bottom:8px; padding:5px; background:#fff; overflow: auto; overflow-x:hidden; overflow-y:scroll;">
+<?php echo $this->getLicenseHtml() ?>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+function changeSubmitStatus(obj) {
+    $('submitButton').disabled = !obj.checked;
+    if(obj.checked){
+        $('submitButton').setStyle({'background':'#f18200','borderColor':'','cursor':'pointer','color':'#C73615'});
+    }
+    else{
+        $('submitButton').setStyle({'background':'#bbb','borderColor':'#bbb','cursor':'default','color':'white'});
+    }
+}
+//]]>
+</script>
+    <p>
+        <input type="checkbox" name="agree" value="1" id="agree" onclick="changeSubmitStatus(this)" class="checkbox validate-select" />
+        <label for="agree"><?php echo $this->__('I agree to the above terms and conditions.') ?></label>
+    </p>
+    <div class="button-set">
+        <button class="form-button" type="submit" id="submitButton" disabled="disabled"><span><?php echo $this->__('Continue') ?></span></button>
+    </div>
+</form>
+<script type="text/javascript">
+//<![CDATA[
+    changeSubmitStatus($('agree'));
+
+    var beginForm = new VarienForm('begin-form');
+//]]>
+</script>
+<?php endif ?>

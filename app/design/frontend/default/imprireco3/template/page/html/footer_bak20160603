@@ -1,0 +1,111 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<div class="footer-container">
+    <div class="footer">
+        <?php //echo $this->getChildHtml() ?>        
+    <div class="footerMenu">
+        <div class="f-col1">
+            <h1><?php echo $this->__('Imprimantes'); ?></h1>
+            <ul id="type_list">
+                <li><a href="/acheter-imprimante-occasion"><?php echo $this->__('Laser Noir & Blanc'); ?></a></li>
+                <li><a href="/achat-imprimante-occasion-couleur"><?php echo $this->__('Laser Couleur'); ?></a></li>
+            </ul>	
+		
+        </div>
+        <div class="f-col2">
+            <h1><?php echo $this->__('Utilisateur'); ?></h1>
+            <ul>
+                <li><a href="/checkout/cart/"><?php echo $this->__('Panier'); ?></a></li>
+                <li><a href="/customer/account/"><?php echo $this->__('Mon compte'); ?></a></li>
+                <li><a href="/sales/order/history/"><?php echo $this->__('Historique de vos commandes'); ?></a></li>
+                <li>
+                    <?php if (! Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+                        <a href="<?php echo Mage::helper('customer')->getLoginUrl(); ?>"><?php echo $this->__('Connexion') ?></a>
+                    <?php else: ?>
+                        <a href="<?php echo Mage::helper('customer')->getLogoutUrl(); ?>"><?php echo $this->__('Deconnexion') ?></a>
+                    <?php endif; ?>
+                </li>						
+            </ul>   
+        </div>
+        <div class="f-col3">
+            <h1><?php echo $this->__('Aide'); ?></h1>
+            <ul>
+                <li><a href="/contacts/"><?php echo $this->__('Contact'); ?></a></li>
+                <li><a href="/paiement-expedition/"><?php echo $this->__('Paiement et Expédition'); ?></a></li>
+            
+            </ul>
+			
+        </div>
+        <div class="f-col4">
+            <div class="box-contact">
+                <h1><?php echo $this->__('Contact'); ?></h1>
+                <p style="text-align: left;"><?php echo $this->__('Tél : 0049 7071 – 966 9023'); ?><br><?php echo $this->__('E-Mail:'); ?> <a style="color: #fff;" href="mailto:contact@imprireco.fr"><?php echo $this->__('contact@imprireco.fr'); ?></a></p> 
+            </div>
+			
+			            <h1 style="margin-top: 20px; padding-bottom: 10px;"><?php echo $this->__('ImpriReco'); ?></h1>
+            <ul id="unittype_list">
+                               <li><a href="/politique-de-confidentialite"><?php echo $this->__('Protection des données personnelles'); ?></a></li>
+                <li><a href="/conditions_generales/"><?php echo $this->__('Conditions générales de ventes'); ?></a></li>
+                <li><a href="/revocation/"><?php echo $this->__('Droit de rétraction'); ?></a></li>
+                <li><a href="/mentions-legales/"><?php echo $this->__('Mentions légales'); ?></a></li>	
+            </ul>	
+			
+			
+            <div style="padding-top: 15px;">
+			<?php /*
+            <h1><?php echo $this->__('Zahlungsarten'); ?></h1> 
+            <ul>
+                <li>
+                    <div class="box-payment-methods">
+                        <ul>
+                            <li><?php echo $this->__('PayPal'); ?></li>
+                            <!--<li>
+                                    <a href="http://www.kopiererhaus.de/zahlung/#rechnung">Rechnung (mit BillSAFE)</a>
+                            </li>-->
+                            <li><?php echo $this->__('Vorkasse'); ?></li>
+                            <!--<li>
+                                    <a href="http://www.kopiererhaus.de/zahlung/#rechnung">Rechnung <span style="font-size: 10px;">(nur für Schulen, Behörden, öffentl. Einrichtungen)</span></a>
+                            </li>-->
+                            <li><?php echo $this->__('Bar bei Abholung'); ?></li>
+                            <li><?php echo $this->__('Nachnahme'); ?></li>
+                        </ul>
+                    </div>
+                </li>
+                <!--<li style="padding-top: 15px;"><a href="http://www.kopiererhaus.de/zahlung/">Zu den Zahlungsarten</a></li>-->
+            </ul>
+			*/ ?>
+			
+			
+                </div>
+                   
+                </div>
+            </div>
+        </div>
+    <div class="copyright">
+        <address><?php echo $this->getCopyright() ?></address>
+    </div>
+</div>

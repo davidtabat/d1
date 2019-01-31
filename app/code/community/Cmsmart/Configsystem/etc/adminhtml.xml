@@ -1,0 +1,41 @@
+<config>
+    <menu>
+        <cmsmart>
+            <title>Cmsmart Extensions</title>
+            <sort_order>1</sort_order>
+            <children>
+                <configsystem>
+                    <title>Cmsmart Config System</title>
+                    <sort_order>1</sort_order>
+                     <action>adminhtml/system_config/edit/section/configsystem</action>
+                </configsystem>
+                <!-- Other extension menu -->
+            </children>
+        </cmsmart>
+    </menu>
+
+    <acl>
+        <resources>
+            <admin>
+                <children>
+
+                    <cmsmart>
+                        <title>Cmsmart Extension</title>
+                    </cmsmart>
+
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <configsystem>
+                                        <title>Configsystem</title>
+                                    </configsystem>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

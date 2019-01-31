@@ -1,0 +1,122 @@
+<layout>
+
+    <calculateshipping_skeleton>
+
+        <reference name="head">
+
+         <!--    <action method="addJs">
+                <script>cmsmart/calculateshipping/jquery/jquery-1.10.2.min.js</script>
+            </action>
+
+            <action method="addJs">
+                <script>cmsmart/calculateshipping/jquery/jquery-migrate-1.2.1.min.js</script>
+            </action>
+
+            <action method="addJs">
+                <script>cmsmart/calculateshipping/jquery/jquery-noconflict.js</script>
+            </action>
+ -->
+            <!--<action method="addJs">-->
+                <!--<script>cmsmart/calculateshipping/fancybox/jquery.fancybox.pack.js</script>-->
+            <!--</action>-->
+
+            <action method="addJs">
+                <script>cmsmart/calculateshipping/magnific/jquery.magnific-popup.js</script>
+            </action>
+
+            <action method="addJs">
+                <script>cmsmart/calculateshipping/nicescroll/jquery.nicescroll.js</script>
+            </action>
+
+            <!--<action method="addCss">-->
+                <!--<stylesheet>css/cmsmart/calculateshipping/fancybox/jquery.fancybox.css</stylesheet>-->
+            <!--</action>-->
+
+            <action method="addCss">
+                <stylesheet>cmsmart/calculateshipping/magnific/magnific-popup.css</stylesheet>
+            </action>
+
+            <action method="addCss">
+                <stylesheet>cmsmart/calculateshipping/styles.css</stylesheet>
+            </action>
+
+        </reference>
+
+        <block type="calculateshipping/form" name="calculateshipping.form" as="calculateshipping.form"
+               template="cmsmart/calculateshipping/form.phtml"/>
+    </calculateshipping_skeleton>
+
+
+    <calculateshipping_left>
+        <update handle="calculateshipping_skeleton"/>
+
+        <reference name="left">
+            <action method="insert">
+                <block>calculateshipping.form</block>
+            </action>
+        </reference>
+    </calculateshipping_left>
+
+
+    <calculateshipping_right>
+        <update handle="calculateshipping_skeleton"/>
+
+        <reference name="right">
+            <action method="insert">
+                <block>calculateshipping.form</block>
+            </action>
+        </reference>
+    </calculateshipping_right>
+
+
+    <calculateshipping_popup>
+        <update handle="calculateshipping_skeleton"/>
+
+        <reference name="product.info">
+            <action method="insert">
+                <block>calculateshipping.form</block>
+            </action>
+        </reference>
+    </calculateshipping_popup>
+
+    <calculateshipping_category>
+        <update handle="calculateshipping_skeleton"/>
+
+        <reference name="product_list">
+            <action method="insert">
+                <block>calculateshipping.form</block>
+            </action>
+        </reference>
+    </calculateshipping_category>
+
+
+    <calculateshipping_index_calculate>
+        <block type="calculateshipping/result" name="calculateshipping.result"
+               template="cmsmart/calculateshipping/result.phtml" output="toHtml"/>
+    </calculateshipping_index_calculate>
+
+    <!--<catalog_category_default>-->
+        <!--<reference name="product_list">-->
+            <!--<action method="setTemplate">-->
+                <!--<template>cmsmart/calculateshipping/product/list.phtml</template>-->
+            <!--</action>-->
+        <!--</reference>-->
+    <!--</catalog_category_default>-->
+
+    <!--<catalog_category_layered>-->
+        <!--<reference name="product_list">-->
+            <!--<action method="setTemplate">-->
+                <!--<template>cmsmart/calculateshipping/product/list.phtml</template>-->
+            <!--</action>-->
+        <!--</reference>-->
+    <!--</catalog_category_layered>-->
+
+    <!--<catalog_product_view>-->
+        <!--<reference name="product.info">-->
+            <!--<action method="setTemplate">-->
+                <!--<template>cmsmart/calculateshipping/product/view.phtml</template>-->
+            <!--</action>-->
+        <!--</reference>-->
+    <!--</catalog_product_view>-->
+
+</layout>

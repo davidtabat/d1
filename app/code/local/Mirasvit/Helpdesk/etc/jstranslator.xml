@@ -1,0 +1,14 @@
+<jstranslator>
+    <update_button_string translate="message" module="helpdesk">
+        <message>Update</message>
+    </update_button_string>
+    <update_continue_button_string translate="message" module="helpdesk">
+        <message>Update And Continue Edit</message>
+    </update_continue_button_string>
+    <send_button_string translate="message" module="helpdesk">
+        <message>Send</message>
+    </send_button_string>
+    <send_continue_button_string translate="message" module="helpdesk">
+        <message>Send And Continue Edit</message>
+    </send_continue_button_string>
+</jstranslator>

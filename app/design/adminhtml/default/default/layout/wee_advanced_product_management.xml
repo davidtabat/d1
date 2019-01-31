@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <adminhtml_catalog_product_management_index>
+        <reference name="content">
+            <remove name="products_list" />
+            <block type="wee_advanced_product_management_adminhtml/catalog_product" name="product_management" template="wee_advanced_product_management/catalog/product/management.phtml">
+                <block type="adminhtml/catalog_product" name="products_grid">
+                    <block type="adminhtml/store_switcher" name="store_switcher" as="store_switcher">
+                        <action method="setUseConfirm"><params>0</params></action>
+                    </block>
+                </block>
+            </block>
+            <block type="wee_advanced_product_management/adminhtml_catalog_category_tree" name="category_tree" />
+        </reference>
+    </adminhtml_catalog_product_management_index>
+</layout>

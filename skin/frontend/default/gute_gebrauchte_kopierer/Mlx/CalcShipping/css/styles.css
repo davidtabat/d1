@@ -1,0 +1,12 @@
+.calc-shipping{margin: 20px 0;}
+.calc-shipping .item{margin-bottom: 10px;}
+.calc-shipping .item .label{margin-bottom: 0px; font-weight: bold;}
+.calc-shipping .item .input{}
+.calc-shipping .item #country{width: 126px;}
+
+.calc-shipping .sp-methods{margin-top: 15px;}
+.calc-shipping .sp-methods dd{margin-bottom: 10px;}
+.calc-shipping .sp-methods dd ul{margin-left: 15px;}
+.calc-shipping .sp-methods dd ul li{margin-top:3px;}
+.calc-shipping .sp-methods dd ul li.error-msg{color: red;}
+.calc-shipping .sp-methods{border:1px solid #d6d6d6;padding:10px;}

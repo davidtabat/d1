@@ -1,0 +1,100 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+/**
+ * Top menu for store
+ *
+ * @see Mage_Page_Block_Html_Topmenu
+ */
+?>
+<?php $_menu = $this->getHtml('level-top') ?>
+<?php if($_menu): ?>
+<div class="nav-container">
+    <ul id="nav">
+        <?php echo $_menu ?>
+    </ul>
+    <!--<div class="nav-arrow" style="display: none;"></div>-->
+</div>
+<?php endif ?>
+
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+		var navCont=$(".nav-container");
+		var navArrow=$(".nav-arrow",navCont);
+		var active=$("ul#nav li.active");
+		var arrowTopOffset=12;
+		var arrowLeftOffset=15;
+		if(navArrow.length==0){
+			navArrow=$("<div />").attr("class","nav-arrow");
+		navArrow.hide();navCont.append(navArrow);
+		active.each(
+			function(){var a=$("a",this);navArrow.css("top",a.offset().top-navCont.offset().top-arrowTopOffset)
+navArrow.css("left",a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2))
+navArrow.show();});
+	}
+		else{
+			$("ul#nav li.first").each(function(){
+				var a=$("a",this);
+navArrow.css("top",a.offset().top-navCont.offset().top-arrowTopOffset)
+navArrow.css("left",a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2))
+navArrow.hide()
+});
+}
+
+
+$("ul#nav li").click(function(){
+	var a=$("a",this);setLocation(a.attr("href"));
+});
+$("ul#nav li").hover(function(){
+	navArrow.stop();var a=$("a",this);var topPos=a.offset().top-navCont.offset().top-arrowTopOffset;
+	var leftPos=a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2);
+	if(navArrow.is(":visible")){
+		navArrow.stop().animate({top:topPos,left:leftPos,opacity:1},300);
+}
+	else{
+		navArrow.css("top",topPos);
+		navArrow.css("left",leftPos);navArrow.fadeIn();
+	}
+},
+		function(){
+			if(active.length!=0){
+			var a=$("a",active);
+		var topPos=a.offset().top-navCont.offset().top-arrowTopOffset;
+		var leftPos=a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2);
+		navArrow.stop().animate({top:topPos,left:leftPos,opacity:1},300);
+	}
+	else{
+
+	}
+});
+navCont.hover(function(){},function(){if(active.length==0){navArrow.fadeOut();}
+});
+
+});
+</script>

@@ -1,0 +1,18 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+?>
+<?php $_description = $this->getProduct()->getDescription(); ?>
+
+<?php if ($_description): ?>
+    <h2><?php echo $this->__('Details') ?></h2>
+    <div class="std">
+        <?php echo $this->helper('catalog/output')->productAttribute($this->getProduct(), $_description, 'description') ?>
+    
+   
+<?php endif; ?>
+      
+ <?php echo  $this->getLayout()->createBlock('amfile/file')->setTemplate('amfile/files.phtml')->toHtml(); ?>

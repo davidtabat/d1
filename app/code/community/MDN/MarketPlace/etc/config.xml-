@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <MDN_MarketPlace>
+            <version>2.2.6</version>
+        </MDN_MarketPlace>
+    </modules>
+    <global>
+        <helpers>
+            <MarketPlace>
+                <class>MDN_MarketPlace_Helper</class>
+            </MarketPlace>
+        </helpers>
+        <blocks>
+            <MarketPlace>
+                <class>MDN_MarketPlace_Block</class>
+            </MarketPlace>
+            
+            <adminhtml>
+                <rewrite>
+                    <!--<sales_order_grid>MDN_MarketPlace_Block_Adminhtml_Sales_Order_Grid</sales_order_grid>-->
+                    <catalog_product_grid>MDN_MarketPlace_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
+                    <catalog_product_edit_tabs>MDN_MarketPlace_Block_Adminhtml_Catalog_Product_Edit_Tabs</catalog_product_edit_tabs>
+                </rewrite>
+            </adminhtml>
+            
+        </blocks>
+        <models>
+
+            <MarketPlace>
+                <class>MDN_MarketPlace_Model</class>
+                <resourceModel>MarketPlace_mysql4</resourceModel>
+            </MarketPlace>
+
+            <MarketPlace_mysql4>
+                <class>MDN_MarketPlace_Model_Mysql4</class>
+                <entities>
+                    <Data>
+                        <table>market_place_data</table>
+                    </Data>
+                    <Logs>
+                        <table>market_place_logs</table>
+                    </Logs>
+                    <Category>
+                        <table>market_place_categories</table>
+                    </Category>
+                    <Feed>
+                        <table>market_place_feed</table>
+                    </Feed>
+                    <Requiredfields>
+                        <table>market_place_required_fields</table>
+                    </Requiredfields>
+                    <Token>
+                        <table>market_place_token</table>
+                    </Token>
+                    <Internationalization>
+                        <table>market_place_internationalization</table>
+                    </Internationalization>
+                    <Status>
+                        <table>market_place_status</table>
+                    </Status>
+                    <Accounts>
+                        <table>market_place_accounts</table>
+                    </Accounts>
+                    <Configuration>
+                        <table>market_place_configuration</table>
+                    </Configuration>
+                    <Countries>
+                        <table>market_place_accounts_countries</table>
+                    </Countries>
+                    <Brands>
+                        <table>market_place_brands</table>
+                    </Brands>
+                </entities>
+            </MarketPlace_mysql4>
+
+        </models>
+
+        <events>
+            <cataloginventory_stock_item_save_after>
+                <observers>
+                    <MDN_MarketPlace_Observer>
+                        <type>Singleton</type>
+                        <class>MDN_MarketPlace_Model_Observer</class>
+                        <method>UpdateUpdatedAtProductFieldAfterOrderImportation</method>
+                    </MDN_MarketPlace_Observer>
+                </observers>
+            </cataloginventory_stock_item_save_after>
+        </events>
+
+        <resources>
+            <MarketPlace_setup>
+                <setup>
+                    <module>MDN_MarketPlace</module>
+                    <class>Mage_Eav_Model_Entity_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </MarketPlace_setup>
+            <MarketPlace_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </MarketPlace_write>
+            <MarketPlace_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </MarketPlace_read>
+        </resources>
+
+    </global>
+    <default>
+        <payment>
+            <MarketPlacePaymentMethod>
+                <active>0</active>
+                <model>MarketPlace/MarketPlacePaymentMethod</model>
+                <allowspecific>0</allowspecific>
+                <title>MarketPlace Payment</title>
+            </MarketPlacePaymentMethod>
+        </payment>
+        <!--<carriers>
+            <marketplacerates>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <condition_name>package_weight</condition_name>
+                <model>MarketPlace/Carrier_Rates</model>
+                <name>Marketplace rates</name>
+                <title>Marketplace rates</title>
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+            </marketplacerates>
+        </carriers>-->
+    </default>
+    <adminhtml>
+        <menu>
+            <sales>
+                <children>
+                    <MarketPlace translate="title" module="MarketPlace">
+                        <title>Marketplace</title>
+                        <sort_order>9999</sort_order>
+                        <children>
+                            <orders translate="title" module="MarketPlace">
+                                <title>Sales History</title>
+                                <sort_order>19</sort_order>
+                                <action>MarketPlace/Orders/index</action>
+                            </orders> 
+                            <configuration translate="title" module="MarketPlace">
+                                <title>Configuration</title>
+                                <sort_order>20</sort_order>
+                                <children>
+                                    <accounts translate="title" module="MarketPlace">
+                                        <title>Accounts</title>
+                                        <action>MarketPlace/Configuration/index</action>
+                                    </accounts>
+                                    <categories translate="title" module="MarketPlace">
+                                        <title>Categories</title>
+                                        <action>MarketPlace/Categories/index</action>
+                                    </categories>
+                                    <attributes translate="title" module="MarketPlace">
+                                        <title>Attributes</title>
+                                        <action>MarketPlace/Attributes/index</action>
+                                    </attributes>
+                                </children>
+                                <action></action>
+                            </configuration>                                                                     
+                        </children>
+                    </MarketPlace>
+                </children>
+            </sales>
+        </menu>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <sales>
+                            <children>
+                                <MarketPlace translate="title" module="MarketPlace">
+                                    <title>Marketplace</title>
+                                    <children>
+                                        <orders translate="title" module="MarketPlace">
+                                            <title>Sales History</title>
+                                        </orders>
+                                        <configuration translate="title" module="MarketPlace">
+                                            <title>Configuration</title>
+                                            <children>
+                                                <accounts translate="title" module="MarketPlace">
+                                                    <title>Accounts</title>
+                                                </accounts>
+                                                <categories translate="title" module="MarketPlace">
+                                                    <title>Category</title>
+                                                </categories> 
+                                                <attributes translate="title" module="MarketPlace">
+                                                    <title>Attributes</title>
+                                                </attributes>                                               
+                                            </children>
+                                        </configuration>                                        
+                                    </children>
+                                </MarketPlace>
+                            </children>
+                        </sales>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <marketplace translate="title" module="MarketPlace">
+                                            <title>Marketplace</title>
+                                        </marketplace>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <translate>
+            <modules>
+                <MDN_MarketPlace>
+                    <files>
+                        <default>MDN_MarketPlace.csv</default>
+                    </files>
+                </MDN_MarketPlace>
+            </modules>
+        </translate>
+        <layout>
+            <updates>
+                <MarketPlace>
+                    <file>MarketPlace.xml</file>
+                </MarketPlace>
+            </updates>
+        </layout>
+    </adminhtml>
+    <admin>
+        <routers>
+            <MarketPlace>
+                <use>admin</use>
+                <args>
+                    <module>MDN_MarketPlace</module>
+                    <frontName>MarketPlace</frontName>
+                </args>
+            </MarketPlace>
+        </routers>
+    </admin>
+    <frontend>
+        <routers>
+            <MarketPlace>
+                <use>standard</use>
+                <args>
+                    <module>MDN_MarketPlace</module>
+                    <frontName>MarketPlace</frontName>
+                </args>
+            </MarketPlace>
+        </routers>
+        <layout>
+            <updates>
+                <MarketPlace>
+                    <file>MarketPlace.xml</file>
+                </MarketPlace>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <MDN_MarketPlace>
+                    <files>
+                        <default>MDN_MarketPlace.csv</default>
+                    </files>
+                </MDN_MarketPlace>
+            </modules>
+        </translate>
+    </frontend>
+
+    <crontab>
+        <jobs>
+            <marketplace_getOrders>
+                <schedule>
+                    <cron_expr>*/20 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>MarketPlace/Observer::getOrders</model>
+                </run>
+            </marketplace_getOrders>
+            <marketplace_pruneFeeds>
+                <schedule>
+                    <cron_expr>0 16 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>MarketPlace/Observer::pruneFeeds</model>
+                </run>
+            </marketplace_pruneFeeds>
+            <marketplace_updateStocks>
+                <schedule>
+                    <cron_expr>*/20 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>MarketPlace/Observer::updateStocks</model>
+                </run>
+            </marketplace_updateStocks>
+            <marketplace_checkproductcreation>
+                <schedule>
+                    <cron_expr>10 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>MarketPlace/Observer::checkProductCreation</model>
+                </run>
+            </marketplace_checkproductcreation>
+            <marketplace_autosubmit>
+                <schedule>
+                    <cron_expr>20 */4 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>MarketPlace/Observer::autoSubmit</model>
+                </run>
+            </marketplace_autosubmit>
+        </jobs>
+    </crontab>
+    
+    <marketplaces></marketplaces>
+   
+</config> 

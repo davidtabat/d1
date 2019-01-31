@@ -1,0 +1,130 @@
+<?php
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+
+/**
+ * @see IntegerNet_MagentoLocalized_Block_Form
+ * @var $this IntegerNet_MagentoLocalized_Block_Form
+ */
+?>
+<?php $page3 = $this->getChild('page3') ?>
+<?php $numberPages = is_object($page3) ? 3 : 2 ?>
+
+<div class="entry-edit">
+<form action="<?php echo $this->getPostActionUrl() ?>" method="post" id="setup_form">
+<input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+<div id="page-one" style="position: relative; left: 0px;">
+
+    <?php echo $this->getChild('page1')
+        ->setPageNumber(1)
+        ->setNumberPages($numberPages)
+        ->toHtml() ?>
+
+    <button type="button" value="Next" id="button-page-one-next" class="form-buttons" onclick="doButtonClick(this.id)"><span><span><?php echo $this->__('Next Page'); ?></span></span></button>
+</div>
+
+<div id="page-two" style="display: none;">
+
+    <?php echo $this->getChild('page2')
+        ->setPageNumber(2)
+        ->setNumberPages($numberPages)
+        ->toHtml() ?>
+
+    <button type="button" value="Back" id="button-page-two-prev" onclick="doButtonClick(this.id)"><span><span><?php echo $this->__('Previous Page'); ?></span></span></button>
+<?php if (is_object($page3)): ?>
+    <button type="button" value="Next" id="button-page-two-next" class="form-buttons" onclick="doButtonClick(this.id)"><span><span><?php echo $this->__('Next Page'); ?></span></span></button>
+
+</div>
+
+<div id="page-three" style="display: none;">
+
+    <?php echo $page3
+        ->setPageNumber(3)
+        ->setNumberPages(3)
+        ->toHtml() ?>
+
+    <button type="button" value="Back" id="button-page-three-prev" onclick="doButtonClick(this.id)"><span><span><?php echo $this->__('Previous Page'); ?></span></span></button>
+<?php endif ?>
+
+    <p class="form-buttons">
+        <?php 
+        $buttonText = Mage::helper('magento_localized')->__('Setup %s', Mage::getStoreConfig('magento_localized/module_title'));
+        if (!Mage::getStoreConfig('magento_localized/is_initialized')) {
+            $buttonText .= '<br /><small>' . Mage::helper('magento_localized')->__('This could take a little while') . '</small>';
+        }
+        echo $this->getButtonHtml($buttonText, 'setupForm.submit();', 'save'); 
+        ?>
+    </p>
+</div>
+</form>
+</div>
+<script type="text/javascript">
+    setupForm = new varienForm('setup_form', '');
+
+    $('field_modules_default').on('change', 'input', function(event) {
+        if ($F('field_modules_default_0')) {
+            $('field_modules').show();
+        } else {
+            $('field_modules').hide();
+        }
+    });
+
+    function doButtonClick(event) {
+        switch(event) {
+            case 'button-page-one-next':
+                $('page-one').setStyle({
+                    'display': 'none'
+                });
+                $('page-two').setStyle({
+                    'display': 'block'
+                });
+                $('page-three').setStyle({
+                    'display': 'none'
+                });
+                break;
+            case 'button-page-two-prev':
+                $('page-one').setStyle({
+                    'display': 'block'
+                });
+                $('page-two').setStyle({
+                    'display': 'none'
+                });
+                $('page-three').setStyle({
+                    'display': 'none'
+                });
+                break;
+            case 'button-page-two-next':
+                $('page-one').setStyle({
+                    'display': 'none'
+                });
+                $('page-two').setStyle({
+                    'display': 'none'
+                });
+                $('page-three').setStyle({
+                    'display': 'block'
+                });
+                break;
+            case 'button-page-three-prev':
+                $('page-one').setStyle({
+                    'display': 'none'
+                });
+                $('page-two').setStyle({
+                    'display': 'block'
+                });
+                $('page-three').setStyle({
+                    'display': 'none'
+                });
+                break;
+
+        }
+
+    }
+
+</script>

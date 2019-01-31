@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+  <default>
+    <reference name="head">
+      <block type="sociallogin/facebook" name="sociallogin.facebook" template="sociallogin/block.phtml" />
+        <action method="addCss"><stylesheet>magebuzz/sociallogin/jquery.fancybox.css</stylesheet></action>
+      <action method="addCss"><stylesheet>magebuzz/sociallogin/sociallogin.css</stylesheet></action>
+    </reference>
+  </default>
+
+  <customer_logged_out>
+    <reference name="top.links" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1">
+      <!-- change Url Login-->
+      <action method="removeLinkByUrl" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1"><url helper="customer/getLoginUrl"/></action>
+      <action method="addLink" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1" translate="label title" module="sociallogin"><label>Log In</label><url helper="sociallogin/getLoginUrl"/><title></title><prepare/><urlParams/><position>100</position><li/><a>class="sociallogin fancybox.ajax"</a></action>
+      <!--change Url My Account-->
+      <action method="removeLinkByUrl" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1"><url helper="customer/getAccountUrl"/></action>
+      <action method="addLink" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1" translate="label title" module="sociallogin"><label>My Account</label><url helper="sociallogin/getAccountUrl"/><title></title><prepare/><urlParams/><position>10</position><li/><a>class="sociallogin fancybox.ajax"</a></action>
+      <!-- change url Wishlist-->
+      <!--<action method="removeLinkBlock" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1"><blockName>wishlist_link</blockName></action>-->
+      <!--<action method="addLink" ifconfig="sociallogin/general/enable_sociallogin" ifvalue="1" translate="label title" module="sociallogin"><label>My Wishlist</label><url helper="sociallogin/getLoginUrl"/><title></title><prepare/><urlParams/><position>30</position><li/><a>class="sociallogin fancybox.ajax"</a></action>-->
+    </reference>
+  </customer_logged_out>
+
+  <sociallogin_index_index>
+    <reference name="content">
+      <block type="sociallogin/sociallogin" name="loginindex" template="sociallogin/sociallogin.phtml" />
+    </reference>
+  </sociallogin_index_index>
+
+  <sociallogin_index_popuplogin>
+    <reference name="content">
+      <block type="sociallogin/facebook" name="sociallogin.facebook" template="sociallogin/block.phtml" />
+      <block type="sociallogin/sociallogin" name="root" output="toHtml" template="sociallogin/popup/popuplogin.phtml" />
+    </reference>
+  </sociallogin_index_popuplogin>
+
+  <customer_account_login translate="label">
+		<reference name="head">
+      <block type="sociallogin/sociallogin" name="social" ></block>
+      <action method="addCss"><stylesheet>magebuzz/sociallogin/sociallogin.css</stylesheet></action>
+    </reference>
+    <reference name="content">
+      <block type="customer/form_login" name="sociallogin_form" before="-">
+        <action method="setTemplate" ifconfig="sociallogin/general/enable_customer_login" ifvalue="1">
+
+          <template>sociallogin/customer/social.phtml</template>
+        </action>
+      </block>
+    </reference>
+  </customer_account_login>
+
+  <checkout_onepage_index translate="label">
+        <reference name="checkout.onepage">
+            <block type="checkout/onepage_login" name="checkout.onepage.login" as="login" template="checkout/onepage/login.phtml">
+                <action method="setTemplate" ifconfig="sociallogin/general/enable_checkout_login" ifvalue="1">
+                    <template>sociallogin/checkout/checkoutlogin.phtml</template>
+                </action>
+            </block>
+        </reference>
+    </checkout_onepage_index>
+</layout>

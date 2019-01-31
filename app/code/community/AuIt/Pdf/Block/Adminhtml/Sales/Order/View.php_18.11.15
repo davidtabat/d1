@@ -1,0 +1,40 @@
+<?php
+class AuIt_Pdf_Block_Adminhtml_Sales_Order_View extends Mage_Adminhtml_Block_Sales_Order_View
+{
+	public function __construct()
+    {
+        parent::__construct();
+        if ($this->getOrder()->getId()) {
+            // $this->_addButton('print', array(
+            //     'label'     => Mage::helper('sales')->__('Print Offer'),
+            //     'class'     => 'save',
+            //     'onclick'   => 'setLocation(\''.$this->getPrintOfferUrl().'\')'
+            //     )
+            // );
+
+             if ($this->getOrder()->getTotalDue()) 
+            {
+             $this->_addButton('paid', array(
+                'label'     => Mage::helper('sales')->__('Payment Paid'),
+                'class'     => 'save',
+                'onclick'   => 'setLocation(\''.$this->getPaidUrl().'\')'
+                )
+            );
+         }
+        }
+    }
+    public function getPrintOfferUrl()
+    {
+        return $this->getUrl('auit_pdf/order/print', array(
+            'order_id' => $this->getOrder()->getId()
+        ));
+    }
+
+     public function getPaidUrl()
+    {
+        return $this->getUrl('auit_pdf/order/paid', array(
+            'order_id' => $this->getOrder()->getId()
+        ));
+    }
+    
+}

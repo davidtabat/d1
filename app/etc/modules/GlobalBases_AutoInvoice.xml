@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <GlobalBases_AutoInvoice>
+            <active>true</active>
+            <codePool>community</codePool>
+        </GlobalBases_AutoInvoice>
+	</modules>
+</config>
+ 
+ 

@@ -1,0 +1,97 @@
+<?php
+/** @var Mirasvit_Helpdesk_Block_Adminhtml_Ticket_Edit_Tab_General $this */
+$message = $this->getNoticeMessage() ?>
+<div id="helpdesk-notice" class="helpdesk-notice" <?php if (!$message) {
+    echo "style='display:none;'";
+}?>><?php echo $message ?></div>
+
+<div class="entry-edit">
+	<div class="box-left">
+	    <div class="entry-edit">
+			<?php echo $this->getCustomerForm()->toHtml() ?>
+	    </div>
+    </div>
+	<div class="box-right">
+		<div class="entry-edit">
+	    	<?php echo $this->getGeneralForm()->toHtml() ?>
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+<?php echo $this->getMessageForm()->toHtml() ?>
+<script>
+    jQuery(document).ready(function() {
+        function f() {
+            jQuery("#reply").autoGrow();
+        };
+        setTimeout(f,1);
+    });
+</script>
+
+<?php
+$ticket = $this->getTicket();
+if ($ticket->getId()): ?>
+
+<script>
+var delayPeriod = 10;
+var isAllowDraft = true;
+var origText = $('reply').value;
+
+// Function checks, whether link exists
+function urlExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status!=404;
+}
+
+function updateActivity() {
+	if (!isAllowDraft) {
+		return;
+	}
+
+//    @dva - disabeld. we need better solution.
+//    // Additional check if ajax link exists (for cloud services, etc).
+//    if(!urlExists('<?php //echo Mage::helper('adminhtml')->getUrl('helpdesk/adminhtml_draft/update/') ?>//')) {
+//        return;
+//    }
+
+	var text = -1;
+
+	var currentText = '';
+	if(tinyMCE.activeEditor) {
+		currentText = tinyMCE.activeEditor.getContent();
+	} else {
+		currentText = $('reply').value;
+	}
+
+	if (currentText != origText) {
+		origText = currentText;
+		text = origText;
+		if ($('helpdesk-draft-status')) {
+			$('helpdesk-draft-status').fade();
+		}
+	}
+    new Ajax.Request('<?php echo Mage::helper('adminhtml')->getUrl('adminhtml/helpdesk_draft/update/') ?>', {
+		method : "post",
+		loaderArea: false,
+		parameters : {ticket_id: <?php echo $ticket->getId() ?>, text: text},
+		onSuccess : function(response) {
+            if(response.responseText.indexOf('<head>') == -1) {
+                $('helpdesk-notice').update(response.responseText);
+                if (response.responseText == '') {
+                    $('helpdesk-notice').hide();
+                } else {
+                    $('helpdesk-notice').show();
+                }
+                updateActivity.delay(delayPeriod);
+            }
+        }
+    });
+}
+
+updateActivity.delay(delayPeriod);
+</script>
+
+<?php endif;?>

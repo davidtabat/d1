@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Override the method Mage_Adminhtml_Sales_Order_InvoiceController:Capture($invoice) in the admin
+    Allowing invoices to be marked paid offline!
+-->
+<config>
+    <modules>
+        <Jay_Capture>
+            <version>1</version>
+        </Jay_Capture>
+    </modules>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Jay_Capture before="Mage_Adminhtml">Jay_Capture_Adminhtml</Jay_Capture>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+</config>

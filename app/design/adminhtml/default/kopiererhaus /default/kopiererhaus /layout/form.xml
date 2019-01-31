@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <form_adminhtml_form_index>
+        <reference name="content">
+            <block type="form/adminhtml_form" name="form" />
+        </reference>
+    </form_adminhtml_form_index>
+</layout>

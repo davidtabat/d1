@@ -1,0 +1,8 @@
+<config>
+    <modules>
+        <Cmsmart_Configsystem>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Cmsmart_Configsystem>
+    </modules>
+</config>

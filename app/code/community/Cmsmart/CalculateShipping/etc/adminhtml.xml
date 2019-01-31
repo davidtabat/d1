@@ -1,0 +1,27 @@
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <calculateshipping translate="title">
+                                        <title>Calculate Shipping</title>
+                                        <sort_order>10</sort_order>
+                                    </calculateshipping>
+
+                                    <cmsmartinfo translate="title">
+                                        <title>Information about Cmsmart</title>
+                                        <sort_order>11</sort_order>
+                                    </cmsmartinfo>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

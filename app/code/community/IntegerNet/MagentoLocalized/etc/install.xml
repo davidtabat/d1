@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+
+    <wizard>
+        <steps>
+            <begin translate="code">
+                <code>Country Selection</code>
+                <controller>wizard</controller>
+                <action>begin</action>
+            </begin>
+        </steps>
+    </wizard>
+
+    <magento_localized>
+        <editions>
+            <de>
+                <name>Magento DE - Deutschland</name>
+                <image_filename>magento_localized/magento-edition-de.jpg</image_filename>
+                <module_package>integer-net/magento-localized-de</module_package>
+                <locale_package>riconeitzel/german-localepack-de-de</locale_package>
+            </de>
+            <at>
+                <name>Magento AT - Österreich</name>
+                <image_filename>magento_localized/magento-edition-at.jpg</image_filename>
+                <module_package>integer-net/magento-localized-at</module_package>
+                <locale_package></locale_package>
+                <locale_fallback_package>riconeitzel/german-localepack-de-de</locale_fallback_package>
+            </at>
+            <ch>
+                <name>Magento CH - Schweiz</name>
+                <image_filename>magento_localized/magento-edition-ch.jpg</image_filename>
+                <module_package>integer-net/magento-localized-ch</module_package>
+                <locale_package></locale_package>
+                <locale_fallback_package>riconeitzel/german-localepack-de-de</locale_fallback_package>
+            </ch>
+            <es>
+                <name>Magento ES - Espana</name>
+                <image_filename>magento_localized/magento-edition-es.jpg</image_filename>
+                <module_package>integer-net/magento-localized-es</module_package>
+                <locale_package>connect20/locale_mage_community_es_es</locale_package>
+            </es>
+            <fr>
+                <name>Magento FR - France</name>
+                <image_filename>magento_localized/magento-edition-fr.jpg</image_filename>
+                <module_package>integer-net/magento-localized-fr</module_package>
+                <locale_package>connect20/locale_mage_community_fr_fr</locale_package>
+            </fr>
+            <it>
+                <name>Magento IT - Italia</name>
+                <image_filename>magento_localized/magento-edition-it.jpg</image_filename>
+                <module_package>integer-net/magento-localized-it</module_package>
+                <locale_package>connect20/locale_mage_community_it_it</locale_package>
+            </it>
+            <nl>
+                <name>Magento NL - Nederland</name>
+                <image_filename>magento_localized/magento-edition-nl.jpg</image_filename>
+                <module_package>integer-net/magento-localized-nl</module_package>
+                <locale_package>ho-nl/ho_nl_nl</locale_package>
+            </nl>
+            <ro>
+                <name>Magento RO - Romania</name>
+                <module_package>integer-net/magento-localized-ro</module_package>
+                <image_filename>magento_localized/magento-edition-ro.jpg</image_filename>
+                <locale_package>mindmagnet/romanian-translation</locale_package>
+            </ro>
+            <pl>
+                <name>Magento PL - Poland</name>
+                <module_package>integer-net/magento-localized-pl</module_package>
+                <image_filename>magento_localized/magento-edition-pl.jpg</image_filename>
+                <locale_package>snowdog-apps/magento-translation-pl_pl</locale_package>
+            </pl>
+            <ru>
+                <name>Magento RU - Россия</name>
+                <module_package>integer-net/magento-localized-ru</module_package>
+                <image_filename>magento_localized/magento-edition-ru.jpg</image_filename>
+                <locale_package>etws/et_russianlanguagepack</locale_package>
+            </ru>
+        </editions>
+        <ebay_edition>
+            <module_package>integer-net/magento-localized-ebay</module_package>
+        </ebay_edition>
+    </magento_localized>
+
+</config>

@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+            <sales>
+                <children>
+                    <MarketPlace translate="title" module="MarketPlace">
+                        <title>Marketplace</title>
+                        <sort_order>9999</sort_order>
+                        <children>
+                            <orders translate="title" module="MarketPlace">
+                                <title>Sales History</title>
+                                <sort_order>19</sort_order>
+                                <action>adminhtml/Orders/index</action>
+                            </orders> 
+                            <configuration translate="title" module="MarketPlace">
+                                <title>Configuration</title>
+                                <sort_order>20</sort_order>
+                                <children>
+                                    <accounts translate="title" module="MarketPlace">
+                                        <title>Accounts</title>
+                                        <action>adminhtml/Configuration/index</action>
+                                    </accounts>
+                                    <categories translate="title" module="MarketPlace">
+                                        <title>Categories</title>
+                                        <action>adminhtml/Categories/index</action>
+                                    </categories>
+                                </children>
+                                <action></action>
+                            </configuration>
+                            <!--<logs translate="title" module="MarketPlace">
+                                <title>Logs</title>
+                                <sort_order>21</sort_order>
+                                <children>
+                                    <general translate="title" module="MarketPlace">
+                                        <title>General</title>
+                                        <action>MarketPlace/Logs/index</action>
+                                    </general>
+                                    <feed translate="title" module="MarketPlace">
+                                        <title>Feed</title>
+                                        <action>MarketPlace/Feed/index</action>
+                                    </feed>
+                                    <monitoring translate="title" module="MarketPlace">
+                                        <title>Monitoring</title>
+                                        <action>MarketPlace/Monitoring/index</action>
+                                    </monitoring>
+                                </children>
+                            </logs>-->                                                                               
+                        </children>
+                    </MarketPlace>
+                </children>
+            </sales>
+        </menu>
+
+    <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <sales>
+                            <children>
+                                <MarketPlace translate="title" module="MarketPlace">
+                                    <title>Marketplace</title>
+                                    <children>
+                                        <orders translate="title" module="MarketPlace">
+                                            <title>Sales History</title>
+                                        </orders>
+                                        <configuration translate="title" module="MarketPlace">
+                                            <title>Configuration</title>
+                                            <children>
+                                                <accounts translate="title" module="MarketPlace">
+                                                    <title>Accounts</title>
+                                                </accounts>
+                                                <categories translate="title" module="MarketPlace">
+                                                    <title>Category</title>
+                                                </categories>                                                
+                                            </children>
+                                        </configuration>                                        
+                                        <!--<logs translate="title" module="MarketPlace">
+                                            <title>Logs</title>
+                                            <children>
+                                                <general translate="title" module="MarketPlace">
+                                                    <title>General</title>
+                                                </general>
+                                                <feed translate="title" module="MarketPlace">
+                                                    <title>Feed</title>
+                                                </feed>
+                                                <monitoring translate="title" module="MarketPlace">
+                                                    <title>Monitoring</title>
+                                                </monitoring>
+                                            </children>
+                                        </logs>-->
+                                    </children>
+                                </MarketPlace>
+                            </children>
+                        </sales>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <marketplace translate="title" module="MarketPlace">
+                                            <title>Marketplace</title>
+                                        </marketplace>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    <translate>
+        <modules>
+            <MDN_MarketPlace>
+                <files>
+                    <default>MDN_MarketPlace.csv</default>
+                </files>
+            </MDN_MarketPlace>
+        </modules>
+    </translate>
+    <layout>
+        <updates>
+            <MarketPlace>
+                <file>MarketPlace.xml</file>
+            </MarketPlace>
+        </updates>
+    </layout>
+</config>

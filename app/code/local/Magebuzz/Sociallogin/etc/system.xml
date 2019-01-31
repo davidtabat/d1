@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+<config>
+  <tabs>
+    <magebuzz translate="label">
+      <label>Magebuzz ADD-ONS</label>
+      <sort_order>400</sort_order>
+    </magebuzz>
+  </tabs>
+  <sections>
+    <sociallogin translate="label" module="sociallogin">
+      <label>Social Login</label>
+      <tab>magebuzz</tab>
+      <frontend_type>text</frontend_type>
+      <sort_order>299</sort_order>
+      <show_in_default>1</show_in_default>
+      <show_in_website>1</show_in_website>
+      <show_in_store>1</show_in_store>
+      <groups>
+        <general translate="label" module="sociallogin">
+          <label>General Settings</label>
+          <frontend_type>text</frontend_type>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <sort_order>0</sort_order>
+          <fields>
+            <enable_sociallogin translate="label">
+              <label>Enable Popup</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>0</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_sociallogin>
+            <enable_customer_login translate="label">
+              <label>Display Social Login buttons in customer log in page</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_customer_login>
+						<enable_checkout_login translate="label">
+              <label>Display Social Login buttons in checkout page</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_checkout_login>
+          </fields> 
+        </general>
+
+        <facebook translate="label">
+          <label>Facebook Login</label>
+          <frontend_type>text</frontend_type>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <sort_order>1</sort_order>
+          <fields>
+            <enable_fb translate="label">
+              <label>Enable Facebook Login</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <comment>Enable Facebook Login</comment>
+            </enable_fb>
+            <fbapp_id translate="label">
+              <label>Facebook App ID</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_fb>1</enable_fb></depends>
+              <comment>Please Enter <![CDATA[<a href="https://developers.facebook.com/apps" target="_blank">Facebook App Id</a>]]></comment>
+            </fbapp_id>
+            <fbapp_secret translate="label">
+              <label>Facebook App Secret Key</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>4</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_fb>1</enable_fb></depends>
+              <comment>Please Enter <![CDATA[<a href="https://developers.facebook.com/apps" target="_blank">Facebook App Secret Key</a>]]></comment>
+            </fbapp_secret>
+            <imglogin translate="label comment">
+              <label>Facebook Login Button</label>
+              <frontend_type>image</frontend_type>
+              <backend_model>adminhtml/system_config_backend_image</backend_model>
+              <upload_dir config="system/filesystem/media" scope_info="1">sociallogin</upload_dir>
+              <base_url type="media" scope_info="1">sociallogin</base_url>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_fb>1</enable_fb></depends>
+            </imglogin>
+            <prefix translate="label">
+              <label>Prefix For Customer Login By Facebook</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>20</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_fb>1</enable_fb></depends>
+            </prefix>
+          </fields> 
+        </facebook>
+
+        <twitter translate="label">
+          <label>Twitter Login </label>
+          <frontend_type>text</frontend_type>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <sort_order>2</sort_order>
+          <comment><?php echo 'abc';?></comment>
+          <fields>
+					<!--obscure-->
+            <enable_twitter translate="label">
+              <label>Enable Twitter Login</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_twitter>
+            <tw_key translate="label">
+              <label>Twitter Consumer Key</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>6</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_twitter>1</enable_twitter></depends>
+              <comment>Please Enter <![CDATA[<a href="https://dev.twitter.com/apps/new" target="_blank">Twitter Consumer Key</a>]]></comment>
+            </tw_key>
+            <tw_secret translate="label">
+              <label>Twitter Consumer Secret</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>7</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_twitter>1</enable_twitter></depends>
+              <comment>Please Enter <![CDATA[<a href="https://dev.twitter.com/apps/new" target="_blank">Twitter Consumer Secret</a>]]></comment>
+            </tw_secret>
+            <imgtwitter translate="label comment">
+              <label>Twitter Login Button</label>              
+              <frontend_type>image</frontend_type>
+              <backend_model>adminhtml/system_config_backend_image</backend_model>
+              <upload_dir config="system/filesystem/media" scope_info="1">sociallogin</upload_dir>
+              <base_url type="media" scope_info="1">sociallogin</base_url>
+              <sort_order>8</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_twitter>1</enable_twitter></depends>
+            </imgtwitter>
+            <prefix translate="label">
+              <label>Prefix For Customer Login By Twitter</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>9</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_twitter>1</enable_twitter></depends>
+            </prefix>
+            <redirect translate="label">
+              <label>Callback URL</label>
+              <frontend_type>text</frontend_type>
+              <frontend_model>sociallogin/twittercallback</frontend_model>
+              <sort_order>10</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_twitter>1</enable_twitter></depends>
+              <comment><![CDATA[Please use this link for Callback URL field when registering with Twitter API]]></comment>
+            </redirect>
+          </fields> 
+        </twitter>
+
+        <google translate="label">
+           <label>Google Login </label>
+           <frontend_type>text</frontend_type>
+           <show_in_default>1</show_in_default>
+           <show_in_website>1</show_in_website>
+           <show_in_store>1</show_in_store>
+           <sort_order>4</sort_order>
+          <fields>
+            <enable_google translate="label">
+              <label>Enable Google Login</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>11</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enable_google>
+
+            <google_app_id translate="label">
+              <label> Client ID</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>12</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_google>1</enable_google></depends>
+              <comment>Please
+                Enter <![CDATA[<a href="https://console.developers.google.com/project" target="_blank">Google App
+                Id</a>]]></comment>
+            </google_app_id>
+            <google_app_secret translate="label">
+              <label>Secret Key</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>13</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_google>1</enable_google></depends>
+              <comment>Please
+                Enter <![CDATA[<a href="https://console.developers.google.com/project" target="_blank">Google App
+                Secret Key</a>]]></comment>
+            </google_app_secret>          
+            <imggoogle translate="label comment">
+              <label>Google Login Button</label>
+              <frontend_type>image</frontend_type>
+              <backend_model>adminhtml/system_config_backend_image</backend_model>
+              <upload_dir config="system/filesystem/media" scope_info="1">sociallogin</upload_dir>
+              <base_url type="media" scope_info="1">sociallogin</base_url>
+              <sort_order>14</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_google>1</enable_google></depends>
+            </imggoogle>
+            <prefix translate="label">
+              <label>Prefix For Customer Login By Google</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>15</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_google>1</enable_google></depends>
+            </prefix>
+            <redirect translate="label">
+              <label>Redirect URIs </label>
+              <frontend_type>text</frontend_type>
+              <frontend_model>sociallogin/googlecallback</frontend_model>
+              <sort_order>16</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enable_google>1</enable_google></depends>
+              <comment><![CDATA[Please use this link for Redirect URIs field when registering with Google API]]></comment>
+            </redirect>
+          </fields> 
+        </google>
+
+        <linkedin translate="label">
+          <label>LinkedIn Login </label>
+          <frontend_type>text</frontend_type>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <sort_order>5</sort_order>
+          <fields>
+            <enabled translate="label">
+              <label>Enabled</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </enabled>
+
+            <client_id translate="label" >
+              <label>LinkedIn API Key</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enabled>1</enabled></depends>
+              <validate>required-entry</validate>
+              <comment>Please
+                Enter <![CDATA[<a href="https://www.linkedin.com/secure/developer" target="_blank">Linkedin Client
+                Id</a>]]></comment>
+            </client_id>
+
+            <client_secret translate="label" >
+              <label>LinkedIn Secret Key</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enabled>1</enabled></depends>
+              <validate>required-entry</validate>
+              <comment>Please
+                Enter <![CDATA[<a href="https://www.linkedin.com/secure/developer" target="_blank">Linkedin Secret
+                Key</a>]]></comment>
+            </client_secret>
+
+            <imglinkedin translate="label comment">
+              <label>Linkedin Login Button</label>
+              <frontend_type>image</frontend_type>
+              <backend_model>adminhtml/system_config_backend_image</backend_model>
+              <upload_dir config="system/filesystem/media" scope_info="1">sociallogin</upload_dir>
+              <base_url type="media" scope_info="1">sociallogin</base_url>
+              <sort_order>4</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enabled>1</enabled></depends>
+            </imglinkedin>
+
+            <prefix translate="label">
+              <label>Prefix For Customer Login By LinkedIn</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enabled>1</enabled></depends>
+            </prefix>
+
+            <redirect translate="label">
+              <label>OAuth 2.0 Redirect URLs</label>
+              <frontend_type>text</frontend_type>
+              <frontend_model>sociallogin/linkedincallback</frontend_model>
+              <sort_order>6</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+              <depends><enabled>1</enabled></depends>
+              <comment><![CDATA[Please use this link for Redirect URIs field when registering with LinkedIn API]]></comment>
+            </redirect>
+          </fields>
+        </linkedin>
+
+      </groups>
+    </sociallogin>
+  </sections>
+</config>

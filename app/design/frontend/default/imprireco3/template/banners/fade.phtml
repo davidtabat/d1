@@ -1,0 +1,19 @@
+<ul class="fade-slider">
+		<?php foreach ($banners as $banner):?>
+				<li>
+						<img title="<?php if($isShowTitle): ?><?php echo '<h3>'.$banner->title.'</h3>' ?><?php endif;?><?php if($isShowDescription): ?><?php echo '<p>'.$banner->content.'</p>' ?><?php endif;?>" src="<?php echo $imgLink.$banner->bannerimage ?>" alt="" />
+				</li>
+		<?php endforeach ?>
+</ul>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery('.fade-slider').bxSlider({
+			auto: true,
+			mode: 'fade',
+			speed: <?php echo $transitionSpeedSlider ?>,
+			preloadImages: 'visible', 
+			pager: false,
+			controls:true
+		});
+	});
+</script>

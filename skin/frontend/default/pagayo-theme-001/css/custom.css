@@ -1,0 +1,78 @@
+.add-to-cart button.button, .add-to-cart button.button:hover {  border: 1px solid #4D70A2 !important;
+    font: bold 15px/34px Arial, Helvetica, sans-serif !important;
+    color: #fff !important;
+    height: 34px !important;
+    text-transform: uppercase !important;
+    background: #4A6EA0 !important;
+    background-image: -moz-linear-gradient(top,#4a6ea0,#4a6ea0) !important;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#8FB1D6),to(#4A6EA0)) !important;}
+	
+	.checkout-types button.button, .checkout-types button.button:hover { border: 1px solid #4D70A2 !important;
+    font: bold 15px/34px Arial, Helvetica, sans-serif !important;
+    color: #fff !important;
+    height: 34px !important;
+    text-transform: uppercase !important;
+    background: #4A6EA0 !important;
+    background-image: -moz-linear-gradient(top,#4a6ea0,#4a6ea0) !important;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#8FB1D6),to(#4A6EA0)) !important;}
+	
+	button.button {  background-color: #666;
+    border: 1px solid #222;
+    color: #fff;
+    cursor: pointer;
+    font: 12px/33px Arial,Helvetica,sans-serif;
+    height: 33px !important;
+    margin: 0;
+    overflow: visible;
+    padding-left: 12px;
+    padding-right: 12px;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    width: auto;}
+	
+		button.button:hover { background-color: #222;
+    border: 1px solid #222;}
+	
+	.calculate-shipping-form button.button > span {background:none !important; height:auto !important;}
+	.home-three-banners {float:left; width:100%; margin-bottom:20px;}
+.home-three-banners > li {
+    float: left;
+    margin-right: 15px; list-style:none !important;
+}
+.cms-index-index .category-products {
+    clear: both;
+}
+.home-three-banners > li:last-child {margin-right:0px;}
+
+.flexslider {margin: 0 0 20px !important;}
+
+.products-grid li.item {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    float: left;
+    margin-bottom: 10px !important;
+    margin-right: 8px !important;
+    width: 230px;
+}
+.products-grid .price-box {height:auto !important;}
+
+.products-grid .actions {
+    height: 35px !important;
+}
+.products-grid .btn-cart, .products-grid .btn-cart:hover {border: 1px solid #4D70A2 !important;
+    font: bold 15px/34px Arial, Helvetica, sans-serif !important;
+    color: #fff !important;
+    height: 34px !important;
+    text-transform: uppercase !important;
+    background: #4A6EA0 !important;
+    background-image: -moz-linear-gradient(top,#4a6ea0,#4a6ea0) !important;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#8FB1D6),to(#4A6EA0)) !important;}
+	
+	.flexslider {width:75% !important; float:left;}
+	.flex-control-nav {margin-left:0 !important;}
+	
+	.banner-right {
+    float: right;
+    list-style: outside none none;
+}

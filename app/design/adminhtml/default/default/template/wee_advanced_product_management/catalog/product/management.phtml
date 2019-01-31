@@ -1,0 +1,16 @@
+<STYLE type="text/css">
+  .categories-side-col {
+    float:left;
+    width:15%;
+  }
+  .products-grid {
+    float:right;
+    width:85%;
+  }
+</STYLE>
+
+<?php echo $this->getChildHtml('category_tree'); ?>
+
+<div class="products-grid">
+  <?php echo $this->getChildHtml('products_grid'); ?>
+</div>

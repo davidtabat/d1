@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Rakuten
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <modules>
+        <Mageshops_Rakuten>
+            <version>0.3.6</version>
+        </Mageshops_Rakuten>
+    </modules>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <nn_rakuten before="Mage_Adminhtml">Mageshops_Rakuten</nn_rakuten>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <rakuten>
+                    <file>nn_market_rakuten.xml</file>
+                </rakuten>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Mageshops_Rakuten>
+                    <files>
+                        <default>Mageshops_Rakuten.csv</default>
+                    </files>
+                </Mageshops_Rakuten>
+            </modules>
+        </translate>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <nn_market translate="title" module="nn_market">
+                            <title>mageSHOPS Market</title>
+                            <children>
+                                <rakuten translate="title" module="rakuten">
+                                    <title>mageSHOPS.com Rakuten.de</title>
+                                    <sort_order>100</sort_order>
+                                    <children>
+                                        <categories translate="title" module="rakuten">
+                                            <title>Categories</title>
+                                        </categories>
+                                        <products translate="title" module="rakuten">
+                                            <title>Products</title>
+                                        </products>
+                                        <orders translate="title" module="rakuten">
+                                            <title>Orders</title>
+                                        </orders>
+                                        <sync translate="title" module="rakuten">
+                                            <title>Synchronize manually</title>
+                                        </sync>
+                                    </children>
+                                </rakuten>
+                            </children>
+                        </nn_market>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+    <global>
+        <blocks>
+            <rakuten>
+                <class>Mageshops_Rakuten_Block</class>
+            </rakuten>
+        </blocks>
+        <models>
+            <rakuten>
+                <class>Mageshops_Rakuten_Model</class>
+                <resourceModel>rakuten_resource</resourceModel>
+            </rakuten>
+            <rakuten_resource>
+                <class>Mageshops_Rakuten_Model_Resource</class>
+                <entities>
+                    <rakuten_product>
+                        <table>nnpro_rakuten_product</table>
+                    </rakuten_product>
+                    <rakuten_product_variant>
+                        <table>nnpro_rakuten_product_variant</table>
+                    </rakuten_product_variant>
+                    <rakuten_product_image>
+                        <table>nnpro_rakuten_product_image</table>
+                    </rakuten_product_image>
+                    <rakuten_order>
+                        <table>nnpro_rakuten_order</table>
+                    </rakuten_order>
+                    <rakuten_order_item>
+                        <table>nnpro_rakuten_order_item</table>
+                    </rakuten_order_item>
+                    <rakuten_request>
+                        <table>nnpro_rakuten_request</table>
+                    </rakuten_request>
+                    <rakuten_synchronization>
+                        <table>nnpro_rakuten_synchronization</table>
+                    </rakuten_synchronization>                    
+                </entities>
+            </rakuten_resource>
+        </models>
+        <helpers>
+            <rakuten>
+                <class>Mageshops_Rakuten_Helper</class>
+            </rakuten>
+        </helpers>
+        <resources>
+            <rakuten_setup>
+                <setup>
+                    <module>Mageshops_Rakuten</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </rakuten_setup>
+        </resources>
+        <events>
+            <catalog_product_load_after>
+                <observers>
+                    <rakuten_product_unvailable_on_zero_stock>
+                        <class>rakuten/observer</class>
+                        <method>setUnvailableOnZeroStock</method>
+                    </rakuten_product_unvailable_on_zero_stock>
+                </observers>
+            </catalog_product_load_after>
+            <sales_quote_collect_totals_before>
+                <observers>
+                    <rakuten_shipping>
+                        <type>singleton</type>
+                        <class>rakuten/observer</class>
+                        <method>setRakutenShipping</method>
+                    </rakuten_shipping>
+                </observers>
+            </sales_quote_collect_totals_before>
+        </events>
+    </global>
+    <default>
+        <nn_market>
+            <rakuten>
+                <api_key>123456789a123456789a123456789a12</api_key>
+                <enable_cron>0</enable_cron>
+                <sync_all_cron>0 */2 * * *</sync_all_cron>
+                <sync_orders_cron>15 * * * *</sync_orders_cron>
+                <sync_stock_price_cron>0,30 * * * *</sync_stock_price_cron>
+                <request_cleanup_cron>0 2 * * *</request_cleanup_cron>
+                <lock_timeout>10</lock_timeout>
+                <force_resave>0</force_resave>
+                <log>0</log>
+            </rakuten>
+            <rakuten_product>
+                <enable_sync>1</enable_sync>
+                <unvailable_on_zero_stock>0</unvailable_on_zero_stock>
+                <variant_price>0</variant_price>
+                <create_csv>1</create_csv>
+                <sync_bundle_prefix>BR</sync_bundle_prefix>
+                <products_per_package>10</products_per_package>
+            </rakuten_product>
+            <rakuten_category>
+                <enable_sync>1</enable_sync>
+                <layout>2</layout>
+            </rakuten_category>
+            <rakuten_order>
+                <!--<enable_sync>1</enable_sync>-->
+                <enable_autocreate>0</enable_autocreate>
+                <rakuten_store>0</rakuten_store>
+            </rakuten_order>
+        </nn_market>
+        <payment>
+            <nnrakuten>
+                <active>1</active>
+                <model>rakuten/payment_method_rakuten</model>
+                <order_status>pending</order_status>
+                <title>Payment done in Rakuten</title>
+                <payment_action>authorize</payment_action>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+            </nnrakuten>
+        </payment>
+        <carriers>
+            <nnrakuten>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>rakuten/carrier_nnrakuten</model>
+                <name>Rakuten Shipping Method</name>
+                <price>0.00</price>
+                <title>Rakuten Shipping Method</title>
+                <type>O</type>
+                <specificerrmsg>This shipping method is currently unavailable. If you would like to ship using this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+            </nnrakuten>
+        </carriers>
+    </default>
+    <crontab>
+        <jobs>
+            <nn_market_rakuten_sync_all>
+                <schedule>
+                    <config_path>nn_market/rakuten/sync_all_cron</config_path>
+                </schedule>
+                <run>
+                    <model>rakuten/observer::synchronizeAll</model>
+                </run>
+            </nn_market_rakuten_sync_all>
+            <nn_market_rakuten_sync_orders>
+                <schedule>
+                    <config_path>nn_market/rakuten/sync_orders_cron</config_path>
+                </schedule>
+                <run>
+                    <model>rakuten/observer::synchronizeOrders</model>
+                </run>
+            </nn_market_rakuten_sync_orders>
+            <nn_market_rakuten_sync_stock_price>
+                <schedule>
+                    <config_path>nn_market/rakuten/sync_stock_price_cron</config_path>
+                </schedule>
+                <run>
+                    <model>rakuten/observer::synchronizeStockPrice</model>
+                </run>
+            </nn_market_rakuten_sync_stock_price>
+            <nn_market_rakuten_request_cleanup>
+                <schedule>
+                    <config_path>nn_market/rakuten/request_cleanup_cron</config_path>
+                </schedule>
+                <run>
+                    <model>rakuten/observer::requestCleanup</model>
+                </run>
+            </nn_market_rakuten_request_cleanup>          
+        </jobs>
+    </crontab>
+</config>

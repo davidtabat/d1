@@ -1,0 +1,25 @@
+<?php
+    $categorySnippetsPrice  = $this->getCategorySnippetsPrice();
+    $categorySnippetsRating = $this->getCategorySnippetsRating();
+    if ($categorySnippetsPrice) {
+        $currencyCode           = Mage::app()->getStore()->getCurrentCurrencyCode();
+        $ratingValue            = number_format($categorySnippetsRating/100*5, 1);
+        $ratingCount            = $this->getCategorySnippetsRatingCount();
+        $formattedPrice         = number_format($categorySnippetsPrice, 2);
+        $priceSymbol            = Mage::app()->getLocale()->currency($currencyCode)->getSymbol();
+        $currentCategoryName    = Mage::registry('current_category')->getName();
+    }
+?>
+<?php if ($categorySnippetsPrice):?>
+
+<div class="category-description container">
+    <?php
+    $_category = Mage::registry('current_category');
+    $_customAttribute = $_category->getCustomAttribute();
+
+    ?>
+  
+    <?php echo Mage::helper('catalog/output')->categoryAttribute($_category, $_customAttribute, 'custom_attribute') ?>
+<?php //endif; ?>
+</div>
+<?php endif?>

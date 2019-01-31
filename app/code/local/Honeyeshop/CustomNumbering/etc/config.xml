@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @copyright Copyright (c) 2011 Honeyeshop.com by Adbee
+ */
+-->
+<config>
+    <modules>
+        <Honeyeshop_CustomNumbering>
+            <version>1.0.0</version>
+            <depends>
+            	<Mage_Eav/>
+            </depends>
+        </Honeyeshop_CustomNumbering>
+    </modules>
+    
+    <global>
+    	<models>
+    		<Honeyeshop_CustomNumbering>
+		        <class>Honeyeshop_CustomNumbering_Model</class>
+		    </Honeyeshop_CustomNumbering>
+   			<eav>
+                <rewrite>     
+                    <entity_increment_numeric>Honeyeshop_CustomNumbering_Model_Eav_Entity_Increment_Numeric</entity_increment_numeric>
+                </rewrite>
+            </eav>
+        </models>
+	    <helpers>
+	        <customnumbering>
+	            <class>Honeyeshop_CustomNumbering_Helper</class>
+	        </customnumbering>
+	    </helpers>  
+	</global>
+    
+    <adminhtml>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <customnumbering translate="title">
+                                            <title>Custom Numbering</title>
+                                        </customnumbering>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+        <translate>
+            <modules>
+                <Honeyeshop_CustomNumbering>
+                    <files>
+                        <default>Honeyeshop_CustomNumbering.csv</default>
+                    </files>
+                </Honeyeshop_CustomNumbering>
+            </modules>
+        </translate>
+    </adminhtml>
+	    
+	<default>
+    	<customnumbering>
+    		<order>
+    			<enabled>0</enabled>
+    			<prefix>ORD%YYYY%%STOREID%</prefix>
+    			<startnumber>00001</startnumber>
+    			<increment>1</increment>
+    			<minlength>5</minlength>
+    			<continuousnumbering>1</continuousnumbering>
+    		</order>
+    		<invoice>
+    			<enabled>0</enabled>
+    			<prefix>VF%YYYY%%STOREID%</prefix>
+    			<startnumber>00001</startnumber>
+    			<increment>1</increment>
+    			<minlength>5</minlength>
+    			<continuousnumbering>1</continuousnumbering>
+    		</invoice>
+    		<shipment>
+    			<enabled>0</enabled>
+    			<prefix>SP%YYYY%%STOREID%</prefix>
+    			<startnumber>00001</startnumber>
+    			<increment>1</increment>
+    			<minlength>5</minlength>
+    			<continuousnumbering>1</continuousnumbering>
+    		</shipment>
+    		<creditmemo>
+    			<enabled>0</enabled>
+    			<prefix>CR%YYYY%%STOREID%</prefix>
+    			<startnumber>00001</startnumber>
+    			<increment>1</increment>
+    			<minlength>5</minlength>
+    			<continuousnumbering>1</continuousnumbering>
+    		</creditmemo>
+    	</customnumbering>
+    </default>
+</config>

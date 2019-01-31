@@ -1,0 +1,24 @@
+<?php
+/** @var Mirasvit_Helpdesk_Block_Adminhtml_Notification_Indicator $this */
+
+$user = Mage::getSingleton('admin/session')->getUser();
+?>
+<script>
+    var notificationInterval = "<?php echo $this->getNotificationInterval()*1000; ?>";
+    var notificationCheckUrl = "<?php echo $this->getCheckNotificationUrl(); ?>";
+    var notificationIcon = "<?php echo $this->getSkinUrl("mirasvit/helpdesk/images/notification_icon.png"); ?>";
+</script>
+
+
+<span id="notification-ticket-indicator">
+    <a href="<?php echo $this->getUrl('adminhtml/helpdesk_ticket'); ?>">
+        <?php
+            echo Mage::helper('helpdesk')->__('Tickets');
+        ?> <span id="desktop_notification_tickets"><?php
+            echo Mage::helper('helpdesk/desktopNotification')->getNewTicketsAmount();
+        ?></span>/<span id="desktop_notification_messages"><?php
+            echo Mage::helper('helpdesk/desktopNotification')->getTicketMessagesAmount($user);
+        ?></span>
+    </a>
+</span>
+<span class="separator">|</span>

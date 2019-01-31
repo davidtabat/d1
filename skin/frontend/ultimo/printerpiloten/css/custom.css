@@ -1,0 +1,108 @@
+/**
+ * This file is a container for custom CSS. You can use it to override the default styles of the theme.
+ *
+ * 1. Copy the file "SAMPLE.custom.css" and rename it to "custom.css".
+ *    Otherwise this file will not be loded by Magento.
+ * 2. Enable it in the admin panel.
+ * 3. Uncomment slected sample styles or add your own CSS to override the default styles of the theme.
+ *
+ * Please refer to the user guide for more details.
+ *
+ */
+
+
+
+/* Stock indicator on product page: icon color
+-------------------------------------------------------------- */
+
+/*
+.availability-only .ic { color: green; }
+*/
+
+
+
+/* Product counter in the mini cart drop-down
+-------------------------------------------------------------- */
+
+/*
+.header .skip-link .count {
+	background-color: deepskyblue;
+}
+*/
+
+.products-grid .product-name {
+overflow: hidden;
+white-space: nowrap;
+text-overflow: ellipsis;
+}
+
+.header-primary .dropdown .dropdown-heading {
+color: #009fe3;
+font-size: 20px;
+font-style: italic;
+font-weight: bold;
+font-stretch: condensed;
+font-family: "Roboto",georgia,serif;
+}
+
+.availability 
+{
+float: left;
+margin: 0px 0px 0px;
+}
+
+.products-list .btn-cart
+{
+background-color: #5bd2ec;
+}
+
+.product-view .btn-cart
+{
+background-color: #5bd2ec;
+}
+
+input.input-text, .cart .shipping select
+
+{
+width: 90%;
+}
+
+.cart .shipping input.input-text, .cart .shipping select
+
+{
+width: 90%;
+}
+
+.product-view .btn-cart, .btn-checkout
+
+{
+background-color: #5bd2ec;
+}
+
+.price-box .price, .price-as-configured .price
+
+{
+font-size: 20px;
+font-weight: bold;
+font-family: "Roboto",georgia,serif;
+}
+
+.videowrapper {
+float: none;
+    clear: both;
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 25px;
+    height: 0;
+}
+.videowrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.tax-details a:link {
+    text-decoration: underline;
+     }

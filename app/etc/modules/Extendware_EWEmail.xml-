@@ -1,0 +1,15 @@
+<config>
+   <modules>
+      <Extendware_EWEmail>
+         <active>true</active>
+         <codePool>local</codePool>
+         <depends>
+            <Extendware_EWCore/>
+            <Mage_Newsletter/>
+         </depends>
+         <extendware>
+            <name>SMTP E-mail Plus</name>
+         </extendware>
+      </Extendware_EWEmail>
+   </modules>
+</config>

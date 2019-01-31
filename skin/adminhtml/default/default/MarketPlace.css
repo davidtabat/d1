@@ -1,0 +1,11 @@
+.active-account a span, .active-country a span{
+    color:black !important
+}
+
+.no-active-account a span, .no-active-country a span{
+    color:#ccc !important;
+}
+
+table.data tr:hover{
+    background-color:#fff9e9;
+}

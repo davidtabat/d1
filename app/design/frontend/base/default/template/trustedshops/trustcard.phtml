@@ -1,0 +1,38 @@
+<?php
+/**
+ * @category  Trustedshops
+ * @package   Trustedshops_Trustedshops
+ * @author    Trusted Shops GmbH
+ * @copyright 2016 Trusted Shops GmbH
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @link      http://www.trustedshops.de/
+ */
+?>
+<?php /** @var Trustedshops_Trustedshops_Block_Trustcard $this */ ?>
+<?php if ($this->collectOrders()) : ?>
+    <div id="trustedShopsCheckout" style="display: none;">
+        <span id="tsCheckoutOrderNr"><?php echo $this->getIncrementId() ?></span>
+        <span id="tsCheckoutBuyerEmail"><?php echo $this->getCustomerEmail() ?></span>
+        <span id="tsCheckoutOrderAmount"><?php echo $this->getOrderAmount() ?></span>
+        <span id="tsCheckoutOrderCurrency"><?php echo $this->getStoreCurrencyCode() ?></span>
+        <span id="tsCheckoutOrderPaymentType"><?php echo $this->getPaymentMethod() ?></span>
+        <span id="tsCheckoutOrderEstDeliveryDate"><?php echo $this->getEstimatedDeliveryDate() ?></span>
+        <?php if ($this->collectReviews()) : ?>
+            <!-- product reviews start -->
+            <!-- for each product in the basket full set of data is required -->
+            <?php /** @var Mage_Sales_Model_Order_Item $item */ ?>
+            <?php foreach ($this->getOrder()->getAllVisibleItems() as $item) : ?>
+                <span class="tsCheckoutProductItem">
+                    <span class="tsCheckoutProductUrl"><?php echo $this->getProductUrl($item) ?></span>
+                    <span class="tsCheckoutProductImageUrl"><?php echo $this->getProductImage($item) ?></span>
+                    <span class="tsCheckoutProductName"><?php echo $this->getName($item) ?></span>
+                    <span class="tsCheckoutProductSKU"><?php echo $this->getProductSkuByItem($item) ?></span>
+                    <span class="tsCheckoutProductGTIN"><?php echo $this->getProductGTIN($item) ?></span>
+                    <span class="tsCheckoutProductMPN"><?php echo $this->getProductMPN($item) ?></span>
+                    <span class="tsCheckoutProductBrand"><?php echo $this->getProductBrand($item) ?></span>
+                </span>
+            <?php endforeach; ?>
+            <!-- product reviews end -->
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

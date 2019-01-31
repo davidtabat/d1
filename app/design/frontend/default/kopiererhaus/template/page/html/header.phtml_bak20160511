@@ -1,0 +1,121 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+jQuery.noConflict();
+jQuery(document).ready(function(){
+	
+   	jQuery(".small-menu").click(function(){ 
+		//alert("hi");
+		
+		if(!jQuery("#nav").is(":visible")) { 
+			jQuery("#nav").show();	
+						
+		} else { 
+			jQuery("#nav").hide();	
+		} 
+	});
+	jQuery(".mob-search").click(function(){ 
+		//alert("hi");
+		
+		if(!jQuery(".mob-search-box").is(":visible")) { 
+			jQuery(".mob-search-box").show();	
+						
+		} else { 
+			jQuery(".mob-search-box").hide();	
+		} 
+	});
+	});
+</script>
+
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+/**
+ * @var Mage_Page_Block_Html_Header $this
+ */
+?>
+
+<!--<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>-->
+<div class="topMenu-container">
+    <div class="topMenu">
+        <div class="left">
+            <?php //echo $this->getChildHtml('welcome') ?>
+			<p><img align="left" alt="" src="<?php echo $this->getSkinUrl(); ?>images/phone.png" /> &nbsp;
+                <?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('phone-number')->toHtml(); ?></p>
+			<span>Beratung Mo-Do 8:30 - 17 Uhr / Fr 8:30-15 Uhr</span>
+        </div>
+            <?php if (! Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+                <a style="margin-left: 20px;display:none;" href="<?php echo Mage::helper('customer')->getLoginUrl(); ?>"><?php echo $this->__('Einloggen') ?></a>
+            <?php else: ?>
+                <a style="margin-left: 20px;" href="<?php echo Mage::helper('customer')->getLogoutUrl(); ?>"><?php echo $this->__('Ausloggen') ?></a>
+            <?php endif; ?>
+            <div class="right">
+                
+                <a href="<?php echo Mage::getBaseUrl(); ?>" class="level-top">Startseite</a> | 
+                <a href="<?php echo Mage::getBaseUrl(); ?>/customer/account/">Mein Konto</a> | 
+                <a href="<?php echo Mage::getBaseUrl(); ?>/checkout/cart/">Mein Warenkorb</a> | 
+                <a href="<?php echo Mage::getBaseUrl(); ?>kaufberatung/">Kaufberatung</a>
+            </div>
+    </div>
+</div>
+<div class="header-container">
+    <div class="header">
+        <?php if ($this->getIsHomePage()): ?>
+            <h1 class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>" /></a></h1>
+        <?php else: ?>
+            <span class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>" /></a></span>
+        <?php endif ?>
+		<a href="https://www.trustedshops.de/bewertung/info_X5F35A17F0A1FF628A8419AF9E093017D.html?utm_source=shop&utm_medium=link&utm_content=trustcard&utm_campaign=trustbadge" target="_blank"><?php echo $this->getLayout()->createBlock('cms/block')->setBlockId('trusted-data')->toHtml(); ?></a>
+        <div title="Mein Warenkorb" class="cart" onclick="location.href = '/checkout/cart/';">
+            <div class="cart-info">
+                <div class="block-content">
+                    <?php
+                    $count = $this->helper('checkout/cart')->getSummaryCount();  //get total items in cart 
+                    $total = $this->helper('checkout/cart')->getQuote()->getGrandTotal(); //get total price 
+                    if ($count == 0) {
+                        //echo $this->__('Es sind keine Artikel im Warenkorb');
+                    }
+                    if ($count == 1) {
+                        echo $this->__('<a href="/checkout/cart/" style="text-decoration: none; color:#333;"> %s', $count . ' Artikel');
+                        echo $this->__(' : %s', $this->helper('core')->formatPrice($total, false));
+                        echo "</a>";
+                    }
+                    if ($count > 1) {
+                        echo $this->__('<a href="/checkout/cart/" style="text-decoration: none; color:#333;"> ' . $count . ' Artikel');
+                        echo $this->__(' : %s', $this->helper('core')->formatPrice($total, false));
+                        echo "</a>";
+                    }
+                    ?>   
+                </div>
+            </div>
+        </div>
+        <div class="quick-access">
+            <?php echo $this->getChildHtml('store_language') ?>
+        </div>
+        <?php echo $this->getChildHtml('topContainer'); ?>
+        <span class="mob-search-box"><?php echo $this->getChildHtml('topSearch') ?></span>
+    </div>
+</div>
+        <?php echo $this->getChildHtml('topMenu') ?>
+ 

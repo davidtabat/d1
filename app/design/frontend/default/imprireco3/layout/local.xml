@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+     
+ 
+
+       
+ 
+       
+ 
+     
+ 
+      
+    </default>
+ 
+   
+    <!--Category View-->
+    <catalog_category_view>
+        <!--Set Page Template-->
+      
+    </catalog_category_view>
+ 
+    <!--Category View With Layered Navigation-->
+    <catalog_category_layered>
+    </catalog_category_layered>
+ 
+    <!--Onepage Checkout Index Page-->
+    <checkout_onepage_index>
+    </checkout_onepage_index>
+ 
+    <!--Onepage Checkout Success Page-->
+    <checkout_onepage_success>
+    </checkout_onepage_success>
+ 
+    <!--Customer Accound Pages-->
+  
+ 
+    <!--Customer Logged In-->
+    <customer_logged_in>
+    </customer_logged_in>
+ 
+    <!--Customer Logged Out-->
+    <customer_logged_out>
+    </customer_logged_out>
+ 
+    <!--Product View-->
+    <catalog_product_view>
+        <reference name="right"> 
+            <block type="cms/block" name="right_add" >
+             <action method="setBlockId"><block_id>right_add</block_id></action>
+            </block>
+        </reference> 
+    </catalog_product_view>
+ 
+    <!--Catalogsearch Result Page-->
+    <catalogsearch_result_index>
+    </catalogsearch_result_index>
+ 
+    <!--Advanced Search Result Page-->
+    <catalogsearch_advanced_result>
+    </catalogsearch_advanced_result>
+ 
+    <!--Advanced Search Page-->
+    <catalogsearch_advanced_index>
+    </catalogsearch_advanced_index>
+ 
+    <!--Cart-->
+    <checkout_cart_index>
+    </checkout_cart_index>
+ 
+    <!--Contacts Page-->
+    <contacts_index_index>
+    </contacts_index_index>
+</layout>

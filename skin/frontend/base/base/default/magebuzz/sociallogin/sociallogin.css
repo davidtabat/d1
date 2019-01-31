@@ -1,0 +1,35 @@
+/* Social login button on Customer Login page */
+#form-login{}
+/*#form-login #registered-user-login{float:left; padding-right:20px; width:420px;}*/
+#form-login #registered-user-login{float:left; padding-right:20px; max-width:60%;}
+#form-login #registered-user-login .form-list label{margin-right:10px; min-width:90px;}
+
+/*#form-login #registered-user-login .form-list input.input-text{width:180px;}*/
+#form-login #registered-user-login .link-create-account{
+	border-top: 1px dotted #CCCCCC;
+	float: left;
+	padding: 10px 0 0;
+	margin:10px 0 0;
+	text-align: right;
+	width: 100%;
+}
+#form-login #registered-user-login .link-create-account p{float:left;}
+#form-login #registered-user-login .link-create-account button.button{float:right;}
+#form-register .link-login{
+	border-top: 1px dotted #CCCCCC;
+	float: left;
+	padding: 10px 0 0;
+	margin:10px 0 0;
+	text-align: right;
+	width: 100%;
+}
+#form-register .link-login p{float:left;}
+#form-register .link-login button.button{float:right;}
+/*#form-login #login-with-social-network{float:right; width:162px;}*/
+#form-login #login-with-social-network{float:right; }
+#form-login #sendlogin{margin-left:15px;}
+#form-forgot{}
+#form-forgot .page-title{margin:0!important;}
+.customer-login-with-social{}
+.customer-login-with-social .content ul{width:100%; margin:0 0 10px; text-align:right;}
+.customer-login-with-social .content ul li{display:inline;}

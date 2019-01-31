@@ -1,0 +1,204 @@
+<config>
+    <tabs>
+        <cmsmart_tab>
+            <label>Cmsmart Extensions</label>
+            <sort_order>100</sort_order>
+        </cmsmart_tab>
+    </tabs>
+
+    <sections>
+        <calculateshipping translate="label" module="calculateshipping">
+            <label>Calculate Shipping</label>
+            <tab>cmsmart_tab</tab>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <sort_order>120</sort_order>
+            <groups>
+				<cmsmart translate="label">
+                    <label>License</label>                   
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[<p id="license-messages"></p>]]>
+                    <![CDATA[
+                    <h5 style="padding-bottom: 10px; font-family: Arial">Magento Calculate Shipping Extension</h5>
+                   	
+                    <div style="padding-bottom: 10px"><p style="float: left; width: 205px">Version</p><p>1.0.0</p></div>
+                    <div style="padding-bottom: 10px"><p style="float: left; width: 205px">License</p><p>GPL</p></div>
+                    <div><p style="float: left; width: 205px">Copyright</p><p>(c) 2013-2014 Cmsmart.net</p></div>
+                    ]]>  
+                    </comment>
+                    <fields>                    	
+                        <license_skuproduct translate="label comment">
+                            <label>Sku Product</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<depends><your_first_field_name>1</your_first_field_name></depends>
+                        </license_skuproduct>     
+                        <license_key translate="label comment">
+                            <label>License</label>
+                            <comment>
+                            <![CDATA[Please fill the license key, more information on <a href="http://cmsmart.net/license" target="_blank" style='text-decoration: none'><font color="#218bca">http://cmsmart.net/license</font></a>]]>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </license_key>                        
+                    </fields>
+                </cmsmart>
+                <allow translate="label" module="calculateshipping">
+                    <label>Enabled extension</label>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled Extension</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+
+                        <ip translate="label">
+                            <label>Auto detect customer local</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ip>
+
+                        <category translate="label">
+                            <label>Also apply for category</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </category>
+                    </fields>
+                </allow>
+
+                <use translate="label" module="calculateshipping">
+                    <label>Allow address fields</label>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <position translate="label">
+                            <label>Form Position</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>calculateshipping/system_config_source_position</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </position>
+
+                        <country translate="label">
+                            <label>Country</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </country>
+
+                        <region translate="label">
+                            <label>Region/Province</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </region>
+
+                        <city translate="label">
+                            <label>City</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </city>
+
+                        <post_code translate="label">
+                            <label>Post Code</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </post_code>
+
+                    </fields>
+                </use>
+
+                <advance translate="label" module="calculateshipping">
+                    <label>Include cart options</label>
+                    <sort_order>4</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <include_cart translate="label">
+                            <label>Show Option</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>8</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </include_cart>
+
+                        <include_cart_default translate="label">
+                            <label>Default Include Cart</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>9</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </include_cart_default>
+                    </fields>
+                </advance>
+				<info translate="label">
+                    <label>Cmsmart</label>
+                    <sort_order>901</sort_order>
+                    <frontend_type>text</frontend_type> 
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store> 
+                    <comment>Extension powered by <![CDATA[<a href="http://www.cmsmart.net" target="_blank" style='text-decoration: none'><font color="#EF1313">CMSMART</font></a>.<br/><br/>]]>Visit our website: <![CDATA[<a href="http://www.cmsmart.net" target="_blank" style='text-decoration: none'><font color="#EF1313">wwww.cmsmart.net</font></a>]]> to view more themes and extension required for your magento store.<![CDATA[<br/><br/>]]> Write ticket and get support from our at: <![CDATA[<a href="http://cmsmart.net/support" target="_blank" style='text-decoration: none'><font color="#EF1313">Technical Support - Forum</font></a>.]]>  </comment>  
+                </info>
+            </groups>
+        </calculateshipping>
+        <cmsmartinfo module="calculateshipping" translate="label">
+            <label>Cmsmart Information</label>
+            <tab>calculateshipping_tab</tab>
+            <sort_order>121</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+        </cmsmartinfo>
+    </sections>
+</config>

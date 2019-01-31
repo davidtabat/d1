@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @copyright Copyright (c) 2011 Honeyeshop.com by Adbee
+ */
+-->
+<config>
+   <modules>
+      <Honeyeshop_CustomNumbering>
+         <active>true</active>
+         <codePool>local</codePool>
+      </Honeyeshop_CustomNumbering>     
+   </modules>
+</config>

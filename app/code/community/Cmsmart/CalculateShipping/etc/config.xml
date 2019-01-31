@@ -1,0 +1,144 @@
+<config>
+    <modules>
+        <Cmsmart_CalculateShipping>
+            <version>0.1.0</version>
+        </Cmsmart_CalculateShipping>
+    </modules>
+
+    <global>
+        <models>
+            <calculateshipping>
+                <class>Cmsmart_CalculateShipping_Model</class>
+                <resourceModel>calculateshipping_resource</resourceModel>
+            </calculateshipping>
+
+            <calculateshipping_resource>
+                <class>Cmsmart_CalculateShipping_Model_Resource</class>
+            </calculateshipping_resource>
+        </models>
+
+        <blocks>
+            <calculateshipping>
+                <class>Cmsmart_CalculateShipping_Block</class>
+            </calculateshipping>
+        </blocks>
+
+        <helpers>
+            <calculateshipping>
+                <class>Cmsmart_CalculateShipping_Helper</class>
+            </calculateshipping>
+        </helpers>
+
+        <resources>
+            <calculateshipping_setup>
+                <setup>
+                    <module>Cmsmart_CalculateShipping</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </calculateshipping_setup>
+
+            <calculateshipping_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </calculateshipping_read>
+
+            <calculateshipping_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </calculateshipping_write>
+        </resources>
+
+        <events>
+            <controller_action_layout_load_before>
+                <observers>
+                    <calculateshipping>
+                        <type>singleton</type>
+                        <class>Cmsmart_CalculateShipping_Model_Observer</class>
+                        <method>controllerActionLayoutLoadBefore</method>
+                    </calculateshipping>
+                </observers>
+            </controller_action_layout_load_before>
+        </events>
+    </global>
+
+    <frontend>
+        <routers>
+            <calculateshipping>
+                <use>standard</use>
+                <args>
+                    <module>Cmsmart_CalculateShipping</module>
+                    <frontName>calculateshipping</frontName>
+                </args>
+            </calculateshipping>
+        </routers>
+
+        <layout>
+            <updates>
+                <calculateshipping>
+                    <file>cmsmart/calculateshipping.xml</file>
+                </calculateshipping>
+            </updates>
+        </layout>
+    </frontend>
+
+    <adminhtml>
+        <layout>
+            <updates>
+                <calculateshipping>
+                    <file>cmsmart/cmsmart_calculateshipping.xml</file>
+                </calculateshipping>
+            </updates>
+        </layout>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <calculateshipping>
+                <use>admin</use>
+                <args>
+                    <module>Cmsmart_CalculateShipping</module>
+                    <frontName>calculateshipping</frontName>
+                </args>
+            </calculateshipping>
+        </routers>
+    </admin>
+
+    <calculateshipping>
+        <apply>
+            <action>
+                <catalog_product_view />
+                <catalog_category_view />
+            </action>
+        </apply>
+    </calculateshipping>
+
+    <default>
+        <calculateshipping>
+			<cmsmart>
+				<license_skuproduct>MG18</license_skuproduct>
+			</cmsmart>
+            <allow>
+                <enabled>1</enabled>
+                <ip>0</ip>
+                <category>1</category>
+            </allow>
+
+            <use>
+                <position>right</position>
+                <country>1</country>
+                <region>1</region>
+                <city>1</city>
+                <post_code>1</post_code>
+            </use>
+
+            <advance>
+                <include_cart>1</include_cart>
+                <default_include_cart>0</default_include_cart>
+            </advance>
+
+        </calculateshipping>
+    </default>
+
+</config>

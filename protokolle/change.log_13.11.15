@@ -1,0 +1,5 @@
+2015/11/11, Altaf Ahmed, Issue resolved- empty order pdf, app/design/frontend/base/default/template/auit/pdf/print/auit_offer
+
+13.11.15 Altaf Ahmed , Error on printing pdf, Base.php  app/code/community/AuIt/Pdf/Model/Pdf
+
+13.11.15 Altaf Ahmed , Error getLable() on order print= app/design/frontend/base/default/template/sales/ordertotals.phtml (all storeviews)

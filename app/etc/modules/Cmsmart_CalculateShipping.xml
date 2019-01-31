@@ -1,0 +1,12 @@
+<config>
+    <modules>
+        <Cmsmart_CalculateShipping>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Catalog />
+                <Mage_Shipping />
+            </depends>
+        </Cmsmart_CalculateShipping>
+    </modules>
+</config>

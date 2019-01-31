@@ -1,0 +1,24 @@
+<config>
+    <modules>
+        <Kopiererhaus_Kaufberatung>
+            <version>0.1.0</version>
+        </Kopiererhaus_Kaufberatung>
+    </modules>
+    <frontend>
+        <routers>
+            <helloworld>
+                <use>standard</use>
+                <args>
+                    <module>Kopiererhaus_Kaufberatung</module>
+                    <frontName>kaufberatung</frontName>
+                </args>
+            </helloworld>
+        </routers>
+        <layout>
+            <two_columns_purchase_advice>
+                <label>Kaufberatung</label>
+                <template>page/2columns-kaufberatung.phtml</template>
+            </two_columns_purchase_advice>
+        </layout>
+    </frontend>
+</config>   

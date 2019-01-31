@@ -1,0 +1,134 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+ 
+?>
+<?php if($this->getItems()->getSize()): ?>
+<div class="block block-related">
+    <div class="block-title">
+        <strong><span><?php echo $this->__('Related Products') ?></span></strong>
+    </div>
+    <div class="block-content">
+    
+            <p class="block-subtitle"><?php // echo $this->__('Check items to add to the cart or') ?>&nbsp;<a href="#" onclick="selectAllRelated(this); return false;"><?php //echo $this->__('select all') ?></a></p>
+        <ol class="mini-products-list" id="block-related">
+        <?php foreach($this->getItems() as $_item): ?>
+            <li class="item">
+                <?php /*?><?php if(!$_item->isComposite() && $_item->isSaleable()): ?>
+                    <?php if (!$_item->getRequiredOptions()): ?>
+                        <input type="checkbox" class="checkbox related-checkbox" id="related-checkbox<?php echo $_item->getId() ?>" name="related_products[]" value="<?php echo $_item->getId() ?>" />
+                    <?php endif; ?>
+                <?php endif; ?><?php */?>
+                <div class="product">
+                
+  
+                <div class="cust-contnt">
+               
+    <ul>
+		<li class="skui"><?php echo $_item->getData('sku'); ?></li>
+        <li class="papersize"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/ico.gif" /><?php echo $_item->getData('papersize'); ?></li>
+        <li class="yearbuilt"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/ye.png" /> <?php echo $_item->getData('yearbuilt'); ?></li>
+        <li class="pages"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/pag.png" /> <?php echo $_item->getData('pages'); ?></li>
+        <li class="black"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/b.png" /> <?php echo $_item->getData('blacktoner'); ?></li>
+        <li class="cyaan"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/c.png" /> <?php echo $_item->getData('cyantoner'); ?></li>
+        <li class="magenta"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/m.png" /> <?php echo $_item->getData('magentatoner'); ?></li>
+        <li class="yellow"><img src="<?php echo $this->getSkinUrl(); ?>images/rel/y.png" /> <?php echo $_item->getData('yellowtoner'); ?></li>
+        <li class="pages"><?php echo $_item->getData('price'); ?> €</li>
+        <li class="add"><button id="product-addtocart-button" class="button btn-cart" onclick="productAddToCartForm.submit(this)" title="In den Warenkorb" type="button">
+<span>
+<span>In den Warenkorb</span>
+</span>
+</button></li>
+	</ul>
+    </div>
+                    <?php /*?><a href="<?php echo $_item->getProductUrl() ?>" title="<?php echo $this->escapeHtml($_item->getName()) ?>" class="product-image"><img src="<?php echo $this->helper('catalog/image')->init($_item, 'thumbnail')->resize(50) ?>" width="50" height="50" alt="<?php echo $this->escapeHtml($_item->getName()) ?>" /></a><?php */?>
+                    <?php /*?><div class="product-details">
+                        <p class="product-name"><a href="<?php echo $_item->getProductUrl() ?>"><?php echo $this->escapeHtml($_item->getName()) ?></a></p>
+                        <?php echo $this->getPriceHtml($_item, true, '-related') ?>
+                        <?php if ($this->helper('wishlist')->isAllow()) : ?>
+                            <a href="<?php echo $this->getAddToWishlistUrl($_item) ?>" class="link-wishlist"><?php echo $this->__('Add to Wishlist') ?></a>
+                        <?php endif; ?>
+                    </div><?php */?>
+                </div>
+            </li>
+        <?php endforeach ?>
+        </ol>
+        <script type="text/javascript">decorateList('block-related', 'none-recursive')</script>
+    </div>
+    <script type="text/javascript">
+    //<![CDATA[
+    $$('.related-checkbox').each(function(elem){
+        Event.observe(elem, 'click', addRelatedToProduct)
+    });
+
+    var relatedProductsCheckFlag = false;
+    function selectAllRelated(txt){
+        if (relatedProductsCheckFlag == false) {
+            $$('.related-checkbox').each(function(elem){
+                elem.checked = true;
+            });
+            relatedProductsCheckFlag = true;
+            txt.innerHTML="<?php echo $this->__('unselect all') ?>";
+        } else {
+            $$('.related-checkbox').each(function(elem){
+                elem.checked = false;
+            });
+            relatedProductsCheckFlag = false;
+            txt.innerHTML="<?php echo $this->__('select all') ?>";
+        }
+        addRelatedToProduct();
+    }
+
+    function addRelatedToProduct(){
+        var checkboxes = $$('.related-checkbox');
+        var values = [];
+        for(var i=0;i<checkboxes.length;i++){
+            if(checkboxes[i].checked) values.push(checkboxes[i].value);
+        }
+        if($('related-products-field')){
+            $('related-products-field').value = values.join(',');
+        }
+    }
+    //]]>
+    </script>
+</div>
+<?php endif ?>
+
+<style>
+.block .block-subtitle {display:none;}
+.cust-contnt li {display:table-cell; vertical-align:middle; width:80px;}
+
+.block-related .item:nth-child(odd) {
+  background-color: #f8f8f8;
+}
+
+.add button.button, .add button.button:hover {
+    background: #4a6ea0 -moz-linear-gradient(center top , #4a6ea0, #4a6ea0) repeat scroll 0 0 !important;
+    border: 1px solid #4d70a2 !important;
+    color: #fff !important;
+    font: bold 15px/34px Arial,Helvetica,sans-serif !important;
+    height: 34px !important;
+    text-transform: uppercase !important;
+</style>

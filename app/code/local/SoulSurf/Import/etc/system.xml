@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<config>
+	<tabs>
+		<soul translate="label" module="import">
+			<label>IT-Recht Kanzlei Import</label>
+			<sort_order>508</sort_order>
+		</soul>
+	</tabs>
+	<sections>
+		<csvimport translate="label" module="import">
+			<tab>soul</tab>
+			<label>Einstellungen</label>
+			<sort_order>10</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>1</show_in_website>
+			<show_in_store>1</show_in_store>
+			
+			<groups>
+				<general translate="label" module="import">
+					<label>Import Einstellungen</label>
+					<sort_order>1000</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+					<fields>						
+						<username translate="label">
+							<label>Benutzername</label>
+							
+							<frontend_type>text</frontend_type>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</username>
+						<password translate="label">
+							<label>Password</label>
+							 <comment>
+                <![CDATA[Bitte vergeben Sie hier zunächst einen beliebigen Benutzernamen und ein Passwort.
+Diese Daten werden dann im Mandantenportal der IT-Recht Kanzlei zur Authentifizierung Ihrer Übertragung abgefragt.</span>]]>
+              </comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>
+						</password>
+						
+						<attach_revocation translate="label">
+							<label>Widerrufsbelehrung an die Bestellbestätigung anhängen</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model> 
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>							
+						</attach_revocation>
+						
+						<attach_terms translate="label">
+							<label>AGB an die Bestellbestätigung anhängen</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model> 
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>0</show_in_store>							
+						</attach_terms>						
+						
+					</fields>	
+				</general>
+			</groups>		
+			
+		</csvimport>
+	</sections>
+</config>

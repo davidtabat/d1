@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Advance FAQ Management Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   FME
+ * @package    Advance FAQ Management
+ * @author     Kamran Rafiq Malik <support@fmeextensions.com>
+ *                          
+ * 	       Asif Hussain <support@fmeextensions.com>
+ * 	       
+ * @copyright  Copyright 2012 © www.fmeextensions.com All right reserved
+ */
+-->
+
+
+<layout version="0.1.0">
+    <faqsadmin_adminhtml_faqs_index>
+		<update handle="editor" />
+        <reference name="content">
+            <block type="faqs/adminhtml_faqs" name="faqs" />
+        </reference>
+    </faqsadmin_adminhtml_faqs_index>
+    
+    <faqsadmin_adminhtml_topic_index>
+		<update handle="editor" />
+        <reference name="content">
+            <block type="faqs/adminhtml_topic" name="topic" />
+        </reference>
+    </faqsadmin_adminhtml_topic_index>
+	
+	<faqsadmin_adminhtml_faqs_edit>
+			<update handle="editor"/>
+	</faqsadmin_adminhtml_faqs_edit>
+	
+	<faqsadmin_adminhtml_faqs_new>
+   	    <update handle="editor" />
+	</faqsadmin_adminhtml_faqs_new>
+    
+</layout>

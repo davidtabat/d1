@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Advance FAQ Management Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   FME
+ * @package    Advance FAQ Management
+ * @author     Kamran Rafiq Malik <support@fmeextensions.com>
+ *                          
+ * 	       Asif Hussain <support@fmeextensions.com>
+ * 	       1 - Created - 09-04-2012
+ * 	       
+ * @copyright  Copyright 2012 © www.fmeextensions.com All right reserved
+ */
+ -->
+ 
+ 
+<layout version="0.1.0">
+    <default>
+		<!-- <reference name="root">
+			<action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+		</reference> -->
+		
+		<reference name="head">
+		    
+			<action method="addCss"><stylesheet>css/faqs/style.css</stylesheet></action>
+			<action method="addCss"><stylesheet>css/faqs/rating.css</stylesheet></action>
+			
+			<action method="addJs"><script>scriptaculous/scriptaculous.js</script></action>
+			<action method="addJs"><script>faqs/accordion.js</script></action>
+			
+			<action method="addJs"><script>faqs/rating/livepipe.js</script></action>
+			<action method="addJs"><script>faqs/rating/rating.js</script></action>
+			
+		</reference>
+		
+		<!-- <reference name="right">
+			<block type="faqs/block" name="block" before="-">
+				<action method="setTemplate">
+					<template>faqs/block.phtml</template>
+				</action>
+			</block>
+		</reference> -->
+		
+    </default>
+    
+    <faqs_index_index>
+
+    	<reference name="root">
+			<action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+		</reference>
+		<reference name="right">
+			<block type="faqs/block" name="block" before="-">
+				<action method="setTemplate">
+					<template>faqs/block.phtml</template>
+				</action>
+			</block>
+		</reference>
+		
+		<reference name="content">
+			<block type="faqs/topic" name="faqs" template="faqs/topics.phtml" />
+		</reference>
+		
+    </faqs_index_index>    
+		    
+			<catalog_category_view>
+					<reference name="right">
+						<remove name="block" />
+					</reference>
+			</catalog_category_view>
+			
+			<catalog_product_view>
+					<reference name="right">
+						<remove name="block" />
+					</reference>
+			</catalog_product_view>
+			
+    <faqs_index_view>
+		<reference name="root">
+			<action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+		</reference>
+		<reference name="right">
+			<block type="faqs/block" name="block" before="-">
+				<action method="setTemplate">
+					<template>faqs/block.phtml</template>
+				</action>
+			</block>
+		</reference>
+		<reference name="content">
+				<block type="faqs/faqs" name="faqs" template="faqs/faqs.phtml" />
+		</reference>  
+		
+    </faqs_index_view>
+    
+    <faqs_index_search>
+		<reference name="root">
+			<action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+		</reference>
+		<reference name="right">
+			<block type="faqs/block" name="block" before="-">
+				<action method="setTemplate">
+					<template>faqs/block.phtml</template>
+				</action>
+			</block>
+		</reference>
+		<reference name="content">
+				<block type="faqs/search" name="search" template="faqs/searchresults.phtml" />
+		</reference> 
+		
+    </faqs_index_search>
+	
+</layout>         
+        
+        
+	    
+        
+    

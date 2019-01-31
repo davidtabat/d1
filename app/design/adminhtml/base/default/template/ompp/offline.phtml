@@ -1,0 +1,24 @@
+<div id="ompp_monitor">
+	<?php
+		$websites = Mage::helper('ompp')->getMaintenanceConfiguration();
+		 foreach ($websites as $site=>$data):?>
+		 <?php
+			$poupup = ''; 
+			$poupup.='<h5>'. $data['websitename'] . ' - '. $data['storename'] .'</h5>';
+			if ($data['type'] != ''){
+ 				if ($data['type'] == 'time'){
+					$poupup.='<strong>' . $this->__('Schedule Maintenance from %s - %s every %s',$data['from'], $data['to'], join(', ', $data['days'])). '</strong>';
+					 
+				}else
+				{
+				  	$poupup.='<strong>' . $this->__('Manual Maintenance Active') .'</strong>';
+				}
+			}
+		?>
+		<div rel="tooltip" title="<?php echo htmlentities ($poupup); ?>" onclick="window.location='<?php echo $this->getCfgStoreUrl($data['website'],$site)?>'" class="ompp_monitor ompp_button <?php echo $data['type'] ?> <?php echo ($data['active']) ? 'mactive' : '' ?>" id="ompp_<?php echo $site ?>">
+		</div>
+		 
+	<?php endforeach ?> 	
+</div>
+
+ 

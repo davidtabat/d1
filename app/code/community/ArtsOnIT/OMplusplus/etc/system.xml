@@ -1,0 +1,234 @@
+<config>
+    <sections>
+        <ompp translate="label" module="ompp">
+            <label>Maintenance</label>
+            <tab>advanced</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>1200</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+			<standardsettings translate="label">
+                    <label>Offline Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+						<enabled translate="label">
+                            <label>Store Offline</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+							<message translate="label">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+			<comment>Available tags: {{contacts}}, {{newsletter}} {{newsletterurl}} {{messages}} {{multilanguages}}</comment>
+                        </message>
+			<newsletterbox translate="label">
+                            <label>Newsletter SignUp form</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+			    <comment>Add {{newsletterurl}} in order to get the right newsletter form url.</comment>
+                        </newsletterbox>
+			<contactsbox translate="label">
+                            <label>Contacts form</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+			    <comment>Add {{contactsurl}} in order to get the right contact form url.</comment>
+                        </contactsbox>
+						<showreminder translate="label">
+                      		<label>Show Website Status </label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+						</showreminder>
+						 
+                    </fields>
+                </standardsettings>
+                <timesettings translate="label">
+                    <label>Schedule Offline Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+			<enabled translate="label">
+                            <label>Enabled Schedule Maintenance</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>		
+			<datefrom translate="label">
+                            <label>Date From</label>
+                            <frontend_model>ompp/adminhtml_date</frontend_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </datefrom>
+			<dateto translate="label">
+                            <label>Date To</label>
+                            <frontend_model>ompp/adminhtml_date</frontend_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </dateto>		 
+			<timefrom translate="label">
+                            <label>Time From</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </timefrom>
+			<timeto translate="label">
+                            <label>Time To</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </timeto>
+
+			<enableddays translate="label">
+                            <label>Enabled Days</label>
+                            <frontend_type>multiselect</frontend_type>
+     			   <source_model>ompp/source_days</source_model>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enableddays>
+			<message translate="label">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+			<comment>Available tags: {{contacts}}, {{newsletter}} {{newsletterurl}} {{messages}} {{multilanguages}} {{countdown}} {{timefrom}} {{timeto}}</comment>
+                        </message>
+			<newsletterbox translate="label">
+                            <label>Newsletter SignUp form</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>23</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+			    <comment>Add {{newsletterurl}} in order to get the right newsletter form url.</comment>
+                        </newsletterbox>
+			<contactsbox translate="label">
+                            <label>Contacts form</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+			    <comment>Add {{contactsurl}} in order to get the right contact form url.</comment>
+                        </contactsbox>
+                        <showreminder translate="label">
+                      		<label>Show Website Status </label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>24</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+						</showreminder>
+                    </fields>
+                </timesettings>
+                <acl>
+               	    <label>Acl policy</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>5</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+	                	<allowed_ips>
+	                		<label>Whitelist allowed IP</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+				<comment>Network ranges can be specified as: - Wildcard format 1.2.3.* - CIDR format: 1.2.3/24 or 1.2.3.4/255.255.255.0- Start-End IP format: 1.2.3.0-1.2.3.255 - separated by comma</comment>
+	                	</allowed_ips>
+                	</fields>
+                </acl>
+		<countdown>
+               	    <label>Countdown Style</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>4</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+			<layout translate="label">
+                            <label>Enabled Days</label>
+                            <frontend_type>select</frontend_type>
+     			   <source_model>ompp/source_layout</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </layout>
+	                 <compact translate="label">
+                            <label>Compact Layout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </compact>
+                    </fields>
+                </countdown>
+		<whitelist>
+               	    <label>White Path</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>5</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+	                <checkout translate="label">
+                            <label>Allow only Checkout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </checkout>
+                     </fields>
+                </whitelist>
+             </groups>
+        </ompp>
+    </sections>
+</config>

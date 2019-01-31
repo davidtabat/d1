@@ -1,0 +1,85 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<?php
+/**
+ * Product list template
+ *
+ * @see Mage_Catalog_Block_Product_List
+ */
+?>
+<?php 
+$_coreHelper = $this->helper('core');
+$_weeeHelper = $this->helper('weee');
+$_taxHelper = $this->helper('tax');
+?>
+<div class="category-products">
+    <ul class="products-grid">
+        <?php
+        $categoryid = 1543;
+
+        $category = new Mage_Catalog_Model_Category();
+        $category->load($categoryid);
+        $collection = $category->getProductCollection();
+        $collection->addAttributeToSelect('*');
+
+        foreach ($collection as $_product) {
+        ?>
+            <li class="item">
+                <h2 class="product-name"> <a href="<?php echo $_product->getProductUrl(); ?>"><?php echo $_product->getName(); ?></a>
+                </h2>
+                <div class="product-image"> <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="product-image"><img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(210); ?>" width="210" height="210" alt="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>" /></a>
+                    <!--<br/><br/>--> 
+                    <?php $_price = $_taxHelper->getPrice($_product, $_product->getPrice()) ?>
+                    <?php $_finalPrice = $_taxHelper->getPrice($_product, $_product->getFinalPrice()) ?>
+                    <?php if ($_finalPrice != $_price): ?>
+                    
+                    <div class="special-price-tag" style="position:absolute;margin-top: -191px;">
+                        <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>">
+                            <img src="<?php echo $this->getSkinUrl('images/specialprice.png'); ?>" alt="" />
+                        </a>
+                    </div>
+                <?php endif; ?>
+                </div>
+                <div class="item-review">
+                    <?php if ($_product->getRatingSummary()): ?>
+                        <?php echo $this->getReviewsSummaryHtml($_product, 'short') ?>
+                    <?php endif; ?>
+                </div>
+                <?php echo $this->getPriceHtml($_product, true) ?>
+                <span class="tax-details">
+                    Inkl. 19% MwSt., zzgl.
+                    <a href="http://www.kopiererhaus.de/lieferung/">Versandkosten</a>
+                </span>
+                <span class="delivery-time-details"><?php echo $_product->getdelivery_time() ?></span>
+                <div class="actions">
+                    <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"><span><span><?php echo $this->__('Add to Cart') ?></span></span></button>
+                </div>
+            <?php } ?>
+        </li>
+    </ul>
+</div>
+

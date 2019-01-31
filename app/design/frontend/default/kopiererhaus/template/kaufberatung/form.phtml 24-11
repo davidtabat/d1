@@ -1,0 +1,300 @@
+<?php
+$view = new Zend_View();
+?>
+
+<?php if (!$formSuccess) : ?>
+
+
+    <div class="col-main">
+
+        <form action="<?php echo Mage::getUrl("kaufberatung/index/submit"); ?>" id="purchaseAdviceForm" method="post">
+
+            <h1>In 3 Minuten zu Ihrem individuellen Angebot</h1>
+
+            <div class="box-2col">
+
+                <div class="hd"></div>
+
+                <div class="bd">
+
+                    <?php $questionNo = 1; ?>
+
+                    <div class="fieldset first" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Möchten Sie nur Schwarz/Weiß oder auch in Farbe drucken?</h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('color')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Welche Formate möchten Sie drucken? <span class="info">(Mehrfachnennung möglich)</span></h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('print')->render($view); ?>
+                                        <div class="formatmisc" style="clear: both;">
+                                            Andere Formate: <?php echo $form->getElement('other_print')->render($view); ?>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Welche Funktionen soll der Kopierer haben? <span class="info">(Mehrfachnennung möglich)</span></h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('features')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Wie viele Papierfächer benötigen Sie?</h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('paper_trays')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Wie möchten Sie den Kopierer anschließen?</h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('connect')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Wie hoch ist Ihr monatliches Kopiervolumen?</h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('volumes')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Bevorzugen Sie ein Tischgerät oder lieber einen Standkopierer?</h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('desktop')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Ihr Budget in Euro</h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('budget')->render($view); ?>
+                                        <?php echo $form->getElement('question_budgetamount')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <?php $questionNo++ ?>
+
+                    <div class="fieldset last" id="b<?php echo $questionNo; ?>">
+                        <table cellpadding="0">
+                            <tr>
+                                <td class="questionno">
+                                    <div class="relative">
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="no"><?php echo $questionNo; ?></div>
+                                </td>
+                                <td class="question">
+                                    <h3>Haben Sie sonstige Anmerkungen oder Wünsche? <span class="info">(Optional)</span></h3>
+                                    <div class="answers">
+                                        <?php echo $form->getElement('comments')->render($view); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="ft"></div>
+
+            </div>
+
+            <div class="next" id="next">
+                <a href="javascript:void(0);"><img src="<?php echo $this->getSkinUrl('images/btn_weiter.png'); ?>" width="116" height="28" alt="Weiter" /></a>
+            </div>
+
+            <div class="box-2col hide personal">
+                <div class="hd"></div>
+                <div class="bd">
+
+                    <div class="fieldset" id="b<?php echo $questionNo; ?>">
+
+                        <h3>An wen soll das Angebot gehen?</h3>
+                        <div class="field-row">
+                            <label class="required">Anrede <em>*</em></label>
+                            <?php echo $form->getElement('title')->render($view); ?>
+                        </div>
+                        <div class="field-row">
+                            <label class="required">Ihr Name <em>*</em></label>
+                            <?php echo $form->getElement('name')->render($view); ?>
+                        </div>
+                        <div class="field-row">
+                            <label>Firma (optional)</label>
+                            <?php echo $form->getElement('company')->render($view); ?>
+                        </div>
+                        <div class="field-row">
+                            <label class="required">Telefon <em>*</em></label>
+                            <?php echo $form->getElement('phone')->render($view); ?>
+                        </div>
+                        <div class="field-row">
+                            <label class="required">E-Mail-Adresse <em>*</em></label>
+                            <?php echo $form->getElement('email')->render($view); ?>
+                        </div>
+                        <div class="field-row submit">
+                            <input type="submit" value="" id="send" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ft"></div>
+
+            </div>
+
+
+        </form>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            var contactForm = new VarienForm('purchaseAdviceForm', true);
+            //]]>
+        </script>
+
+    </div>
+<div class="col-right sidebar" style="padding: 56px 7px 1px;">
+        <div class="banner-small consultant" style="display: block; text-align: center;">
+            <img src="<?php echo $this->getSkinUrl('images/banner-kaufberatung_277x171.png'); ?>" width="254" alt="" /></a>
+        </div>
+    <h3 style="margin: 9px 0 9px 10px;">Kopiererhaus.de</h3>
+    <p style="margin-left: 10px;">Ihr Shop für generalüberholte, voll funktionsfähige Gebrauchtkopierer und Rebuild Toner zu günstigen Preisen.</p>
+        <br />
+        <h3 style="margin-left: 10px;">Wir führen Kopiergeräte von</h3>
+
+        <ul class="manufacturer-list">
+            <li class="first"><a href="/hp-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_hp.png'); ?>" /></a></li>
+            <li><a href="/minolta-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_konicaminolta.png'); ?>" /></a></li>
+            <li><a href="/kyocera-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_kyocera.png'); ?>" /></a></li>
+            <li><a href="/canon-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_canon.png'); ?>" /></a></li>
+            <li><a href="/ricoh-kopierer"><img src="<?php echo $this->getSkinUrl('images/logo_ricoh.png'); ?>" /></a></li>
+        </ul>
+    </div>
+
+<?php else: ?>
+
+    <div class="col-main">
+
+        <h1>Vielen Dank für Ihre Anfrage</h1>
+        <br />
+        <p>Wir werden Ihre Anfrage bearbeiten und Sie schnellstmöglich mit einem auf Sie zugeschnittenen Angebot kontaktieren.</p>
+        <p><a href="/"><img src="<?php echo $this->getSkinUrl('images/btn_einkauffortsetzen.png'); ?>" alt="Einkauf fortsetzen" /></a></p>
+
+    </div>
+
+<?php endif; ?>
+

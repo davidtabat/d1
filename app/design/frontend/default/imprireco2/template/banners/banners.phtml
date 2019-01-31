@@ -1,0 +1,32 @@
+<?php
+    $currentStore = Mage::app()->getStore()->getId();
+		$banners = $this->getBanners();
+		$bannerStyle = Mage::helper('banners')->transitionType();
+    $isShowTitle		    = Mage::helper('banners')->getTitleBanners();
+    $isShowDescription 	    = Mage::helper('banners')->getDescriptionBanners();
+    $transitionSpeedSlider  = 1000*Mage::helper('banners')->transitionSpeed();
+    $imgLink                = Mage::getBaseUrl('media')."Banners/images/";
+?>
+
+<?php  if(Mage::helper('banners')->isEnableBanners() == 1):?>
+    <?php
+        if (count($banners) > 0){
+            switch( $bannerStyle ){
+                case "carousel":
+                    require_once ('carousel.phtml');
+                    break;
+                case "fade":
+                    require_once ('fade.phtml');
+                    break;
+								case "thumbnail-view":
+                    require_once ('thumbnail-view.phtml');
+                    break;		
+                default:
+                    require_once ('carousel.phtml');
+                    break;
+            }
+        }else { ?>
+            <p class="note-msg"><?php echo $this->__("No banner. Please upload a banner!!!"); ?></p>
+        <?php }
+    ?>
+<?php endif ?>

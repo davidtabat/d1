@@ -1,0 +1,24 @@
+
+<?php $_helper = Mage::helper('catsidebarnav'); ?>
+<?php $_menu = $this->renderCategoriesMenuHtml(0,'level-top') ?>
+<?php if($_helper->isEnabled()): ?>
+		<?php if($_menu): ?>
+		<div class="block block-category-nav">
+			<div class="block-title">
+				<strong><span><?php echo $this->__('Categories') ?></span></strong>
+			</div>
+			<div class="block-content">
+				<ul id="category-sidebar-nav" class="category-sidebar-nav">
+					<?php echo $_menu ?>
+				</ul>
+			</div>	
+		</div>
+		<?php endif ?>
+<?php endif ?>	
+<?php $_descr=Mage::getModel('catalog/layer')->getCurrentCategory()->getDescription(); ?>
+<?php if(!empty($_descr)): ?>
+
+<div class="block short-description" style="padding: 10px; margin: 13px 0 5px;">
+<?php echo $_descr; ?> 
+</div>
+<?php endif;?>

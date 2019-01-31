@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+        <Extendware_EWEmail>
+        	<extendware>
+	        	<settings>
+	        		<scopes>
+		        		<main>
+							<tabs>
+						        <main translate="label comment ewhelp" module="ewemail">
+						            <label>SMTP E-mail Plus</label>
+						            <sort_order>100</sort_order>
+						        </main>
+						    </tabs>
+							<sections>
+								<ewemail translate="label comment ewhelp" module="ewemail">
+									<class>separator-top</class>
+									<label>General</label>
+									<tab>main</tab>
+									<frontend_type>text</frontend_type>
+									<sort_order>100</sort_order>
+									<show_in_default>1</show_in_default>
+									<show_in_website>1</show_in_website>
+									<show_in_store>1</show_in_store>
+									<groups>
+										<general translate="label comment ewhelp" module="ewemail">
+						                    <label>General</label>
+						                    <frontend_type>text</frontend_type>
+						                    <sort_order>10</sort_order>
+						                    <show_in_default>1</show_in_default>
+						                    <show_in_website>1</show_in_website>
+						                    <show_in_store>1</show_in_store>
+						                    <fields>
+												<enabled translate="label comment ewhelp">
+						                            <label>Status</label>
+						                            <frontend_type>select</frontend_type>
+						                            <source_model>ewcore/adminhtml_config_data_option_enabledisable</source_model>
+						                            <sort_order>1</sort_order>
+						                            <show_in_default>1</show_in_default>
+						                            <show_in_website>1</show_in_website>
+						                            <show_in_store>1</show_in_store>
+						                            <comment><![CDATA[Disabling will force the use of the normal Magento mail sending regardless of other settings.]]></comment>
+						                        </enabled>
+						                        <sending_enabled translate="label comment ewhelp">
+						                            <label>Sending</label>
+						                            <frontend_type>select</frontend_type>
+						                            <source_model>ewcore/adminhtml_config_data_option_enabledisable</source_model>
+						                            <sort_order>1</sort_order>
+						                            <show_in_default>1</show_in_default>
+						                            <show_in_website>1</show_in_website>
+						                            <show_in_store>1</show_in_store>
+						                            <depends><enabled>1</enabled></depends>
+						                            <comment><![CDATA[Disabling will log outgoing e-mail in the log, but will not actually send it]]></comment>
+						                        </sending_enabled>
+						                        <log_enabled translate="label comment ewhelp">
+						                            <label>Logging</label>
+						                            <frontend_type>select</frontend_type>
+						                            <source_model>ewcore/adminhtml_config_data_option_enabledisable</source_model>
+						                            <sort_order>2</sort_order>
+						                            <show_in_default>1</show_in_default>
+						                            <show_in_website>1</show_in_website>
+						                            <show_in_store>1</show_in_store>
+						                            <depends><enabled>1</enabled></depends>
+						                            <comment><![CDATA[Outgoing messages will be logged if this is enabled]]></comment>
+						                        </log_enabled>
+						                    </fields>
+						                </general>
+						                <smtp translate="label comment ewhelp" module="ewemail">
+						                    <label>SMTP</label>
+						                    <frontend_type>text</frontend_type>
+						                    <sort_order>20</sort_order>
+						                    <show_in_default>1</show_in_default>
+						                    <show_in_website>1</show_in_website>
+						                    <show_in_store>1</show_in_store>
+						                    <fields>
+												<enabled translate="label comment ewhelp">
+						                            <label>Status</label>
+						                            <frontend_type>select</frontend_type>
+						                            <source_model>ewcore/adminhtml_config_data_option_enabledisable</source_model>
+						                            <sort_order>1</sort_order>
+						                            <show_in_default>1</show_in_default>
+						                            <show_in_website>1</show_in_website>
+						                            <show_in_store>1</show_in_store>
+						                            <comment><![CDATA[If disabled, mail will use the normal Magento mail sending method.]]></comment>
+						                        </enabled>
+												<authentication translate="label comment ewhelp">
+													<label>Authentication</label>
+													<frontend_type>select</frontend_type>
+													<source_model>ewemail/adminhtml_data_option_smtp_authentication</source_model>
+													<sort_order>2</sort_order>
+													<show_in_default>1</show_in_default>
+													<show_in_website>1</show_in_website>
+													<show_in_store>1</show_in_store>
+													<depends><enabled>1</enabled></depends>
+													<comment><![CDATA[If you choose none, then the username and password below will not be used]]></comment>
+												</authentication>
+												<username translate="label comment ewhelp">
+													<label>Username</label>
+													<frontend_type>text</frontend_type>
+													<sort_order>3</sort_order>
+													<show_in_default>1</show_in_default>
+													<show_in_website>1</show_in_website>
+													<show_in_store>1</show_in_store>
+													<depends><enabled>1</enabled></depends>
+													<comment>Authentication username used if you selected an authentication method other than none.</comment>
+												</username>
+												<password translate="label comment ewhelp">
+													<label>Password</label>
+													<frontend_type>obscure</frontend_type>
+                            						<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+													<sort_order>4</sort_order>
+													<show_in_default>1</show_in_default>
+													<show_in_website>1</show_in_website>
+													<show_in_store>1</show_in_store>
+													<depends><enabled>1</enabled></depends>
+													<comment>Authentication password used if you selected an authentication method other than none.</comment>
+												</password>
+												<host translate="label comment ewhelp">
+													<label>Host</label>
+													<frontend_type>text</frontend_type>
+													<sort_order>5</sort_order>
+													<show_in_default>1</show_in_default>
+													<show_in_website>1</show_in_website>
+													<show_in_store>1</show_in_store>
+													<depends><enabled>1</enabled></depends>
+													<comment>The SMTP server hostname. This is required.</comment>
+												</host>
+												<port translate="label comment ewhelp">
+													<label>Port</label>
+													<frontend_type>text</frontend_type>
+													<sort_order>6</sort_order>
+													<show_in_default>1</show_in_default>
+													<show_in_website>1</show_in_website>
+													<show_in_store>1</show_in_store>
+													<depends><enabled>1</enabled></depends>
+													<comment>The SMTP server port. Leave blank to use the default according to the SSL security you select.</comment>
+												</port>
+												<ssl translate="label comment ewhelp">
+													<label>SSL Security</label>
+													<frontend_type>select</frontend_type>
+													<source_model>ewemail/adminhtml_data_option_smtp_ssl</source_model>
+													<sort_order>7</sort_order>
+													<show_in_default>1</show_in_default>
+													<show_in_website>1</show_in_website>
+													<show_in_store>1</show_in_store>
+													<depends><enabled>1</enabled></depends>
+													<comment>The connection security used to connect to the SMTP server.</comment>
+												</ssl>
+						                    </fields>
+						                </smtp>
+						                <advanced translate="label comment ewhelp" module="ewemail">
+						                    <label>Advanced</label>
+						                    <frontend_type>text</frontend_type>
+						                    <sort_order>50</sort_order>
+						                    <show_in_default>1</show_in_default>
+						                    <show_in_website>1</show_in_website>
+						                    <show_in_store>1</show_in_store>
+						                    <fields>
+												<reply_to_enabled translate="label comment ewhelp">
+						                            <label>Reply-To Status</label>
+						                            <frontend_type>select</frontend_type>
+						                            <source_model>ewcore/adminhtml_config_data_option_enabledisable</source_model>
+						                            <sort_order>1</sort_order>
+						                            <show_in_default>1</show_in_default>
+						                            <show_in_website>1</show_in_website>
+						                            <show_in_store>1</show_in_store>
+						                            <comment><![CDATA[If enabled the reply-to will be set if available (such as on the contact form). This is not compatible with all SMTP servers.]]></comment>
+						                        </reply_to_enabled>
+						                        <log_max_age translate="label comment ewhelp">
+						                            <label>Max Log Age (days)</label>
+						                            <frontend_type>text</frontend_type>
+						                            <sort_order>10</sort_order>
+						                            <show_in_default>1</show_in_default>
+						                            <show_in_website>0</show_in_website>
+						                            <show_in_store>0</show_in_store>
+						                            <validators>
+						                            	<validator>
+						                            		<model>ewcore/data_validator_integer</model>
+						                            		<options>
+						                            			<min_value>0</min_value>
+						                            		</options>
+						                            	</validator>
+						                            </validators>
+						                            <validate>required-entry validate-zero-or-greater</validate>
+						                            <comment><![CDATA[After this many days a log will be deleted. Set to 0 to never auto-delete logs.]]></comment>
+						                        </log_max_age>
+						                    </fields>
+						                </advanced>
+									</groups>
+								</ewemail>
+							</sections>
+						</main>
+					</scopes>
+				</settings>
+			</extendware>
+		</Extendware_EWEmail>
+	</modules>
+</config>

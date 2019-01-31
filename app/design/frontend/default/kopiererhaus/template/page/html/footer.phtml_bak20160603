@@ -1,0 +1,168 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magento.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2006-2014 X.commerce, Inc. (http://www.magento.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+<div class="footer-container">
+    <div class="footer">
+        <?php //echo $this->getChildHtml() ?>        
+    <div class="footerMenu">
+        <div class="f-col1">
+            <span class="footer1"><?php echo $this->__('Geräte'); ?></span>
+            <ul id="type_list">
+                <li><a href="/farbkopierer"><?php echo $this->__('Farbkopierer'); ?></a></li>
+                <li><a href="/laserdrucker"><?php echo $this->__('Laserdrucker'); ?></a></li>
+                <li><a href="/farblaserdrucker"><?php echo $this->__('Farblaserdrucker'); ?></a></li>
+            </ul>	
+            <span class="footer1" style="margin-top: 20px; padding-bottom: 10px;"><?php echo $this->__('Gerätetypen'); ?></span>
+            <ul id="unittype_list">
+                <li><a href="/standkopierer"><?php echo $this->__('Standkopierer'); ?></a></li>
+                <li><a href="/tischkopierer"><?php echo $this->__('Tischkopierer'); ?></a></li>
+            </ul>	
+
+		
+        </div>
+        <div class="f-col2">
+            <span class="footer1"><?php echo $this->__('Hersteller'); ?></span>	            
+            <ul id="manufacturer_list">
+                <li><a href="/canon-kopierer"><?php echo $this->__('Canon Kopierer'); ?></a></li>
+                <li><a href="/hp-kopierer"><?php echo $this->__('HP Kopierer'); ?></a></li>
+                <li><a href="/konica-minolta-kopierer"><?php echo $this->__('Konica Minolta Kopierer'); ?></a></li>
+                <li><a href="/kyocera-mita-kopierer"><?php echo $this->__('Kyocera Mita Kopierer'); ?></a></li>
+                <li><a href="/ricoh-kopierer"><?php echo $this->__('Ricoh Kopierer'); ?></a></li>
+            </ul>				
+            <span class="footer1" style="margin-top: 20px; padding-bottom: 10px;"><?php echo $this->__('Formate'); ?></span>
+            <ul id="formatsize_list">
+                    <li><a href="/kopierer-a3"><?php echo $this->__('Kopierer A3'); ?></a></li>
+                    <li><a href="/kopierer-a4"><?php echo $this->__('Kopierer A4'); ?></a></li>
+                    <li><a href="/a3-drucker"><?php echo $this->__('A3 Drucker'); ?></a></li>
+                    <li><a href="/a4-drucker"><?php echo $this->__('A4 Drucker'); ?></a></li>
+            </ul>	            
+        </div>
+        <div class="f-col3">
+            <span class="footer1"><?php echo $this->__('Support'); ?></span>
+            <ul>
+                <li><a href="/kaufberatung/"><?php echo $this->__('Kaufberatung'); ?></a></li>
+                <li><a href="/contacts/"><?php echo $this->__('Kontakt'); ?></a></li>
+                <li><a href="/lieferung/"><?php echo $this->__('Zahlung und Versand'); ?></a></li>
+            
+            </ul>
+            <span class="footer1" style="margin-top: 20px; padding-bottom: 10px;"><?php echo $this->__('Benutzer'); ?></span>
+            <ul>
+                <li><a href="/checkout/cart/"><?php echo $this->__('Warenkorb'); ?></a></li>
+                <li><a href="/customer/account/"><?php echo $this->__('Mein Konto'); ?></a></li>
+                <li><a href="/sales/order/history/"><?php echo $this->__('Bestellhistorie'); ?></a></li>
+                <li>
+                    <?php if (! Mage::getSingleton('customer/session')->isLoggedIn()): ?>
+                        <a href="<?php echo Mage::helper('customer')->getLoginUrl(); ?>"><?php echo $this->__('Einloggen') ?></a>
+                    <?php else: ?>
+                        <a href="<?php echo Mage::helper('customer')->getLogoutUrl(); ?>"><?php echo $this->__('Ausloggen') ?></a>
+                    <?php endif; ?>
+                </li>						
+            </ul>   
+			
+        </div>
+        <div class="f-col4">
+            <div class="box-contact">
+                <span class="footer1"><?php echo $this->__('Kontakt'); ?></span>
+                <p style="text-align: left;"><?php echo $this->__('Tel: +49 (0) 7071 / 966 9000'); ?><br><?php echo $this->__('E-Mail:'); ?> <a style="color: #fff;" href="mailto:kontakt@kopiererhaus.de"><?php echo $this->__('kontakt@kopiererhaus.de'); ?></a></p> 
+            </div>
+			
+			            <span class="footer1" style="margin-top: 20px; padding-bottom: 10px;"><?php echo $this->__('kopiererhaus.de'); ?></span>
+            <ul id="unittype_list">
+                               <li><a href="/datenschutz/"><?php echo $this->__('Datenschutz'); ?></a></li>
+                <li><a href="/agb/"><?php echo $this->__('AGB'); ?></a></li>
+                <li><a href="/widerrufsbelehrung/"><?php echo $this->__('Widerrufsrecht'); ?></a></li>
+                <li><a href="/impressum/"><?php echo $this->__('Impressum'); ?></a></li>	
+            </ul>	
+			
+			
+            <div style="padding-top: 15px;">
+			<?php /*
+            <span class="footer1"><?php echo $this->__('Zahlungsarten'); ?></span> 
+            <ul>
+                <li>
+                    <div class="box-payment-methods">
+                        <ul>
+                            <li><?php echo $this->__('PayPal'); ?></li>
+                            <!--<li>
+                                    <a href="http://www.kopiererhaus.de/zahlung/#rechnung">Rechnung (mit BillSAFE)</a>
+                            </li>-->
+                            <li><?php echo $this->__('Vorkasse'); ?></li>
+                            <!--<li>
+                                    <a href="http://www.kopiererhaus.de/zahlung/#rechnung">Rechnung <span style="font-size: 10px;">(nur für Schulen, Behörden, öffentl. Einrichtungen)</span></a>
+                            </li>-->
+                            <li><?php echo $this->__('Bar bei Abholung'); ?></li>
+                            <li><?php echo $this->__('Nachnahme'); ?></li>
+                        </ul>
+                    </div>
+                </li>
+                <!--<li style="padding-top: 15px;"><a href="http://www.kopiererhaus.de/zahlung/">Zu den Zahlungsarten</a></li>-->
+            </ul>
+			*/ ?>
+			
+			
+                </div>
+                    <div style="padding-top: 15px;" class="box-security">
+                        <span class="footer1" style="padding-bottom: 15px;"><?php echo $this->__('Sicherheit'); ?></span>
+                        <table cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                        <!--<td width="80"><script type="text/javascript" src="https://seal.thawte.com/getthawteseal?host_name=www.kopiererhaus.de&amp;size=M&amp;lang=de"></script></td>-->
+                                        <td><?php echo $this->__('Ihre Daten werden'); ?><br><?php echo $this->__(' verschlüsselt übertragen.'); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="copyright">
+        <address><?php echo $this->getCopyright() ?></address>
+    </div>
+</div>
+
+<script type="text/javascript">
+  (function () { 
+    var _tsid = 'X5F35A17F0A1FF628A8419AF9E093017D'; 
+    _tsConfig = { 
+      'yOffset': '0', /* offset from page bottom */
+      'variant': 'reviews', /* text, default, small, reviews, custom, custom_reviews */
+      'customElementId': '', /* required for variants custom and custom_reviews */
+      'trustcardDirection': '', /* for custom variants: topRight, topLeft, bottomRight, bottomLeft */
+      'customBadgeWidth': '', /* for custom variants: 40 - 90 (in pixels) */
+      'customBadgeHeight': '', /* for custom variants: 40 - 90 (in pixels) */
+      'disableResponsive': 'false', /* deactivate responsive behaviour */
+      'disableTrustbadge': 'false', /* deactivate trustbadge */
+      'trustCardTrigger': 'mouseenter' /* set to 'click' if you want the trustcard to be opened on click instead */
+    };
+    var _ts = document.createElement('script');
+    _ts.type = 'text/javascript'; 
+    _ts.charset = 'utf-8'; 
+    _ts.async = true; 
+    _ts.src = '//widgets.trustedshops.com/js/' + _tsid + '.js'; 
+    var __ts = document.getElementsByTagName('script')[0];
+    __ts.parentNode.insertBefore(_ts, __ts);
+  })();
+</script>

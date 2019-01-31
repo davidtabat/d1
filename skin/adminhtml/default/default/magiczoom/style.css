@@ -1,0 +1,26 @@
+.magiczoomEditForm td.label {
+    width: 240px !important;
+}
+.magiczoomEditForm td.label label {
+    width: 225px !important;
+}
+.magiczoomEditForm td.value {
+    min-width: 475px !important;
+    width: auto !important;
+}
+.magiczoomEditForm td.value .use-default {
+    float: right;
+}
+.fieldsetOpen {
+    background: url("../images/entry_edit_head_arrow_up.gif") no-repeat scroll 100% 50% transparent !important;
+}
+.fieldsetClose {
+    background: url("../images/entry_edit_head_arrow_down.gif") no-repeat scroll 100% 50% transparent !important;
+}
+.magiczoomEditForm #magicscroll_icon {
+    float: left;
+    margin: 0 5px 5px 0;
+}
+.magiczoomEditForm #magicscroll_icon ~ p.note {
+    clear: both;
+}

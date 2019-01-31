@@ -1,0 +1,124 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2012 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+?>
+
+
+
+<?php $variable_name = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB); ?>
+<?php
+// EXCONCEPT 121754: changed page identification, otherwise loading of metadata broken
+// (before fix: always standard metdata was loaded instead of individual metadata)
+?>
+<?php // $pageId = Mage::getBlockSingleton('cms/page')->getPage()->getIdentifier(); ?>
+<?php $pageId = Mage::getSingleton('cms/page')->getIdentifier(); ?>
+<?php
+// EXCONCEPT 121754 end
+?>
+<?php if($pageId =='home'){ ?>
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="http://www.printerpiloten.ch/js/bjqs-1.3.min11.js"></script>
+<script class="secret-source">
+jQuery(document).ready(function($) {
+
+$('#banner-fade').bjqs({
+height      : 507,
+width       : 1064,
+animtype : 'fade'
+});
+
+});
+</script>
+<?php } ?>
+
+
+
+<meta http-equiv="Content-Type" content="<?php echo $this->getContentType() ?>" />
+<title><?php echo $this->getTitle() ?></title>
+<meta name="description" content="<?php echo htmlspecialchars($this->getDescription()) ?>" />
+<meta name="keywords" content="<?php echo htmlspecialchars($this->getKeywords()) ?>" />
+<meta name="robots" content="<?php echo htmlspecialchars($this->getRobots()) ?>" />
+<link rel="icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
+<link rel="shortcut icon" href="<?php echo $this->getFaviconFile(); ?>" type="image/x-icon" />
+
+<?php
+// EXCONCEPT 121754: deactivated incorrect metaname meta tags
+/*
+<metaname="og:email" content="contact@printerpiloten.ch" />
+<metaname="og:phone_number" content="+49 (0) 7071 966 -9000" />
+<metaname="og:title" content="HP Laserjet P3005N - Q7814A" />
+<metaname="og:type" content="product" />
+<metaname="og:image"content="http://files.rakuten-static.de/7a19ec1d528459603c8cc63cca7d4ab2/images/391478191_628501.jpg" />
+<metaname="og:site_name" content="asdfasdf" />
+<metaname="og:description" content=" Descr " />
+<metaname="description" content="Category Or Product Description" />
+<metaname="keywords" content="asdfasdf " />
+<metaname="robots" content="index, follow" />
+*/
+// EXCONCEPT 121754 end
+?>
+<meta http-equiv="Content-Language" content="de-ch" />
+<meta property="og:locale" content="de-CH" />
+
+
+<!--[if lt IE 7]>
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = '<?php echo $this->helper('core/js')->getJsUrl('blank.html') ?>';
+    var BLANK_IMG = '<?php echo $this->helper('core/js')->getJsUrl('spacer.gif') ?>';
+//]]>
+</script>
+<![endif]-->
+<?php echo $this->getCssJsHtml() ?>
+<?php echo $this->getChildHtml() ?>
+<?php echo $this->helper('core/js')->getTranslatorScript() ?>
+<?php echo $this->getIncludes() ?>
+<?php
+// EXCONCEPT 122581
+?>
+<script type="text/javascript" src="/js/magebuzz/catsidebarnav/jquery.min.js"></script>
+<script type="text/javascript">
+jQuery.noConflict();
+jQuery.fn.addimagezoom=function(options){
+	var $=jQuery;
+	return this.each(function(){ //return jQuery obj
+		if (this.tagName !== featuredimagezoomer.iname)
+			return true; //skip to next matched element
+		featuredimagezoomer.init($, $(this), options);
+	});
+}
+</script>
+<?php
+// EXCONCEPT 122581 end
+?>
+
+
+
+
+
+
+
+
+

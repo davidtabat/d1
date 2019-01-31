@@ -1,0 +1,20 @@
+# Never save database creditentials in your repo. Keep a dummy copy with a different name eg "local.xml.dev"
+app/etc/local.xml
+
+# All of the var folders can be excluded.
+var/*
+!var/.htaccess
+
+# Remove generated files
+includes/*
+!includes/.htaccess
+
+robots.txt
+
+media/*
+.DS_Store
+.idea/
+
+downloader_renam/.cache
+downloader_renam/cache.cfg
+downloader_renam/connect.cfg

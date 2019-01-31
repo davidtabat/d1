@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+-->
+<definitions xmlns:typens="urn:{{var wsdl.name}}" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+             name="{{var wsdl.name}}" targetNamespace="urn:{{var wsdl.name}}">
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:Magento">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://schemas.xmlsoap.org/soap/encoding/" />
+            <complexType name="amastyFileAttachmentEntity">
+                <all>
+                    <element name="file_id" type="xsd:int" nillable="true" default="0" />
+                    <element name="product_id" type="xsd:int"/>
+                    <element name="file_url" type="xsd:string" nillable="true" />
+                    <element name="title" type="xsd:string"/>
+                    <element name="file_name" type="xsd:string"/>
+                    <element name="file_link" type="xsd:string"/>
+                    <element name="file_path" type="xsd:string"/>
+                    <element name="store_id" type="xsd:int" nillable="true" default="0"/>
+                    <element name="visible" type="xsd:boolean"/>
+                    <element name="position" type="xsd:int"/>
+                    <element name="file_content" type="xsd:string" nillable="true" />
+                </all>
+            </complexType>
+            <complexType name="amastyFileAttachmentEntityArray">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:amastyFileAttachmentEntity[]"/>
+                    </restriction>
+                </complexContent>
+            </complexType>
+        </schema>
+    </types>
+    <message name="amastyFileGetAttachmentsRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="productId" type="xsd:int" />
+        <part name="storeId" type="xsd:int" />
+        <part name="attachmentId" type="xsd:int"/>
+        <part name="readFile" type="xsd:boolean"/>
+    </message>
+    <message name="amastyFileGetAttachmentsResponse">
+        <part name="result" type="typens:Array"/>
+    </message>
+    <message name="amastyFileAddAttachmentsRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="attachments" type="typens:amastyFileAttachmentEntityArray" />
+    </message>
+    <message name="amastyFileAddAttachmentsResponse">
+        <part name="result" type="xsd:boolean"/>
+    </message>
+    <message name="amastyFileDeleteAttachmentsRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="productId" type="xsd:int" />
+        <part name="attachmentId" type="xsd:int"/>
+    </message>
+    <message name="amastyFileDeleteAttachmentsResponse">
+        <part name="result" type="xsd:boolean"/>
+    </message>
+    <portType name="{{var wsdl.handler}}PortType">
+        <operation name="amastyFileGetAttachments">
+            <documentation>Upload new product image</documentation>
+            <input message="typens:amastyFileGetAttachmentsRequest"/>
+            <output message="typens:amastyFileGetAttachmentsResponse"/>
+        </operation>
+        <operation name="amastyFileAddAttachments">
+            <documentation>Upload new product image</documentation>
+            <input message="typens:amastyFileAddAttachmentsRequest"/>
+            <output message="typens:amastyFileAddAttachmentsResponse"/>
+        </operation>
+        <operation name="amastyFileDeleteAttachments">
+            <documentation>Upload new product image</documentation>
+            <input message="typens:amastyFileDeleteAttachmentsRequest"/>
+            <output message="typens:amastyFileDeleteAttachmentsResponse"/>
+        </operation>
+    </portType>
+    <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <operation name="amastyFileGetAttachments">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded"
+                           encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded"
+                           encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+        <operation name="amastyFileAddAttachments">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded"
+                           encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded"
+                           encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+        <operation name="amastyFileDeleteAttachments">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded"
+                           encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body namespace="urn:{{var wsdl.name}}" use="encoded"
+                           encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="{{var wsdl.name}}Service">
+        <port name="{{var wsdl.handler}}Port" binding="typens:{{var wsdl.handler}}Binding">
+            <soap:address location="{{var wsdl.url}}"/>
+        </port>
+    </service>
+</definitions>

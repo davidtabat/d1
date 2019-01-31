@@ -1,0 +1,111 @@
+<?php
+/**
+ * Calculate Shipping Result
+ *
+ * @author Pham Hong Thanh
+ * @email thanhpham0990@gmail.com
+ * @var $this Cmsmart_CalculateShipping_Block_Result
+ */
+?>
+
+<div id="calculate-shipping-result" class="block1-result">
+
+<?php if($this->hasResult()):?>
+
+    <div class="block1 block1-shipping-estimate block1-shipping-results">
+
+        <div class="block1-title result-title">
+            <strong><span><?php echo Mage::helper('calculateshipping')->__('Shipping Rates') ?></span></strong>
+        </div>
+
+        <div>
+            <span class="ajax_loader" id="ajax_loader" style="display: none;">
+                <img src='<?php echo $this->getSkinUrl('images/cmsmart/calculateshipping/ajax-loader.gif')?>'/>
+            </span>
+        </div>
+
+        <div id="shipping-rates" class="block1-content shipping-rates">
+            <?php if ($this->getResult()):?>
+                <dl>
+                    <?php $count = 0;?>
+                    <?php foreach ($this->getResult() as $code => $_rates): ?>
+                        <?php $count++; ?>
+                        <dt><?php echo $this->getCarrierName($code) ?></dt>
+                        <dd>
+                            <ul id="shipping-method-list-<?php echo $count;?>" class="shipping-method-list">
+                                <?php foreach ($_rates as $_rate): ?>
+                                    <li<?php if ($_rate->getErrorMessage()) echo ' class="error-msg"';?>>
+                                        <?php if ($_rate->getErrorMessage()): ?>
+                                            <?php echo $_rate->getErrorMessage() ?>
+                                        <?php else: ?>
+                                            <?php echo $_rate->getMethodTitle() ?>
+                                            <?php $_excl = $this->getShippingPrice($_rate->getPrice(), $this->helper('tax')->displayShippingPriceIncludingTax()); ?>
+                                            <?php $_incl = $this->getShippingPrice($_rate->getPrice(), true); ?>
+                                            <?php echo $_excl; ?>
+                                            <?php if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                                                (<?php echo Mage::helper('calculateshipping')->__('Incl. Tax'); ?> <?php echo $_incl; ?>)
+                                            <?php endif; ?>
+                                        <?php endif ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <script type="text/javascript">decorateList('shipping-method-list-<?php echo $count;?>', 'none-recursive')</script>
+                        </dd>
+                    <?php endforeach; ?>
+                </dl>
+            <?php else: ?>
+                <?php echo $this->getMessagesBlock()->toHtml(); ?>
+            <?php endif;?>
+        </div>
+
+    <!--    --><?php //if($this->isIncludeCart()):?>
+
+        <?php $_items = $this->getRecentItems() ?>
+
+        <?php if(count($_items)): ?>
+
+<!--        <div class="block1-title block1-title-item">-->
+<!--            <strong><span>--><?php //echo Mage::helper('calculateshipping')->__('Calculate For Item(s)') ?><!--</span></strong>-->
+<!--        </div>-->
+
+
+            <div class="block1-title result-title">
+                <strong><span><?php echo Mage::helper('calculateshipping')->__('List Product') ?></span></strong>
+            </div>
+            <div id="shipping-product-list" class="block1-content items shipping-product-list">
+                <ol id="mini1-products-list" class="mini1-products-list">
+                    <?php foreach($_items as $_item): ?>
+                        <li class="item">
+                            <?php echo $this->getItemHtml($_item) ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+                <script type="text/javascript">decorateList('mini1-products-list', 'none-recursive')</script>
+            </div>
+
+        <?php endif ?>
+
+<!--    --><?php //endif ?>
+
+</div>
+
+<?php endif; ?>
+
+</div>
+
+
+<script type="text/javascript">
+
+    $j(".mfp-content").click(function(){
+        $j(".nicescroll-rails").remove();
+    });
+
+    $j("#shipping-rates").niceScroll({
+        cursorcolor:"#F16033"
+    });
+
+    $j("#shipping-product-list").niceScroll({
+        cursorcolor:"#F16033"
+    });
+
+</script>

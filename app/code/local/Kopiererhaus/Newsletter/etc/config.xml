@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Kopiererhaus_Newsletter>
+			<version>0.1.0</version>
+		</Kopiererhaus_Newsletter>
+	</modules>
+	<admin>
+		<routers>
+			<web>
+				<args>
+					<modules><kopiererhaus_newsletter after="Mage_Adminhtml">Kopiererhaus_Newsletter_Adminhmtl</kopiererhaus_newsletter></modules>
+				</args>
+			</web>
+		</routers>
+	</admin>
+	<adminhtml>
+		<menu>
+			<system>
+				<children>
+					<newsletter module="newsletter">
+						<title>CleverReach - Export</title>
+						<sort_order>201</sort_order>
+						<action>adminhtml/newsletter</action>
+						<!--<children>
+							<items module="newsletter">
+								<title>Export</title>
+								<sort_order>0</sort_order>
+								<action>newsletter/adminhtml_newsletter</action>
+							</items>
+					</children>-->
+					</newsletter>
+				</children>
+			</system>
+			
+		</menu>
+		<acl>
+			<resources>
+				<all>
+					<title>Allow Everything</title>
+				</all>
+				<admin>
+					<children>
+						<Company_Web>
+							<title>Web Module</title>
+							<sort_order>10</sort_order>
+						</Company_Web>
+					</children>
+				</admin>
+			</resources>
+		</acl>
+		<layout>
+			<updates>
+				<web>
+					<file>web.xml</file>
+				</web>
+			</updates>
+		</layout>
+	</adminhtml>
+</config>

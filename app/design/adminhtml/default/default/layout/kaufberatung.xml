@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <kaufberatung_adminhtml_kaufberatung_index>
+        <reference name="content">
+            <block type="kaufberatung/adminhtml_kaufberatung" name="kaufberatung" />
+        </reference>
+    </kaufberatung_adminhtml_kaufberatung_index>
+</layout>

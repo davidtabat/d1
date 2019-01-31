@@ -1,0 +1,56 @@
+<?php
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+?>
+<?php /* @var $this Amasty_File_Block_Adminhtml_Import_Tab_Upload */ ?>
+<div class="entry-edit custom-options product-custom-options" id="amfile-uploads">
+	<div class="entry-edit-head">
+		<h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Upload Files By FTP'); ?></h4>
+	</div>
+
+	<input type="hidden" id="amfile_ajax_action" name="amfile_ajax_action" value="<?php echo $this->getUrl('*/*/upload');?>">
+
+
+
+	<div class="fieldset fieldset-wide">
+		<div class="hor-scroll container">
+			<div class="main">
+				<ul>
+					<li>1. <?php echo $this->__('Upload your files to folder'); ?> <code><?php echo Mage::helper('amfile')->getFtpImportDir()?></code></li>
+					<li>2. <?php echo $this->__('Prepare csv file with columns'); ?> (<a href="<?php echo $this->getUrl('*/*/exampleFileCsv');?>"><?php echo $this->__("Download File Example");?></a>):
+						<ul>
+							<?php foreach($this->getFieldsForImport() as $_fieldKey => $_fieldName): ?>
+								<li> - <?php echo $_fieldName;?>
+									<?php if(!in_array($_fieldKey, $this->getRequiredFieldsForImport())):?>
+										(<?php echo $this->__('optional');?>)
+									<?php endif;?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					</li>
+					<li>3. <?php echo $this->__('Upload CSV file in a tab "Import CSV"'); ?></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="entry-edit-head">
+		<h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Upload Files'); ?></h4>
+	</div>
+
+
+
+	<div class="fieldset fieldset-wide">
+		<div id="files_box" class="hor-scroll container">
+			<div id="preloader">
+			</div>
+			<div class="drop main" id="ftp_import_drag_n_drop"><?php echo $this->__('Click or drop files here'); ?></div>
+
+		</div>
+	</div>
+</div>

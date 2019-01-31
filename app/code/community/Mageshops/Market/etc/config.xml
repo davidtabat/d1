@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  	Mageshops
+ * @package    	Mageshops_Market
+ * @license    	http://license.mageshops.com/  Unlimited Commercial License
+ * @copyright 	mageSHOPS.com 2014
+ * @author 	    Taras Kapushchak with THANKS to mageSHOPS.com <info@mageshops.com>
+ */
+-->
+<config>
+    <modules>
+        <Mageshops_Market>
+            <version>0.0.1</version>
+        </Mageshops_Market>
+    </modules>
+    <global>
+        <models>
+            <nn_market>
+                <class>Mageshops_Market_Model</class>
+            </nn_market>
+        </models>
+        <blocks>
+            <nn_market>
+                <class>Mageshops_Market_Block</class>
+            </nn_market>
+        </blocks>
+        <helpers>
+            <nn_market>
+                <class>Mageshops_Market_Helper</class>
+            </nn_market>
+        </helpers>
+    </global>
+</config>

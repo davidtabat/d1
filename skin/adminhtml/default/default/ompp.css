@@ -1,0 +1,69 @@
+#ompp_monitor
+{
+	height:17px;
+	position:absolute;
+	right:25px;
+	top:5px;
+ 	
+}
+.ompp_monitor
+{
+	background-color:#97AD00;
+	float:right;
+	height:16px;
+	width:16px;
+	margin-left:7px;
+	position:relative;
+ 
+	cursor: pointer;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}
+.ompp_monitor.time
+{
+	background-color:#FFBC0A;
+	background-image:url(images/ompp_clock.png);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+.ompp_monitor.time.mactive
+{
+	background-color:#BD2735;
+}
+.ompp_monitor.mactive
+{
+	background-color:#BD2735;
+}
+.ompp_monitor.time span
+{
+	margin-left: 20px;
+}
+.ompp_monitor span
+{
+	display:block;
+	margin-left: 4px;
+	margin-right: 4px;
+}
+.ompp_monitor span.small
+{
+	width:17px;
+	text-indent: -500px;
+	overflow:hidden;
+	margin: 0;
+}
+ .ttstyle
+{
+ width: 350px;
+ background:#fff;
+ border:1px solid #ccc;
+padding:7px;
+position:relative;
+z-index:10000;
+}
+ .ttstyle h5
+{
+margin-bottom:7px;
+color:#0A3A46;
+}
+ 
+

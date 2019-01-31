@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Ebay edition package for Magento Localized
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedEbay
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<layout version="0.1.0">
+    <adminhtml_magentolocalized_form>
+        <reference name="head">
+            <action method="addJs"><file>tooltip.js</file></action>
+            <action method="addCss"><name>magento_localized/magento_localized_ebay.css</name></action>
+        </reference>
+
+        <reference name="magento_localized.form">
+            <block type="magento_localized_ebay/form" name="magento_localized.form.ebay" as="page3" template="magento_localized_ebay/form.phtml" />
+        </reference>
+    </adminhtml_magentolocalized_form>
+
+    <adminhtml_magentolocalizedebay_paypalpopup>
+        <action method="unsetChild"><name>root</name></action>
+        <block type="core/template" name="root" template="magento_localized_ebay/paypal_popup.phtml" output="toHtml" />
+    </adminhtml_magentolocalizedebay_paypalpopup>
+</layout>

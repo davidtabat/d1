@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<layout>
+    
+     <default>
+	<reference name="head" >
+         	<action method="addCss"><name>ompp.css</name></action>
+	        <action method="addJs"><script>artsonit/ompp/monitor.js</script></action>
+	</reference>
+        <reference name="content">
+            <block type="ompp/adminhtml_offline" before="global_notices" name="offline_block"  ></block>
+		 
+        </reference>
+    </default>
+</layout>

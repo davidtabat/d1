@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <settings>
+    <preloader image="images/hp2_0276.jpg" />
+    <userInterface showZoomButtons="true" showToolTips="true" showHotspotsButton="false" showFullScreenButton="true" showTogglePlayButton="true" showArrows="true" toolbarAlign="center" toolbarBackColor="transparent" toolbarHoverColor="#808285" toolbarForeColor="#E3E3E3" toolbarBackAlpha="0" toolbarAlpha="1" showProgressNumbers="true" showFullScreenToolbar="false" progressLoopColor="#e8e8e8" progressNumColor="#949494" fullScreenBackColor="#FFFFFF" />
+    <control dragSpeed="0.01" maxZoom="200" maxZoomFullScreen="200" fullScreenStretch="100" doubleClickZooms="true" disableMouseControl="false" showHighresOnFullScreen="true" mouseHoverDrag="false" hideHotspotsOnLoad="false" hideHotspotsOnZoom="true" />
+    <rotation firstImage="0" rotate="false" rotatePeriod="7" bounce="false" rotateDirection="-1" forceDirection="false" inertiaRelToDragSpeed="true" inertiaTimeToStop="700" inertiaMaxInterval="120" useInertia="true" />
+  </settings>
+  <hotspots />
+  <images highresWidth="2000" highresHeight="1695">
+    <image src="images/hp2_0276.jpg">
+      <highres src="images/highres/hp2_0276.jpg" />
+    </image>
+    <image src="images/hp2_0277.jpg">
+      <highres src="images/highres/hp2_0277.jpg" />
+    </image>
+    <image src="images/hp2_0278.jpg">
+      <highres src="images/highres/hp2_0278.jpg" />
+    </image>
+    <image src="images/hp2_0279.jpg">
+      <highres src="images/highres/hp2_0279.jpg" />
+    </image>
+    <image src="images/hp2_0280.jpg">
+      <highres src="images/highres/hp2_0280.jpg" />
+    </image>
+    <image src="images/hp2_0281.jpg">
+      <highres src="images/highres/hp2_0281.jpg" />
+    </image>
+    <image src="images/hp2_0282.jpg">
+      <highres src="images/highres/hp2_0282.jpg" />
+    </image>
+    <image src="images/hp2_0283.jpg">
+      <highres src="images/highres/hp2_0283.jpg" />
+    </image>
+    <image src="images/hp2_0284.jpg">
+      <highres src="images/highres/hp2_0284.jpg" />
+    </image>
+    <image src="images/hp2_0285.jpg">
+      <highres src="images/highres/hp2_0285.jpg" />
+    </image>
+    <image src="images/hp2_0286.jpg">
+      <highres src="images/highres/hp2_0286.jpg" />
+    </image>
+    <image src="images/hp2_0287.jpg">
+      <highres src="images/highres/hp2_0287.jpg" />
+    </image>
+    <image src="images/hp2_0288.jpg">
+      <highres src="images/highres/hp2_0288.jpg" />
+    </image>
+    <image src="images/hp2_0289.jpg">
+      <highres src="images/highres/hp2_0289.jpg" />
+    </image>
+    <image src="images/hp2_0290.jpg">
+      <highres src="images/highres/hp2_0290.jpg" />
+    </image>
+    <image src="images/hp2_0291.jpg">
+      <highres src="images/highres/hp2_0291.jpg" />
+    </image>
+    <image src="images/hp2_0292.jpg">
+      <highres src="images/highres/hp2_0292.jpg" />
+    </image>
+    <image src="images/hp2_0293.jpg">
+      <highres src="images/highres/hp2_0293.jpg" />
+    </image>
+    <image src="images/hp2_0294.jpg">
+      <highres src="images/highres/hp2_0294.jpg" />
+    </image>
+    <image src="images/hp2_0295.jpg">
+      <highres src="images/highres/hp2_0295.jpg" />
+    </image>
+    <image src="images/hp2_0296.jpg">
+      <highres src="images/highres/hp2_0296.jpg" />
+    </image>
+    <image src="images/hp2_0297.jpg">
+      <highres src="images/highres/hp2_0297.jpg" />
+    </image>
+    <image src="images/hp2_0298.jpg">
+      <highres src="images/highres/hp2_0298.jpg" />
+    </image>
+    <image src="images/hp2_0299.jpg">
+      <highres src="images/highres/hp2_0299.jpg" />
+    </image>
+    <image src="images/hp2_0300.jpg">
+      <highres src="images/highres/hp2_0300.jpg" />
+    </image>
+    <image src="images/hp2_0301.jpg">
+      <highres src="images/highres/hp2_0301.jpg" />
+    </image>
+    <image src="images/hp2_0302.jpg">
+      <highres src="images/highres/hp2_0302.jpg" />
+    </image>
+    <image src="images/hp2_0303.jpg">
+      <highres src="images/highres/hp2_0303.jpg" />
+    </image>
+    <image src="images/hp2_0304.jpg">
+      <highres src="images/highres/hp2_0304.jpg" />
+    </image>
+    <image src="images/hp2_0305.jpg">
+      <highres src="images/highres/hp2_0305.jpg" />
+    </image>
+    <image src="images/hp2_0306.jpg">
+      <highres src="images/highres/hp2_0306.jpg" />
+    </image>
+    <image src="images/hp2_0307.jpg">
+      <highres src="images/highres/hp2_0307.jpg" />
+    </image>
+    <image src="images/hp2_0308.jpg">
+      <highres src="images/highres/hp2_0308.jpg" />
+    </image>
+    <image src="images/hp2_0309.jpg">
+      <highres src="images/highres/hp2_0309.jpg" />
+    </image>
+    <image src="images/hp2_0310.jpg">
+      <highres src="images/highres/hp2_0310.jpg" />
+    </image>
+    <image src="images/hp2_0311.jpg">
+      <highres src="images/highres/hp2_0311.jpg" />
+    </image>
+    <image src="images/hp2_0312.jpg">
+      <highres src="images/highres/hp2_0312.jpg" />
+    </image>
+    <image src="images/hp2_0313.jpg">
+      <highres src="images/highres/hp2_0313.jpg" />
+    </image>
+    <image src="images/hp2_0314.jpg">
+      <highres src="images/highres/hp2_0314.jpg" />
+    </image>
+    <image src="images/hp2_0315.jpg">
+      <highres src="images/highres/hp2_0315.jpg" />
+    </image>
+    <image src="images/hp2_0316.jpg">
+      <highres src="images/highres/hp2_0316.jpg" />
+    </image>
+    <image src="images/hp2_0317.jpg">
+      <highres src="images/highres/hp2_0317.jpg" />
+    </image>
+    <image src="images/hp2_0318.jpg">
+      <highres src="images/highres/hp2_0318.jpg" />
+    </image>
+    <image src="images/hp2_0319.jpg">
+      <highres src="images/highres/hp2_0319.jpg" />
+    </image>
+    <image src="images/hp2_0320.jpg">
+      <highres src="images/highres/hp2_0320.jpg" />
+    </image>
+    <image src="images/hp2_0321.jpg">
+      <highres src="images/highres/hp2_0321.jpg" />
+    </image>
+    <image src="images/hp2_0322.jpg">
+      <highres src="images/highres/hp2_0322.jpg" />
+    </image>
+    <image src="images/hp2_0277_1.jpg">
+      <highres src="images/highres/hp2_0277_1.jpg" />
+    </image>
+  </images>
+</config>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+
+
+    <default>
+        <reference name="notifications">
+            <block type="Cdiscount/CheckFakeProducts" name="CheckFakeProducts" as="CheckFakeProducts"></block>
+        </reference>
+    </default>
+
+    <cdiscount_main_index>
+        <reference name="head">
+            <action method="addJs"><script>mdn/MarketPlace.js</script></action>
+            <action method="addCss"><name>MarketPlace.css</name></action>
+        </reference>
+        <reference name="content">
+            <block type="Cdiscount/Cdiscount" name="cdiscount_cdiscount" template="Cdiscount/Cdiscount.phtml">
+                <block type="Cdiscount/Index_Tabs" name="cdiscount_index_tabs" as="cdiscount_index_tabs"/>
+            </block>
+        </reference>
+    </cdiscount_main_index>
+
+</layout>

@@ -1,0 +1,28 @@
+<?php
+/**
+ * Product description template
+ *
+ * @see Mage_Catalog_Block_Product_View_Description
+ */
+?>
+<div class="row">
+    <div class="col-md-10">
+
+<?php $_description = $this->getProduct()->getDescription(); ?>
+<?php if ($_description): ?>
+    <strong class="section-title"><?php echo $this->__('Details') ?></strong>
+    <div class="std">
+        <?php echo $this->helper('catalog/output')->productAttribute($this->getProduct(), $_description, 'description') ?>
+    </div>
+<?php endif; ?>
+
+<?php $_techdescription = $this->getProduct()->getTechdescription(); ?>
+<?php if ($_techdescription): ?>
+    <strong class="section-title"><?php echo $this->__('Technische Details') ?></strong>
+    <div class="std">
+        <?php echo $this->helper('catalog/output')->productAttribute($this->getProduct(), $_techdescription, 'techdescription') ?>
+    </div>
+<?php endif; ?>
+
+</div>
+</div>

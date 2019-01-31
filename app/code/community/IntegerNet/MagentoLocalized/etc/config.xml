@@ -1,0 +1,562 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+    <modules>
+        <IntegerNet_MagentoLocalized>
+            <version>1.9.0.1.3</version>
+        </IntegerNet_MagentoLocalized>
+    </modules>
+
+    <global>
+        <models>
+            <magento_localized>
+                <class>IntegerNet_MagentoLocalized_Model</class>
+            </magento_localized>
+            <catalog>
+                <rewrite>
+                    <category_attribute_backend_image>IntegerNet_MagentoLocalized_Model_Catalog_Category_Attribute_Backend_Image</category_attribute_backend_image>
+                </rewrite>
+            </catalog>
+            <paypal>
+                <rewrite>
+                    <config>IntegerNet_MagentoLocalized_Model_Paypal_Config</config>
+                </rewrite>
+            </paypal>
+        </models>
+
+        <blocks>
+            <magento_localized>
+                <class>IntegerNet_MagentoLocalized_Block</class>
+            </magento_localized>
+            <install>
+                <rewrite>
+                    <end>IntegerNet_MagentoLocalized_Block_Install_End</end>
+                </rewrite>
+            </install>
+        </blocks>
+
+        <helpers>
+            <magento_localized>
+                <class>IntegerNet_MagentoLocalized_Helper</class>
+            </magento_localized>
+        </helpers>
+
+        <resources>
+            <magento_localized_setup>
+                <setup>
+                    <module>IntegerNet_MagentoLocalized</module>
+                </setup>
+            </magento_localized_setup>
+        </resources>
+
+        <events>
+            <controller_action_predispatch_install_wizard_index>
+                <observers>
+                    <magento_localized>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallStart</method>
+                    </magento_localized>
+                </observers>
+            </controller_action_predispatch_install_wizard_index>
+            <controller_action_predispatch_install_index_index>
+                <observers>
+                    <magento_localized>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallStart</method>
+                    </magento_localized>
+                </observers>
+            </controller_action_predispatch_install_index_index>
+            <controller_action_predispatch_install_wizard_begin>
+                <observers>
+                    <magento_localized_theme>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallWizard</method>
+                    </magento_localized_theme>
+                </observers>
+            </controller_action_predispatch_install_wizard_begin>
+            <controller_action_predispatch_install_wizard_locale>
+                <observers>
+                    <magento_localized_theme>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallWizard</method>
+                    </magento_localized_theme>
+                </observers>
+            </controller_action_predispatch_install_wizard_locale>
+            <controller_action_predispatch_install_wizard_config>
+                <observers>
+                    <magento_localized_theme>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallWizard</method>
+                    </magento_localized_theme>
+                </observers>
+            </controller_action_predispatch_install_wizard_config>
+            <controller_action_predispatch_install_wizard_administrator>
+                <observers>
+                    <magento_localized_theme>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallWizard</method>
+                    </magento_localized_theme>
+                </observers>
+            </controller_action_predispatch_install_wizard_administrator>
+            <controller_action_predispatch_install_wizard_end>
+                <observers>
+                    <magento_localized_theme>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>predispatchInstallWizardEnd</method>
+                    </magento_localized_theme>
+                </observers>
+            </controller_action_predispatch_install_wizard_end>
+        </events>
+    </global>
+
+    <adminhtml>
+        <layout>
+            <updates>
+                <magento_localized>
+                    <file>magento_localized.xml</file>
+                </magento_localized>
+            </updates>
+        </layout>
+
+        <translate>
+            <modules>
+                <IntegerNet_MagentoLocalized>
+                    <files>
+                        <default>IntegerNet_MagentoLocalized.csv</default>
+                    </files>
+                </IntegerNet_MagentoLocalized>
+            </modules>
+        </translate>
+
+        <events>
+            <admin_session_user_login_success>
+                <observers>
+                    <magento_localized>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>onAdminUserLoginSuccess</method>
+                    </magento_localized>
+                </observers>
+            </admin_session_user_login_success>
+        </events>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <IntegerNet_MagentoLocalized after="Mage_Adminhtml">IntegerNet_MagentoLocalized_Adminhtml</IntegerNet_MagentoLocalized>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
+    <frontend>
+        <layout>
+            <updates>
+                <magento_localized>
+                    <file>magento_localized.xml</file>
+                </magento_localized>
+            </updates>
+        </layout>
+
+        <translate>
+            <modules>
+                <IntegerNet_MagentoLocalized>
+                    <files>
+                        <default>IntegerNet_MagentoLocalized.csv</default>
+                    </files>
+                </IntegerNet_MagentoLocalized>
+            </modules>
+        </translate>
+
+        <events>
+            <cms_page_load_after>
+                <observers>
+                    <integernet_magento_localized>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>afterLoadCmsPage</method>
+                    </integernet_magento_localized>
+                </observers>
+            </cms_page_load_after>
+
+            <checkout_additional_information>
+                <observers>
+                    <integernet_magento_localized>
+                        <type>singleton</type>
+                        <class>magento_localized/observer</class>
+                        <method>addCheckoutAdditionalInformation</method>
+                    </integernet_magento_localized>
+                </observers>
+            </checkout_additional_information>
+        </events>
+
+        <routers>
+            <install>
+                <args>
+                    <modules>
+                        <IntegerNet_MagentoLocalized before="Mage_Install">IntegerNet_MagentoLocalized_Install</IntegerNet_MagentoLocalized>
+                    </modules>
+                </args>
+            </install>
+        </routers>
+    </frontend>
+
+    <install>
+        <translate>
+            <modules>
+                <IntegerNet_MagentoLocalized>
+                    <files>
+                        <default>IntegerNet_MagentoLocalized.csv</default>
+                    </files>
+                </IntegerNet_MagentoLocalized>
+            </modules>
+        </translate>
+    </install>
+
+    <default>
+        <design>
+            <package>
+                <name>default</name>
+            </package>
+            <theme>
+                <default>default</default>
+            </theme>
+        </design>
+        <customer>
+            <integernet_removecustomeraccountlinks>
+                <items>recurring_profiles,billing_agreements,tags,OAuth Customer Tokens</items>
+            </integernet_removecustomeraccountlinks>
+        </customer>
+        <persistent>
+            <options>
+                <enabled>1</enabled>
+            </options>
+        </persistent>
+        <sales_pdf>
+            <firegento_pdf>
+                <show_footer>1</show_footer>
+                <engine>firegento_pdf/engine_invoice_default</engine>
+            </firegento_pdf>
+        </sales_pdf>
+        <shipping>
+            <option>
+                <checkout_multiple>0</checkout_multiple>
+            </option>
+        </shipping>
+        <tax>
+            <ignore_notification>
+                <discount>1</discount>
+            </ignore_notification>
+        </tax>
+        <admin>
+            <security>
+                <session_cookie_lifetime>36000</session_cookie_lifetime>
+            </security>
+            <startup>
+                <page>system/magento_localized/configuration</page>
+            </startup>
+            <magento_localized>
+                <display_logo>1</display_logo>
+                <display_menu>1</display_menu>
+                <display_dashboard_block>1</display_dashboard_block>
+                <datatransfer>1</datatransfer>
+            </magento_localized>
+        </admin>
+        <dev>
+            <log>
+                <active>1</active>
+            </log>
+            <js>
+                <merge_files>0</merge_files>
+            </js>
+            <css>
+                <merge_css_files>0</merge_css_files>
+            </css>
+        </dev>
+        <magento_localized>
+            <form_fields>
+                <general__imprint__shop_name translate="label">
+                    <type>text</type>
+                    <label>Shop Name</label>
+                    <sorting>10</sorting>
+                    <optional>0</optional>
+                </general__imprint__shop_name>
+                <general__imprint__company_first translate="label">
+                    <type>text</type>
+                    <label>Company 1</label>
+                    <sorting>20</sorting>
+                    <optional>0</optional>
+                </general__imprint__company_first>
+                <general__imprint__company_second translate="label">
+                    <type>text</type>
+                    <label>Company 2</label>
+                    <sorting>25</sorting>
+                    <optional>1</optional>
+                </general__imprint__company_second>
+                <general__imprint__street translate="label">
+                    <type>text</type>
+                    <label>Street</label>
+                    <sorting>30</sorting>
+                    <optional>0</optional>
+                </general__imprint__street>
+                <general__imprint__zip translate="label">
+                    <type>text</type>
+                    <label>Zip</label>
+                    <sorting>40</sorting>
+                    <optional>0</optional>
+                </general__imprint__zip>
+                <general__imprint__city translate="label">
+                    <type>text</type>
+                    <label>City</label>
+                    <sorting>50</sorting>
+                    <optional>0</optional>
+                </general__imprint__city>
+                <general__imprint__country translate="label">
+                    <type>select</type>
+                    <source_model>adminhtml/system_config_source_country</source_model>
+                    <label>Country</label>
+                    <sorting>60</sorting>
+                    <optional>0</optional>
+                </general__imprint__country>
+                <general__imprint__telephone translate="label">
+                    <type>text</type>
+                    <label>Telephone</label>
+                    <sorting>70</sorting>
+                    <optional>0</optional>
+                </general__imprint__telephone>
+                <general__imprint__telephone_additional translate="label">
+                    <type>text</type>
+                    <label>Supplementary Information for Telephone</label>
+                    <sorting>75</sorting>
+                    <optional>1</optional>
+                </general__imprint__telephone_additional>
+                <general__imprint__fax translate="label">
+                    <type>text</type>
+                    <label>Fax</label>
+                    <sorting>80</sorting>
+                    <optional>1</optional>
+                </general__imprint__fax>
+                <general__imprint__email translate="label">
+                    <type>text</type>
+                    <label>E-Mail</label>
+                    <sorting>90</sorting>
+                    <optional>0</optional>
+                </general__imprint__email>
+                <general__imprint__web translate="label">
+                    <type>text</type>
+                    <label>Website</label>
+                    <sorting>100</sorting>
+                    <optional>0</optional>
+                </general__imprint__web>
+            </form_fields>
+
+            <display_paypal_email_field>1</display_paypal_email_field>
+
+            <modules>
+                <webformat_loginwithpaypal>
+                    <name>Login with PayPal</name>
+                    <description>This extension makes the customer login easier by adding a &#x201C;Login With PayPal&#x201D; button to customer login page and onepage checkout login tab.</description>
+                    <url>http://www.magentocommerce.com/magento-connect/webformat-login-with-paypal.html</url>
+                    <code>webformat/loginwithpaypal</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </webformat_loginwithpaypal>
+                <firegento_pdf>
+                    <name>FireGento PDF</name>
+                    <description>FireGento PDF overwrites standard PDF layouts for invoices, shipments and creditmemos.</description>
+                    <url>http://www.magentocommerce.com/magento-connect/pdf-9999.html</url>
+                    <code>firegento/pdf</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </firegento_pdf>
+                <dermodpro_baseprice>
+                    <name>Baseprice Extension</name>
+                    <description>Automatic calculation and indication of the basis price for articles</description>
+                    <url>http://www.nr-apps.com/store/baseprice-extension-basic.html</url>
+                    <code>connect20/dermodpro_baseprice</code>
+                    <is_required>0</is_required>
+                    <is_default>0</is_default>
+                    <is_available>1</is_available>
+                </dermodpro_baseprice>
+                <avstudnitz_scopehint>
+                    <name>Scope Hint</name>
+                    <description>Creates a warning if a configuration setting is overwritten on a lower level (website or store view)</description>
+                    <url>https://github.com/avstudnitz/AvS_ScopeHint</url>
+                    <code>avstudnitz/scopehint</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </avstudnitz_scopehint>
+                <avstudnitz_admin_notification_advanced>
+                    <name>Admin Notification Advanced</name>
+                    <description>Improves handling of notifactions in admin area: mark all read, delete all, ...</description>
+                    <url>https://github.com/avstudnitz/AvS_ScopeHint</url>
+                    <code>avstudnitz/admin-notification-advanced</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </avstudnitz_admin_notification_advanced>
+                <timreynolds_magento_qconfig>
+                    <name>Magento Quick Config Search</name>
+                    <description>A Magento module that adds Quick Search functionality to the Admin Configuration area</description>
+                    <url>https://github.com/tim-reynolds/magento-qconfig</url>
+                    <code>tim-reynolds/magento-qconfig</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </timreynolds_magento_qconfig>
+                <magento_hackathon_magemonitoring>
+                    <name>MageMonitoring</name>
+                    <description>Magento Extension to get health of your Magento installation (Server, PHP, APC, Logs, Rewrites, Modules version installed ...)</description>
+                    <url>https://github.com/magento-hackathon/Hackathon_MageMonitoring</url>
+                    <code>magento-hackathon/hackathon_magemonitoring</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </magento_hackathon_magemonitoring>
+                <integernet_removecustomeraccountlinks>
+                    <name>Removes Customer Account Links</name>
+                    <description>Removes unwanted Links from the "My Account" Navigation</description>
+                    <url>https://github.com/integer-net/RemoveCustomerAccountLinks</url>
+                    <code>integer-net/removecustomeraccountlinks</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </integernet_removecustomeraccountlinks>
+                <integernet_autoshipping>
+                    <name>Autoshipping</name>
+                    <description>Provide shipping costs in Magento Cart, plus the ability to change the country there</description>
+                    <url>https://github.com/integer-net/Autoshipping</url>
+                    <code>integer-net/autoshipping</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </integernet_autoshipping>
+                <cashondelivery>
+                    <name>Cash on Delivery (Payment Method)</name>
+                    <description>Cash on Delivery allows to book additional fee on delivery depending on domestic or international delivery.</description>
+                    <url>http://www.magentocommerce.com/magento-connect/cashondelivery.html</url>
+                    <code>connect20/cashondelivery</code>
+                    <is_required>0</is_required>
+                    <is_default>0</is_default>
+                    <is_available>1</is_available>
+                </cashondelivery>
+                <bankpayment>
+                    <name>Bank Prepayment (Payment Method)</name>
+                    <description>Payment Method "Bank Prepayment"</description>
+                    <url>http://www.magentocommerce.com/magento-connect/bankpayment.html</url>
+                    <code>connect20/bankpayment</code>
+                    <is_required>0</is_required>
+                    <is_default>0</is_default>
+                    <is_available>1</is_available>
+                </bankpayment>
+                <itabs_invoice>
+                    <name>Invoice (Payment Method)</name>
+                    <description>Payment Method "Invoice"</description>
+                    <url>https://github.com/itabs/Itabs_Invoice</url>
+                    <code>itabs/invoice</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </itabs_invoice>
+                <therouv_debitpayment>
+                    <name>Debit Payment (Payment Method)</name>
+                    <description>This extension allows shop owners to provide the payment method "DebitPayment" to their customers.</description>
+                    <url>http://www.magentocommerce.com/magento-connect/debitpayment.html</url>
+                    <code>therouv/debitpayment</code>
+                    <is_required>0</is_required>
+                    <is_default>0</is_default>
+                    <is_available>1</is_available>
+                </therouv_debitpayment>
+                <openstream_rappenrounding>
+                    <name>Magento 5 Cent Rounding</name>
+                    <description>Magento 5-Rappen-Rundung for Swiss Magento Merchants</description>
+                    <url>https://github.com/openstream/Magento5CentRounding</url>
+                    <code>openstream/rappenrounding</code>
+                    <is_required>0</is_required>
+                    <is_default>0</is_default>
+                    <is_available>0</is_available>
+                </openstream_rappenrounding>
+                <webformat_loginwithpaypal>
+                    <name>Login with PayPal</name>
+                    <description>This extension makes the customer login easier by adding a &#x201C;Login With PayPal&#x201D; button to customer login page and onepage checkout login tab.</description>
+                    <url>http://www.magentocommerce.com/magento-connect/webformat-login-with-paypal.html</url>
+                    <code>webformat/loginwithpaypal</code>
+                    <is_required>0</is_required>
+                    <is_default>1</is_default>
+                    <is_available>1</is_available>
+                </webformat_loginwithpaypal>
+            </modules>
+
+            <languages>
+                <de_DE>
+                    <name>German</name>
+                    <code>riconeitzel/german-localepack-de-de</code>
+                </de_DE>
+                <en_US>
+                    <name>English</name>
+                    <code></code>
+                </en_US>
+                <es_ES>
+                    <name>Spanish</name>
+                    <code>connect20/locale_mage_community_es_es</code>
+                </es_ES>
+                <fr_FR>
+                    <name>French</name>
+                    <code>connect20/locale_mage_community_fr_fr</code>
+                </fr_FR>
+                <nl_NL>
+                    <name>Dutch</name>
+                    <code>ho-nl/ho_nl_nl</code>
+                </nl_NL>
+                <it_IT>
+                    <name>Italian</name>
+                    <code>connect20/locale_mage_community_it_it</code>
+                </it_IT>
+                <ro_RO>
+                    <name>Romanian</name>
+                    <code>mindmagnet/romanian-translation</code>
+                </ro_RO>
+                <pl_PL>
+                    <name>Polish</name>
+                    <code>snowdog-apps/magento-translation-pl_pl</code>
+                </pl_PL>
+                <ru_RU>
+                    <name>Russian</name>
+                    <code>etws/et_russianlanguagepack</code>
+                </ru_RU>
+            </languages>
+
+            <install_guide_url>
+                <default>http://www.nr-apps.com/n/guide.html</default>
+            </install_guide_url>
+
+            <survey_url>
+                <default>http://www.nr-apps.com/n/survey.html</default>
+            </survey_url>
+        </magento_localized>
+    </default>
+</config>

@@ -1,0 +1,117 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2012 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+/**
+ * @var Mage_Page_Block_Html_Header $this
+ */
+?>
+<div class="header-container">
+    <div class="header">
+        <?php if ($this->getIsHomePage()):?>
+        <h1 class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>" /></a></h1>
+        <?php else:?>
+        <a href="<?php echo $this->getUrl('') ?>" title="<?php echo $this->getLogoAlt() ?>" class="logo"><strong><?php echo $this->getLogoAlt() ?></strong><img src="<?php echo $this->getLogoSrc() ?>" alt="<?php echo $this->getLogoAlt() ?>" /></a>
+        <?php endif?>
+       
+        <div class="quick-access">
+        
+        
+         <div class="quicck-left">
+        <ul>
+        <li>Professionelle  Aufbereitung</li>
+        <li>12 Monate Gewährleistung</li>
+        <li>Schont  Kapital  und  Umwelt</li>
+   
+       </ul>
+ 
+        </div>
+        
+         <div class="quick-text">
+          <div id="telephone1"><p>Beratung per Telefon: +41 33 550 05 05</p><h6>Mo - Do 08:30 - 17:00 Uhr<br>Fr 08:30 - 12:00 und 13:00 - 15:00 Uhr</h6></div>
+
+        <div id="quick-text">
+        	<ul>
+            <li><a href="<?php echo Mage::getBaseUrl(); ?>checkout/cart/">Mein Warenkorb</a></li>
+            <li><a href="<?php echo Mage::getBaseUrl(); ?>checkout/cart/">Zur Kasse</a></li>
+          
+            </ul>
+          <?php echo $this->getChildHtml('topSearch') ?>
+        </div>
+      
+      </div>
+       
+           <?php /*?> <p class="welcome-msg"><?php echo $this->getWelcome() ?> <?php echo $this->getAdditionalHtml() ?></p><?php */?>
+            <?php //echo $this->getChildHtml('topLinks') ?>
+            <?php //echo $this->getChildHtml('store_language') ?>
+        </div>
+        <?php echo $this->getChildHtml('topContainer'); ?>
+    </div>
+<?php echo $this->getChildHtml('topMenu') ?>
+</div>
+
+
+
+
+<!--<div id="navi-con">
+<div id="navi">
+<ul>
+	<li><a href="#">Home</a></li>
+    <li><a href="#">Laserdrucker</a></li>
+    <li><a href="#">Kopierer</a></li>
+    <li><a href="#">Multifunktionsgeräte</a></li>
+    <li><a href="#">Faxgeräte</a></li>
+
+
+</ul>
+
+</div>
+</div>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

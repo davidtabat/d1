@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category  Trustedshops
+ * @package   Trustedshops_Trustedshops
+ * @author    Trusted Shops GmbH
+ * @copyright 2016 Trusted Shops GmbH
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @link      http://www.trustedshops.de/
+ */
+-->
+<config>
+    <modules>
+        <Trustedshops_Trustedshops>
+            <version>1.1.2</version>
+        </Trustedshops_Trustedshops>
+    </modules>
+    <global>
+        <models>
+            <trustedshops>
+                <class>Trustedshops_Trustedshops_Model</class>
+            </trustedshops>
+        </models>
+        <blocks>
+            <trustedshops>
+                <class>Trustedshops_Trustedshops_Block</class>
+            </trustedshops>
+            <adminhtml>
+                <rewrite>
+                    <widget_form_element_dependence>Trustedshops_Trustedshops_Block_Widget_Dependence</widget_form_element_dependence>
+                </rewrite>
+            </adminhtml>
+        </blocks>
+        <helpers>
+            <trustedshops>
+                <class>Trustedshops_Trustedshops_Helper</class>
+            </trustedshops>
+        </helpers>
+    </global>
+    <frontend>
+        <layout>
+            <updates>
+                <trustedshops_trustedshops>
+                    <file>trustedshops.xml</file>
+                </trustedshops_trustedshops>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <trustedshops_trustedshops>
+                    <files>
+                        <default>Trustedshops_Trustedshops.csv</default>
+                    </files>
+                </trustedshops_trustedshops>
+            </modules>
+        </translate>
+    </frontend>
+    <adminhtml>
+        <translate>
+            <modules>
+                <trustedshops_trustedshops>
+                    <files>
+                        <default>Trustedshops_Trustedshops.csv</default>
+                    </files>
+                </trustedshops_trustedshops>
+            </modules>
+        </translate>
+        <events>
+            <admin_system_config_changed_section_trustedshops>
+                <observers>
+                    <trustedshops_trustedshops>
+                        <type>singleton</type>
+                        <class>trustedshops/observer</class>
+                        <method>adminSystemConfigChangedSectionTrustedshops</method>
+                    </trustedshops_trustedshops>
+                </observers>
+            </admin_system_config_changed_section_trustedshops>
+        </events>
+    </adminhtml>
+    <default>
+        <trustedshops>
+            <info>
+                <mode>standard</mode>
+            </info>
+            <trustbadge>
+                <variant>reviews</variant>
+                <offset>0</offset>
+                <collect_orders>1</collect_orders>
+                <code><![CDATA[
+<script type="text/javascript">
+(function () {
+var _tsid = '%tsid%';
+_tsConfig = {
+'yOffset': '0',
+'variant': 'reviews',
+'customElementId': '',
+'trustcardDirection': '',
+'customBadgeWidth': '',
+'customBadgeHeight': '',
+'disableResponsive': 'false',
+'disableTrustbadge': 'false',
+'trustCardTrigger': 'mouseenter',
+'customCheckoutElementId': ''
+};
+var _ts = document.createElement('script');
+_ts.type = 'text/javascript';
+_ts.charset = 'utf-8';
+_ts.async = true;
+_ts.src = '//widgets.trustedshops.com/js/' + _tsid + '.js';
+var __ts = document.getElementsByTagName('script')[0];
+__ts.parentNode.insertBefore(_ts, __ts);
+})();
+</script>
+                ]]></code>
+            </trustbadge>
+            <product>
+                <collect_reviews>0</collect_reviews>
+                <review_code><![CDATA[
+<script type="text/javascript">
+_tsProductReviewsConfig = {
+tsid: '%tsid%',
+sku: ['%sku%'],
+variant: 'productreviews',
+borderColor: '#0DBEDC',
+locale: 'de_DE',
+backgroundColor: ' #ffffff',
+starColor: '#FFDC0F',
+starSize: '15px',
+ratingSummary: 'false',
+maxHeight: '1200px',
+'element': '#ts_product_sticker',
+hideEmptySticker: 'false',
+introtext: '' /* optional */
+};
+var scripts = document.getElementsByTagName('SCRIPT'),
+me = scripts[scripts.length - 1];
+var _ts = document.createElement('SCRIPT');
+_ts.type = 'text/javascript';
+_ts.async = true;
+_ts.charset = 'utf-8';
+_ts.src
+='//widgets.trustedshops.com/reviews/tsSticker/tsProductSticker.js';
+me.parentNode.insertBefore(_ts, me);
+_tsProductReviewsConfig.script = _ts;
+</script>
+                ]]></review_code>
+                <review_border_color>#FFDC0F</review_border_color>
+                <review_star_color>#C0C0C0</review_star_color>
+                <rating_code><![CDATA[
+<script type="text/javascript"
+src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.
+js"></script>
+<script>
+var summaryBadge = new productStickerSummary();
+summaryBadge.showSummary(
+{
+'tsId': '%tsid%',
+'sku': ['%sku%'],
+'element': '#ts_product_widget',
+'starColor' : '#FFDC0F',
+'starSize' : '14px',
+'fontSize' : '12px',
+'showRating' : true,
+'scrollToReviews' : false
+}
+);
+</script>
+                ]]></rating_code>
+                <rating_star_color>#FFDC0F</rating_star_color>
+                <rating_star_size>15px</rating_star_size>
+                <rating_font_size>12px</rating_font_size>
+            </product>
+        </trustedshops>
+    </default>
+    <phpunit>
+        <suite>
+            <modules>
+                <Trustedshops_Trustedshops/>
+            </modules>
+        </suite>
+    </phpunit>
+</config>

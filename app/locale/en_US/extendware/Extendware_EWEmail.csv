@@ -1,0 +1,104 @@
+Action,Action
+"Add Blacklist Item","Add Blacklist Item"
+Advanced,Advanced
+"After this many days a log will be deleted. Set to 0 to never auto-delete logs.","After this many days a log will be deleted. Set to 0 to never auto-delete logs."
+"Are you sure?","Are you sure?"
+Authentication,Authentication
+"Authentication password used if you selected an authentication method other than none.","Authentication password used if you selected an authentication method other than none."
+"Authentication username used if you selected an authentication method other than none.","Authentication username used if you selected an authentication method other than none."
+Blacklist,Blacklist
+"Blacklist Item","Blacklist Item"
+"Blacklist item has been deleted","Blacklist item has been deleted"
+"Blacklist item has been successfully saved","Blacklist item has been successfully saved"
+"Blacklisted Emails","Blacklisted Emails"
+"Blacklisted Item","Blacklisted Item"
+Body,Body
+Configuration,Configuration
+Configure,Configure
+CRAM-MD5,CRAM-MD5
+"Create E-mail","Create E-mail"
+"Create New E-mail","Create New E-mail"
+Created,Created
+"Date Created","Date Created"
+"Date Sent","Date Sent"
+Delete,Delete
+"Disabling will force the use of the normal Magento mail sending regardless of other settings.","Disabling will force the use of the normal Magento mail sending regardless of other settings."
+"Disabling will log outgoing e-mail in the log, but will not actually send it","Disabling will log outgoing e-mail in the log, but will not actually send it"
+E-mail,E-mail
+"E-mail could not be sent","E-mail could not be sent"
+"E-mail has been successfully sent","E-mail has been successfully sent"
+"E-mail Information","E-mail Information"
+"E-mail Log","E-mail Log"
+"E-Mail Plus","E-Mail Plus"
+Edit,Edit
+Email,Email
+"Email Address","Email Address"
+"Email Body","Email Body"
+"Emails listed here will not be sent to, but sending will report as a success. This is useful if some of your customers / subscribers have invalid emails and you want to avoid sending to them.","Emails listed here will not be sent to, but sending will report as a success. This is useful if some of your customers / subscribers have invalid emails and you want to avoid sending to them."
+Extendware,Extendware
+Failed,Failed
+"From E-mail","From E-mail"
+"From Name","From Name"
+General,General
+"General Information","General Information"
+Host,Host
+Html,Html
+ID,ID
+"If disabled, mail will use the normal Magento mail sending method.","If disabled, mail will use the normal Magento mail sending method."
+"If enabled the reply-to will be set if available (such as on the contact form). This is not compatible with all SMTP servers.","If enabled the reply-to will be set if available (such as on the contact form). This is not compatible with all SMTP servers."
+"If you choose none, then the username and password below will not be used","If you choose none, then the username and password below will not be used"
+"Improve Your Store","Improve Your Store"
+"Item does not exist","Item does not exist"
+Log,Log
+"Log item has been deleted","Log item has been deleted"
+Logging,Logging
+Login,Login
+Main,Main
+"Manage Blacklisted Emails","Manage Blacklisted Emails"
+"Manage Extensions","Manage Extensions"
+"Max Log Age (days)","Max Log Age (days)"
+"Missing data for item","Missing data for item"
+Name,Name
+"New E-mail","New E-mail"
+None,None
+"Outgoing messages will be logged if this is enabled","Outgoing messages will be logged if this is enabled"
+Password,Password
+Plain,Plain
+"Please <u>read the help descriptions, field descriptions, fieldset descriptions, and user guides</u> so you may configure this extension to suit your needs.","Please <u>read the help descriptions, field descriptions, fieldset descriptions, and user guides</u> so you may configure this extension to suit your needs."
+"Please select an item(s) before submitting to the mass processor","Please select an item(s) before submitting to the mass processor"
+Port,Port
+"Recipient E-mail","Recipient E-mail"
+"Recipient Information","Recipient Information"
+"Recipient Name","Recipient Name"
+"Reply-To Status","Reply-To Status"
+"Selected item(s) (%d) have been mass processed by the %s processor","Selected item(s) (%d) have been mass processed by the %s processor"
+"Selected item(s) (%d) have failed to be mass processed by the %s processor","Selected item(s) (%d) have failed to be mass processed by the %s processor"
+Send,Send
+"Sender Information","Sender Information"
+Sending,Sending
+Sent,Sent
+"Separate with a comma to send to multiple recipients","Separate with a comma to send to multiple recipients"
+Settings,Settings
+SMTP,SMTP
+"SMTP E-mail Plus","SMTP E-mail Plus"
+"SMTP Email","SMTP Email"
+SSL,SSL
+"SSL Security","SSL Security"
+Status,Status
+Store,Store
+"Store Contact","Store Contact"
+"Store View","Store View"
+Subject,Subject
+Template,Template
+"The connection security used to connect to the SMTP server.","The connection security used to connect to the SMTP server."
+"The SMTP server hostname. This is required.","The SMTP server hostname. This is required."
+"The SMTP server port. Leave blank to use the default according to the SSL security you select.","The SMTP server port. Leave blank to use the default according to the SSL security you select."
+"This email address already exists","This email address already exists"
+TLS,TLS
+"To E-mail","To E-mail"
+"To Name","To Name"
+Type,Type
+Updated,Updated
+"User Guides / Help","User Guides / Help"
+Username,Username
+View,View

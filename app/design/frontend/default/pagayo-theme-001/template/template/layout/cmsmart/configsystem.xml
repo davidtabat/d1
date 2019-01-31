@@ -1,0 +1,18 @@
+<layout>
+    <default>
+        <reference name="head">
+            <action ifconfig="configsystem/cmsmart_fontend/enalbed_jquery"  method="addItem">
+                <type>js</type>
+                <name>cmsmart/jquery/jquery.js</name>
+            </action>
+            <action ifconfig="configsystem/cmsmart_fontend/enalbed_jquery_mirgate"  method="addItem">
+                <type>js</type>
+                <name>cmsmart/jquery/jquery-migrate.js</name>
+            </action>
+            <action ifconfig="configsystem/cmsmart_fontend/enalbed_jquery_noconflig"  method="addItem">
+                <type>js</type>
+                <name>cmsmart/jquery/jquery-noconflict.js</name>
+            </action>
+        </reference>
+    </default>
+</layout>

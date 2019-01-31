@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <SoulSurf_Import>
+            <version>0.1.0</version>
+        </SoulSurf_Import>
+    </modules>
+    <global>
+    	<helpers>
+            <import><class>SoulSurf_Import_Helper</class></import>
+        </helpers>
+        <blocks>
+            <import>
+                <class>SoulSurf_Import_Block</class>
+            </import>
+        </blocks>
+     <models>
+       <SoulSurf_Import>
+            <class>SoulSurf_Import_Model</class>
+       </SoulSurf_Import>
+       <sales>
+            <rewrite>
+            <order>SoulSurf_Import_Model_Order</order>
+          </rewrite>
+        </sales>
+        <core>
+          <rewrite>
+            <email_template>SoulSurf_Import_Model_Email_Template</email_template>
+          </rewrite>
+        </core>
+        
+   </models>
+      
+    </global>
+
+    <frontend>
+        <routers>
+            <SoulSurf_Import>
+                <use>standard</use>
+                <args>
+                    <module>SoulSurf_Import</module>
+                    <frontName>import</frontName>
+                </args>
+            </SoulSurf_Import>  
+        </routers>
+    </frontend>
+    
+</config>
+

@@ -1,0 +1,65 @@
+<?php if($this->canShowCalcShipping()) : ?>
+<?php $_product = $this->getProduct(); ?>
+<div class="calc-shipping">
+
+	<?php if(Mage::getStoreConfig('mlx_calcshipping/general/scountry')) : ?>
+	<div class="item">
+		<div class="label"><?php echo $this->__('Country'); ?></div>
+		<div class="input-box">
+			<?php echo Mage::getBlockSingleton('directory/data')->getCountryHtmlSelect() ?>
+		</div>
+	</div>
+	<?php endif; ?>
+	
+	<?php if(Mage::getStoreConfig('mlx_calcshipping/general/sstate')) : ?>
+	<div class="item">
+		<div class="label"><?php echo $this->__('State/Province'); ?></div>
+		<div class="input-box">
+			<input type="text" class="input-text" title="State/Province" value="" name="region" id="region">
+		</div>
+	</div>
+	<?php endif; ?>
+	
+	<?php if(Mage::getStoreConfig('mlx_calcshipping/general/szip')) : ?>
+	<div class="item">
+		<div class="label"><?php echo $this->__('Zip/Postal Code'); ?></div>
+		<div class="input-box">
+			<input type="text" name="postcode" id="calc-postcode" value="" class="input-text" />
+			<button id="calc-button" type="button" class="button"><span><span><?php echo $this->__('Calculate'); ?></span></span></button>
+			<div class="clear clr"></div>
+		</div>
+	</div>
+	<?php endif; ?>
+	
+	<div id="calc-result"></div>
+	<script type="text/javascript">
+		jQuery(document).ready(function(e){
+			jQuery('#calc-button').click(function(){
+				var calcShippingproductAddToCartForm = new VarienForm('product_addtocart_form');
+				if(calcShippingproductAddToCartForm.validator.validate()){
+					var link = "<?php echo $this->getUrl('calcshipping/index/calc'); ?>";
+					jQuery.ajax({
+						'url'			: link,
+						'dataType'		: 'json',
+						'data'			: jQuery('#product_addtocart_form').serialize(),
+						'type'			: 'POST',
+						'beforeSend'	: function(jqXHR, settings){
+							jQuery("#calc-result").html("<img style='margin-top: 20px;' src='<?php echo $this->getSkinUrl('Mlx/CalcShipping/images/ajax-loader.gif') ?>' />");
+						},
+						'success'		: function(data, textStatus, jqXHR){
+							jQuery('#calc-result').html(data.result);
+						},
+						'complete'		: function(jqXHR, textStatus){},
+						'error': function(jqXHR, textStatus, errorThrown){
+							jQuery("#calc-result").html('');
+							alert('<?php echo $this->__('Server error. Please try again!'); ?>');
+						}
+					});
+				}else{
+					calcShippingproductAddToCartForm.submit();
+				}
+			});
+		});
+	</script>
+</div>
+<?php endif; ?>

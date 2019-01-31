@@ -1,0 +1,27 @@
+.sort-able{cursor:move;margin-bottom: 10px;}
+.highlight{border: 1px dashed #E85D26 !important;padding: 1px;}
+.mw_block{position: relative;}
+.mw_block .block{margin-bottom: 0;}
+.mw_block .remove-block{position:absolute; right: 5px;top: 5px; z-index: 99;}
+.mw_block .remove-block a{display: block; width: 14px; height: 14px; background: url(../images/remove.gif);}
+.ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; background:#FCEDD9;}
+.ui-sortable-placeholder * { visibility: hidden; }
+.preview-panel button.button-in-panel{background: none repeat scroll 0 0 transparent;border: 0 none;cursor: pointer;margin: 0 0 0 4px;overflow: visible;padding: 0;width: auto;}
+.preview-panel button.button-in-panel span{ background: url("../images/btn-bg.png") no-repeat scroll 0 0 transparent;color: #F15A24;float: left;font: bold 12px/27px Tahoma,Verdana,Arial,sans-serif;height: 28px;padding: 0 0 0 4px;text-align: center;white-space: nowrap;}
+.preview-panel button.button-in-panel span span{background-position: 100% 0;padding: 0 8px 0 2px;}
+.preview-panel button.button-in-panel span span span{background: none repeat scroll 0 0 transparent;padding: 0;}
+.preview-panel button.button-in-panel-add span span span{background: url("../images/btn-add.png") no-repeat scroll 0 50% transparent;padding-left: 20px;}
+.preview-panel button.button-in-panel-save span span span{background: url("../images/btn-save.png") no-repeat scroll 0 50% transparent; padding-left: 20px;}
+.preview-panel button.button-in-panel-defaults span span span{background: url("../images/btn-defaults.png") no-repeat scroll 0 50% transparent;padding-left: 20px;}
+.preview-panel button.button-in-panel-cancel span span span{background: url("../images/btn-cancel.png") no-repeat scroll 0 50% transparent;padding-left: 20px;}
+.preview-panel button.button-in-panel-exit span span span{background: url("../images/btn-exit.png") no-repeat scroll 0 50% transparent;padding-left: 20px;}
+.preview-panel {background: url("../images/bg_panel.png") repeat-x scroll 0 100% transparent;color: #FFFFFF;margin: 0;padding: 6px 0 20px 24px;text-align: center;}
+.preview-panel .mdte-option-highlight,.preview-panel .layout-switcher,.preview-panel .mdte-option-highlight,.preview-panel .apply-for {float: right;font-size: 12px;line-height: 28px;margin: 0;padding-right: 10px;}
+.preview-panel .layout-switcher{float:left;}
+.preview-panel .apply-for{float:left;}
+.block-list-container{display: none;}
+.add-block{width: 400px; padding: 20px;}
+.add-block select,.add-block input{width: 400px;padding: 2px;}
+.add-block p.required{float: left;}
+.add-block-button{text-align: right;}
+.advanced-block{display:none;}

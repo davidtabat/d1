@@ -1,0 +1,340 @@
+<?php
+  /*
+  * @copyright   Copyright ( c ) 2014 www.magebuzz.com
+  */
+?>
+<?php 
+  $enablefacebook = $this->helper('sociallogin')->getEnableFacebook();
+  $enabletwitter = $this->helper('sociallogin')->getEnableTwitter();
+  $enablegoogle = $this->helper('sociallogin')->getEnableGoogle();
+	$enablelinkedin = $this->helper('sociallogin')->getEnableLinkedin();
+?>
+<div class="message-all" id="message-all" style="font-size: 13px; color: red;"></div>
+<div id="cboxLoadingGraphic" style="float: left; display: none;"></div>
+<div id="containerDiv" style="display:none;">
+  <div class="page-title">
+    <h3><?php echo $this->__('Please enter your Twitter email'); ?></h3>
+  </div>  
+  <div id="twitter_error" style="color: red;"></div>
+  <div class="socialpopup-input-box" style="margin-left: 10px;">
+	  <input type="text" id="tw_email" name="tw_email" value="" class="input-text required-entry validate-email"/>
+
+    <button type="button" onclick="return twitter_check();" style="float: right;" class="button"
+            title= "<?php echo $this->__('Login') ?>" name="twittermail" id="twittermail"><span><span><?php echo $this->__('Login') ?></span></span></button>
+    <button type="button" onclick="return submitLoginPopup();" style="float: right; margin-left: 10px; margin-right:
+    10px;"  class="button" title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__('Back') ?>
+		    </span></span></button>
+  </div>
+  <div id="twitter_error"></div>
+</div>
+
+<div id="containerGg" style="display: none;">
+	<div class="page-title">
+		<h3><?php echo $this->__('Please enter your Google email'); ?></h3>
+	</div>
+	<div id="google_error" style="color: red;"></div>
+	<div class="socialpopup-input-box" style="margin-left: 25px;">
+		<input type="text" id="gg_email" name="gg_email" value="" class="input-text required-entry validate-email" />
+		<button type="button" onclick="return google_check();" style="float: right; margin-right: 70px;" class="button"
+		        title="<?php echo $this->__('Login')?>" name="googlemail" id="googlemail"><span><span><?php
+						echo $this->__('Login')?></span></span></button>
+		<button type="button" onclick="return submitLoginPopup();" style="float: right; margin-right:
+    10px;"  class="button" title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__('Back') ?>
+		    </span></span></button>
+	</div>
+	<div id="google_error"></div>
+</div>
+
+<div id="containerFb" style="display: none;">
+	<div class="page-title">
+		<h3><?php echo $this->__('Please enter your Facebook email'); ?></h3>
+	</div>
+	<div id="facebook_error" style="color: red;"></div>
+	<div class="socialpopup-input-box" style="margin-left: 25px;">
+		<form action="" method="post">
+		<input type="text" id="fb_email" name="fb_email" value="" class="input-text required-entry validate-email" />
+		<button type="button" onclick="return facebook_check();" style="float: right;" class="button"
+		        title="<?php echo $this->__('Login')?>" name="facebookmail" id="facebookmail"><span><span><?php
+						echo $this->__('Login')?></span></span></button>
+		<button type="button" onclick="return submitLoginPopup();" style="float: right; margin-right:
+    10px; margin-left: 10px;"  class="button" title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__
+						('Back') ?>
+		    </span></span></button>
+		</form>
+	</div>
+	<div id="facebook_error"></div>
+</div>
+
+<div id="containerLi" style="display: none;">
+	<div class="page-title">
+		<h3><?php echo $this->__('Please enter your Linkedin email'); ?></h3>
+	</div>
+	<div id="linkedin_error" style="color: red;"></div>
+	<div class="socialpopup-input-box" style="margin-left: 25px;">
+		<input type="text" id="li_email" name="li_email" value="" class="input-text required-entry validate-email" />
+		<button type="button" onclick="return linkedin_check();" style="float: right; margin-right: 70px;" class="button"
+		        title="<?php echo $this->__('Login')?>" name="linkedinmail"
+		        id="linkedinmail"><span><span><?php echo $this->__('Login')?></span></span></button>
+		<button type="button" onclick="return submitLoginPopup();" style="float: right; margin-right:
+    6px;"  class="button" title="<?php echo $this->__('Back') ?>"><span><span><?php echo $this->__('Back') ?>
+		    </span></span></button>
+	</div>
+	<div id="linkedin_error" style="color: red;"></div>
+</div>
+
+<div id='form-login' style=" float: left; clear: both;">
+  <div id="registered-user-login" style="max-width: 60%;"> 
+    <div class="page-title">
+      <h1><?php echo $this->__('Sign in') ?></h1>
+    </div>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <div class="content">    
+      <form action="javascript:loginFormAcion();" method="post" id="login-form-validate">
+        <ul class="form-list">
+          <li>                       
+            <div style="color: red;font-size: 11px;margin-left: 43px;" id="login_error" ></div>
+          </li>
+          <li class="fields">
+            <div class="field">
+              <label for="emaillogin" class="required"><em>*</em><?php echo $this->__('Email Address &nbsp') ?></label>
+
+              <div class="input-box">   
+                <input type="text" name="username" value="<?php echo $this->htmlEscape($this->getUsername()) ?>" id="emaillogin" class="input-text required-entry validate-email" title="<?php echo $this->__('Email Address') ?>" />          
+              </div>
+            </div>
+          </li>    
+          
+          <li class="fields">
+            <div class="field">
+              <label for="passlogin" class="required"><em>*</em><?php echo $this->__('Password &nbsp
+              &nbsp &nbsp &nbsp &nbsp') ?></label>
+              <div class="input-box">  
+                <input type="password" name="password" class="input-text required-entry validate-password"
+                       id="passlogin"  title="<?php echo $this->__('Password ') ?>" />
+              </div>
+            </div>
+          </li>
+          <li>          
+            <a href="#" onclick="return showForgotForm();" class="f-left"><?php echo $this->__('Forgot Your Password?') ?></a>
+            <button type="submit" class="button" title="<?php echo $this->__('Login') ?>" name="sendlogin" id="sendlogin"><span><span><?php echo $this->__('Login') ?></span></span></button>
+          </li>     
+        </ul>
+        <div class="link-create-account">
+          <p><?php echo $this->__("Don't you have an account?") ?> </p>
+          <button type="button" class="button" onclick="javascript:submitPopupRegister();" title="<?php echo $this->__('Login') ?>" name="create_new_account" id="create-new-account"><span><span><?php echo $this->__('Create an Account') ?></span></span></button>	
+        </div>
+      </form>
+    </div>  
+  </div>
+
+  <div id="login-with-social-network"> 
+    <div class="page-title">
+      <h1><?php echo $this->__('Sign in With') ?></h1>
+    </div>
+    <div class="content">    
+      <ul class="form-list">
+        <?php if($enablefacebook):?>
+          <li>
+            <a href="#" onclick="return showFacebookForm();" class="fb_button_ps"><img src="<?php echo $this->helper
+		            ('sociallogin')->getLoginImg()?>" alt="<?php echo $this->__('Connect with Facebook')?>" /></a>
+          </li>
+          <?php endif?>
+        <?php if($enabletwitter):?>
+          <li>
+            <a href="#" onclick="return showTwitterForm();" class="fb_button_ps"><img src="<?php echo $this->helper('sociallogin')->getTwitterImg()?>" alt="<?php echo $this->__('Connect with Twitter')?>" /></a> 
+          </li>
+          <?php endif?>
+        <?php if($enablegoogle):?>
+          <li>
+            <a href="#" onclick="return logingg();" class="fb_button_ps"><img src="<?php echo $this->helper
+		            ('sociallogin')->getGoogleImg()?>" alt="<?php echo $this->__('Connect with Google')?>" />
+            </a>
+          </li>
+          <?php endif?>
+	      <?php if($enablelinkedin): ?>
+	        <li>
+		        <a href="<?php echo $this -> escapeUrl($this->_getButtonUrl());?>" class="fb_button_ps"><img src="<?php
+				        echo $this->helper('sociallogin')->getLinkedinImg()?>" alt="<?php echo $this->__('Connect with Linkedin')?>" /> </a>
+	         </li>
+	      <?php endif; ?>
+      </ul>
+    </div>  
+  </div>
+</div>
+
+<div id="form-register" style="display:none;">
+  <div>
+    <div class="page-title">
+      <h1><?php echo $this->__('Create an Account') ?></h1>
+    </div>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <form action="javascript:registerAction();" method="post" id="register-form">
+    <div class="content">    
+      <ul class="form-list">
+        <li>           
+          <div style="color: red;font-size: 11px;margin-left: 43px;" id="register_error" ></div>
+        </li>
+        <li class="fields">
+          <div class="field">					
+            <label class="required" for="firstname"><em>*</em><?php echo $this->__('First Name') ?></label>
+            <div class="input-box">   
+              <input type="text" name="firstname" id="firstname" class="input-text required-entry" title="<?php echo $this->__('First Name') ?>" />      
+            </div>
+          </div>
+          <div class="field">
+            <label for="lastname" class="required"><em>*</em><?php echo $this->__('Last Name') ?></label>
+            <div class="input-box">  
+              <input type="text" name="lastname" class="input-text required-entry" id="lastname" title="<?php echo $this->__('Last Name') ?>" />
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <label for="email-register" class="required"><em>*</em><?php echo $this->__('Email Address') ?></label>
+          <div class="input-box">	
+            <input type="text" name="email" id="email-register" class="input-text required-entry validate-email validate-check-mail" title="<?php echo $this->__('Email Address') ?>" />
+          </div>		
+        </li>
+        <li class="fields">
+          <div class="field">
+            <label for="pass-register" class="required"><em>*</em><?php echo $this->__('Password') ?></label>
+            <div class="input-box">	
+              <input type="password" value="" name="password" class="input-text required-entry validate-password" id="pass-register" title="<?php echo $this->__('Password') ?>" />
+            </div>	
+          </div>
+          <div class="field">
+            <label for="confirmation" class="required"><em>*</em><?php echo $this->__('Confirm Password') ?></label>
+            <div class="input-box">
+              <input type="password" value="" name="confirmation" title="<?php echo $this->__('Confirm Password') ?>" id="confirmation" class="input-text required-entry validate-cpassword" />
+            </div>	
+          </div>          
+        </li>
+        <li>                   
+          <button type="submit" class="button" title="<?php echo $this->__('Sign Up Now') ?>" name="send" id="send2"><span><span><?php echo $this->__('Sign Up Now') ?></span></span></button>                   
+        </li>     
+      </ul>
+      <div class="link-login">
+        <p><?php echo $this->__("Already have an Account ?") ?> </p>
+        <button type="button" class="button" onclick="javascript:submitLoginPopup();" title="<?php echo $this->__('Login') ?>" name="btn-login" id="btn-login"><span><span><?php echo $this->__('Login') ?></span></span></button>	
+      </div>
+    </div>
+  </div>  
+  </form>  
+</div>
+
+<div id="form-forgot" style="display: none;">
+  <div class="page-title">
+    <h1><?php echo $this->__('Forgot Your Password?') ?></h1>
+  </div>
+  <div class="message-forgot" id="message-forgot" style="font-size: 13px; color: green;"></div>
+  <form action="javascript:forgotFormAction();" method="post" id="forgot-form">
+    <div class="content" id="content">    
+      <ul class="form-list">   
+        <li>          
+          <div style="color: red;font-size: 11px;margin-left: 43px;" id="forgot-error" ></div>
+        </li>   
+        <li>
+          <label for="email-forgot" class="required"><em>*</em><?php echo $this->__('Email Address') ?></label>
+          <div class="input-box">	
+            <input type="text" name="email-forgot" id="email-forgot" class="input-text required-entry validate-email validate-check-mail" title="<?php echo $this->__('Email Address') ?>" />          
+          </div>
+        </li>  
+        <li>         
+          <button type="submit" class="button" title="<?php echo $this->__('Forgot Password') ?>" name="send" id="send2"><span><span><?php echo $this->__('Forgot Password') ?></span></span></button>                           
+        </li>                  
+      </ul>
+      <p><a style="float: left" onclick="return submitLoginPopup();"><?php echo $this->__("&laquo; Back to Login") ?></a></p>	
+    </div>    
+  </form>
+</div>
+
+<div id="cboxLoadingGraphic" style="float: left; display: none;"></div>
+<script type="text/javascript">
+  //<![CDATA[
+  var dataForm = new VarienForm('register-form', true);    
+  function submitLoginPopup() {     
+    document.getElementById('form-login').style.display = "block";
+    document.getElementById('form-register').style.display = "none";
+    document.getElementById('form-forgot').style.display = "none";
+    document.getElementById('containerDiv').style.display = "none";          
+    document.getElementById('containerGg').style.display = "none";
+    document.getElementById('containerFb').style.display = "none";
+	  document.getElementById('containerLi').style.display = "none";
+
+  }
+  function showTwitterForm() {
+
+    var checktwitter = '<?php echo Mage::getSingleton('sociallogin/api_twitter')->checkConnectionTwitter();?>';
+    if(checktwitter == '')
+      {
+      document.getElementById('form-login').style.display = "block";
+      document.getElementById('form-register').style.display = "none";       
+      document.getElementById('containerDiv').style.display = "none";
+      document.getElementById('containerGg').style.display = "none";
+	    document.getElementById('containerFb').style.display = "none";
+	    document.getElementById('containerLi').style.display = "none";
+      document.getElementById('message-all').style.display = "block";
+      document.getElementById('message-all').innerHTML= 'Twitter log in is not configured correctly. Please contact the store owner. ';      
+
+    }else
+      {
+      document.getElementById('message-all').innerHTML= '';            
+      document.getElementById('form-login').style.display = "none";
+      document.getElementById('form-register').style.display = "none";       
+      document.getElementById('containerDiv').style.display = "block";
+      document.getElementById('containerGg').style.display = "none";
+	    document.getElementById('containerFb').style.display = "none";
+	    document.getElementById('containerLi').style.display = "none";
+    }
+
+  }
+
+  function showGoogleForm()
+  {
+	  document.getElementById('message-all').innerHTML='';
+	  document.getElementById('form-login').style.display = "none";
+	  document.getElementById('form-register').style.display = "none";
+	  document.getElementById('containerDiv').style.display = "none";
+	  document.getElementById('containerGg').style.display = "block";
+	  document.getElementById('containerFb').style.display = "none";
+	  document.getElementById('containerLi').style.display = "none";
+  }
+
+  function showFacebookForm()
+  {
+	  document.getElementById('message-all').innerHTML='';
+	  document.getElementById('form-login').style.display = "none";
+	  document.getElementById('form-register').style.display = "none";
+	  document.getElementById('containerDiv').style.display = "none";
+	  document.getElementById('containerGg').style.display = "none";
+	  document.getElementById('containerLi').style.display = "none";
+	  document.getElementById('containerFb').style.display = "block";
+  }
+  function showLinkedinForm()
+  {
+	  document.getElementById('message-all').innerHTML = '';
+	  document.getElementById('form-login').style.display = "none";
+	  document.getElementById('form-register').style.display = "none";
+	  document.getElementById('containerDiv').style.display = "none";
+	  document.getElementById('containerGg').style.display = "none";
+	  document.getElementById('containerFb').style.display = "none";
+	  document.getElementById('containerLi').style.display = "block";
+  }
+
+  var dataForm = new VarienForm('login-form-validate', true);
+  function submitPopupRegister() { 
+    document.getElementById('form-login').style.display = "none";
+    document.getElementById('form-register').style.display = "block";         
+  }
+  var dataForm = new VarienForm('forgot-form', true);
+  function showForgotForm() { 
+    document.getElementById('form-login').style.display = "none";
+    document.getElementById('form-register').style.display = "none";     
+    document.getElementById('containerDiv').style.display = "none";     
+    document.getElementById('form-forgot').style.display = "block";
+	  document.getElementById('containerGg').style.display = "none";
+	  document.getElementById('containerLi').style.display = "none";
+	  document.getElementById('containerFb').style.display = "none";
+  }
+  //]]>
+    </script>

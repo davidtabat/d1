@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config>
+	<layout>
+		<updates>
+			<ompp>
+				<file>ompp.xml</file>
+			</ompp>
+		</updates>
+	</layout>
+    <translate>
+        <modules>
+            <ArtsOnIT_OMplusplus>
+                <files>
+                    <default>ArtsOnIT_OMplusplus.csv</default>
+                </files>
+            </ArtsOnIT_OMplusplus>
+        </modules>
+    </translate>
+    <acl>
+        <resources>
+			<all>
+				<title>Allow Everything</title>
+			</all>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <ompp>
+                                        <title>Offline Maintenance ++</title>
+                                    </ompp>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

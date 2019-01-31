@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Kopiererhaus_All>
+			<version>0.1.0</version>
+		</Kopiererhaus_All>
+	</modules>
+	<global>
+		<page>
+			<layouts>
+				<home translate="label">
+					<label>Startseite</label>
+					<template>page/home.phtml</template>
+					<layout_handle>home</layout_handle>
+				</home>
+				<content_page translate="label">
+					<label>2 Spalten Inhaltsseite mit linker Spalte</label>
+					<template>page/2columns-content.phtml</template>
+					<layout_handle>page_content</layout_handle>
+				</content_page>
+				<!-- add more layouts here -->
+			</layouts>
+		</page>
+	</global>
+	<layout>
+		<contacts_index_index>
+			<reference name="root">
+				<action method="setTemplate">
+					<template>page/2columns-content.phtml</template>
+				</action>
+			</reference>
+		</contacts_index_index>
+	</layout>
+</config>

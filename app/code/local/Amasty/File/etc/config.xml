@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author Amasty Team
+ * @copyright Copyright (c) 2015 Amasty (https://www.amasty.com)
+ * @package Amasty_File
+ */
+-->
+
+<config>
+
+    <modules>
+        <Amasty_File>
+            <version>1.6.5</version>
+        </Amasty_File>
+    </modules>
+    
+    <global>
+        <models>
+            <amfile>
+                <class>Amasty_File_Model</class>
+                <resourceModel>amfile_mysql4</resourceModel>
+            </amfile>
+            <amfile_mysql4>
+                <class>Amasty_File_Model_Mysql4</class>
+                <entities>
+                    <file>
+                        <table>am_file</table>
+                    </file> 
+                    <store>
+                        <table>am_file_store</table>
+                    </store> 
+                    <icon>
+                        <table>am_file_icons</table>
+                    </icon> 
+                    <stat>
+                        <table>am_file_stat</table>
+                    </stat>
+                    <store_customer_group>
+                        <table>am_file_store_customer_group</table>
+                    </store_customer_group>
+                    <store_customer_group>
+                        <table>am_file_store_customer_group</table>
+                    </store_customer_group>
+                </entities>
+            </amfile_mysql4>
+        </models>
+        
+        <resources>
+            <amfile_setup>
+                <setup>
+                    <module>Amasty_File</module>
+                    <class>Amasty_File_Model_Mysql4_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </amfile_setup>
+            
+            <amfile_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </amfile_write>
+            
+            <amfile_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </amfile_read>
+        </resources>
+
+        <blocks>
+            <amfile>
+                <class>Amasty_File_Block</class>
+            </amfile>
+            <catalog>
+                <rewrite>
+                    <product_view_tabs>Amasty_File_Block_Rewrite_Product_View_Tabs</product_view_tabs>
+                </rewrite>
+            </catalog>
+        </blocks>
+         
+        <helpers>
+            <amfile>
+                <class>Amasty_File_Helper</class>
+            </amfile>
+            <amstring>
+                <class>Amasty_File_Helper_String</class>
+            </amstring>
+        </helpers>
+    </global>
+    
+    <frontend>
+        <translate>
+            <modules>
+                <Amasty_File>
+                    <files>
+                        <default>Amasty_File.csv</default>
+                    </files>
+                </Amasty_File>
+            </modules>
+        </translate>
+        <layout>
+            <updates>
+                <amfile module="Amasty_File">
+                    <file>amfile.xml</file>
+                </amfile>
+            </updates>
+        </layout>
+         <routers>
+            <amfile_front>
+                <use>standard</use>
+                <args>
+                    <module>Amasty_File</module>
+                    <frontName>amfilerating</frontName>
+                </args>
+            </amfile_front>
+        </routers>
+    </frontend>  
+     
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Amasty_File after="Mage_Adminhtml">Amasty_File_Adminhtml</Amasty_File>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
+    <adminhtml>
+        <events>
+            <core_layout_block_create_after>
+                <observers>
+                    <amfile>
+                        <type>singleton</type>
+                        <class>amfile/observer</class>
+                        <method>forIndexCustomerGrid</method>
+                    </amfile>
+                </observers>
+            </core_layout_block_create_after>
+            <catalog_product_save_after>
+                <observers>
+                    <amfile>
+                        <type>singleton</type>
+                        <class>amfile/observer</class>
+                        <method>saveProductTabData</method>
+                    </amfile>
+                </observers>
+            </catalog_product_save_after>
+            <catalog_product_delete_before>
+                <observers>
+                    <amfile>
+                        <type>singleton</type>
+                        <class>amfile/observer</class>
+                        <method>onProductDeleteBefore</method>
+                    </amfile>
+                </observers>
+            </catalog_product_delete_before>
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <amfile>
+                        <type>singleton</type>
+                        <class>amfile/observer</class>
+                        <method>onCoreBlockAbstractToHtmlBefore</method>
+                    </amfile>
+                </observers>
+            </core_block_abstract_to_html_before>
+        </events>
+
+        <layout>
+            <updates>
+                <amfile module="Amasty_File">
+                    <file>amfile.xml</file>
+                </amfile>
+            </updates>
+        </layout>
+    </adminhtml>
+    <frontend>
+        <layout>
+            <updates>
+                <amfile module="Amasty_File">
+                    <file>amfile.xml</file>
+                </amfile>
+            </updates>
+        </layout>
+        <events>
+            <controller_action_layout_render_before>
+                <observers>
+                    <amfile>
+                        <type>singleton</type>
+                        <class>amfile/observer</class>
+                        <method>onLayoutRenderBefore</method>
+                    </amfile>
+                </observers>
+            </controller_action_layout_render_before>
+        </events>
+    </frontend>
+
+    <default>
+        <amfile>
+            <block>
+                <enabled>1</enabled>
+                <title>Files</title>
+                <parent_name>product.info.additional</parent_name>
+                <show_ordered>0</show_ordered>
+                <customer_group>-1</customer_group>
+            </block>
+            <import>
+                <ftp_dir>/media/amfile/ftp</ftp_dir>
+            </import>
+        </amfile>
+    </default>
+</config>

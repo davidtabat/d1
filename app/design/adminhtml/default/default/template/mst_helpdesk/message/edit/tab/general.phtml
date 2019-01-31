@@ -1,0 +1,10 @@
+<?php
+/** @var Mirasvit_Helpdesk_Block_Adminhtml_Message_Edit_Tab_General $this */
+
+$message = $this->getNoticeMessage()
+?>
+<div id="helpdesk-notice" class="helpdesk-notice" <?php if (!$message) {
+    echo "style='display:none;'";
+}?>><?php echo $message ?></div>
+
+<?php echo $this->getGeneralForm()->toHtml() ?>

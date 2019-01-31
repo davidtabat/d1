@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<layout version="1.0.0">
+    <facebookproductstab_page>
+	    <block type="turnkeye_facebookproductstab/view" name="facebookproductstab" template="turnkeye/facebookproductstab/tab.phtml" output="toHtml" />
+    </facebookproductstab_page>
+</layout>
