@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <DevAll_MetaUpdate>
+            <active>true</active>
+            <codePool>local</codePool>
+        </DevAll_MetaUpdate>
+    </modules>
+</config>
