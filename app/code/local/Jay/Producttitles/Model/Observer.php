@@ -18,7 +18,7 @@ class Jay_Producttitles_Model_Observer {
 	    	switch (Mage::app()->getStore()->getCode()) {
 	    		case 'kopiererhaus':
 	    			$title = $product->getData('name') . " | Günstig bei Kopiererhaus.de";
-	    			$metaDescription = $product->getData('name') . " beim Profi für gebrauchte Drucker und Kopierer: ✓ Generalüberholt inkl. 12 Monate Gewährleistung ✓ Geprüfte Qualität ✓ Sicher + Günstig";
+	    			$metaDescription = $product->getData('name') . " beim Profi für gebrauchte Drucker und Kopierer: ✓ Aufbereitet inkl. 12 Monate Gewährleistung ✓ Geprüfte Qualität ✓ Sicher + Günstig";
 	    			break;
 	    		
 	    		case 'druckerhaus24':
