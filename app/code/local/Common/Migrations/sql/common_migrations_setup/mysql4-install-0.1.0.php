@@ -21,9 +21,9 @@ if ($product->package_id) {
     }
 
     $shippingXml="<g:shipping>
-<g:country>DE</g:country>
-<g:service>$service</g:service>
-<g:price>$price</g:price>
+<g:country><![CDATA[DE]]></g:country>
+<g:service><![CDATA[$service]]></g:service>
+<g:price><![CDATA[$price]]></g:price>
 </g:shipping>
 ";
     return $shippingXml;
