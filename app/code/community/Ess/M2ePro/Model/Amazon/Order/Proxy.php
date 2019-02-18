@@ -152,27 +152,7 @@ class Ess_M2ePro_Model_Amazon_Order_Proxy extends Ess_M2ePro_Model_Order_Proxy
      */
     public function getBillingAddressData()
     {
-        if ($this->order->getAmazonAccount()->isMagentoOrdersBillingAddressSameAsShipping()) {
-            return parent::getBillingAddressData();
-        }
-
-        if ($this->order->getShippingAddress()->hasSameBuyerAndRecipient()) {
-            return parent::getBillingAddressData();
-        }
-
-        $customerNameParts = $this->getNameParts($this->order->getBuyerName());
-
-        return array(
-            'firstname'  => $customerNameParts['firstname'],
-            'lastname'   => $customerNameParts['lastname'],
-            'country_id' => '',
-            'region'     => '',
-            'region_id'  => '',
-            'city'       => 'Amazon does not supply the complete billing Buyer information.',
-            'postcode'   => '',
-            'street'     => array(),
-            'company'    => ''
-        );
+        return parent::getBillingAddressData();
     }
 
     /**
