@@ -3,3 +3,4 @@ pipelines:
     - step:
         script:
           - echo 'I made a pipeline!'
+          - git status
