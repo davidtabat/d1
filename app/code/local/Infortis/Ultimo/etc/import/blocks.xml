@@ -993,5 +993,41 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
+      <cms_block>
+         <title>kopiererhaus_slide_1</title>
+         <identifier>kopiererhaus_slide_1</identifier>
+         <content><![CDATA[<p><a href="https://www.kopiererhaus.de/hp-laserjet-p2055-ce456a-2094">
+          <img style="display: block; margin-left: auto; margin-right: auto; vertical-align: middle;" alt="HP LaserJet P2055DN"
+          src="{{media url="wysiwyg/Slider/kopiererhaus/Banner_Kopiererhaus_Vorlage_M402dn.jpg"}}" /> </a></p>]]></content>
+         <is_active>1</is_active>
+         <stores><item>0</item></stores>
+      </cms_block>
+      <cms_block>
+         <title>kopiererhaus_slide_2</title>
+         <identifier>kopiererhaus_slide_2</identifier>
+         <content><![CDATA[<p><a href="https://www.kopiererhaus.de/lexmark-x954de-mfp-farbgeraet-fuer-a3">
+          <img style="display: block; margin-left: auto; margin-right: auto; vertical-align: middle;" alt="HP Color LaserJet CM6040F MFP"
+           src="{{media url="wysiwyg/Slider/kopiererhaus/Banner_Kopiererhaus_Vorlage_X954.jpg"}}" /> </a></p>]]></content>
+         <is_active>1</is_active>
+         <stores><item>0</item></stores>
+      </cms_block>
+      <cms_block>
+         <title>kopiererhaus_slide_3</title>
+         <identifier>kopiererhaus_slide_3</identifier>
+         <content><![CDATA[<p><a href="https://www.kopiererhaus.de/hp-color-laserjet-enterprise-flow-m880z-a2w75a-bis-a3">
+          <img style="display: block; margin-left: auto; margin-right: auto; vertical-align: middle;" alt="HP LaserJet M5035XS MFP"
+          src="{{media url="wysiwyg/Slider/kopiererhaus/Banner_Kopiererhaus_Vorlage_M880z.jpg"}}" /> </a></p>]]></content>
+         <is_active>1</is_active>
+         <stores><item>0</item></stores>
+      </cms_block>
+      <cms_block>
+         <title>kopiererhaus_slide_4</title>
+         <identifier>kopiererhaus_slide_4</identifier>
+         <content><![CDATA[<p><a href="https://www.kopiererhaus.de/lexmark-ms415dn-35s0280">
+          <img style="display: block; margin-left: auto; margin-right: auto; vertical-align: middle;" alt="Kyocera TASKalfa 300i"
+          src="{{media url="wysiwyg/Slider/kopiererhaus/Banner_Kopiererhaus_Vorlage_MS415.jpg"}}" /> </a></p>]]></content>
+         <is_active>1</is_active>
+         <stores><item>0</item></stores>
+      </cms_block>
    </blocks>
 </root>
