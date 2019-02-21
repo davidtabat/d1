@@ -16,7 +16,7 @@
 	</a>
     
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -32,7 +32,7 @@
 	</li>
 
 </ul>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -88,7 +88,7 @@
 		<span class="ib ib-hover ic ic-lg ic-renren"></span>
 	</a>
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -136,39 +136,20 @@
       <cms_block>
          <title>Product - secondary column bottom</title>
          <identifier>block_product_secondary_bottom</identifier>
-         <content><![CDATA[<div class="feature feature-icon-hover indent first">
-	<span class="ib ic ic-lg ic-plane"></span>
-	<p class="no-margin ">We will send this product in 2 days. <a href="#">Read more...</a></p>
-</div>
-<div class="feature feature-icon-hover indent">
-	<span class="ib ic ic-lg ic-phone"></span>
-	<p class="no-margin ">Call us now for more info about our products.</p>
-</div>
-<div class="feature feature-icon-hover indent">
-	<span class="ib ic ic-lg ic-reload"></span>
-	<p class="no-margin ">Return purchased items and get all your money back.</p>
-</div>
-<div class="feature feature-icon-hover indent last">
-	<span class="ib ic ic-lg ic-star"></span>
-	<p class="no-margin ">Buy this product and earn 10 special loyalty points!</p>
+         <content><![CDATA[<div class="feature-wrapper bottom-border">
+<ul class="checklist">
+<li><span class="ic ic-arrow-right ic-lg"></span> <strong>bis 70%</strong> unter UVP</li>
+<li><span class="ic ic-arrow-right ic-lg"></span>  voll funktionsfähig</li>
+<li><span class="ic ic-arrow-right ic-lg"></span>  12 Monate Gewährleistung</li>
+</ul>
+<p></p>
+<p><strong><a class="go" onclick="_gaq.push(['_trackEvent', 'aktion', 'kaufberatung', 'produktdetail']);" href="/vorteile">Alle Vorteile</a></strong></p>
+
 </div>
 
-
-
-<!-- Social bookmarks from http://www.addthis.com/get/sharing  -->
-<!-- AddThis Button BEGIN -->
-<div class="feature-wrapper top-border">
-	<div class="addthis_toolbox addthis_default_style ">
-	<a class="addthis_button_preferred_1"></a>
-	<a class="addthis_button_preferred_2"></a>
-	<a class="addthis_button_preferred_3"></a>
-	<a class="addthis_button_preferred_4"></a>
-	<a class="addthis_button_compact"></a>
-	<a class="addthis_counter addthis_bubble_style"></a>
-	</div>
-	<script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js#pubid=xa-5054e6c6502d114f"></script>
-</div>
-<!-- AddThis Button END -->
+<h4>Kaufberatung & Kontakt<br/></h4>
+<p><span class="ic ic-phone ic-lg"></span>&nbsp;&nbsp;<strong>07071 / 966 9000</strong><br/>Mo-Do 9-17 Uhr, Fr 9-15 Uhr</p>
+<p><strong><a class="go" onclick="_gaq.push(['_trackEvent', 'aktion', 'kaufberatung', 'produktdetail']);" href="/beratung">Online Kaufberatung</a></strong></p>
 
 ]]></content>
          <is_active>1</is_active>
@@ -185,7 +166,7 @@
          <title>Cart - below totals</title>
          <identifier>block_cart_below_totals</identifier>
          <content><![CDATA[<div class="hide-below-320" style="display: table; float: right; padding-right: 10px; text-align: right;"><span style="display: table-cell; vertical-align: middle;">Sample info about SSL Certificate</span> <img src="{{media url="wysiwyg/infortis/ultimo/custom/block_cart_below_totals.png"}}" alt="Example Image" title="Static CMS block displayed below totals. Put your own content here." /></div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -203,19 +184,19 @@
          <content><![CDATA[<p>Custom CMS block displayed as a tab. You can use it to display info about returns and refunds, latest promotions etc. You can put your own content here: text, HTML, images - whatever you like. There are <strong>many similar blocks</strong> accross the store. All CMS blocks are editable from the admin panel.</p>
 
 <div class="feature indent first">
-	<span class="ib ib-hover ic ic-right ic-2x"></span>
+	<span class="icon i-right no-bg-color"></span>
 	<p class="no-margin"><strong>Magento Community Edition is the most powerful</strong> open source e-commerce software and can be downloaded 100% for free. Developers can modify the core code, add custom features and functionality by installing extensions from Magento Connect marketplace.</p>
 </div>
 <div class="feature indent">
-	<span class="ib ib-hover ic ic-right ic-2x"></span>
+	<span class="icon i-right no-bg-color"></span>
 	<p class="no-margin"><strong>Manage the fully dynamic catalog</strong> with the intutive admistrative interface. The flexible catalog system includes various options for the display of items. Magento is also integrated with a variety of major payment gateways out of the box.</p>
 </div>
 <div class="feature indent last">
-	<span class="ib ib-hover ic ic-right ic-2x"></span>
+	<span class="icon i-right no-bg-color"></span>
 	<p class="no-margin"><strong>Magento is a fully global platform</strong>, allowing for the expansion of business or simply offering multiple versions of your site to meet the needs of your customers.
 Translated into over 60 languages, supporting multiple currencies, payment methods and taxes, Magento allows for internationalization of your online stores.</p>
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -224,32 +205,27 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <content><![CDATA[<p>Another custom CMS block displayed as a tab. You can use it to display info about returns and refunds, latest promotions etc. You can put your own content here: text, HTML, images - whatever you like. There are <strong>many similar blocks</strong> accross the store. All CMS blocks are editable from the admin panel.</p>
 
 <p>Lorem ipsum dolor sit, consectetur adipiscing elit. Etiam neque velit, blandit sed scelerisque quis. Nullam ornare enim nec justo bibendum lobortis. In eget metus.</p>]]></content>
-         <is_active>0</is_active>
+         <is_active>0</is_active>s
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Cart - below table</title>
          <identifier>block_cart_below_table</identifier>
          <content><![CDATA[<img src="{{media url="wysiwyg/infortis/ultimo/custom/banners/cart-discount.png"}}" alt="Magento discount code" title="Use discount code/coupon" />]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Footer column 1</title>
          <identifier>block_footer_column1</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
-	<h6 class="block-title heading">About Ultimo</h6>
-
-	<div class="block-content">
-
-		<div class="feature first last">
-			<img class="icon" src="{{media url="wysiwyg/infortis/ultimo/icons/info.png"}}" alt="About Ultimo Magento Theme" />
-			<p>Ultimo is a premium Magento theme with advanced admin module. It’s extremely customizable, easy to use and fully responsive.</p>
-			<p>Suitable for every type of store. Great starting point for your custom projects.</p>
-			<h5><a class="go" href="http://themeforest.net/item/ultimo-fluid-responsive-magento-theme/3231798?ref=infortis">Buy this theme</a></h5>
-		</div>
-
-	</div>
+<h6 class="block-title heading">&Uuml;ber uns</h6>
+<div class="block-content">
+<div class="feature first last">
+<p>Kopiererhaus bietet Ihnen professionell aufbereitete Kopierer, Drucker und Multifunktionsger&auml;te namhafter Hersteller wie Hewlett Packard, Konica Minolta, Kyocera, Sharp und Canon.</p>
+<p>Jedes Ger&auml;t wurde fachm&auml;nnisch von unseren hauseigenen Technikern gepr&uuml;ft und aufbereitet.</p>
+</div>
+</div>
 </div>]]></content>
          <is_active>1</is_active>
          <stores><item>0</item></stores>
@@ -259,20 +235,15 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <identifier>block_footer_column2</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
 
-	<h6 class="block-title heading">Theme Features</h6>
+	<h6 class="block-title heading">kopiererhaus.de</h6>
 	<div class="block-content">
-	
+
 		<ul class="bullet">
-			<li><a href="{{store url='ultimo-responsive-magento-theme'}}">Theme Features</a></li>
-			<li><a href="{{store url='typography'}}">Typography</a></li>
-			<li><a href="#">Some Sample Link</a></li>
-			<li><a href="#">Meat Our Best Partners</a></li>
-			<li><a href="#">Latest Work Samples</a></li>
-			<li><a href="#">Our Other Projects</a></li>
-			<li><a href="#">One Click To Join Us</a></li>
-			<li><a href="#">Follow Us On Twitter</a></li>
-			<li><a href="http://infortis-themes.com/">Magento Themes</a></li>
-			<li><a href="#">Ecommerce</a></li>
+			<li><a href="https://www.kopiererhaus.de/impressum">Impressum</a></li><br>
+			<li><a href="https://www.kopiererhaus.de/agb">AGB</a></li><br>
+			<li><a href="https://www.kopiererhaus.de/widerrufsbelehrung">Widerrufsrecht</a></li><br>
+			<li><a href="https://www.kopiererhaus.de/datenschutz">Datenschutz</a></li><br>
+			<li><a href="https://www.kopiererhaus.de/elektroaltgeraeteentsorgung">Hinweise zur Elektroaltgeräteentsorgung</a></li>
 		</ul>
 
 	</div>
@@ -286,23 +257,23 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <identifier>block_footer_column3</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
 
-	<h6 class="block-title heading">Key Features</h6>
+	<h6 class="block-title heading">Unser Qualitätsversprechen</h6>
 	<div class="block-content">
 		<div class="feature feature-icon-hover indent first">
 			<span class="ib ic ic-char">1</span>
-			<p class="no-margin">Unlimited colors, hundreds of customizable elements</p>
+			<p class="no-margin">Ausgesuchter Einkauf</p>
 		</div>
 		<div class="feature feature-icon-hover indent">
 			<span class="ib ic ic-char">2</span>
-			<p class="no-margin ">Customizable responsive layout based on fluid grid</p>
+			<p class="no-margin ">Vollständiger Funktionstest</p>
 		</div>
 		<div class="feature feature-icon-hover indent">
 			<span class="ib ic ic-char">3</span>
-			<p class="no-margin ">50+ placeholders to display custom content</p>
+			<p class="no-margin ">Gewährleistung</p>
 		</div>
 		<div class="feature feature-icon-hover indent">
 			<span class="ib ic ic-char">4</span>
-			<p class="no-margin ">Create your custom sub-themes (variants)</p>
+			<p class="no-margin ">Service nach Gewährleistungszeit</p>
 		</div>
 	</div>
 
@@ -314,27 +285,25 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <title>Footer column 4</title>
          <identifier>block_footer_column4</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
-
-		<h6 class="block-title heading">Company Info</h6>
-		<div class="block-content">
-			<div class="feature feature-icon-hover indent first">
-				<span class="ib ic ic-phone ic-lg"></span>
-				<p class="no-margin ">Call Us +001 555 801<br/>Fax +001 555 802</p>
-			</div>
-			<div class="feature feature-icon-hover indent">
-				<span class="ib ic ic-mobile ic-lg"></span>
-				<p class="no-margin ">+77 123 1234<br/>+42 98 9876</p>
-			</div>
-			<div class="feature feature-icon-hover indent">
-				<span class="ib ic ic-letter ic-lg"></span>
-				<p class="no-margin ">boss@example.com<br/>me@example.com</p>
-			</div>
-			<div class="feature feature-icon-hover indent last">
-				<span class="ib ic ic-skype ic-lg"></span>
-				<p class="no-margin ">Skype: samplelogin<br/>skype-support</p>
-			</div>
-		</div>
-
+<h6 class="block-title heading">Kontakt und Support</h6>
+<div class="block-content">
+<div class="feature feature-icon-hover indent first">
+<span class="ib ic ic-phone ic-lg"></span>
+<p class="no-margin ">Telefon 0 7071 / 966 9000<br />Telefax 0 7071 / 966 9090</p>
+</div>
+<div class="feature feature-icon-hover indent">
+<span class="ib ic ic-letter ic-lg"></span>
+<p class="no-margin "><a href="mailto:kontakt@kopiererhaus.de">kontakt@kopiererhaus.de</a><br /><a href="https://www.kopiererhaus.de/contacts">Kontaktformular</a></p>
+</div>
+<div class="feature feature-icon-hover indent">
+<span class="ib ic ic-question ic-lg"></span>
+<p class="no-margin "><a href="{{store url='faq'}}">Häufige Fragen (FAQ)</a><br /><a href="https://www.kopiererhaus.de/beratung">Kaufberatung</a></p>
+</div>
+<div class="feature feature-icon-hover indent last">
+<span class="ib ic ic-truck ic-lg"></span>
+<p class="no-margin "><a href="https://www.kopiererhaus.de/lieferung">Versand und<br />Zahlung</a></p>
+</div>
+</div>
 </div>]]></content>
          <is_active>1</is_active>
          <stores><item>0</item></stores>
@@ -491,7 +460,7 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
 
 	</div>
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -522,29 +491,19 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
       <cms_block>
          <title>Header top left 2</title>
          <identifier>block_header_top_left2</identifier>
-         <content><![CDATA[<div class="links-wrapper-separators">
-
-   <ul class="links">
-      <li class="first">
-         <a href="http://ultimo.infortis-themes.com/demo/select-demo/" title="See more demos">All demos</a>
-      </li>
-      <li class="hide-below-768">
-         <a href="{{store url='ultimo-responsive-magento-theme'}}" title="See the list of all features">Features</a>
-      </li>
-      <li class="last hide-below-480">
-         <a href="http://themeforest.net/item/ultimo-fluid-responsive-magento-theme/3231798?ref=infortis" title="Click to buy this theme">Buy me!</a>
-      </li>
-   </ul>
-
-</div>]]></content>
-         <is_active>1</is_active>
+         <content><![CDATA[TOP LEFT 2]]></content>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Header top left</title>
          <identifier>block_header_top_left</identifier>
-         <content><![CDATA[<div class="hide-below-768" title="You can put here a phone number or some additional help info"><span class="ic ic-lg ic-phone"></span> Call +001 555 801</div>]]></content>
-         <is_active>1</is_active>
+         <content><![CDATA[<div class="feature feature-icon-hover indent">
+<span class="ic ic-success ib">
+</span>
+<h4>bis 70% unter UVP</h4>
+</div>]]></content>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -553,13 +512,13 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <content><![CDATA[<ul class="links">
 
 	<li class="first">
-		<a href="#" title="Sample">Sample</a>
+		<a href="https://www.kopiererhaus.de/customer/account/login/" title="Mein Konto">Mein Konto</a>
 	</li>
 	<li class="">
-		<a href="#" title="Custom">Custom</a>
+		<a href="https://www.kopiererhaus.de/lieferung" title="Versand & Zahlung">Versand & Zahlung</a>
 	</li>
 	<li class="last">
-		<a href="#" title="Links">Links</a>
+		<a href="https://www.kopiererhaus.de/beratung" title="Kaufberatung">Kaufberatung</a>
 	</li>
 
 </ul>]]></content>
@@ -572,10 +531,10 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <content><![CDATA[<ul class="links">
 
 	<li class="first">
-		<a href="{{store url='about-magento-demo-store'}}" title="Custom link">Sample</a>
+		<a href="{{store url='lieferung'}}" title="Zahlung & Versand">Zahlung & Versand</a>
 	</li>
 	<li class="last">
-		<a href="{{store url='any/custom/page'}}" title="Link Hidden on Mobile">Links</a>
+		<a href="{{store url='beratung'}}" title="Kaufberatung">Kaufberatung</a>
 	</li>
 
 </ul>]]></content>
@@ -593,14 +552,16 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <title>Footer - row 2 column 1</title>
          <identifier>block_footer_row2_column1</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
-	<h6 class="block-title heading">First Heading</h6>
+	<h6 class="block-title heading">Hersteller</h6>
 
 	<div class="block-content">
 
 		<ul class="bullet">
-			<li><a href="{{store url="ultimo-responsive-magento-theme"}}">This is just a sample link</a></li>
-			<li><a href="#">And this is some other link</a></li>
-			<li><a href="#">Another dummy text</a></li>
+			<li><a href="https://www.kopiererhaus.de/canon-kopierer">Canon Kopierer</a></li>
+			<li><a href="https://www.kopiererhaus.de/hp-kopierer">HP Kopierer</a></li>
+			<li><a href="https://www.kopiererhaus.de/konica-minolta-kopierer">Konica Minolta Kopierer</a></li>
+			<li><a href="https://www.kopiererhaus.de/kyocera-mita-kopierer">Kyocera Mita Kopierer</a></li>
+			<li><a href="https://www.kopiererhaus.de/ricoh-kopierer">Ricoh Kopierer</a></li>
 		</ul>
 
 	</div>
@@ -631,14 +592,14 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <title>Footer - row 2 column 3</title>
          <identifier>block_footer_row2_column3</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
-	<h6 class="block-title heading">Third Heading</h6>
+	<h6 class="block-title heading">Geräte</h6>
 
 	<div class="block-content">
 
 		<ul class="bullet">
-			<li><a href="{{store url="ultimo-responsive-magento-theme"}}">This is just a sample link</a></li>
-			<li><a href="#">And this is some other link</a></li>
-			<li><a href="#">Another dummy text</a></li>
+			<li><a href="https://www.kopiererhaus.de/farbkopierer">Farbkopierer</a></li>
+			<li><a href="https://www.kopiererhaus.de/laserdrucker">Laserdrucker</a></li>
+			<li><a href="https://www.kopiererhaus.de/farblaserdrucker">Farblaserdrucker</a></li>
 		</ul>
 
 	</div>
@@ -748,14 +709,13 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <title>Footer - row 2 column 4</title>
          <identifier>block_footer_row2_column4</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
-	<h6 class="block-title heading">Fourth Heading</h6>
+	<h6 class="block-title heading">Gerätetypen</h6>
 
 	<div class="block-content">
 
 		<ul class="bullet">
-			<li><a href="{{store url="ultimo-responsive-magento-theme"}}">Link example</a></li>
-			<li><a href="#">And this is some other link</a></li>
-			<li><a href="#">Last Sample Link</a></li>
+			<li><a href="https://www.kopiererhaus.de/standkopierer">Standkopierer</a></li>
+			<li><a href="https://www.kopiererhaus.de/tischkopierer">Tischkopierer</a></li>
 		</ul>
 
 	</div>
@@ -771,7 +731,7 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
 {{block type="ultraslideshow/slideshow" template="infortis/ultraslideshow/slideshow.phtml" slides="block_category_slide1,block_category_slide2" timeout="10000"}}
 
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -853,97 +813,70 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
 
 </a>
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Landing page 3</title>
          <identifier>landing_page3</identifier>
-         <content><![CDATA[<div class="landing-page nested-container clearer">
-	<br />
-    
-	<div class="vertical-section grid12-4 mobile-grid-half">
-        <a href="{{store direct_url="downloadable/ebooks.html"}}">
-        	<img class="center-block" src="{{media url="wysiwyg/infortis/ultimo/custom/landing/vert1.jpg"}}" alt="Sample banner" />
-            <div class="caption dark3 full-width">
-                <h2 class="heading permanent">e-Books</h2>
-                <p class="permanent">Sell e-Books with Magento</p>
-                <p>Lorem ipsum dolor </p>
-            </div>
-        </a>
-	</div>
-	<div class="vertical-section grid12-4 mobile-grid-half">
-        <a href="{{store direct_url="downloadable/music.html"}}">
-        	<img class="center-block" src="{{media url="wysiwyg/infortis/ultimo/custom/landing/vert2.jpg"}}" alt="Sample banner" />
-            <div class="caption dark3 full-width">
-	            <h2 class="heading permanent">Music</h2>
-    	        <p class="permanent">Sell music with Magento</p>
-        	    <p>Lorem ipsum dolor </p>
-            </div>
-        </a>
-	</div>
-	<div class="vertical-section grid12-4 mobile-grid-half">
-        <a href="{{store direct_url="downloadable/software.html"}}">
-        	<img class="center-block" src="{{media url="wysiwyg/infortis/ultimo/custom/landing/vert3.jpg"}}" alt="Sample banner" />
-            <div class="caption dark3 full-width">
-	            <h2 class="heading permanent">Software</h2>
-    	        <p class="permanent">Sell digital products</p>
-        	    <p>Lorem ipsum dolor </p>
-            </div>
-        </a>
-	</div>
-
-	<div class="vertical-section grid-full mobile-grid-half">
-		<p class="horizontal-section" style="background-color: #f5f5f5; padding: 15px;">This is a custom landing page: a CMS block which can replace category products. You can put your own content here: text, HTML, images - whatever you want. You can create landing page for every category.</p>
-	</div>
-	<br />
-
+         <content><![CDATA[<div class="landing-page nested-container clearer"><br />
+<div class="vertical-section grid12-4 mobile-grid-half"><a href="{{store direct_url="> <img class="center-block" alt="Sample banner" src="{{media url="wysiwyg/infortis/ultimo/custom/landing/vert1.jpg"}}" /></a>
+<div class="caption dark3 full-width">
+<h2 class="heading permanent">e-Books</h2>
+<p class="permanent">Sell e-Books with Magento</p>
+<p>Lorem ipsum dolor</p>
+</div>
+</div>
+<div class="vertical-section grid12-4 mobile-grid-half"><a href="{{store direct_url="> <img class="center-block" alt="Sample banner" src="{{media url="wysiwyg/infortis/ultimo/custom/landing/vert2.jpg"}}" /></a>
+<div class="caption dark3 full-width">
+<h2 class="heading permanent">Music</h2>
+<p class="permanent">Sell music with Magento</p>
+<p>Lorem ipsum dolor</p>
+</div>
+</div>
+<div class="vertical-section grid12-4 mobile-grid-half"><a href="{{store direct_url="> <img class="center-block" alt="Sample banner" src="{{media url="wysiwyg/infortis/ultimo/custom/landing/vert3.jpg"}}" /></a>
+<div class="caption dark3 full-width">
+<h2 class="heading permanent">Software</h2>
+<p class="permanent">Sell digital products</p>
+<p>Lorem ipsum dolor</p>
+</div>
+</div>
+<div class="vertical-section grid-full mobile-grid-half">
+<p class="horizontal-section" style="background-color: #f5f5f5; padding: 15px;">This is a custom landing page: a CMS block which can replace category products. You can put your own content here: text, HTML, images - whatever you want. You can create landing page for every category.</p>
+</div>
 </div>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Slideshow side banners</title>
          <identifier>block_slideshow_banners</identifier>
-         <content><![CDATA[<a class="banner fade-on-hover" href="{{store url='about-magento-demo-store'}}">
-	<img src="{{media url='wysiwyg/infortis/ultimo/slideshow/banner/01.png'}}" alt="Sample banner" />
-
-	<div class="caption light1 full-width right">
-		<p class="right">Sample caption</p>
-	</div>
-
-</a>
-
-<a class="banner fade-on-hover" href="{{store url='about-magento-demo-store'}}">
-	<img src="{{media url='wysiwyg/infortis/ultimo/slideshow/banner/02.png'}}" alt="Sample banner" />
-
-	<div class="caption dark1 full-width right">
-		<p class="right">Add custom text</p>
-	</div>
-
-</a>
-
-<a class="banner fade-on-hover" href="{{store url='about-magento-demo-store'}}">
-	<img src="{{media url='wysiwyg/infortis/ultimo/slideshow/banner/03.png'}}" alt="Sample banner" />
-
-	<div class="caption dark3 full-width right">
-		<p class="right">Caption sample</p>
-	</div>
-</a>]]></content>
-         <is_active>1</is_active>
+         <content><![CDATA[<p><a class="banner fade-on-hover" href="{{store url='about-magento-demo-store'}}"> <img alt="Sample banner" src="{{media url='wysiwyg/infortis/ultimo/slideshow/banner/01.png'}}" /></a></p>
+<div class="caption light1 full-width right">
+<p class="right">Sample caption</p>
+</div>
+<p><a class="banner fade-on-hover" href="{{store url='about-magento-demo-store'}}"> <img alt="Sample banner" src="{{media url='wysiwyg/infortis/ultimo/slideshow/banner/02.png'}}" /></a></p>
+<div class="caption dark1 full-width right">
+<p class="right">Add custom text</p>
+</div>
+<p><a class="banner fade-on-hover" href="{{store url='about-magento-demo-store'}}"> <img alt="Sample banner" src="{{media url='wysiwyg/infortis/ultimo/slideshow/banner/03.png'}}" /></a></p>
+<div class="caption dark3 full-width right">
+<p class="right">Caption sample</p>
+</div>]]></content>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Header top right 2</title>
          <identifier>block_header_top_right2</identifier>
-         <content><![CDATA[Sample content of the static block block_header_top_right2]]></content>
+         <content><![CDATA[<p style="text-align: left;">TOP RIGHT 2</p>]]></content>
          <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
          <title>Header top right</title>
          <identifier>block_header_top_right</identifier>
-         <content><![CDATA[Sample content of the top right static block]]></content>
+         <content><![CDATA[<p style="text-align: left;">TOP RIGHT</p>]]></content>
          <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
@@ -955,7 +888,7 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
 			<span>About Us</span>
 		</a>
 	</li>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -971,7 +904,7 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
 		</div>
 
 </a>]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
@@ -983,7 +916,7 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
 			<h2 class="heading permanent">Sample Category Slideshow</h2>
 		</div>
 ]]></content>
-         <is_active>1</is_active>
+         <is_active>0</is_active>
          <stores><item>0</item></stores>
       </cms_block>
       <cms_block>
