@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<config>
+    <modules>
+        <DevAll_ExportUpsLabel>
+            <active>true</active>
+            <codePool>local</codePool>
+        </DevAll_ExportUpsLabel>
+    </modules>
+</config>
