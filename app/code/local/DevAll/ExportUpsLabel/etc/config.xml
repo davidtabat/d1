@@ -29,11 +29,11 @@
 
     <default>
         <sales>
-            <exportupslabel>
+            <export_upslabel>
                 <enabled>1</enabled>
                 <email>info@druckerboerse.com</email>
-                <subject>Quarterly export of order data</subject>
-            </exportupslabel>
+                <subject>Monthly export of UPS Printing Labels</subject>
+            </export_upslabel>
         </sales>
     </default>
 </config>
