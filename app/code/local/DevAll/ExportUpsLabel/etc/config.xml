@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <DevAll_ExportUpsLabel>
+            <version>1.0.0</version>
+        </DevAll_ExportUpsLabel>
+    </modules>
+
+    <crontab>   
+        <jobs>   
+            <export_upslabel>      
+                <schedule>         
+                    <cron_expr>0 0 1 * *</cron_expr>       
+                </schedule>     
+                <run>       
+                    <model>export_upslabel/cron::processExporting</model>    
+                </run>
+            </export_upslabel>
+        </jobs>
+    </crontab>
+     
+    <global>
+        <models>     
+            <export_upslabel>      
+                <class>DevAll_ExportUpsLabel_Model</class>
+            </export_upslabel>
+        </models>
+    </global>
+
+    <default>
+        <sales>
+            <exportupslabel>
+                <enabled>1</enabled>
+                <email>info@druckerboerse.com</email>
+                <subject>Quarterly export of order data</subject>
+            </exportupslabel>
+        </sales>
+    </default>
+</config>
+
