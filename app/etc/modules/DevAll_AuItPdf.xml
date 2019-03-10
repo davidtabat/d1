@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<config>
+    <modules>
+        <DevAll_AuItPdf>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <AuIt_Pdf />
+            </depends>
+        </DevAll_AuItPdf>
+    </modules>
+</config>
