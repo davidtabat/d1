@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Localized Magento Editions
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalized
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+-->
+<config>
+    <menu>
+        <system>
+            <children>
+                <magento_localized>
+                    <children>
+                        <paypal translate="title" module="magento_localized_ebay">
+                            <title>Configure PayPal Express</title>
+                            <sort_order>210</sort_order>
+                            <action>adminhtml/magentoLocalizedEbay/paypal</action>
+                        </paypal>
+                        <m2e translate="title" module="magento_localized_ebay">
+                            <title>Configure M2E Pro</title>
+                            <sort_order>230</sort_order>
+                            <action>adminhtml/magentoLocalizedEbay/m2e</action>
+                        </m2e>
+                        <m2epro_ebay>
+                            <title>Sell On eBay</title>
+                            <sort_order>240</sort_order>
+                            <ifconfig>magento_localized/installed_modules/ess/m2e-pro</ifconfig>
+                            <children>
+                                <listings>
+                                    <title>Listings</title>
+                                    <sort_order>1</sort_order>
+                                    <action>M2ePro/adminhtml_ebay_listing/index</action>
+                                </listings>
+
+                                <orders>
+                                    <title>Sales</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_ebay_order/index</action>
+                                </orders>
+
+                                <logs>
+                                    <title>Logs</title>
+                                    <sort_order>3</sort_order>
+                                    <action>M2ePro/adminhtml_ebay_log/listing</action>
+                                </logs>
+
+                                <configuration>
+                                    <title>Configuration</title>
+                                    <sort_order>4</sort_order>
+                                    <action>M2ePro/adminhtml_ebay_synchronization/index</action>
+                                </configuration>
+
+                                <help>
+                                    <title>Help</title>
+                                    <sort_order>5</sort_order>
+                                    <action>M2ePro/adminhtml_support/index/referrer/ebay</action>
+                                </help>
+                            </children>
+                        </m2epro_ebay>
+
+                        <m2epro_common>
+                            <title>Sell On Multi-Channels</title>
+                            <sort_order>250</sort_order>
+                            <ifconfig>magento_localized/installed_modules/ess/m2e-pro</ifconfig>
+                            <children>
+                                <listings>
+                                    <title>Manage Listings</title>
+                                    <sort_order>1</sort_order>
+                                    <children>
+                                        <listing>
+                                            <title>Listings</title>
+                                            <sort_order>1</sort_order>
+                                            <action>M2ePro/adminhtml_common_listing/index</action>
+                                        </listing>
+                                        <listing_other>
+                                            <title>3rd Party Listings</title>
+                                            <sort_order>2</sort_order>
+                                            <action>M2ePro/adminhtml_common_listing_other/index</action>
+                                        </listing_other>
+                                    </children>
+                                </listings>
+
+                                <orders>
+                                    <title>Sales</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_common_order/index</action>
+                                </orders>
+
+                                <templates>
+                                    <title>Templates</title>
+                                    <sort_order>3</sort_order>
+                                    <children>
+                                        <selling_format>
+                                            <title>Selling Format Templates</title>
+                                            <sort_order>1</sort_order>
+                                            <action>M2ePro/adminhtml_common_template_sellingFormat/index</action>
+                                        </selling_format>
+                                        <synchronization>
+                                            <title>Synchronization Templates</title>
+                                            <sort_order>2</sort_order>
+                                            <action>M2ePro/adminhtml_common_template_synchronization/index</action>
+                                        </synchronization>
+                                    </children>
+                                </templates>
+
+                                <logs>
+                                    <title>Activity Logs</title>
+                                    <sort_order>4</sort_order>
+                                    <children>
+                                        <listing>
+                                            <title>Listings Log</title>
+                                            <sort_order>1</sort_order>
+                                            <action>M2ePro/adminhtml_common_log/listing</action>
+                                        </listing>
+                                        <listing_other>
+                                            <title>3rd Party Listings Log</title>
+                                            <sort_order>2</sort_order>
+                                            <action>M2ePro/adminhtml_common_log/listingOther</action>
+                                        </listing_other>
+                                        <synchronization>
+                                            <title>Synchronization Log</title>
+                                            <sort_order>3</sort_order>
+                                            <action>M2ePro/adminhtml_common_log/synchronization</action>
+                                        </synchronization>
+                                        <order>
+                                            <title>Orders Log</title>
+                                            <sort_order>4</sort_order>
+                                            <action>M2ePro/adminhtml_common_log/order</action>
+                                        </order>
+                                    </children>
+                                </logs>
+
+                                <configuration>
+                                    <title>Configuration</title>
+                                    <sort_order>5</sort_order>
+                                    <children>
+                                        <account>
+                                            <title>Account Settings</title>
+                                            <sort_order>1</sort_order>
+                                            <action>M2ePro/adminhtml_common_account/index</action>
+                                        </account>
+                                        <marketplace>
+                                            <title>Marketplaces</title>
+                                            <sort_order>2</sort_order>
+                                            <action>M2ePro/adminhtml_common_marketplace/index</action>
+                                        </marketplace>
+                                        <synchronization>
+                                            <title>Synchronization</title>
+                                            <sort_order>3</sort_order>
+                                            <action>M2ePro/adminhtml_common_synchronization/index</action>
+                                        </synchronization>
+                                        <global>
+                                            <title>Global Settings</title>
+                                            <sort_order>4</sort_order>
+                                            <action>M2ePro/adminhtml_common_configuration/index</action>
+                                        </global>
+                                    </children>
+                                </configuration>
+
+                                <help>
+                                    <title>Help</title>
+                                    <sort_order>6</sort_order>
+                                    <children>
+                                        <doc>
+                                            <title>Documentation</title>
+                                            <sort_order>1</sort_order>
+                                            <action>M2ePro/adminhtml_support/index</action>
+                                        </doc>
+                                        <tutorial>
+                                            <title>Video Tutorials</title>
+                                            <sort_order>2</sort_order>
+                                            <action>M2ePro/adminhtml_support/index</action>
+                                        </tutorial>
+                                        <support>
+                                            <title>Support</title>
+                                            <sort_order>3</sort_order>
+                                            <action>M2ePro/adminhtml_support/index/referrer/common</action>
+                                        </support>
+                                    </children>
+                                </help>
+                            </children>
+                        </m2epro_common>
+                    </children>
+                </magento_localized>
+            </children>
+        </system>
+        <magento_localized>
+            <children>
+                <paypal translate="title" module="magento_localized_ebay">
+                    <title>Configure PayPal Express</title>
+                    <sort_order>210</sort_order>
+                    <action>adminhtml/magentoLocalizedEbay/paypal</action>
+                </paypal>
+                <m2e translate="title" module="magento_localized_ebay">
+                    <title>Configure M2E Pro</title>
+                    <sort_order>230</sort_order>
+                    <action>adminhtml/magentoLocalizedEbay/m2e</action>
+                </m2e>
+                <m2epro_ebay>
+                    <title>Sell On eBay</title>
+                    <sort_order>240</sort_order>
+                    <ifconfig>magento_localized/installed_modules/ess/m2e-pro</ifconfig>
+                    <children>
+                        <listings>
+                            <title>Listings</title>
+                            <sort_order>1</sort_order>
+                            <action>M2ePro/adminhtml_ebay_listing/index</action>
+                        </listings>
+
+                        <orders>
+                            <title>Sales</title>
+                            <sort_order>2</sort_order>
+                            <action>M2ePro/adminhtml_ebay_order/index</action>
+                        </orders>
+
+                        <logs>
+                            <title>Logs</title>
+                            <sort_order>3</sort_order>
+                            <action>M2ePro/adminhtml_ebay_log/listing</action>
+                        </logs>
+
+                        <configuration>
+                            <title>Configuration</title>
+                            <sort_order>4</sort_order>
+                            <action>M2ePro/adminhtml_ebay_synchronization/index</action>
+                        </configuration>
+
+                        <help>
+                            <title>Help</title>
+                            <sort_order>5</sort_order>
+                            <action>M2ePro/adminhtml_support/index/referrer/ebay</action>
+                        </help>
+                    </children>
+                </m2epro_ebay>
+
+                <m2epro_common>
+                    <title>Sell On Multi-Channels</title>
+                    <sort_order>250</sort_order>
+                    <ifconfig>magento_localized/installed_modules/ess/m2e-pro</ifconfig>
+                    <children>
+                        <listings>
+                            <title>Manage Listings</title>
+                            <sort_order>1</sort_order>
+                            <children>
+                                <listing>
+                                    <title>Listings</title>
+                                    <sort_order>1</sort_order>
+                                    <action>M2ePro/adminhtml_common_listing/index</action>
+                                </listing>
+                                <listing_other>
+                                    <title>3rd Party Listings</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_common_listing_other/index</action>
+                                </listing_other>
+                            </children>
+                        </listings>
+
+                        <orders>
+                            <title>Sales</title>
+                            <sort_order>2</sort_order>
+                            <action>M2ePro/adminhtml_common_order/index</action>
+                        </orders>
+
+                        <templates>
+                            <title>Templates</title>
+                            <sort_order>3</sort_order>
+                            <children>
+                                <selling_format>
+                                    <title>Selling Format Templates</title>
+                                    <sort_order>1</sort_order>
+                                    <action>M2ePro/adminhtml_common_template_sellingFormat/index</action>
+                                </selling_format>
+                                <synchronization>
+                                    <title>Synchronization Templates</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_common_template_synchronization/index</action>
+                                </synchronization>
+                            </children>
+                        </templates>
+
+                        <logs>
+                            <title>Activity Logs</title>
+                            <sort_order>4</sort_order>
+                            <children>
+                                <listing>
+                                    <title>Listings Log</title>
+                                    <sort_order>1</sort_order>
+                                    <action>M2ePro/adminhtml_common_log/listing</action>
+                                </listing>
+                                <listing_other>
+                                    <title>3rd Party Listings Log</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_common_log/listingOther</action>
+                                </listing_other>
+                                <synchronization>
+                                    <title>Synchronization Log</title>
+                                    <sort_order>3</sort_order>
+                                    <action>M2ePro/adminhtml_common_log/synchronization</action>
+                                </synchronization>
+                                <order>
+                                    <title>Orders Log</title>
+                                    <sort_order>4</sort_order>
+                                    <action>M2ePro/adminhtml_common_log/order</action>
+                                </order>
+                            </children>
+                        </logs>
+
+                        <configuration>
+                            <title>Configuration</title>
+                            <sort_order>5</sort_order>
+                            <children>
+                                <account>
+                                    <title>Account Settings</title>
+                                    <sort_order>1</sort_order>
+                                    <action>M2ePro/adminhtml_common_account/index</action>
+                                </account>
+                                <marketplace>
+                                    <title>Marketplaces</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_common_marketplace/index</action>
+                                </marketplace>
+                                <synchronization>
+                                    <title>Synchronization</title>
+                                    <sort_order>3</sort_order>
+                                    <action>M2ePro/adminhtml_common_synchronization/index</action>
+                                </synchronization>
+                                <global>
+                                    <title>Global Settings</title>
+                                    <sort_order>4</sort_order>
+                                    <action>M2ePro/adminhtml_common_configuration/index</action>
+                                </global>
+                            </children>
+                        </configuration>
+
+                        <help>
+                            <title>Help</title>
+                            <sort_order>6</sort_order>
+                            <children>
+                                <doc>
+                                    <title>Documentation</title>
+                                    <sort_order>1</sort_order>
+                                    <action>M2ePro/adminhtml_support/index</action>
+                                </doc>
+                                <tutorial>
+                                    <title>Video Tutorials</title>
+                                    <sort_order>2</sort_order>
+                                    <action>M2ePro/adminhtml_support/index</action>
+                                </tutorial>
+                                <support>
+                                    <title>Support</title>
+                                    <sort_order>3</sort_order>
+                                    <action>M2ePro/adminhtml_support/index/referrer/common</action>
+                                </support>
+                            </children>
+                        </help>
+                    </children>
+                </m2epro_common>
+            </children>
+        </magento_localized>
+    </menu>
+</config>

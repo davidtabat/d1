@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-fr",
+   "type": "magento-module",
+   "description": "French Localization package for Magento Localized (aka Magento FR)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedFR",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

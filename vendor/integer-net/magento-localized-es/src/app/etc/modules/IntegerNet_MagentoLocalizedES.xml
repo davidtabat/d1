@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Spanish Localization package for Magento Localized (aka Magento ES) 
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedES
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+    <modules>
+        <IntegerNet_MagentoLocalizedES>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <IntegerNet_MagentoLocalized />
+            </depends>
+        </IntegerNet_MagentoLocalizedES>
+    </modules>
+</config>

@@ -1,0 +1,71 @@
+{* This is a comment block
+
+Use vars: {{var var_name}}
+*}<!--@subject Zapłata za transakcję zakończona niepowodzeniem @-->
+<!--@vars
+{"var reason":"Transaction Failed Reason",
+"var checkoutType":"Checkout Type",
+"var customerEmail":"Customer Email",
+"var customer":"Customer Name",
+"var items":"Shopping Cart Items",
+"var total":"Total",
+"var billingAddress.format('html')":"Billing Address",
+"var shippingAddress.format('html')":"Shipping Address",
+"var shippingMethod":"Shipping Method",
+"var paymentMethod":"Payment Method",
+"var dateAndTime":"Date and Time of Transaction"}
+@-->
+
+<table>
+    <thead>
+        <tr>
+            <th>Zapłata za transakcję zakończona niepowodzeniem</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <p>
+                    <b>Powód:</b><br />
+                    {{var reason}}
+                </p>
+                <p>
+                    <b>Typ płatności:</b><br />
+                    {{var checkoutType}}
+                </p>
+                <p>
+                    <b>Klient:</b><br />
+                    <a href="mailto:{{var customerEmail}}">{{var customer}}</a> &lt;{{var customerEmail}}&gt;
+                </p>
+                <p>
+                    <b>Produkty:</b><br />
+                    {{var items}}
+                </p>
+                <p>
+                    <b>Razem:</b><br />
+                    {{var total}}
+                </p>
+                <p>
+                    <b>Dane płatności:</b><br />
+                    {{var billingAddress.format('html')}}
+                </p>
+                <p>
+                    <b>Adres dostawy:</b><br />
+                    {{var shippingAddress.format('html')}}
+                </p>
+                <p>
+                    <b>Sposób dostawy:</b><br />
+                    {{var shippingMethod}}
+                </p>
+                <p>
+                    <b>Sposób zapłaty:</b><br />
+                    {{var paymentMethod}}
+                </p>
+                <p>
+                    <b>Data i czas:</b><br />
+                    {{var dateAndTime}}
+                </p>
+            </td>
+        </tr>
+    </tbody>
+</table>

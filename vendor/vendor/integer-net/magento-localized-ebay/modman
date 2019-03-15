@@ -1,0 +1,8 @@
+src/app/code/community/IntegerNet/MagentoLocalizedEbay                  app/code/community/IntegerNet/MagentoLocalizedEbay
+src/app/design/adminhtml/default/default/layout/*	                    app/design/adminhtml/default/default/layout/
+src/app/design/adminhtml/default/default/template/magento_localized_ebay  app/design/adminhtml/default/default/template/magento_localized_ebay
+src/app/etc/modules/*                                                   app/etc/modules/
+src/app/locale/de_DE/*                                                  app/locale/de_DE/
+src/js/*                                                                js/
+src/skin/adminhtml/default/default/magento_localized/*                  skin/adminhtml/default/default/magento_localized/
+src/skin/install/default/default/magento_localized/*                    skin/install/default/default/magento_localized/

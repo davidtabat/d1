@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-ebay",
+   "type": "magento-module",
+   "description": "Ebay edition package for Magento Localized",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedEbay",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

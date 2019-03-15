@@ -1,0 +1,56 @@
+.magento-localized-ebay-setup hr {
+    width: 960px;
+    margin-bottom: 20px;
+    border: 0;
+    border-bottom: 1px solid #c8c8c8;
+}
+
+.magento-localized-ebay-setup .col2-set .col-1 {
+    max-width: 520px;
+    float: left;
+}
+.magento-localized-ebay-setup td.label {
+    width: 230px;
+}
+
+.magento-localized-ebay-setup .col2-set .col-2,
+.magento-localized-ebay-setup .form-list .comment {
+    max-width: 434px;
+    padding-left: 20px;
+    float: left;
+}
+
+.magento-localized-ebay-setup .col2-set {
+    max-width: 974px;
+}
+
+.magento-localized-ebay-setup .col2-set:after {
+    display: block;
+    content: ".";
+    clear: both;
+    font-size: 0;
+    line-height: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.magento-localized-ebay-setup .form-list .comment a {
+    color: #EA7601;
+}
+
+#group_m2e li {
+    list-style-position: inside;
+    list-style-type: disc;
+    padding-left: 1em;
+    text-indent: -1em;
+    margin-left: 0;
+}
+
+.adminhtml-magentolocalized-form .form-list td.m2e-label {
+    background: #ffffff !important;
+    border: 1px solid #D6D6D6 !important;
+}
+
+.adminhtml-magentolocalized-form .tooltip {
+    max-width: 200px;
+} 

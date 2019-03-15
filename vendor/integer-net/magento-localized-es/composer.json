@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-es",
+   "type": "magento-module",
+   "description": "Spanish Localization package for Magento Localized (aka Magento ES)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedES",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

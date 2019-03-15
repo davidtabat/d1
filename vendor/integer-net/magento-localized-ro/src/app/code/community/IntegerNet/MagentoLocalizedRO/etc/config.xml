@@ -1,0 +1,180 @@
+
+<!--
+/**
+ * Romanian Localization package for Magento Localized (aka Magento RO)
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedRO
+ * @copyright  Copyright (coffee) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+    <modules>
+        <IntegerNet_MagentoLocalizedRO>
+            <version>0.1.0</version>
+        </IntegerNet_MagentoLocalizedRO>
+    </modules>
+
+    <default>
+        <general>
+            <country>
+                <allow>RO</allow>
+            </country>
+            <locale>
+                <code>ro_RO</code>
+                <code_fallback></code_fallback>
+                <firstday>1</firstday>
+            </locale>
+            <store_information>
+                <merchant_country>RO</merchant_country>
+            </store_information>
+            <imprint>
+                <country>RO</country>
+                <display_copyright>1</display_copyright>
+            </imprint>
+        </general>
+
+        <design>
+            <header>
+                <welcome>Bine ai venit!</welcome>
+            </header>
+        </design>
+
+        <catalog>
+            <custom_options>
+                <time_format>24h</time_format>
+                <date_fields_order>d,m,y</date_fields_order>
+            </custom_options>
+            <baseprice>
+                <base_price_incl_tax>1</base_price_incl_tax>
+                <frontend_label>corespunde {{baseprice}} per {{reference_amount}} {{reference_unit}}</frontend_label>
+            </baseprice>
+        </catalog>
+
+        <sales>
+            <reorder>
+                <allow>0</allow>
+                <hide_sidebar_box>1</hide_sidebar_box>
+            </reorder>
+        </sales>
+
+        <autoshipping>
+            <settings>
+                <enabled>1</enabled>
+                <country_id>RO</country_id>
+            </settings>
+        </autoshipping>
+
+        <carriers>
+            <flatrate>
+                <title>Cost Livrare</title>
+                <name>Pausal</name>
+                <type>O</type>
+                <price>4.90</price>
+            </flatrate>
+            <freeshipping>
+                <active>1</active>
+                <title>Cost Livrare</title>
+                <name>Livrare gratuita</name>
+                <free_shipping_subtotal>50</free_shipping_subtotal>
+            </freeshipping>
+        </carriers>
+
+        <payment>
+            <ccsave>
+                <active>0</active>
+            </ccsave>
+            <checkmo>
+                <active>0</active>
+            </checkmo>
+            <free>
+                <title>Gratuit</title>
+            </free>
+            <banktransfer>
+                <active>1</active>
+                <title>Plata in avans</title>
+                <sort_order>20</sort_order>
+            </banktransfer>
+        </payment>
+
+        <magento_localized>
+            <module_title>Magento RO</module_title>
+            <module_code>magento_ro</module_code>
+            <module_url>http://www.nr-apps.com/store/magento-ro.html</module_url>
+            <logo_filename>magento_localized/logo.png</logo_filename>
+            <tracking_url>//www.nr-apps.com/n/germanstoreconfig/tracking</tracking_url>
+            <newsfeed_url>http://www.nr-apps.com/n/media/germanstoreconfig/feed.xml</newsfeed_url>
+            <iframe_url_prefix>//www.nr-apps.com/n/magento_ro_</iframe_url_prefix>
+            <iframe_url_suffix>.html</iframe_url_suffix>
+            <iframe_main_language_code>ro</iframe_main_language_code>
+            <iframe_fallback_language_code>en</iframe_fallback_language_code>
+            <feed_url_prefix>http://www.nr-apps.com/n/media/germanstoreconfig/</feed_url_prefix>
+            <default_language>ro_RO</default_language>
+            <available_languages>
+                <en_US />
+            </available_languages>
+            <country>RO</country>
+            <currency>EUR</currency>
+            <timezone>Europe/Berlin</timezone>
+            <install_guide_url>
+                <pl>http://www.nr-apps.com/n/magento_ro_ro/guide.html</pl>
+                <default>http://www.nr-apps.com/n/magento_ro_en/guide.html</default>
+            </install_guide_url>
+            <survey_url>
+                <pl>//www.nr-apps.com/n/magento_ro_ro/survey.html</pl>
+                <default>//www.nr-apps.com/n/magento_ro_en/survey.html</default>
+            </survey_url>
+            <form_fields>
+                <general__imprint__vat_id>
+                    <type>text</type>
+                    <label>NIF</label>
+                    <sorting>200</sorting>
+                    <optional>1</optional>
+                </general__imprint__vat_id>
+                <general__imprint__tax_number>
+                    <type>text</type>
+                    <label>Numarul Fiscal</label>
+                    <sorting>210</sorting>
+                    <optional>1</optional>
+                </general__imprint__tax_number>
+                <general__imprint__court>
+                    <type>text</type>
+                    <label>Registru juridic</label>
+                    <sorting>220</sorting>
+                    <optional>1</optional>
+                </general__imprint__court>
+                <general__imprint__register_number>
+                    <type>text</type>
+                    <label>Seria</label>
+                    <sorting>230</sorting>
+                    <optional>1</optional>
+                </general__imprint__register_number>
+                <general__imprint__financial_office>
+                    <type>text</type>
+                    <label>Biroul financiar</label>
+                    <sorting>240</sorting>
+                    <optional>1</optional>
+                </general__imprint__financial_office>
+                <general__imprint__ceo>
+                    <type>text</type>
+                    <label>Directorul General</label>
+                    <sorting>250</sorting>
+                    <optional>1</optional>
+                </general__imprint__ceo>
+                <general__imprint__owner>
+                    <type>text</type>
+                    <label>Proprietarul</label>
+                    <sorting>260</sorting>
+                    <optional>1</optional>
+                </general__imprint__owner>
+            </form_fields>
+            <modules>
+            </modules>
+        </magento_localized>
+        <magesetup>
+            <default_country>RO</default_country>
+        </magesetup>
+    </default>
+</config>

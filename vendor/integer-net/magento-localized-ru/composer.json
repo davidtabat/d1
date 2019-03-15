@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-ru",
+   "type": "magento-module",
+   "description": "Russian Localization package for Magento Localized (aka Magento RU)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedRU",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

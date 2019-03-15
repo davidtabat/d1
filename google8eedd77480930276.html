@@ -1,0 +1,730 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>page introuvable</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="http://www.imprireco.fr/skin/frontend/base/default/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="http://www.imprireco.fr/skin/frontend/base/default/favicon.ico" type="image/x-icon" />
+<!--[if lt IE 7]>
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = 'http://www.imprireco.fr/js/blank.html';
+    var BLANK_IMG = 'http://www.imprireco.fr/js/spacer.gif';
+//]]>
+</script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="http://www.imprireco.fr/media/css/87d0d701ab204f667525d6bbdc2c17ba.css" media="all" />
+<link rel="stylesheet" type="text/css" href="http://www.imprireco.fr/media/css/8a80a8566a24ea8df73366ceecf2195d.css" media="print" />
+<script type="text/javascript" src="http://www.imprireco.fr/media/js/9f63c9e368c4f22371a96f618635f2de.js"></script>
+<!--[if lt IE 8]>
+<link rel="stylesheet" type="text/css" href="http://www.imprireco.fr/media/css/8bb72323fc3cf6934d1124866ec67285.css" media="all" />
+<![endif]-->
+<!--[if lt IE 7]>
+<script type="text/javascript" src="http://www.imprireco.fr/media/js/6c08892ef7305e29556f099368558f50.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+//<![CDATA[
+Mage.Cookies.path     = '/';
+Mage.Cookies.domain   = '.www.imprireco.fr';
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+optionalZipCountries = ["IE","PA","HK","MO"];
+//]]>
+</script>
+<script src="http://www.imprireco.fr/js/magebuzz/sociallogin/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="http://www.imprireco.fr/js/magebuzz/sociallogin/jquery.fancybox.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+window.fbAsyncInit = function() {
+	FB.init({appId: '',
+		status     : true,
+		cookie     : true,
+		xfbml      : true,
+		oauth      : true});
+};
+(function(d){
+	var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+	js = d.createElement('script'); js.id = id; js.async = true;
+	js.src = "//connect.facebook.net/fr_FR/all.js";
+	d.getElementsByTagName('head')[0].appendChild(js);
+}(document));
+
+function facebook_check(){
+	jQuery.fancybox.showLoading();
+	var email_value = document.getElementById("fb_email").value;
+	var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+	if(email_value == '')
+	{
+		jQuery.fancybox.hideLoading();
+		document.getElementById('facebook_error').innerHTML="This field is required";
+	} else if(reg.test(email_value) == false){
+		jQuery.fancybox.hideLoading();
+		document.getElementById('facebook_error').innerHTML="Invalid Email Address";
+		return false
+	} else {
+		document.getElementById('facebook_error').innerHTML="";
+		var ajaxurl = "http://www.imprireco.fr/sociallogin/index/facebookcheck/?email_value="+email_value;
+		var  screenX    = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft;
+		var   screenY    = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop;
+		var   outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth;
+		var   outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		var   width    = 790;
+		var   height   = 350;
+		var   left     = parseInt(screenX + ((outerWidth - width) / 2), 10);
+		var   top      = parseInt(screenY + ((outerHeight - height) / 2.5), 10);
+		var   features = (
+			'width=' + width +
+				',height=' + height +
+				',left=' + left +
+				',top=' + top
+			);
+
+		new Ajax.Request(ajaxurl, {
+			method: 'post',
+			parameters: {email_value: email_value},
+			onSuccess: function(facebook_success_give) {
+				var pattern_url = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+				var url_value=pattern_url.test(facebook_success_give.responseText);
+				if(url_value ==false)
+				{
+					jQuery.fancybox.hideLoading();
+					document.getElementById('facebook_error').innerHTML=facebook_success_give.responseText;
+					return false;
+				}else {
+					jQuery.fancybox.hideLoading();
+					document.getElementById('containerFb').style.display = 'none';
+					jQuery.fancybox.close();
+					FB.login(function(response) {
+						if (response.status == 'connected') {
+							login();
+
+						}else if(response.status == 'unknown')
+						{
+							window.location.reload();
+						}
+						else{
+							// user is not logged in
+
+							document.getElementById('form-login').style.display = "block";
+							document.getElementById('form-register').style.display = "none";
+							document.getElementById('containerDiv').style.display = "none";
+							document.getElementById('message-all').style.display = "block";
+							if(response.status == 'not_authorized'){
+								document.getElementById('message-all').innerHTML= 'Your Facebook account is not authorized for you to log in the system. ';
+							}else{
+								document.getElementById('message-all').innerHTML= 'Facebook log in is not configured correctly. Please contact the store owner. ';
+							}
+						}
+					}, {scope:'email,publish_stream'});
+
+					return false;
+				}
+			}
+		});
+	}
+}
+
+function logout(){
+	document.location.href="http://www.imprireco.fr/sociallogin/index/logout/";
+}
+
+
+ function login()
+ {
+	 document.location.href="http://www.imprireco.fr/sociallogin/index/loginfacebook/?referer=aHR0cDovL3d3dy5pbXByaXJlY28uZnIvZ29vZ2xlOGVlZGQ3NzQ4MDkzMDI3Ni5odG1s";
+ }
+
+function loginFormAcion()
+{
+	jQuery.fancybox.showLoading();
+	var xmlhttp;
+	var username = document.getElementById("emaillogin").value;
+	var password = document.getElementById("passlogin").value;
+	var urlpost = 'http://www.imprireco.fr/sociallogin/index/loginpost/';
+	if (window.XMLHttpRequest)
+	{// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var responce = xmlhttp.responseText;
+			var pattern_url = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+			var url_value=pattern_url.test(responce);
+			//responce = responce.trim();
+			if(url_value)
+			{
+				window.location = responce;
+				jQuery.fancybox.hideLoading();
+				//jQuery.fancybox.close();
+				document.getElementById('login_error').innerHTML = '';
+			}
+			else{
+				jQuery.fancybox.hideLoading();
+				document.getElementById('login_error').innerHTML = responce;
+			}
+		}
+	}
+
+	xmlhttp.open("GET",urlpost+'?username='+username+'&password='+password,true);
+	xmlhttp.send();
+}
+
+function forgotFormAction(){
+	jQuery.fancybox.showLoading();
+	var email_value = document.getElementById("email-forgot").value;
+	var ajaxurl = "http://www.imprireco.fr/sociallogin/index/forgotpassword";
+	new Ajax.Request(ajaxurl, {
+		method: 'post',
+		parameters: {email: email_value},
+		onSuccess: function(forgot_success_give) {
+			if(forgot_success_give.responseText =='okforgot')
+			{
+				jQuery.fancybox.hideLoading();
+				document.getElementById('content').style.display = "none";
+				document.getElementById('message-forgot').innerHTML= 'If there is an account associated with '+email_value+' you will receive an email with a link to reset your password.';
+			}else{
+				jQuery.fancybox.hideLoading();
+				document.getElementById('forgot-error').innerHTML= forgot_success_give.responseText;
+			}
+		}
+	});
+}
+
+	function logingg()
+	{
+		var  screenX    = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft;
+		var   screenY    = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop;
+		var   outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth;
+		var   outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		var   width    = 420;
+		var   height   = 500;
+		var   left     = parseInt(screenX + ((outerWidth - width) / 2), 10);
+		var   top      = parseInt(screenY + ((outerHeight - height) / 2.5), 10);
+		var   features = (
+			'width=' + width +
+				',height=' + height +
+				',left=' + left +
+				',top=' + top
+			);
+		jQuery.fancybox.close();
+		var ajaxurl = "http://www.imprireco.fr/sociallogin/index/googlelogin/referer/aHR0cDovL3d3dy5pbXByaXJlY28uZnIvZ29vZ2xlOGVlZGQ3NzQ4MDkzMDI3Ni5odG1s/";
+		newwindow=window.open(ajaxurl,'Login_by_google',features);
+	}
+
+	function loginlinkedin()
+	{
+		
+	}
+
+
+  function twitter_check() {
+    jQuery.fancybox.showLoading();      
+    var email_value = document.getElementById("tw_email").value;
+    var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+    if(email_value=='')
+      {
+      jQuery.fancybox.hideLoading();
+      document.getElementById('twitter_error').innerHTML="This field is required";      
+    } else if(reg.test(email_value) == false) {
+      jQuery.fancybox.hideLoading();
+      document.getElementById('twitter_error').innerHTML="Invalid Email Address";
+      return false;
+    }else{
+      document.getElementById('twitter_error').innerHTML="";
+      var ajaxurl = "http://www.imprireco.fr/sociallogin/index/twitterpost/?email_value="+email_value;
+      var  screenX    = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft;
+      var   screenY    = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop;
+      var   outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth;
+      var   outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+      var   width    = 790;
+      var   height   = 350;
+      var   left     = parseInt(screenX + ((outerWidth - width) / 2), 10);
+      var   top      = parseInt(screenY + ((outerHeight - height) / 2.5), 10);
+      var   features = (
+      'width=' + width +
+      ',height=' + height +
+      ',left=' + left +
+      ',top=' + top
+      );
+
+      new Ajax.Request(ajaxurl, {
+        method: 'post',
+        parameters: {email_value: email_value},
+        onSuccess: function(twitter_success_give) {
+          var pattern_url = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+          var url_value=pattern_url.test(twitter_success_give.responseText);
+          if(url_value == false)
+            {
+            jQuery.fancybox.hideLoading();
+            document.getElementById('twitter_error').innerHTML=twitter_success_give.responseText;
+            return false;
+          }else
+            {
+            jQuery.fancybox.hideLoading();
+            jQuery.fancybox.close();    
+            newwindow=window.open(twitter_success_give.responseText,'Login_by_twitter',features);
+
+            if (window.focus) {
+              newwindow.focus()
+            }
+            return false;
+          }
+        }
+      });
+    }
+  }
+  var newwindow;
+
+
+  function registerAction()
+  {
+    jQuery.fancybox.showLoading();
+    var dataform = jQuery('form#register-form').serialize();
+    document.getElementById('register_error').innerHTML="";
+    var ajaxurl = "http://www.imprireco.fr/sociallogin/index/registeraccount?"+dataform;
+    new Ajax.Request(ajaxurl,{
+      method:'Get',
+      onSuccess: function(register_success_give) {
+        var pattern_url = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+        var url_value=pattern_url.test(register_success_give.responseText);
+        if(url_value ==false)
+          {
+          jQuery.fancybox.hideLoading();
+          document.getElementById('register_error').innerHTML=register_success_give.responseText;
+          return false;
+        }else
+          {
+          jQuery.fancybox.hideLoading();
+          jQuery.fancybox.close();
+          window.location.href=register_success_give.responseText;
+        }
+      }
+    });
+
+  }
+
+	function loginLinkedin()
+	{
+		var  screenX    = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft;
+		var   screenY    = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop;
+		var   outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth;
+		var   outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		var   width    = 420;
+		var   height   = 500;
+		var   left     = parseInt(screenX + ((outerWidth - width) / 2), 10);
+		var   top      = parseInt(screenY + ((outerHeight - height) / 2.5), 10);
+		var   features = (
+			'width=' + width +
+				',height=' + height +
+				',left=' + left +
+				',top=' + top
+			);
+		jQuery.fancybox.close();
+		jQuery.fancybox.hideLoading();
+<!--		var ajaxurl = "--><!--";-->
+<!--		newwindow=window.open(ajaxurl,'Login_by_google',features);-->
+	}
+
+  ///customer page and checkout page
+
+function fb_check(){
+	jQuery.fancybox.showLoading();
+	var email_value = document.getElementById("fb_email").value;
+	var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+	if(email_value == '')
+	{
+		jQuery.fancybox.hideLoading();
+		document.getElementById('facebook_error').innerHTML="This field is required";
+	} else if(reg.test(email_value) == false){
+		jQuery.fancybox.hideLoading();
+		document.getElementById('facebook_error').innerHTML="Invalid Email Address";
+		return false
+	} else {
+		document.getElementById('facebook_error').innerHTML="";
+		var ajaxurl = "http://www.imprireco.fr/sociallogin/index/facebookcheck/?email_value="+email_value;
+		var  screenX    = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft;
+		var   screenY    = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop;
+		var   outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth;
+		var   outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22);
+		var   width    = 790;
+		var   height   = 350;
+		var   left     = parseInt(screenX + ((outerWidth - width) / 2), 10);
+		var   top      = parseInt(screenY + ((outerHeight - height) / 2.5), 10);
+		var   features = (
+			'width=' + width +
+				',height=' + height +
+				',left=' + left +
+				',top=' + top
+			);
+
+		new Ajax.Request(ajaxurl, {
+			method: 'post',
+			parameters: {email_value: email_value},
+			onSuccess: function(facebook_success_give) {
+				var pattern_url = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+				var url_value=pattern_url.test(facebook_success_give.responseText);
+				if(url_value ==false)
+				{
+					jQuery.fancybox.hideLoading();
+					document.getElementById('facebook_error').innerHTML=facebook_success_give.responseText;
+					return false;
+				}else {
+					jQuery.fancybox.hideLoading();
+					document.getElementById('divfacebook').style.display = 'none';
+					jQuery.fancybox.close();
+					FB.login(function(response) {
+
+						if (response.status == 'connected') {
+							login();
+						} else {
+							// user is not logged in
+							window.location.reload();
+						}
+					}, {scope:'email,publish_stream'});
+					return false;
+				}
+			}
+		});
+	}
+}
+
+  function checktwitter() {
+    var checktwitter = '1';
+    if (checktwitter == '') {
+      document.getElementById('divtwitter').style.display = "none";
+      document.getElementById('allcontent').style.display = "block";
+      document.getElementById('message-all').style.display = "block";
+      document.getElementById('message-all').innerHTML= 'Twitter log in is not configured correctly. Please contact the store owner. ';
+    } else {
+      document.getElementById('divtwitter').style.display = "block";
+      document.getElementById('allcontent').style.display = "block";
+      document.getElementById('message-all').style.display = "none";
+      document.getElementById('divfacebook').style.display = "none";
+      document.getElementById('divgoogle').style.display = "none";
+    }
+
+    jQuery(document).ready(function() {
+          jQuery(".twitter").fancybox({inline:true});
+        });
+  }
+
+	function facebooklogin(){
+		document.getElementById('divfacebook').style.display = "block";
+		document.getElementById('allcontent').style.display = "block";
+		document.getElementById('message-all').style.display = "none";
+		document.getElementById('divtwitter').style.display = "none";
+		document.getElementById('divgoogle').style.display = "none";
+
+		jQuery(document).ready(function() {
+			jQuery(".facebook").fancybox({inline:true});
+		});
+	}
+
+function googleLogin(){
+	document.getElementById('divgoogle').style.display = "block";
+	document.getElementById('allcontent').style.display = "block";
+	document.getElementById('message-all').style.display = "none";
+	document.getElementById('divtwitter').style.display = "none";
+	document.getElementById('divfacebook').style.display = "none"
+
+	jQuery(document).ready(function() {
+		jQuery(".google").fancybox({inline:true});
+	});
+
+}
+
+
+  jQuery(document).ready(function() {
+    jQuery(".sociallogin").fancybox();
+  });
+
+  /*]]>*/
+      </script><script type="text/javascript">//<![CDATA[
+        var Translator = new Translate({"HTML tags are not allowed":"Les balises HTML ne sont pas autoris\u00e9es","Please select an option.":"S\u00e9lectionnez une option","This is a required field.":"Ce champ est obligatoire.","Please enter a valid number in this field.":"Veuillez saisir un nombre valide.","The value is not within the specified range.":"La valeur n'est pas dans la plage sp\u00e9cifi\u00e9e.","Please use numbers only in this field. Please avoid spaces or other characters such as dots or commas.":"Seuls les chiffres sont autoris\u00e9s dans ce champ. \u00c9vitez les espaces ou autres caract\u00e8res tels que les points ou les virgules.","Please use letters only (a-z or A-Z) in this field.":"Veuillez utiliser uniquement des lettres (a-z ou A-Z) dans ce champ.","Please use only letters (a-z), numbers (0-9) or underscore(_) in this field, first character should be a letter.":"Veuillez utiliser uniquement des lettres (a-z), des chiffres (0-9) ou underscore (_) dans ce champ, en commen\u00e7ant par une lettre.","Please use only letters (a-z or A-Z) or numbers (0-9) only in this field. No spaces or other characters are allowed.":"Veuillez utiliser uniquement des lettres (a-z) ou des chiffres (0-9) dans ce champ. Les espaces et autres caract\u00e8res ne sont pas autoris\u00e9s.","Please use only letters (a-z or A-Z) or numbers (0-9) or spaces and # only in this field.":"Veuillez utiliser uniquement des lettres (a-z), des chiffres (0-9), des espaces ou des di\u00e8ses (#) dans ce champ.","Please enter a valid phone number. For example (123) 456-7890 or 123-456-7890.":"Veuillez saisir un num\u00e9ro de t\u00e9l\u00e9phone valide.","Please enter a valid fax number. For example (123) 456-7890 or 123-456-7890.":"Veuillez saisir un num\u00e9ro de fax valide. Par exemple 0123456789.","Please enter a valid date.":"Veuillez saisir une date valide.","Please enter a valid email address. For example johndoe@domain.com.":"Veuillez saisir une adresse email valide. Par exemple prenom.nom@domaine.com","Please use only visible characters and spaces.":"Veuillez utiliser uniquement des caract\u00e8res visibles et des espaces.","Please enter 6 or more characters. Leading or trailing spaces will be ignored.":"Veuillez saisir au moins 6 caract\u00e8res. Les espaces en d\u00e9but ou en fin de cha\u00eene seront ignor\u00e9s.","Please enter 7 or more characters. Password should contain both numeric and alphabetic characters.":"Veuillez saisir au moins 7 caract\u00e8res. Le mot de passe doit contenir \u00e0 la fois des caract\u00e8res num\u00e9riques et alphab\u00e9tiques.","Please make sure your passwords match.":"V\u00e9rifiez que vos mots de passe concordent.","Please enter a valid URL. Protocol is required (http:\/\/, https:\/\/ or ftp:\/\/)":"Veuillez saisir une URL valide. Le protocole est obligatire (http:\/\/, https:\/\/ ou ftp:\/\/)","Please enter a valid URL. For example http:\/\/www.example.com or www.example.com":"Veuillez saisir une URL valide. Par exemple http:\/\/www.exemple.com ou www.exemple.com","Please enter a valid URL Key. For example \"example-page\", \"example-page.html\" or \"anotherlevel\/example-page\".":"Veuillez saisir une URL valide. Par exemple \"page-exemple\", \"page-exemple.html\" ou \"niveau\/page-exemple\".","Please enter a valid XML-identifier. For example something_1, block5, id-4.":"Veuillez saisir un identifiant XML valide. Par exemple, quelquechose_1, bloc5, id-4.","Please enter a valid social security number. For example 123-45-6789.":"Veuillez saisir un num\u00e9ro de s\u00e9curit\u00e9 sociale valide. Par exemple 123-45-6789.","Please enter a valid zip code. For example 90602 or 90602-1234.":"Veuillez saisir un code postal valide. Par exemple 92100.","Please enter a valid zip code.":"Veuillez saisir un code postal valide.","Please use this date format: dd\/mm\/yyyy. For example 17\/03\/2006 for the 17th of March, 2006.":"Veuillez utiliser ce format de date : jj\/mm\/aaaa. Par exemple, 21\/12\/2012 pour le 21 D\u00e9cembre 2012.","Please enter a valid $ amount. For example $100.00.":"Veuillez saisir un montant valide. Par exemple 100.00 \u20ac.","Please select one of the above options.":"Veuillez choisir une des options ci-dessus.","Please select one of the options.":"Veuillez choisir une des options.","Please select State\/Province.":"Veuillez choisir un \u00e9tat\/province.","Please enter a number greater than 0 in this field.":"Veuillez saisir un nombre sup\u00e9rieur \u00e0 0 dans ce champ.","Please enter a number 0 or greater in this field.":"Veuillez saisir un nombre sup\u00e9rieur ou \u00e9gal \u00e0 0 dans ce champ.","Please enter a valid credit card number.":"Veuillez saisir un num\u00e9ro de carte bancaire valide.","Credit card number does not match credit card type.":"Le num\u00e9ro de carte ne correspond pas au type de carte.","Card type does not match credit card number.":"Le type de carte ne correspond pas au num\u00e9ro de carte.","Incorrect credit card expiration date.":"Mauvaise date d'expiration de carte de cr\u00e9dit.","Please enter a valid credit card verification number.":"Veuillez saisir un num\u00e9ro de v\u00e9rification de carte bancaire valide.","Please use only letters (a-z or A-Z), numbers (0-9) or underscore(_) in this field, first character should be a letter.":"Utilisez uniquement des lettres (a-z ou A-Z), des chiffres (0-9) ou des underscores (_) dans ce champ. Le premier caract\u00e8re doit \u00eatre une lettre.","Please input a valid CSS-length. For example 100px or 77pt or 20em or .5ex or 50%.":"Veuillez saisir une longueur CSS valide. Par exemple 100px ou 77pt ou 20 em ou .5ex ou 50%.","Text length does not satisfy specified text range.":"La longueur du texte ne satisfait pas la plage de texte sp\u00e9cifi\u00e9e.","Please enter a number lower than 100.":"Veuillez saisir un nombre inf\u00e9rieur \u00e0 100.","Please select a file":"S\u00e9lectionnez un fichier","Please enter issue number or start date for switch\/solo card type.":"Veuillez saisir le num\u00e9ro de probl\u00e8me ou une date de d\u00e9but pour le type de carte switch\/solo.","Please wait, loading...":"Veuillez patienter, chargement en cours...","This date is a required value.":"Cette date est obligatoire.","Please enter a valid day (1-%d).":"Veuillez saisir un jour valide (1-%d).","Please enter a valid month (1-12).":"Veuillez saisir un mois valide (1-12).","Please enter a valid year (1900-%d).":"Veuillez saisir une ann\u00e9e valide (1900-%d).","Please enter a valid full date":"Veuillez saisir une date compl\u00e8te valide.","Please enter a valid date between %s and %s":"Veuillez saisir une date valide entre %s et %s","Please enter a valid date equal to or greater than %s":"Veuillez saisir une date valide sup\u00e9rieure ou \u00e9gale \u00e0 %s","Please enter a valid date less than or equal to %s":"Veuillez saisir une date valide inf\u00e9rieure ou \u00e9gale \u00e0 %s","Complete":"Termin\u00e9e","Add Products":"Ajouter des produits","Please choose to register or to checkout as a guest":"Choisissez de vous enregistrer ou de passer votre commande en tant qu'invit\u00e9","Your order cannot be completed at this time as there is no shipping methods available for it. Please make necessary changes in your shipping address.":"Vous ne pouvez pas continuer votre commande car aucun mode de livraison n'est disponible pour votre adresse.","Please specify shipping method.":"Choisissez un mode de livraison.","Your order cannot be completed at this time as there is no payment methods available for it.":"Vous ne pouvez pas continuer votre commande car aucun mode de paiement n'est disponible.","Please specify payment method.":"Choisissez un mode de paiement.","Insert Widget...":"Ins\u00e9rer un widget...","Add to Cart":"Ajouter au panier","In Stock":"En stock","Out of Stock":"\u00c9puis\u00e9","Update":"Mettre \u00e0 jour"});
+        //]]></script></head>
+<body class=" cms-index-noroute cms-no-route">
+            <div id="v-cookielaw"
+     class="v-bar v-yellow-alert v-top"
+     style="display: none">
+    <div class="v-message">
+        En continuant à naviguer sur notre site, vous acceptez l'utilisation de cookies qui nous permettent de vous proposer des services et offres adaptés à vos centres d'intérêts.    </div>
+    <div class="v-actions">
+        <a href="javascript:cookieLawAccept();" class="v-button v-accept">
+            Accepter        </a>
+        <a href="http://www.imprireco.fr/datenschutz/" class="v-button">
+            En savoir plus        </a>
+    </div>
+</div>
+<script type="text/javascript">
+    function cookieLawAccept() {
+        var d = null;
+        if (0) {
+            d = new Date();
+            d.setTime(d.getTime() + (0 * 24 * 60 * 60 * 1000));
+        }
+        Mage.Cookies.set('cookielaw', '1', d);
+        document.getElementById('v-cookielaw').style.display = 'none';
+    }
+
+    if (!Mage.Cookies.get('cookielaw')) document.getElementById('v-cookielaw').style.display = '';
+
+    </script>
+    <div class="wrapper">
+        <noscript>
+        <div class="global-site-notice noscript">
+            <div class="notice-inner">
+                <p>
+                    <strong>Javascript est désactivé dans votre navigateur.</strong><br />
+                    Javascript doit être activé dans votre navigateur pour utiliser toutes les fonctionnalités de ce site.                </p>
+            </div>
+        </div>
+    </noscript>
+    <div class="page">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+jQuery.noConflict();
+jQuery(document).ready(function(){
+   	jQuery(".small-menu").click(function(){ 
+		//alert("hi");
+		if(!jQuery("#nav").is(":visible")) { 
+			jQuery("#nav").show();	
+						
+		} else { 
+			jQuery("#nav").hide();	
+		} 
+	});
+	});
+</script>
+
+
+<!--<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>-->
+<div class="topMenu-container">
+    <div class="topMenu">
+        <div class="left">
+            Bienvenue chez ImpriReco!        </div>
+                            <a style="margin-left: 20px;display:none;" href="http://www.imprireco.fr/customer/account/login/">Identifiez-vous</a>
+                        <div class="right">
+                <img align="left" alt="" src="http://www.imprireco.fr/skin/frontend/default/imprireco3/images/phone.png" /> &nbsp;
+                 | 
+                <a href="http://www.imprireco.fr/" class="level-top">Page d'accueil</a> | 
+                <a href="http://www.imprireco.fr//customer/account/">Votre compte</a> | 
+                <a href="http://www.imprireco.fr//checkout/cart/">Panier</a> | 
+            </div>
+    </div>
+</div>
+<div class="header-container">
+    <div class="header">
+                    <span class="logo"><strong>ImpriReco</strong><a href="http://www.imprireco.fr/" title="ImpriReco" class="logo"><img src="http://www.imprireco.fr/skin/frontend/default/imprireco3/images/ImpriReco_LOGO.gif" alt="ImpriReco" /></a></span>
+                <div title="Mein Warenkorb" class="cart" onclick="location.href = '/checkout/cart/';">
+            <div class="cart-info">
+                <div class="block-content">
+                    <a href="/checkout/cart/" style="text-decoration: none; color:#333;"> Il y a 1 article dans votre panier. Total: 194,00 €</a>   
+                </div>
+            </div>
+        </div>
+        <div class="quick-access">
+                    </div>
+                <form id="search_mini_form" action="http://www.imprireco.fr/catalogsearch/result/" method="get">
+    <div class="form-search">
+        <label for="search"></label>
+        <input id="search" type="text" name="q" value="" class="input-text" maxlength="128" />
+        <button type="submit" title="Chercher" class="button"><span><span></span></span></button>
+        <div id="search_autocomplete" class="search-autocomplete"></div>
+        <script type="text/javascript">
+        //<![CDATA[
+            var searchForm = new Varien.searchForm('search_mini_form', 'search', 'Rechercher...');
+            searchForm.initAutocomplete('http://www.imprireco.fr/catalogsearch/ajax/suggest/', 'search_autocomplete');
+        //]]>
+        </script>
+    </div>
+</form>
+    </div>
+</div>
+        <div class="nav-container">
+<div title="Mein Warenkorb" class="cart mob-cart" onclick="location.href = '/checkout/cart/';">cart</div>
+<div title="search" class="mob-search" >search</div>
+<span class="small-menu"></span>
+    <ul id="nav">
+        <li  class="level0 nav-1 first level-top"><a href="http://www.imprireco.fr/acheter-imprimante-occasion"  class="level-top" ><span>Imprimantes laser monochromes A4</span></a></li><li  class="level0 nav-2 last level-top"><a href="http://www.imprireco.fr/achat-imprimante-occasion-couleur"  class="level-top" ><span>Imprimantes laser couleur A4</span></a></li>    </ul>
+    <!--<div class="nav-arrow" style="display: none;"></div>-->
+</div>
+
+
+<script type="text/javascript">
+jQuery.noConflict();
+jQuery(document).ready(function(){
+		var navCont=jQuery(".nav-container");
+		var navArrow=jQuery(".nav-arrow",navCont);
+		var active=jQuery("ul#nav li.active");
+		var arrowTopOffset=12;
+		var arrowLeftOffset=15;
+		if(navArrow.length==0){
+			navArrow=jQuery("<div />").attr("class","nav-arrow");
+		navArrow.hide();navCont.append(navArrow);
+		active.each(
+			function(){var a=jQuery("a",this);navArrow.css("top",a.offset().top-navCont.offset().top-arrowTopOffset)
+navArrow.css("left",a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2))
+navArrow.show();});
+	}
+		else{
+			jQuery("ul#nav li.first").each(function(){
+				var a=jQuery("a",this);
+navArrow.css("top",a.offset().top-navCont.offset().top-arrowTopOffset)
+navArrow.css("left",a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2))
+navArrow.hide()
+});
+}
+
+
+jQuery("ul#nav li").click(function(){
+	var a=jQuery("a",this);setLocation(a.attr("href"));
+});
+jQuery("ul#nav li").hover(function(){
+	navArrow.stop();var a=jQuery("a",this);var topPos=a.offset().top-navCont.offset().top-arrowTopOffset;
+	var leftPos=a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2);
+	if(navArrow.is(":visible")){
+		navArrow.stop().animate({top:topPos,left:leftPos,opacity:1},300);
+}
+	else{
+		navArrow.css("top",topPos);
+		navArrow.css("left",leftPos);navArrow.fadeIn();
+	}
+},
+		function(){
+			if(active.length!=0){
+			var a=jQuery("a",active);
+		var topPos=a.offset().top-navCont.offset().top-arrowTopOffset;
+		var leftPos=a.offset().left-navCont.offset().left-arrowLeftOffset+(a.width()/2);
+		navArrow.stop().animate({top:topPos,left:leftPos,opacity:1},300);
+	}
+	else{
+
+	}
+});
+navCont.hover(function(){},function(){if(active.length==0){navArrow.fadeOut();}
+});
+
+});
+</script> 
+        <div class="main-container col1-layout">
+            <div class="main">
+                                <div class="col-main">
+					<div class="col-left">
+																																			
+					</div>				
+                                            <div class="page-title">
+        <h1>page introuvable</h1>
+    </div>
+<div class="std"><h2>404 - page introuvable</h2>
+<p>Malheureusement, la page demand&eacute;e n'a pas pu &ecirc;tre trouv&eacute;e. Apparemment, a &eacute;t&eacute; fournie &agrave; partir d'une URL incorrect.</p>
+<ul>
+<li><a href="http://www.imprireco.fr/catalogsearch/advanced/">Recherche avanc&eacute;e</a></li>
+<li><a href="http://www.imprireco.fr/">Page d'accueil</a></li>
+</ul>
+ 
+
+
+    <link rel="stylesheet" href="http://www.imprireco.fr/skin/frontend/default/imprireco3/css/productattachments/css/productattachments.css"/>
+    <div class="box-collateral" style="margin-top:25px;">
+        <h2></h2> 
+        <div class="pa_category">
+
+                                                            	
+                                                            	
+                                                            	
+                    </div>
+        <script type="text/javascript" src="http://www.imprireco.fr/js//productattachments/jquery.prettyPhoto.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            jQuery(document).ready(function() {
+
+
+                jQuery("a[rel^='prettyPhoto']").prettyPhoto({animation_speed: 'normal', theme: 'light_square', slideshow: 3000, autoplay_slideshow: true});
+                jQuery("a[rel^='prettyPhoto']").prettyPhoto({animation_speed: 'fast', slideshow: 10000, hideflash: true});
+
+            });
+        </script>
+    </div></div>                </div>
+            </div>
+        </div>
+        <div class="footer-container">
+    <div class="footer">
+                
+    <div class="footerMenu">
+        <div class="f-col1">
+            <h1>Appareils</h1>
+            <ul id="type_list">
+                <li><a href="/acheter-imprimante-occasion">Laser Noir & Blanc A4</a></li>
+                <li><a href="/achat-imprimante-occasion-couleur">Laser Couleur A4</a></li>
+            </ul>	
+		
+        </div>
+        <div class="f-col2">
+            <h1>Utilisateur</h1>
+            <ul>
+                <li><a href="/checkout/cart/">Panier</a></li>
+                <li><a href="/customer/account/">Mon compte</a></li>
+                <li><a href="/sales/order/history/">Historique de vos commandes</a></li>
+                <li>
+                                            <a href="http://www.imprireco.fr/customer/account/login/">Connexion</a>
+                                    </li>						
+            </ul>   
+        </div>
+        <div class="f-col3">
+            <h1>Aide</h1>
+            <ul>
+                <li><a href="/contacts/">Contact</a></li>
+                <li><a href="/paiment-expedition/">Paiement et Expédition</a></li>
+            
+            </ul>
+			
+        </div>
+        <div class="f-col4">
+            <div class="box-contact">
+                <h1>Contact</h1>
+                <p style="text-align: left;">Tél : 0049 7071 – 966 9023<br>E-Mail: <a style="color: #fff;" href="mailto:contact@imprireco.fr">contact@imprireco.fr</a></p> 
+            </div>
+			
+			            <h1 style="margin-top: 20px; padding-bottom: 10px;">ImpriReco</h1>
+            <ul id="unittype_list">
+                               <li><a href="/politique-de-confidentialite">Protection des données personnelles</a></li>
+                <li><a href="/conditions_generales/">Conditions générales de ventes</a></li>
+                <li><a href="/revocation/">Droit de rétraction</a></li>
+                <li><a href="/mentions-legales/">Mentions légales</a></li>	
+            </ul>	
+			
+			
+            <div style="padding-top: 15px;">
+						
+			
+                </div>
+                   
+                </div>
+            </div>
+        </div>
+    <div class="copyright">
+        <address>&copy; 2016 Büroservice Hübner GmbH - Tous droits réservés.</address>
+    </div>
+</div>                
+
+
+<script>
+new Ajax.Request('http://www.imprireco.fr/mgtvarnish/esi/', {
+  onSuccess: function(response) {}
+});
+</script>        </div>
+</div>
+</body>
+</html>

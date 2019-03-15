@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<package>
+    <name>DerModPro_BasePrice</name>
+    <version>0.3.0</version>
+    <stability>stable</stability>
+    <license uri="http://opensource.org/licenses/osl-3.0.php">OSL v3.0</license>
+    <channel>community</channel>
+    <extends/>
+    <summary>This extension enables you to display the base price for products.  E.g. if you sell
+different quantities of oil, you can enter the amount each bottle contains (like 250ml)
+and a reference unit (like liter), and the price per liter is calculated and displayed.</summary>
+    <description>This extension enables you to display the base price for products.  E.g. if you sell
+different quantities of oil, you can enter the amount each bottle contains (like 250ml)
+and a reference unit (like liter), and the price per liter is calculated and displayed.
+
+What can be configured:
+- Product Unit:
+   The packaging unit of your products: Milliliter, Gram, Centimeter, Milligram,...
+
+- Product Amount:
+   The amount of the packaging unit (e.g. 100g)
+
+- Reference Unit:
+   The unit the price should be calculated for. It should match the type of unit chosen
+   for the product (Milliliter to Liter, Milligram to Gram or Kilogram, Centimeter to Meter,...)
+
+- Reference Amount:
+   Probably you will want to have 1 (one) as the reference amount. But if you want to have a
+   different amount, you can choose one here.
+
+
+You can specify defaults on a global, website or store view scope for all products
+in the admin interface under System / Catalog / Hide Prices
+
+You can override those default settings in the Product Management page at
+Catalog / Manage Products / (Choose a Product) / Prices
+
+In the configuration you may also disable the extension on a store view scope.
+
+
+LIST VIEW
+To display baseprices in the list view, you can either add the following code to your
+catalog/product/list.phtml template, or enable the commented out XML block in
+app/design/frontend/default/default/layout/baseprice.xml
+This is the code that displays the short baseprice label for a product:
+
+				&lt;?php if($baseprice = Mage::helper('baseprice')-&gt;getBasePriceLabel($_product, true)): ?&gt;
+				&lt;div class="baseprice"&gt;(&lt;?php echo $baseprice ?&gt;)&lt;/div&gt;
+				&lt;?php endif; ?&gt;
+
+
+NOTICE
+This extension provides base prices for simple products. We provide a commercial
+Extension that extends the BasePrice Module to add support for custom options,
+configurable products and bundled products. You can purchase that module on the
+http://der-modulprogrammierer.de website.
+
+
+UNINSTALL
+If you ever uninstall the extension (I don't hope so ;)) your site will be broken, because
+Magento doesn't support a mechanism to remove attributes with an extension, and this
+extension uses source models.
+To fix the Error, you have to execute the following SQL:
+
+   DELETE FROM `eav_attribute` where attribute_code IN ('base_price_amount','base_price_unit','base_price_base_amount','base_price_base_unit');   
+   DELETE FROM `core_resource` where code = 'baseprice_setup';
+
+Afterwards don't forget to clear the cache.</description>
+    <notes>If you have ideas for improvements or find bugs, please send them to vinai@der-modulprogrammierer.de,
+with DerModPro_BasePrice as part of the subject.</notes>
+    <authors><author><name>Vinai Kopp</name><user>auto-converted</user><email>info@der-modulprogrammierer.de</email></author></authors>
+    <date>2010-06-07</date>
+    <time>15:36:05</time>
+    <contents><target name="magecommunity"><dir name="DerModPro"><dir name="BasePrice"><dir name="Block"><dir name="Catalog"><dir name="Product"><dir name="View"><dir name="Type"><file name="Simple.php" hash="32a7131da4ce2d4b2421efd49472acce"/></dir></dir><file name="View.php" hash="156a1d2ef69ebe46b153c19ab1788bb9"/></dir></dir></dir><dir name="etc"><file name="config.xml" hash="0a1d336b9c5eee895d83467709f41a38"/><file name="system.xml" hash="f7522272318279079817c4958b305d7d"/></dir><dir name="Helper"><file name="Data.php" hash="f82e41e52b7024dfe37c0543d2298d29"/></dir><dir name="Model"><dir name="Config"><dir name="Data"><dir name="Baseprice"><file name="Unit.php" hash="a327df139a0645917c12ac8b935f5585"/></dir></dir><dir name="Source"><dir name="Baseprice"><file name="Unit.php" hash="69b7cf7643cac0f7fbaf21fa2c474ee4"/></dir></dir></dir><dir name="Entity"><dir name="Backend"><dir name="Baseprice"><file name="Amount.php" hash="a45f64ae11381407cfe54614e1c7efa9"/><file name="Unit.php" hash="8107d6820820e58f41895ca6aaed381f"/></dir></dir><dir name="Frontend"><dir name="Baseprice"><dir name="Product"><file name="Amount.php" hash="5960cdcd7a4adf15d62035013fb8d80b"/><file name="Unit.php" hash="5b48e4c6a4e8990f48d1e5c4db84724a"/></dir><dir name="Reference"><file name="Amount.php" hash="d2e1515ae73986fd33129c6e964a570b"/><file name="Unit.php" hash="525e315a0b0919dc9cd0266fa669e560"/></dir><file name="Abstract.php" hash="8b925788a44b66686cb0ff11e88558a1"/></dir></dir><dir name="Resource"><dir name="Eav"><dir name="Attribute"><dir name="Product"><file name="Amount.php" hash="71986e8013a7e3cf421387c99344ebb1"/><file name="Unit.php" hash="f540236cdeaa9ffc0d0ddba97e4d6f7f"/></dir><dir name="Reference"><file name="Amount.php" hash="bed1a6fa8afae824156317103dac837a"/><file name="Unit.php" hash="fa44330796915e328cf5249b7aea57f6"/></dir><file name="Abstract.php" hash="bcf3b2627a78589c1e46233acf54aa83"/></dir></dir></dir><dir name="Source"><dir name="Baseprice"><dir name="Product"><file name="Unit.php" hash="aa78f0fc12198c49f9295156302b1bd1"/></dir><dir name="Reference"><file name="Unit.php" hash="ea9c6242fbf46b1fdaeeb3138f8b553f"/></dir><file name="Abstract.php" hash="f0f7e4805f0d530899d6e2d45d3952e0"/></dir></dir></dir><file name="Baseprice.php" hash="f4258df72075d11cd8932e34e5b0251e"/><file name="Observer.php" hash="25d9585ac6ebb08c94f4aa7bcea9a919"/></dir><dir name="sql"><dir name="baseprice_setup"><file name="mysql4-install-0.1.0.php" hash="b7eddf38b560ff4b0d5bbc14bcbf81e3"/><file name="mysql4-upgrade-0.1.6-0.1.7.php" hash="87000a481fd1176eaa88ca5ae9f3b64c"/><file name="mysql4-upgrade-0.1.7-0.1.8.php" hash="fad5b0e4726eeb1e27c19af466a0711a"/><file name="mysql4-upgrade-0.1.8-0.1.9.php" hash="fdc233564027ef4e49c27bb8b980932f"/><file name="mysql4-upgrade-0.1.9-0.2.0.php" hash="cd47c8c69d85cee2c77570c3715ca67f"/></dir></dir><file name="README.txt" hash="d019518dc6028c0cb66583df496293b2"/></dir></dir></target><target name="magelocale"><dir name="de_DE"><file name="DerModPro_BasePrice.csv" hash="cf19e355aec20f25d4f84ce759f4c5f0"/></dir><dir name="en_US"><file name="DerModPro_BasePrice.csv" hash="83766328153aa5518a3682112b251451"/></dir></target><target name="mageskin"><dir name="frontend"><dir name="default"><dir name="default"><dir name="css"><file name="baseprice.css" hash="2ac3390b38d91d26150913293b8ccbb0"/></dir></dir></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="default"><dir name="default"><dir name="layout"><file name="baseprice.xml" hash="bdb35c3a39435153a6e0ccc07242f5e9"/></dir><dir name="template"><dir name="baseprice"><file name="baseprice.phtml" hash="4ec16b80db6c9a06b1bed7670c22ebb1"/><file name="list.phtml" hash="6fff5a9f9f0d5f3642aa6453ffde1e20"/></dir></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="DerModPro_BasePrice.xml" hash="aa2242a0cf4ace2795fa7181081aa5ce"/></dir></target></contents>
+    <compatible/>
+    <dependencies/>
+</package>

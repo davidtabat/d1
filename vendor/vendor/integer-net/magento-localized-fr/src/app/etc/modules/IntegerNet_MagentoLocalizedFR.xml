@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * French Localization package for Magento Localized (aka Magento FR) 
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedFR
+ * @copyright  Copyright (c) 2014 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+    <modules>
+        <IntegerNet_MagentoLocalizedFR>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <IntegerNet_MagentoLocalized />
+            </depends>
+        </IntegerNet_MagentoLocalizedFR>
+    </modules>
+</config>

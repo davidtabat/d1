@@ -65,7 +65,6 @@ function getUrlFromPath($path)
 /**
  * Take a HTTP header value and split it up into parts.
  *
- * @param $headerValue
  * @return array Key "_value" contains the main value, all others
  *               as given in the header value
  */
@@ -201,18 +200,25 @@ try {
         echo $urlSchema . "\n";
         exit();
     }
+
+    $schema = $retriever->retrieve($urlSchema);
+    if ($schema === null) {
+        echo "Error loading JSON schema file\n";
+        echo $urlSchema . "\n";
+        showJsonError();
+        exit(2);
+    }
 } catch (Exception $e) {
     echo "Error loading JSON schema file\n";
     echo $urlSchema . "\n";
     echo $e->getMessage() . "\n";
     exit(2);
 }
-$refResolver = new JsonSchema\SchemaStorage($retriever, $resolver);
-$schema = $refResolver->resolveRef($urlSchema);
+$refResolver = new JsonSchema\RefResolver($retriever);
+$refResolver->resolve($schema, $urlSchema);
 
 if (isset($arOptions['--dump-schema'])) {
-    $options = defined('JSON_PRETTY_PRINT') ? JSON_PRETTY_PRINT : 0;
-    echo json_encode($schema, $options) . "\n";
+    echo json_encode($schema, JSON_PRETTY_PRINT) . "\n";
     exit();
 }
 
@@ -235,3 +241,4 @@ try {
     echo "Error code: " . $e->getCode() . "\n";
     exit(24);
 }
+?>

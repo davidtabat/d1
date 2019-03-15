@@ -1,0 +1,14 @@
+{
+    "name": "etws/et_russianlanguagepack",
+    "type": "magento-module",
+    "description": "ET Russian Language Pack",
+    "homepage": "http://shop.etwebsolutions.com/eng/magento-extensions/et-russian-language-pack.html",
+    "authors":[
+        {
+            "name":"ET Web Solutions"
+        }
+    ],
+    "require": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}

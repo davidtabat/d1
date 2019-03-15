@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-it",
+   "type": "magento-module",
+   "description": "Italian Localization package for Magento Localized (aka Magento IT)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedIT",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

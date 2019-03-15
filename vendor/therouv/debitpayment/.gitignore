@@ -1,0 +1,13 @@
+.DS_Store
+.DS_STORE
+.buildpath
+.project
+.settings
+.settings/**/*
+.externalToolBuilders
+.externalToolBuilders/**/*
+.idea
+.idea/**/*
+.vagrant
+.vagrant/**/*
+

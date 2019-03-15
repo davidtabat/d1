@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-ch",
+   "type": "magento-module",
+   "description": "Swiss Localization package for Magento Localized (aka Magento CH)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedCH",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

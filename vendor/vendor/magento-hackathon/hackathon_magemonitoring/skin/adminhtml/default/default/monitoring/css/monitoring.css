@@ -1,0 +1,144 @@
+.monitoring-section-title {
+    color: #325F8A;
+    text-transform: capitalize;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+h4.monitoring-section-title {
+    font-size: 14px;
+}
+
+.monitoring-data-container {
+    width: 100%;
+    border: 1px solid #D6D6D6;
+}
+
+.md-item {
+    border-bottom: 1px solid #D6D6D6;
+    min-width: 500px;
+    min-height: 24px;
+}
+
+.md-item:first-child {
+    border-top: none;
+}
+
+.md-item:last-child {
+    border-bottom: none;
+}
+
+.md-item-success {
+    background-color: #E1FCE4;
+}
+
+.md-item-warning {
+    background-color: #FCFAD9;
+}
+
+.md-item-error {
+    background-color: #FAEBE7;
+}
+
+.md-icon {
+    width: 16px;
+    height: 24px;
+    margin-left: 10px;
+    background: transparent url(../images/statuses.png) no-repeat;
+    display: inline-block;
+    line-height: 24px;
+    vertical-align: top;
+}
+
+.md-icon-info {
+    background-position: -51px 4px;
+}
+
+.md-icon-success {
+    background-position: 0 4px;
+}
+
+.md-icon-warning {
+    background-position: -34px 4px;
+}
+
+.md-icon-error {
+    background-position: -17px 4px;
+}
+
+.md-item-title,
+.md-item-value,
+.md-item-chart {
+    font-weight: bold;
+    display: inline-block;
+    width: 45%;
+    vertical-align: top;
+    padding: 3px 0 0 10px;
+}
+
+.md-item-chart {
+    width: 5%;
+}
+
+.f-right {
+    margin: 3px;
+}
+
+.widget-collapse {
+    display: inline-block !important;
+    width: 100%;
+}
+
+.entry-edit-head.md-relative {
+    position: relative;
+}
+
+.md-additional-controls {
+    display: inline-block;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    padding-left: 2px;
+    /*width: 40px;*/
+    position: absolute;
+    top: 3px;
+    right: 29px;
+    z-index: 156;
+}
+
+.md-additional-controls a.md-icon {
+    background: transparent url('../images/control_icons.png') no-repeat;
+    display: inline-block !important;
+    vertical-align: middle;
+    margin-top: -2px;
+    margin-left: 0;
+}
+
+.md-additional-controls a.md-icon-conf {
+    background-position: -19px 0;
+    height: 16px;
+}
+
+.md-additional-controls a.md-icon-conf.control-invis {
+    display: none !important;
+}
+
+.md-additional-controls a.md-icon-refresh {
+    background-position: 0 0;
+    height: 16px;
+}
+
+.mh-form-label {
+    width: 200px;
+    display: inline-block;
+}
+
+.mh-form-input {
+    margin-bottom: 5px;
+}
+
+.mh-form-button {
+    margin-top: 15px;
+    margin-left: 10px;
+    float: right;
+}
+

@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Russian Localization package for Magento Localized (aka Magento RU) 
+ *
+ * @category   IntegerNet
+ * @package    IntegerNet_MagentoLocalizedRU
+ * @copyright  Copyright (c) 2013 integer_net GmbH (http://www.integer-net.de/)
+ * @license    http://opensource.org/licenses/gpl-3.0 GNU General Public License, version 3 (GPLv3)
+ * @author     Andreas von Studnitz <avs@integer-net.de>
+ */
+ -->
+<config>
+    <modules>
+        <IntegerNet_MagentoLocalizedRU>
+            <version>0.1.0</version>
+        </IntegerNet_MagentoLocalizedRU>
+    </modules>
+
+    <global>
+    </global>
+
+    <default>
+        <general>
+            <country>
+                <allow>RU</allow>
+            </country>
+            <locale>
+                <code>ru_RU</code>
+                <firstday>1</firstday>
+            </locale>
+            <store_information>
+                <merchant_country>RU</merchant_country>
+            </store_information>
+            <imprint>
+                <shop_name>Название магазина</shop_name>
+                <company_first>Название компании, ООО</company_first>
+                <zip>1234</zip>
+                <street>Улица 1</street>
+                <city>Город</city>
+                <country>RU</country>
+                <display_copyright>1</display_copyright>
+            </imprint>
+        </general>
+
+        <design>
+            <header>
+                <welcome>Добро пожаловать!</welcome>
+            </header>
+        </design>
+
+        <catalog>
+            <custom_options>
+                <time_format>24h</time_format>
+                <date_fields_order>d,m,y</date_fields_order>
+            </custom_options>
+            <baseprice>
+                <base_price_incl_tax>1</base_price_incl_tax>
+                <frontend_label>equates to {{baseprice}} per {{reference_amount}} {{reference_unit}}</frontend_label>
+            </baseprice>
+        </catalog>
+
+        <sales>
+            <reorder>
+                <allow>0</allow>
+                <hide_sidebar_box>1</hide_sidebar_box>
+            </reorder>
+        </sales>
+
+        <autoshipping>
+            <settings>
+                <enabled>1</enabled>
+                <country_id>RU</country_id>
+            </settings>
+        </autoshipping>
+
+        <carriers>
+            <flatrate>
+                <title>Стоимость доставки</title>
+                <name>Доставка</name>
+                <type>O</type>
+                <price>4.90</price>
+            </flatrate>
+            <freeshipping>
+                <active>1</active>
+                <title>Стоимость доставки</title>
+                <name>Бесплатная доставка</name>
+                <free_shipping_subtotal>50</free_shipping_subtotal>
+            </freeshipping>
+        </carriers>
+
+        <payment>
+            <ccsave>
+                <active>0</active>
+            </ccsave>
+            <checkmo>
+                <active>0</active>
+            </checkmo>
+            <free>
+                <title>Бесплатно</title>
+            </free>
+            <banktransfer>
+                <active>1</active>
+                <title>Банковский перевод</title>
+                <sort_order>20</sort_order>
+            </banktransfer>
+            <debit>
+                <active>0</active>
+                <title>Debit Payment</title>
+                <sort_order>30</sort_order>
+                <order_status>pending</order_status>
+                <allowspecific>1</allowspecific>
+                <specificcountry>RU</specificcountry>
+            </debit>
+            <cashondelivery>
+                <active>1</active>
+                <title>Наличные</title>
+                <sort_order>40</sort_order>
+                <order_status>pending</order_status>
+                <shippingallowspecific>1</shippingallowspecific>
+                <shippingspecificcountry>RU</shippingspecificcountry>
+                <inlandcosts>2</inlandcosts>
+            </cashondelivery>
+        </payment>
+
+        <magento_localized>
+            <module_title>Magento RU</module_title>
+            <module_code>magento_ru</module_code>
+            <module_url>http://de.nr-apps.com/store/magento-ru.html</module_url>
+            <logo_filename>magento_localized/logo.png</logo_filename>
+            <tracking_url>//www.nr-apps.com/n/germanstoreconfig/tracking</tracking_url>
+            <newsfeed_url>http://www.nr-apps.com/n/media/germanstoreconfig/feed.xml</newsfeed_url>
+            <iframe_url_prefix>//www.nr-apps.com/n/magento_ru_</iframe_url_prefix>
+            <iframe_url_suffix>.html</iframe_url_suffix>
+            <iframe_main_language_code>ru</iframe_main_language_code>
+            <iframe_fallback_language_code>en</iframe_fallback_language_code>
+            <feed_url_prefix>http://www.nr-apps.com/n/media/germanstoreconfig/</feed_url_prefix>
+            <default_language>ru_RU</default_language>
+            <available_languages>
+                <en_US />
+            </available_languages>
+            <country>RU</country>
+            <currency>RUB</currency>
+            <timezone>Europe/Moscow</timezone>
+            <install_guide_url>
+                <ru>http://www.nr-apps.com/n/magento_ru_ru/guide.html</ru>
+                <default>http://www.nr-apps.com/n/magento_ru_en/guide.html</default>
+            </install_guide_url>
+            <survey_url>
+                <ru>//www.nr-apps.com/n/magento_ru_ru/survey.html</ru>
+                <default>//www.nr-apps.com/n/magento_ru_en/survey.html</default>
+            </survey_url>
+            <form_fields>
+                <general__imprint__ceo>
+                    <type>text</type>
+                    <label>CEO</label>
+                    <sorting>250</sorting>
+                    <optional>1</optional>
+                </general__imprint__ceo>
+                <general__imprint__owner>
+                    <type>text</type>
+                    <label>Владелец</label>
+                    <sorting>260</sorting>
+                    <optional>1</optional>
+                </general__imprint__owner>
+            </form_fields>
+            <modules>
+                <itabs_invoice>
+                    <is_default>0</is_default>
+                </itabs_invoice>
+                <therouv_debitpayment>
+                    <is_available>0</is_available>
+                    <is_default>0</is_default>
+                </therouv_debitpayment>
+            </modules>
+        </magento_localized>
+        <germansetup>
+            <default_country>RU</default_country>
+        </germansetup>
+    </default>
+</config>

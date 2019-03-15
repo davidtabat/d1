@@ -80,8 +80,69 @@ ini_set('display_errors', 1);
 
 umask(0);
 
+
+///14.04.2015 Hübner eingefügt START:
+
+// Begin: Switch-Abfrage  
+switch($_SERVER['HTTP_HOST']){ 
+
+
+case 'www.druckerfachhandel.de':   
+case 'druckerfachhandel.de':   
+$_SERVER["MAGE_RUN_CODE"]="druckerfachhandel";  
+$_SERVER["MAGE_RUN_TYPE"]="store"; 
+break;   
+
+case 'www.kopiererhaus.de': 
+case 'kopiererhaus.de': 
+$_SERVER["MAGE_RUN_CODE"]="kopiererhaus";    
+$_SERVER["MAGE_RUN_TYPE"]="store";   
+break;
+
+case 'mgt.druckerhaus24.de':
+$_SERVER["MAGE_RUN_CODE"]="dh24test";
+$_SERVER["MAGE_RUN_TYPE"]="store";
+break;
+
+case 'www.druckerhaus24.de':      
+case 'druckerhaus24.de':      
+$_SERVER["MAGE_RUN_CODE"]="druckerhaus24";    
+$_SERVER["MAGE_RUN_TYPE"]="store";   
+break;
+
+case 'imprireco.fr':
+case 'www.imprireco.fr':
+$_SERVER["MAGE_RUN_CODE"]="imprireco_gmbh";
+$_SERVER["MAGE_RUN_TYPE"]="store";
+break;
+
+case 'tech-tiger.com': 
+case 'www.tech-tiger.com': 
+$_SERVER["MAGE_RUN_CODE"]="techtiger";    
+$_SERVER["MAGE_RUN_TYPE"]="store";  
+break;
+
+case 'beta.printerpiloten.ch': 
+$_SERVER["MAGE_RUN_CODE"]="printerpiloten_ch";    
+$_SERVER["MAGE_RUN_TYPE"]="store";  
+break;
+
+
+} 
+
+///14.04.2015 Hübner eingefügt ENDE
+
+
+
+
+
+
+
+
+
+
 /* Store or website code */
-$mageRunCode = isset($_SERVER['MAGE_RUN_CODE']) ? $_SERVER['MAGE_RUN_CODE'] : 'kopiererhaus';
+$mageRunCode = isset($_SERVER['MAGE_RUN_CODE']) ? $_SERVER['MAGE_RUN_CODE'] : '';
 
 /* Run store or run website */
 $mageRunType = isset($_SERVER['MAGE_RUN_TYPE']) ? $_SERVER['MAGE_RUN_TYPE'] : 'store';

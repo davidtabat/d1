@@ -1,0 +1,4 @@
+install/app/code/community/ET/RussianLanguagePack       app/code/community/ET/RussianLanguagePack
+install/app/etc/modules/*                               app/etc/modules/
+install/app/locale/ru_RU/*                              app/locale/ru_RU/
+install/js/*                                            js/

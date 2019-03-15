@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-de",
+   "type": "magento-module",
+   "description": "German Localization package for Magento Localized (aka Magento DE)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedDE",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}

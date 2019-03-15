@@ -1,0 +1,27 @@
+Activate PayPal Express payment,Activar el pago de PayPal Express
+Test mode (sandbox) for PayPal payment,Modo de prueba (sandbox) para el pago por PayPal
+IntegerNet_MagentoLocalizedEbay::Email Associated with PayPal Merchant Account,Correo electrónico asociado a la cuenta PayPal Merchant
+"Setup of PayPal and M2E","Configuración de PayPal y M2E"
+Setup of modules powered by ebay,Configuración de los módulos de pago de eBay
+IntegerNet_MagentoLocalizedEbay::What is PayPal? Click for more info or to register.,¿Qué es PayPal? Haga clic para obtener más información o para registrarse.
+Please enter the e-mail address of your PayPal merchant account.,"Por favor, introduzca la dirección de correo electrónico de su cuenta de vendedor de PayPal."
+"The information on setting the PayPal API you will find in your PayPal merchant account under the menu item PayPal &gt; My account &gt; My profile &gt; Merchant &gt; <a href=""%s"" target=""_blank"">API access</a>.","La información sobre la configuración del API de PayPal la encontrará en su cuenta de Merchantde de PayPal bajo el menú PayPal> Mi cuenta> Mi perfil> Merchant> <a href=""%s"" target=""_blank"">acceso API</ a>."
+"You have any further questions about your merchant account? <a href=""%s"" target=""_blank"">Please click here</a>.","¿Tienes preguntas acerca de tu cuenta de comerciante? <a href=""%s"" target=""_blank"">Por favor haz clic aquí</a>."
+You have the option to make further settings for PayPal after you finished the setup here.,Usted tiene la opción de realizar otros ajustes de PayPal después de haber terminado la configuración aquí.
+,
+Install M2E module,Instalar el módulo M2E
+"M2E Pro is installed, but not configured yet. Click <a href=""%s"">here</a> to start the wizard.","M2E Pro está instalado, pero no está configurado todavía. Haga clic <a href=""%s""> aquí </ a> para iniciar el asistente."
+What is M2E Pro?,¿Qué es M2E Pro?
+,
+Configure PayPal Express,Configurar PayPal Express
+,
+Configure M2E Pro,Configurar M2E Pro
+Install M2E Pro,Instalar M2E Pro
+The M2E Pro module is not installed yet.,El módulo M2E Pro todavía no está instalado.
+,
+Install now,Instalar ahora
+,
+"You have successfully activated PayPal payment. Anytime you have the possibility to select advanced settings <a href=""%s"">here</a>.","Ha activado el pago de PayPal. Puedes seleccionar la configuración avanzada en cualquier momento desde <a href=""%s"">aquí</ a>."
+,
+IntegerNet_MagentoLocalizedEbay::No,No
+IntegerNet_MagentoLocalizedEbay::Yes,Sí

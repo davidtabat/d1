@@ -1,0 +1,27 @@
+"Activate PayPal Express payment","Activeer PayPal Express betaling"
+"Test mode (sandbox) for PayPal payment","Testmodus (sandbox) voor de betaling van Paypal"
+"IntegerNet_MagentoLocalizedEbay::Email Associated with PayPal Merchant Account","E-mail Associated met PayPal Merchant Account"
+"Setup of PayPal and M2E","Setup van PayPal en M2E"
+"Setup of modules powered by ebay","Setup van modules aangedreven door ebay"
+"IntegerNet_MagentoLocalizedEbay::What is PayPal? Click for more info or to register.","Wat is PayPal? Klik voor meer informatie en het aanmeldformulier."
+"Please enter the e-mail address of your PayPal merchant account.","Vul het e-mailadres van uw PayPal-merchant account."
+"The information on setting the PayPal API you will find in your PayPal merchant account under the menu item PayPal &gt; My account &gt; My profile &gt; Merchant &gt; <a href=""%s"" target=""_blank"">API access</a>.","De informatie over het instellen van de PayPal-API vindt u in uw PayPal-merchant account onder het menu-item PayPal &gt; Mijn account &gt; Mijn profiel &gt; Merchant &gt; <a href=""%s"" target=""_blank""> API-toegang </ a>."
+"You have any further questions about your merchant account? <a href=""%s"" target=""_blank"">Please click here</a>.","Heeft u nog vragen over uw merchant account? <a href=""%s"" target=""_blank""> Klik hier </ a>."
+"You have the option to make further settings for PayPal after you finished the setup here.","Je hebt de mogelijkheid om verdere instellingen voor PayPal te maken nadat u de installatie klaar bent hier."
+,
+"Install M2E module","Installeer M2E module"
+"M2E Pro is installed, but not configured yet. Click <a href=""%s"">here</a> to start the wizard.","M2E Pro is geïnstalleerd, maar nog niet geconfigureerd. Klik <a href=""%s"">hier</a> om de wizard te starten."
+"What is M2E Pro?","Wat is M2E Pro?"
+,
+"Configure PayPal Express","Configureren PayPal Express"
+,
+"Configure M2E Pro","Configureren M2E Pro"
+"Install M2E Pro","Installeer M2E Pro"
+"The M2E Pro module is not installed yet.","De M2E Pro module is nog niet geïnstalleerd."
+,
+"Install now","Nu installeren"
+,
+"You have successfully activated PayPal payment. Anytime you have the possibility to select advanced settings <a href=""%s"">here</a>.","Je hebt met succes geactiveerd PayPal betaling. Anytime u de mogelijkheid om geavanceerde instellingen <a href=""%s""> hier </ a> te selecteren."
+,
+"IntegerNet_MagentoLocalizedEbay::No","Geen"
+"IntegerNet_MagentoLocalizedEbay::Yes","Ja"

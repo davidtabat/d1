@@ -10,14 +10,13 @@
 namespace JsonSchema\Uri;
 
 use JsonSchema\Exception\UriResolverException;
-use JsonSchema\UriResolverInterface;
 
 /**
  * Resolves JSON Schema URIs
  * 
  * @author Sander Coolen <sander@jibber.nl> 
  */
-class UriResolver implements UriResolverInterface
+class UriResolver
 {
     /**
      * Parses a URI into five main components
@@ -70,7 +69,11 @@ class UriResolver implements UriResolverInterface
     }
     
     /**
-     * {@inheritdoc}
+     * Resolves a URI
+     * 
+     * @param string $uri Absolute or relative
+     * @param type $baseUri Optional base URI
+     * @return string Absolute URI
      */
     public function resolve($uri, $baseUri = null)
     {
@@ -97,11 +100,11 @@ class UriResolver implements UriResolverInterface
     
     /**
      * Tries to glue a relative path onto an absolute one
-     *
+     * 
      * @param string $relativePath
      * @param string $basePath
      * @return string Merged path
-     * @throws UriResolverException
+     * @throws UriResolverException 
      */
     public static function combineRelativePathWithBasePath($relativePath, $basePath)
     {
@@ -113,14 +116,13 @@ class UriResolver implements UriResolverInterface
             return $relativePath;
         }
 
-        $basePathSegments = explode('/', $basePath);
-
+        $basePathSegments = self::getPathSegments($basePath);
+        
         preg_match('|^/?(\.\./(?:\./)*)*|', $relativePath, $match);
         $numLevelUp = strlen($match[0]) /3 + 1;
         if ($numLevelUp >= count($basePathSegments)) {
             throw new UriResolverException(sprintf("Unable to resolve URI '%s' from base '%s'", $relativePath, $basePath));
         }
-
         $basePathSegments = array_slice($basePathSegments, 0, -$numLevelUp);
         $path = preg_replace('|^/?(\.\./(\./)*)*|', '', $relativePath);
 
@@ -139,6 +141,14 @@ class UriResolver implements UriResolverInterface
         $path = preg_replace('|//|', '/', $path);
         
         return $path;
+    }
+    
+    /**
+     * @return array
+     */
+    private static function getPathSegments($path) {
+        
+        return explode('/', $path);
     }
     
     /**

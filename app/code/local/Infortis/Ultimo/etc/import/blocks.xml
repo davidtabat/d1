@@ -573,15 +573,14 @@ Translated into over 60 languages, supporting multiple currencies, payment metho
          <title>Footer - row 2 column 2</title>
          <identifier>block_footer_row2_column2</identifier>
          <content><![CDATA[<div class="collapsible mobile-collapsible">
-	<h6 class="block-title heading">Formate</h6>
+	<h6 class="block-title heading">Second Heading</h6>
 
 	<div class="block-content">
 
 		<ul class="bullet">
-			<li><a href="https://www.kopiererhaus.de/kopierer-a3">Kopierer A3</a></li>
-<li><a href="https://www.kopiererhaus.de/kopierer-a4">Kopierer A4</a></li>
-<li><a href="https://www.kopiererhaus.de/a3-drucker">A3 Drucker</a></li>
-<li><a href="https://www.kopiererhaus.de/a4-drucker">A4 Drucker</a></li>
+			<li><a href="{{store url="ultimo-responsive-magento-theme"}}">This is just a sample link</a></li>
+			<li><a href="#">And this is some other link</a></li>
+			<li><a href="#">Another dummy text</a></li>
 		</ul>
 
 	</div>

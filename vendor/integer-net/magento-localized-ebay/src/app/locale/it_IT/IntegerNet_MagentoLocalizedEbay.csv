@@ -1,0 +1,45 @@
+"Install BillSAFE module","Installare il modulo BillSAFE"
+"Activate BillSAFE payment","Attivare il modulo BillSAFE"
+"Test mode (sandbox) for BillSAFE payment","Attivare la modalità di test (Sandbox) per pagamenti mediante BillSAFE"
+"Merchant ID","ID merchant"
+"License Key","Chiave licenza"
+"You can find this by logging in to the <a href=""%s"" target=""_blank"">BillSAFE payment backend</a>.","E' possibile ricavare questo dato facendo login nel <a href=""%s"" target=""_blank"">backend di BillSAFE</a>."
+"Activate BillSAFE installment payment","Attivare pagamenti rateali con BillSAFE"
+"Test mode (sandbox) for BillSAFE installment payment","Attivare la modalità di test (Sandbox) per pagamenti rateali mediante BillSAFE"
+"BillSAFE is the secure invoice payment service from PayPal.","BillSAFE è il servizio di pagamenti sicuri di PayPal."
+"BillSAFE is the secure invoice payment service from PayPal. Klick here to get more info or register now.","BillSAFE è il servizio di pagamenti sicuri di PayPal. Clicca qui per avere maggiori informazioni o per registrarti ora."
+"Register here now!","Registrati ora!"
+"What is BillSAFE?","Cos'è BillSAFE?"
+
+"Activate PayPal Express payment","Attivare pagamenti mediante Paypal Express"
+"Test mode (sandbox) for PayPal payment","Attivare la modalità di test (Sandbox) per pagamenti mediante PayPal Express"
+"IntegerNet_MagentoLocalizedEbay::Email Associated with PayPal Merchant Account","Email associata all'account merchant di PayPal"
+"Setup of PayPal, BillSAFE and M2E","Setup di PayPal, BillSAFE e M2E"
+"Setup of modules powered by ebay","Setup dei moduli forniti da ebay"
+"IntegerNet_MagentoLocalizedEbay::What is PayPal? Click for more info or to register.","cos'è PayPal? Clicca qui per maggiori informazioni o per registrarti."
+"Please enter the e-mail address of your PayPal merchant account.","Inserisci l'indirizzo email del tuo account merchant su PayPal."
+
+"The information on setting the PayPal API you will find in your PayPal merchant account under the menu item PayPal &gt; My account &gt; My profile &gt; Merchant &gt; <a href=""%s"" target=""_blank"">API access</a>.","Le informazioni per configurare le API PayPal le trovi nel tuo account merchant PayPal nel menu PayPal &gt; My account &gt; My profile &gt; Merchant &gt; <a href=""%s"" target=""_blank"">API access</a>."
+"You have any further questions about your merchant account? <a href=""%s"" target=""_blank"">Please click here</a>.","Hai ulteriori domante riguardo il tuo account merchant? <a href=""%s"" target=""_blank"">Clicca qui</a>."
+"You have the option to make further settings for PayPal after you finished the setup here.","Avrai la possibilità di configurare ulteriormente PayPal al termine del setup."
+
+"Install M2E module","Installazione del modulo M2E"
+"M2E Pro is installed, but not configured yet. Click <a href=""%s"">here</a> to start the wizard.","Il modulo M2E Pro è installato ma non ancora configurato. Clicca <a href=""%s"">qui</a>, per avviare il wizard di configurazione."
+"What is M2E Pro?","Cos'è M2E Pro?"
+
+"Configure PayPal Express","Configurazione PayPal Express"
+
+"Configure BillSAFE","Configurazione BillSAFE"
+"Install BillSAFE","Installazione BillSAFE"
+"The BillSAFE module is not installed yet.","Il modulo BillSAFE non è ancora installato."
+
+"Configure M2E Pro","Configurazione M2E Pro"
+"Install M2E Pro","Installazione M2E Pro"
+"The M2E Pro module is not installed yet.","Il modulo M2E Pro non è ancora installato."
+
+"Install now","Installa ora"
+
+"You have successfully activated PayPal payment. Anytime you have the possibility to select advanced settings <a href=""%s"">here</a>.","Hai attivato con successo i pagamenti mediante PayPal. E' possibile selezionare le configurazioni avanzate <a href=""%s"">qui</a>."
+
+"IntegerNet_MagentoLocalizedEbay::No","No"
+"IntegerNet_MagentoLocalizedEbay::Yes","Sì"

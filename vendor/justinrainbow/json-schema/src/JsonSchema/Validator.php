@@ -9,8 +9,13 @@
 
 namespace JsonSchema;
 
+use JsonSchema\Constraints\Schema;
 use JsonSchema\Constraints\Constraint;
-use JsonSchema\Entity\JsonPointer;
+
+use JsonSchema\Exception\InvalidSchemaMediaTypeException;
+use JsonSchema\Exception\JsonDecodingException;
+
+use JsonSchema\Uri\Retrievers\UriRetrieverInterface;
 
 /**
  * A JsonSchema Constraint
@@ -30,25 +35,10 @@ class Validator extends Constraint
      *
      * {@inheritDoc}
      */
-    public function check($value, $schema = null, JsonPointer $path = null, $i = null)
+    public function check($value, $schema = null, $path = null, $i = null)
     {
-        $validator = $this->factory->createInstanceFor('schema');
+        $validator = new Schema($this->checkMode, $this->uriRetriever);
         $validator->check($value, $schema);
-
-        $this->addErrors(array_unique($validator->getErrors(), SORT_REGULAR));
-    }
-
-    /**
-     * Does everything that check does, but will also coerce string values in the input to their expected
-     * types defined in the schema whenever possible. Note that the first argument is passed by reference,
-     * so you must pass in a variable.
-     *
-     * {@inheritDoc}
-     */
-    public function coerce(&$value, $schema = null, JsonPointer $path = null, $i = null)
-    {
-        $validator = $this->factory->createInstanceFor('schema');
-        $validator->coerce($value, $schema);
 
         $this->addErrors(array_unique($validator->getErrors(), SORT_REGULAR));
     }

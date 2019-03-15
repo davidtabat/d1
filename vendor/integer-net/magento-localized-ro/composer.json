@@ -1,0 +1,9 @@
+{
+   "name": "integer-net/magento-localized-ro",
+   "type": "magento-module",
+   "description": "Romanian Localization package for Magento Localized (aka Magento RO)",
+   "homepage": "https://github.com/integer-net/MagentoLocalizedRO",
+   "require": {
+      "magento-hackathon/magento-composer-installer": "*"
+   }
+}
