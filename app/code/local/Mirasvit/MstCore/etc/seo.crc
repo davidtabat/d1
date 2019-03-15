@@ -1,4 +1,4 @@
-b6bb5fd608549be2aa64842a7ac95f4d  app/locale/en_US/Mirasvit_Seo.csv
+91a6cc449eaf953509f3d20ce4debad5  app/locale/en_US/Mirasvit_Seo.csv
 ab49405ce070a4ecbf918b04eadf5387  app/etc/modules/Mirasvit_Seo.xml
 15278362e19e6333f46feb6aa5834038  app/etc/modules/Mirasvit_SeoFilter.xml
 bf6b536ce7d122720d4779745a99ac30  app/design/frontend/base/default/layout/seo.xml
@@ -44,11 +44,11 @@ d3c64d821766052046dd09712ce5951a  app/code/local/Mirasvit/Seo/sql/seo_setup/mysq
 45cc594aed84756e5edfecf7ebd907f4  app/code/local/Mirasvit/Seo/sql/seo_setup/mysql4-upgrade-0.1.9-0.2.0.php
 5477e25fd8a9e5548ce6ef7ec7b492bc  app/code/local/Mirasvit/Seo/sql/seo_setup/mysql4-upgrade-0.1.0-0.1.1.php
 8a6e5945ac64c046bd36a0711b4379b4  app/code/local/Mirasvit/Seo/sql/seo_setup/mysql4-upgrade-0.2.4-0.2.5.php
-ebdb1f78e02cabbf204cd9838f8ff75b  app/code/local/Mirasvit/Seo/Block/Richsnippet.php
+dacdc27206676203ef15dfb39b34ea49  app/code/local/Mirasvit/Seo/Block/Richsnippet.php
 978022896e42b342441cfe276cc825ce  app/code/local/Mirasvit/Seo/Block/Goodrelations.php
-e613318d47e39d72428e7d3f14fa50a3  app/code/local/Mirasvit/Seo/Block/Organizationsnippets.php
+7d50012487c7155cc1a92441bd54d141  app/code/local/Mirasvit/Seo/Block/Organizationsnippets.php
 befecf149a8aab1b40011b8b176a1aa2  app/code/local/Mirasvit/Seo/Block/Html/Pager.php
-c60a124266795aef9e60a7969d4a37da  app/code/local/Mirasvit/Seo/Block/Html/Head.php
+92c3a79466bda37bb723dd1c3bd14716  app/code/local/Mirasvit/Seo/Block/Html/Head.php
 42cb7b7a8fefbeba701cabca2a5d1e8b  app/code/local/Mirasvit/Seo/Block/Breadcrumbs.php
 349158597a5a3a1672b25c0e5fd3d4fb  app/code/local/Mirasvit/Seo/Block/Adminhtml/Rewrite/Grid.php
 9c9fd9a98405515788752e21b4bba17d  app/code/local/Mirasvit/Seo/Block/Adminhtml/Rewrite/Edit.php
@@ -83,7 +83,7 @@ ef28e88d6a9f4bc4e3644b596258bc2b  app/code/local/Mirasvit/Seo/Block/Adminhtml/Sy
 c48b8ae795ec836ebcdb2bb6349a0a39  app/code/local/Mirasvit/Seo/Block/Catalog/Product/List/Toolbar.php
 f8d0f88446c2afb78b28a217f94f4855  app/code/local/Mirasvit/Seo/Block/Catalog/Product/List/Toolbar/Adapter.php
 d73dc04d216bbfe17f966cc1e539cf89  app/code/local/Mirasvit/Seo/Block/Review/View.php
-da90002a49d7188fb0232e2f7ec248f7  app/code/local/Mirasvit/Seo/Block/Review/Helper.php
+7c509cc9bfade944560a949c3624c053  app/code/local/Mirasvit/Seo/Block/Review/Helper.php
 9f13166a9cb6dcccccf5be29205bc979  app/code/local/Mirasvit/Seo/Block/Review/Product/View/List.php
 28b3a7d3402a167ca760e2e55599dfa7  app/code/local/Mirasvit/Seo/Model/Rewrite/Url.php
 6748a656854eab756000cd415f557a1d  app/code/local/Mirasvit/Seo/Model/Rewrite/Tag.php
@@ -125,7 +125,7 @@ e3f0a7ef4ab1f15823a16b79767c6a62  app/code/local/Mirasvit/Seo/Model/System/Templ
 58326a5df8fd5d61e810a8001eb81826  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Producturlformat.php
 691d0e78aaafdd79be8f47e337489e73  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Crossdomain.php
 9bec58f0724f6877aaa08447830a8717  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Weightrichsnippets.php
-2a181d17f114a8e95c97430d64cccd8b  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Category.php
+ea72f4b64bd91a09bcf065e9b3a6dc4c  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Category.php
 5575762612be5dc9e8b4b11ae36e0217  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Httpsnoindexpages.php
 d28f895134f1f945a47cb9cd278bc0e8  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Breadcrumbs.php
 2f61f43d7b3c88a323ab98ebe330a5a4  app/code/local/Mirasvit/Seo/Model/System/Config/Source/Associatedcanonical/Product.php
@@ -144,7 +144,7 @@ af2b699ec99044536e7afd29c2ae518f  app/code/local/Mirasvit/Seo/Model/System/Confi
 ee6f933ca6d01cd0e32e4af05a6e218d  app/code/local/Mirasvit/Seo/Model/System/Config/Frontend/Category.php
 cd4988e1351bc9a0b278e7bc280492ac  app/code/local/Mirasvit/Seo/Model/System/Config/Observer.php
 3bc24ba60fce06e53a9669cf7d4fcf18  app/code/local/Mirasvit/Seo/Model/Info/Observer.php
-ea8ed7f5e9e711849af6547961772566  app/code/local/Mirasvit/Seo/etc/adminhtml.xml
+0cfa96bb8a8d5da95370143c6db03b01  app/code/local/Mirasvit/Seo/etc/adminhtml.xml
 2d2871886c07ce1936c75a8036a5e77c  app/code/local/Mirasvit/Seo/etc/config.xml
 01e44a959b173c1eebd5ce985d9f86c0  app/code/local/Mirasvit/Seo/etc/system.xml
 a094aa0777eaeb05698697fb32073338  app/code/local/Mirasvit/Seo/controllers/Adminhtml/RewriteController.php
@@ -152,7 +152,7 @@ a094aa0777eaeb05698697fb32073338  app/code/local/Mirasvit/Seo/controllers/Adminh
 f2b92171092fc20440a9b8f396651205  app/code/local/Mirasvit/Seo/controllers/Adminhtml/TemplateController.php
 cee2c6ee201b129df5da5cd36f02692d  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/RewriteController.php
 747fa5849054f396db014ffb9c321868  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/RedirectController.php
-cd0b6f0f0c10d1fa8ac460dc978eeed2  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/TemplateController.php
+6ea8e00656280c441f2723f77afce5e9  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/TemplateController.php
 02dd92e96d02a8121166178a7c017206  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/RedirectimportController.php
 2da7c2375fbeedb7b41c2586eab1a2df  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/System/CheckDuplicateController.php
 4a8dd93e9fced14f53497213f03e20d2  app/code/local/Mirasvit/Seo/controllers/Adminhtml/Seo/System/TemplateController.php
@@ -165,12 +165,12 @@ c29cfd9a1414afe758804c708a07109b  app/code/local/Mirasvit/Seo/Test/module_fixtur
 f9f83d7a21396c4249113f3ece973836  app/code/local/Mirasvit/Seo/Test/Helper/DataTest/fixtures/data.yaml
 4db2dc0e301c4858603bc34e299e5455  app/code/local/Mirasvit/Seo/Test/Helper/DataTest.php
 d76abeb199541b2605762ec0d749c3ad  app/code/local/Mirasvit/Seo/Test/Helper/ParseTest.php
-412ae113926b3bb3d673106361163c4e  app/code/local/Mirasvit/Seo/Helper/Rewrite/Image.php
-8f7db14d0b88f0f96539ac6686f8bd05  app/code/local/Mirasvit/Seo/Helper/Validator.php
+e25a4769cb3c1b308cdb46ebab2f8667  app/code/local/Mirasvit/Seo/Helper/Rewrite/Image.php
+c35a884444e06c6f7a67fa2e0fe63cd3  app/code/local/Mirasvit/Seo/Helper/Validator.php
 536935942150f285546963b4efc9839c  app/code/local/Mirasvit/Seo/Helper/Migration.php
 729f77cb48f68e3b392713071f12236c  app/code/local/Mirasvit/Seo/Helper/Parse.php
 1a9846b430e0d3c884451dbf3f3dc89c  app/code/local/Mirasvit/Seo/Helper/Breadcrumbs.php
-268c13bc9627dc774379b7b2de46f5b4  app/code/local/Mirasvit/Seo/Helper/Data.php
+e432ce1c0275ced1193073753df36109  app/code/local/Mirasvit/Seo/Helper/Data.php
 2653290b9ff53d44fef61a4a01c7e470  app/code/local/Mirasvit/Seo/Helper/Snippets.php
 dbae112e83eb11fe5dc66929fcfaff77  app/code/local/Mirasvit/Seo/Helper/Mail.php
 0a36cd0412bc85c97f3f0a9a16ec9ca7  app/code/local/Mirasvit/Seo/Helper/Help.php
