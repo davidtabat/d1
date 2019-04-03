@@ -68,9 +68,11 @@
                         <input type="text" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Street Address')) ?>" name="billing[street][]" id="billing:street1" value="<?php echo $this->escapeHtml($this->getAddress()->getStreet(1)) ?>" class="input-text <?php echo $_streetValidationClass ?>" />
                     </div>
                 </div>
+                <?php if (Mage::app()->getStore()->getStoreId() != 19) : ?>
                 <div class="field" style="margin-top:16px;">
                     <p class="input-text"><strong>Bitte beachten Sie: </strong> Eine Lieferung an Postf&auml;cher, Packstationen und Postfilialen ist leider nicht m&ouml;glich. </p> 
                 </div>
+                <?php endif; ?>
         <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
         <?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
                 <div class="wide">
