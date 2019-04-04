@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <config>
     <modules>
-        <DevAll_RemoveInactiveStores>
+        <DevAll_Migrations>
             <version>1.0.0</version>
-        </DevAll_RemoveInactiveStores>
+        </DevAll_Migrations>
     </modules>
     <global>
         <resources>
-            <removeinactivestores_setup>
+            <migrations_setup>
                 <setup>
-                    <module>DevAll_RemoveInactiveStores</module>
+                    <module>DevAll_Migrations</module>
                 </setup>
-            </removeinactivestores_setup>
+            </migrations_setup>
         </resources>
     </global>
 </config>
