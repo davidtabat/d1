@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <DevAll_RemoveInactiveStores>
+            <active>true</active>
+            <codePool>local</codePool>
+        </DevAll_RemoveInactiveStores>
+    </modules>
+</config>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <DevAll_RemoveInactiveStores>
+            <version>1.0.0</version>
+        </DevAll_RemoveInactiveStores>
+    </modules>
+    <global>
+        <resources>
+            <removeinactivestores_setup>
+                <setup>
+                    <module>DevAll_RemoveInactiveStores</module>
+                </setup>
+            </removeinactivestores_setup>
+        </resources>
+    </global>
+</config>
+
