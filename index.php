@@ -20,16 +20,9 @@
  *
  * @category    Mage
  * @package     Mage
- * @copyright  Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
+ * @copyright  Copyright (c) 2006-2019 Magento, Inc. (http://www.magento.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-
-//FIX for EU VAT Rate Report module memory problem
-if (strpos($_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'],'vatreport_rate') !== false) {
-    ini_set('memory_limit', '1024M');
-}
-
-if (isset($_SERVER['SERVER_PORT']) && (443 == $_SERVER['SERVER_PORT'])) $_SERVER['HTTPS'] = 'on';
 
 if (version_compare(phpversion(), '5.3.0', '<')===true) {
     echo  '<div style="font:12px/1.35em arial, helvetica, sans-serif;">
@@ -40,6 +33,7 @@ Whoops, it looks like you have an invalid PHP version.</h3></div><p>Magento supp
  Magento using PHP-CGI as a work-around.</p></div>';
     exit;
 }
+
 /**
  * Compilation includes configuration file
  */
@@ -76,70 +70,9 @@ if (isset($_SERVER['MAGE_IS_DEVELOPER_MODE'])) {
     Mage::setIsDeveloperMode(true);
 }
 
-ini_set('display_errors', 1);
+#ini_set('display_errors', 1);
 
 umask(0);
-
-
-///14.04.2015 Hübner eingefügt START:
-
-// Begin: Switch-Abfrage  
-switch($_SERVER['HTTP_HOST']){ 
-
-
-case 'www.druckerfachhandel.de':   
-case 'druckerfachhandel.de':   
-$_SERVER["MAGE_RUN_CODE"]="druckerfachhandel";  
-$_SERVER["MAGE_RUN_TYPE"]="store"; 
-break;   
-
-case 'www.kopiererhaus.de': 
-case 'kopiererhaus.de': 
-$_SERVER["MAGE_RUN_CODE"]="kopiererhaus";    
-$_SERVER["MAGE_RUN_TYPE"]="store";   
-break;
-
-case 'mgt.druckerhaus24.de':
-$_SERVER["MAGE_RUN_CODE"]="dh24test";
-$_SERVER["MAGE_RUN_TYPE"]="store";
-break;
-
-case 'www.druckerhaus24.de':      
-case 'druckerhaus24.de':      
-$_SERVER["MAGE_RUN_CODE"]="druckerhaus24";    
-$_SERVER["MAGE_RUN_TYPE"]="store";   
-break;
-
-case 'imprireco.fr':
-case 'www.imprireco.fr':
-$_SERVER["MAGE_RUN_CODE"]="imprireco_gmbh";
-$_SERVER["MAGE_RUN_TYPE"]="store";
-break;
-
-case 'tech-tiger.com': 
-case 'www.tech-tiger.com': 
-$_SERVER["MAGE_RUN_CODE"]="techtiger";    
-$_SERVER["MAGE_RUN_TYPE"]="store";  
-break;
-
-case 'beta.printerpiloten.ch': 
-$_SERVER["MAGE_RUN_CODE"]="printerpiloten_ch";    
-$_SERVER["MAGE_RUN_TYPE"]="store";  
-break;
-
-
-} 
-
-///14.04.2015 Hübner eingefügt ENDE
-
-
-
-
-
-
-
-
-
 
 /* Store or website code */
 $mageRunCode = isset($_SERVER['MAGE_RUN_CODE']) ? $_SERVER['MAGE_RUN_CODE'] : '';
