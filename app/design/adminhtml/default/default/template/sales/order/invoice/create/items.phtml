@@ -20,7 +20,7 @@
  *
  * @category    design
  * @package     default_default
- * @copyright   Copyright (c) 2006-2017 X.commerce, Inc. and affiliates (http://www.magento.com)
+ * @copyright   Copyright (c) 2006-2019 Magento, Inc. (http://www.magento.com)
  * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 ?>
@@ -117,7 +117,7 @@
           <?php if ($this->canSendInvoiceEmail()): ?>
           <p>
               <label class="normal" for="send_email"><?php echo Mage::helper('sales')->__('Email Copy of Invoice') ?></label>
-              <input id="send_email" name="invoice[send_email]" value="1" type="checkbox" checked />
+              <input id="send_email" name="invoice[send_email]" value="1" type="checkbox" />
           </p>
           <?php endif; ?>
           <div class="a-right">
