@@ -17,8 +17,13 @@ class DevAll_Disable_Products extends Mage_Shell_Abstract
 
         // time before import started
         $importStart = $this->getArg('import_start');
-        $importStart = strftime("%Y-%m-%d %H:%M:%S", $importStart);
-
+        // make sure import_start was passed
+        if ($importStart != false) {
+            $importStart = strftime("%Y-%m-%d %H:%M:%S", $importStart);
+        } else {
+            echo 'Please specify import_start: --import_start ${IMPORT_START}';
+            return false;
+        }
         foreach ($productCollection as $product) {
             // getting imported_at date
             $importedAt = $product->getImportedAt();
