@@ -95,7 +95,7 @@
             <p>
                 <label class="normal"
                        for="send_email"><?php echo Mage::helper('sales')->__('Email Copy of Shipment') ?></label>
-                <input id="send_email" name="shipment[send_email]" value="1" type="checkbox"/>
+                <input id="send_email" name="shipment[send_email]" value="1" type="checkbox" checked="checked"/>
             </p>
             <?php endif; ?>
             <?php if(Mage::getSingleton('admin/session')->isAllowed('sales/adminhtml_upslabel')): ?>
