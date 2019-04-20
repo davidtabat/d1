@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <DevAll_Extends>
+            <version>1.0.0</version>
+        </DevAll_Extends>
+    </modules>
+     
+    <global>
+        <models>     
+            <sales>
+                <quote>
+                    <totals>
+                        <tax_subtotal>
+                            <class>tax/sales_total_quote_subtotal</class>
+                            <after>subtotal</after>
+                            <before>tax,discount,msrp</before>
+                        </tax_subtotal>
+                    </totals>
+                </quote>
+            </sales>
+        </models>
+    </global>
+</config>
+

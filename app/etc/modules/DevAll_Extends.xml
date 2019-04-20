@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<config>
+    <modules>
+        <DevAll_Extends>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <Mage_Tax />
+            </depends>
+        </DevAll_Extends>
+    </modules>
+</config>
