@@ -106,3 +106,7 @@ float: none;
 .tax-details a:link {
     text-decoration: underline;
      }
+
+.product-view .sticker {
+    height:0;
+}
