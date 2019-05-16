@@ -23,7 +23,7 @@ class DevAll_ExportUpsLabel_Model_Cron
             return false;
         }
 
-        $fromDate = date('Y-m-d', strtotime('first day of last month'));
+        $fromDate = date('Y-m-d', strtotime('first day of this month'));
         $toDate = date('Y-m-d');
 
         $orderAddressTable = Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address');
@@ -49,19 +49,17 @@ class DevAll_ExportUpsLabel_Model_Cron
             ->group('order_address.country_id')
             ->order('count DESC');
 
-        if ($data->count()) {
-            $content = Mage::helper('sales')->__('Country Packages from %s to %s', $fromDate, $toDate) . "\n\n";
-            $total = 0;
+        $content = Mage::helper('sales')->__('Country Packages from %s to %s', $fromDate, $toDate) . "\n\n";
+        $total = 0;
 
-            foreach ($data as $item) {
-                $content .= sprintf('%s: %s', Mage::getModel('directory/country')->loadByCode($item->getCountryId())->getName(), $item->getCount()) . "\n";
-                $total += (int)$item->getCount();
-            }
-
-            $content .= Mage::helper('sales')->__('%sTotal this Month: %s', "\n", $total);
-
-            $this->sendMail($content);
+        foreach ($data as $item) {
+            $content .= sprintf('%s: %s', Mage::getModel('directory/country')->loadByCode($item->getCountryId())->getName(), $item->getCount()) . "\n";
+            $total += (int)$item->getCount();
         }
+
+        $content .= Mage::helper('sales')->__('%sTotal this Month: %s', "\n", $total);
+
+        $this->sendMail($content);
     }
 
     /**
