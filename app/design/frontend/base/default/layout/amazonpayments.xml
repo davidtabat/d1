@@ -4,7 +4,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -12,7 +12,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 -->
@@ -152,14 +152,14 @@
             <action method="setIsLogout"><value>1</value></action>
         </reference>
     </customer_account_logoutsuccess>
-    <amazonpayments_advanced_login_index>
+    <amazonpayments_login_index>
         <remove name="right"/>
         <remove name="left"/>
         <reference name="root">
             <action method="setTemplate"><template>page/1column.phtml</template></action>
         </reference>
-    </amazonpayments_advanced_login_index>
-    <amazonpayments_advanced_login_redirect>
+    </amazonpayments_login_index>
+    <amazonpayments_login_redirect>
         <remove name="right"/>
         <remove name="left"/>
         <reference name="root">
@@ -168,7 +168,7 @@
         <reference name="content">
             <block type="amazonpayments/login_redirect" name="amazonpayments_login_redirect" template="creativestyle/amazonpayments/login/redirect.phtml" />
         </reference>
-    </amazonpayments_advanced_login_redirect>
+    </amazonpayments_login_redirect>
     <amazonpayments_account_confirm>
         <reference name="content">
             <block type="amazonpayments/login_account_confirm" name="amazonpayments_login_account_confirm" template="creativestyle/amazonpayments/login/form/account_confirm.phtml" />
@@ -188,4 +188,33 @@
             </block>
         </reference>
     </customer_account_index>
+    <amazonpayments_checkout_invalidpayment>
+        <label>Amazon Pay invalid payment method</label>
+        <remove name="left"/>
+        <remove name="right"/>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="amazonpayments/checkout_payment" name="amazonpayments.payment" as="payment" template="creativestyle/amazonpayments/checkout/payment.phtml">
+                <block type="amazonpayments/checkout_notice" name="amazonpayments.checkout.capture_notice" as="capture_notice" template="creativestyle/amazonpayments/checkout/capture_notice.phtml"/>
+                <block type="checkout/onepage_review_info" name="amazonpayments.checkout.review" as="review" template="creativestyle/amazonpayments/checkout/payment/review/info.phtml">
+                    <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>checkout/onepage/review/item.phtml</template></action>
+                    <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>checkout/onepage/review/item.phtml</template></action>
+                    <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>checkout/onepage/review/item.phtml</template></action>
+                    <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals" template="checkout/onepage/review/totals.phtml"/>
+                    <block type="core/text_list" name="checkout.onepage.review.info.items.before" as="items_before" translate="label">
+                        <label>Items Before</label>
+                    </block>
+                    <block type="core/text_list" name="checkout.onepage.review.info.items.after" as="items_after" translate="label">
+                        <label>Items After</label>
+                    </block>
+                    <block type="core/template" name="checkout.onepage.review.button" as="button" template="creativestyle/amazonpayments/checkout/payment/review/button.phtml"/>
+                </block>
+            </block>
+        </reference>
+        <reference name="amazonpayments.js">
+            <action method="setIsPayment"><value>1</value></action>
+        </reference>
+    </amazonpayments_checkout_invalidpayment>
 </layout>

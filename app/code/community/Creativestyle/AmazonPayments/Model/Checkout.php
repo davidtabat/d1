@@ -108,6 +108,11 @@ class Creativestyle_AmazonPayments_Model_Checkout extends Mage_Checkout_Model_Ty
 
         $this->_setCartCouponCode();
 
+        // shipping totals may be affected by payment method
+        if (!$this->getQuote()->isVirtual() && $this->getQuote()->getShippingAddress()) {
+            $this->getQuote()->getShippingAddress()->setCollectShippingRates(true);
+        }
+
         $this->getQuote()->collectTotals();
         $this->getQuote()->save();
 
@@ -142,7 +147,7 @@ class Creativestyle_AmazonPayments_Model_Checkout extends Mage_Checkout_Model_Ty
         return array();
     }
 
-    public function saveOrder() 
+    public function saveOrder()
     {
         $this->getQuote()->collectTotals();
         $this->validate();
@@ -186,8 +191,7 @@ class Creativestyle_AmazonPayments_Model_Checkout extends Mage_Checkout_Model_Ty
             // add order information to the session
             $this->_checkoutSession->setLastOrderId($order->getId())
                 ->setLastRealOrderId($order->getIncrementId())
-                ->setAmazonOrderReferenceId(null)
-                ->setAmazonSequenceNumber(null);
+                ->setAmazonOrderReferenceId(null);
         }
 
         Mage::dispatchEvent(

@@ -372,7 +372,7 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction
     public function getTransaction()
     {
         if (null === $this->_transaction) {
-            throw new Creativestyle_AmazonPayments_Exception('Transaction object is not set');
+            throw new Creativestyle_AmazonPayments_Exception('[proc::Transaction] Transaction object is not set');
         }
 
         return $this->_transaction;
@@ -952,5 +952,20 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction
         }
 
         return !empty($rawDetails) ? $rawDetails : null;
+    }
+
+    /**
+     * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
+    public function isSync()
+    {
+        $transactionDetails = $this->_getAmazonTransactionDetails();
+        if (isset($transactionDetails['AuthorizationReferenceId'])
+            && preg_match('/-sync$/', $transactionDetails['AuthorizationReferenceId'])) {
+            return true;
+        }
+
+        return false;
     }
 }

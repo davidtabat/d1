@@ -15,14 +15,20 @@
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 ?>
+<?php /** @var Creativestyle_AmazonPayments_Block_Login_Redirect $this */?>
 <h1><?php echo $this->__('Redirecting, please wait...'); ?></h1>
 <script type="text/javascript">//<![CDATA[
     var accessToken = (new RegExp('[?|&|#]<?php echo $this->getAccessTokenParamName(); ?>=([^&;]+?)(&|#|;|$)')
         .exec(location.hash) || [,""])[1].replace(/\+/g,'%20') || null;
+    var state = (new RegExp('[?|&|#]state=([^&;]+?)(&|#|;|$)').exec(location.hash) || [,""])[1] || null;
     if (typeof accessToken === 'string' && accessToken.match(/^Atza/)) {
         Mage.Cookies.set('amazon_Login_accessToken', decodeURIComponent(accessToken), null, '/', null, true);
-        setLocation('<?php echo $this->getRedirectUrl(); ?>'.replace(/%s/, accessToken));
+        if (state === 'checkout') {
+            window.location.href = '<?php echo $this->getCheckoutRedirectUrl(); ?>'.replace(/%s/, accessToken);
+        } else {
+            window.location.href = '<?php echo $this->getRedirectUrl(); ?>';
+        }
     } else {
-        setLocation('<?php echo $this->getFailureUrl(); ?>');
+        window.location.href = '<?php echo $this->getFailureUrl(); ?>';
     }
 //]]></script>

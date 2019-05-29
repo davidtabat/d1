@@ -32,6 +32,7 @@
 class Creativestyle_AmazonPayments_Block_Pay_Button extends Creativestyle_AmazonPayments_Block_Pay_Abstract
 {
     const WIDGET_CONTAINER_ID_PREFIX = 'payButtonWidget';
+    const WIDGET_CONTAINER_CLASS = 'payButtonWidget';
 
     /**
      * @inheritdoc
@@ -41,7 +42,7 @@ class Creativestyle_AmazonPayments_Block_Pay_Button extends Creativestyle_Amazon
     /**
      * @inheritdoc
      */
-    protected $_containerClass = self::WIDGET_CONTAINER_ID_PREFIX;
+    protected $_containerClass = self::WIDGET_CONTAINER_CLASS;
 
     /**
      * @inheritdoc
@@ -67,7 +68,9 @@ class Creativestyle_AmazonPayments_Block_Pay_Button extends Creativestyle_Amazon
             }
 
             // hide for Login and popup enabled, when request wasn't secure
-            if ($this->isPopupAuthenticationExperience() && !$this->_isConnectionSecure()) {
+            if ($this->isLoginActive()
+                && $this->isPopupAuthenticationExperience()
+                && !$this->_isConnectionSecure()) {
                 return false;
             }
 

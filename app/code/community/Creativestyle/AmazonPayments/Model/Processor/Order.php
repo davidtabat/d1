@@ -396,7 +396,8 @@ class Creativestyle_AmazonPayments_Model_Processor_Order
             && $transactionProcessor->getTransactionState()
             == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_DECLINED
             && $transactionProcessor->getTransactionReasonCode()
-            == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_TIMEOUT) {
+            == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_TIMEOUT
+            && !$transactionProcessor->isSync()) {
             $this->_getPaymentProcessor($this->getPayment())->cancelOrderReference();
         }
 
@@ -446,7 +447,7 @@ class Creativestyle_AmazonPayments_Model_Processor_Order
     public function getOrder()
     {
         if (null === $this->_order) {
-            throw new Creativestyle_AmazonPayments_Exception('Order object is not set');
+            throw new Creativestyle_AmazonPayments_Exception('[proc::Order] Order object is not set');
         }
 
         return $this->_order;

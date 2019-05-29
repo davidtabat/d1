@@ -16,17 +16,8 @@
  */
 class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_AmazonPayments_Controller_Checkout
 {
-    /**
-     * Returns Amazon checkout instance
-     *
-     * @return Creativestyle_AmazonPayments_Model_Checkout
-     */
-    protected function _getCheckout()
-    {
-        /** @var Creativestyle_AmazonPayments_Model_Checkout $checkout */
-        $checkout = Mage::getSingleton('amazonpayments/checkout');
-        return $checkout;
-    }
+    const CHECKOUT_JS_APP_PAGE_ID = 'checkout';
+    const INVALID_PAYMENT_METHOD_JS_APP_PAGE_ID = 'invalid_payment';
 
     /**
      * @return string
@@ -111,7 +102,14 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
             }
 
             $this->loadLayout();
-            $this->getLayout()->getBlock('head')->setTitle($this->__('Amazon Pay'));
+            $this->_setHeadTitle('Amazon Pay')
+                ->_setJsParams(
+                    array(
+                        'order_reference_id' => $this->_getOrderReferenceId(),
+                        'access_token' => $this->_getAccessToken(),
+                        'js_app_page' => self::CHECKOUT_JS_APP_PAGE_ID
+                    )
+                );
             $this->renderLayout();
         } catch (Exception $e) {
             Creativestyle_AmazonPayments_Model_Logger::logException($e);
@@ -131,7 +129,7 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                     return;
                 }
 
-                $result = $this->_saveShipping($this->_getAmazonCheckout());
+                $result = $this->_saveShipping();
             } catch (Exception $e) {
                 Creativestyle_AmazonPayments_Model_Logger::logException($e);
                 $result = array(
@@ -161,41 +159,7 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
             return;
         }
 
-        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
-    }
-
-    public function opcSaveShippingAction()
-    {
-        if ($this->getRequest()->isPost()) {
-            try {
-                if ($this->_expireAjax()) {
-                    return;
-                }
-
-                $result = $this->_saveShipping($this->_getOnePageCheckout());
-            } catch (Exception $e) {
-                Creativestyle_AmazonPayments_Model_Logger::logException($e);
-                $result = array(
-                    'error' => -1,
-                    'error_messages' => $e->getMessage(),
-                    'allow_submit' => false
-                );
-            }
-
-            if (!isset($result['error'])) {
-                $result = array(
-                    'render_widget' => array(
-                        'shipping-method' => $this->_getShippingMethodsHtml()
-                    ),
-                    'allow_submit' => false
-                );
-            };
-        } else {
-            $this->_forward('noRoute');
-            return;
-        }
-
-        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+        $this->_setJsonResponse($result);
     }
 
     /**
@@ -218,7 +182,7 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                     'error_messages' => $e->getMessage(),
                     'allow_submit' => false
                 );
-                $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+                $this->_setJsonResponse($result);
                 return;
             }
 
@@ -231,7 +195,7 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                 'render_widget' => array('review' => $this->_getReviewHtml()),
                 'allow_submit' => $this->_isSubmitAllowed()
             );
-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $this->_setJsonResponse($result);
         } else {
             $this->_forward('noRoute');
         }
@@ -304,54 +268,49 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
 
     /**
      * @param Creativestyle_AmazonPayments_Exception_InvalidTransaction $e
+     * @param Mage_Sales_Model_Order|null $order
      * @return array|null
-     * @throws Varien_Exception
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
      */
-    protected function _handleInvalidTransactionException(Creativestyle_AmazonPayments_Exception_InvalidTransaction $e)
-    {
-        if ($e->getType() == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_TYPE_AUTH) {
-            if ($e->getState()
-                == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_DECLINED) {
-                if ($e->getReasonCode()
-                    == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_INVALID_PAYMENT) {
-                    return array(
-                        'success'        => false,
-                        'error'          => true,
-                        'error_messages' => $this->__(
-                            'There has been a problem with the selected payment method from your Amazon account, '
-                            . 'please update the payment method or choose another one.'
-                        ),
-                        'allow_submit' => $this->_isSubmitAllowed(),
-                        'deselect_payment' => true,
-                        'render_widget' => array(
-                            'wallet' => true
-                        ),
-                        'disable_widget' => array(
-                            'address-book' => true,
-                            'shipping-method' => true,
-                            'review' => true
-                        )
-                    );
-                }
-            }
-        }
+    protected function _handleInvalidTransactionException(
+        Creativestyle_AmazonPayments_Exception_InvalidTransaction $e,
+        Mage_Sales_Model_Order $order = null
+    ) {
+        if ($e->isAuth()) {
+            if ($e->isDeclined()) {
+                switch ($e->getReasonCode()) {
+                    case Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_INVALID_PAYMENT:
+                        $this->_redirect('*/*/invalidPayment');
+                        return null;
 
-        if ($e->getType() == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_TYPE_AUTH) {
-            if ($e->getState()
-                == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_DECLINED) {
-                if ($e->getReasonCode()
-                    == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_AMAZON_REJECTED) {
-                    $this->_clearOrderReferenceId();
-                }
-            }
-        }
+                    case Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_TIMEOUT:
+                        if (!$e->isSync() || $this->_getConfig()->getAuthorizationMode()
+                            === Creativestyle_AmazonPayments_Model_Lookup_AuthorizationMode::SYNCHRONOUS) {
+                            $this->_cancelOrderReference();
+                            if ($order && $order->getId()) {
+                                if ($order->canUnhold()) {
+                                    $order->unhold();
+                                }
 
-        if ($e->getType() == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_TYPE_AUTH) {
-            if ($e->getState()
-                == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_DECLINED) {
-                if ($e->getReasonCode()
-                    == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_TIMEOUT) {
-                    $this->_cancelOrderReferenceId();
+                                $order->cancel()->save();
+                            }
+                        }
+                        break;
+
+                    case Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_AMAZON_REJECTED:
+                    case Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_REASON_PROCESSING_FAILURE:
+                        if ($e->isSync()) {
+                            $this->_cancelOrderReference();
+                            if ($order && $order->getId()) {
+                                if ($order->canUnhold()) {
+                                    $order->unhold();
+                                }
+
+                                $order->cancel()->save();
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -361,6 +320,8 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
         $this->_getCheckoutSession()->addError(
             $this->__('There was an error processing your order. Please contact us or try again later.')
         );
+
+        $this->_redirect('checkout/cart');
 
         return array(
             'success' => false,
@@ -381,7 +342,7 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                 Mage::helper('checkout')->getRequiredAgreementIds()
             );
             if ($result) {
-                $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+                $this->_setJsonResponse($result);
                 return;
             }
 
@@ -393,7 +354,7 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
             );
             $result = $this->_validateOrderReference($orderReferenceDetails);
             if ($result) {
-                $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+                $this->_setJsonResponse($result);
                 return;
             }
 
@@ -406,12 +367,9 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                 }
             }
 
-            $sequenceNumber = (int)$this->_getCheckoutSession()->getAmazonSequenceNumber();
             $this->_getQuote()->getPayment()
                 ->setTransactionId($this->_getOrderReferenceId())
-                ->setSkipOrderReferenceProcessing($skipOrderReferenceProcessing)
-                ->setAmazonSequenceNumber($sequenceNumber ? $sequenceNumber : null);
-            $this->_getCheckoutSession()->setAmazonSequenceNumber($sequenceNumber ? $sequenceNumber + 1 : 1);
+                ->setSkipOrderReferenceProcessing($skipOrderReferenceProcessing);
 
             $customFields = $this->getRequest()->getPost('custom_fields', array());
             foreach ($customFields as $customFieldName => $customFieldValue) {
@@ -444,14 +402,13 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
 
             $result = array(
                 'success' => true,
-                'error' => false,
-                'redirect' => Mage::getUrl('checkout/onepage/success')
+                'error' => false
             );
-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $this->_setJsonResponse($result);
         } catch (Creativestyle_AmazonPayments_Exception_InvalidTransaction $e) {
             $result = $this->_handleInvalidTransactionException($e);
             if (is_array($result)) {
-                $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+                $this->_setJsonResponse($result);
                 return;
             }
         } catch (Exception $e) {
@@ -465,25 +422,13 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                 'error' => true,
                 'redirect' => Mage::getUrl('checkout/cart')
             );
-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $this->_setJsonResponse($result);
         }
     }
 
-    /**
-     * @throws Varien_Exception
-     */
-    public function clearOrderReferenceAction()
-    {
-        $this->_clearOrderReferenceId();
-        $this->_redirect('checkout/cart');
-    }
-
-    /**
-     * @throws Varien_Exception
-     */
     public function cancelOrderReferenceAction()
     {
-        $this->_cancelOrderReferenceId();
+        $this->_cancelOrderReference();
         $this->_redirect('checkout/cart');
     }
 
@@ -528,6 +473,139 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
             return;
         }
 
-        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+        $this->_setJsonResponse($result);
+    }
+
+    /**
+     * @throws Varien_Exception
+     */
+    public function mfaAction()
+    {
+        $order = null;
+
+        $session = $this->_getCheckoutSession();
+        $lastQuoteId = $session->getLastQuoteId();
+        $lastOrderId = $session->getLastOrderId();
+        $lastRecurringProfiles = $session->getLastRecurringProfileIds();
+
+        if (!$lastQuoteId || (!$lastOrderId && empty($lastRecurringProfiles))) {
+            $this->_redirect('checkout/cart');
+            return;
+        }
+
+        $authenticationStatus = $this->getRequest()->getParam('AuthenticationStatus', null);
+
+        switch ($authenticationStatus) {
+            case Creativestyle_AmazonPayments_Model_Amazon_Mfa_AuthenticationStatus::SUCCESS:
+                try {
+                    /** @var Mage_Sales_Model_Quote $quote */
+                    $quote = Mage::getModel('sales/quote')->load($lastQuoteId);
+
+                    /** @var Mage_Sales_Model_Order $order */
+                    $order = Mage::getModel('sales/order')->load($lastOrderId);
+
+                    if ($order->getId()) {
+                        /** @var Mage_Sales_Model_Order_Payment $payment */
+                        $payment = $order->getPayment();
+                        if (in_array($payment->getMethod(), $this->_getHelper()->getAvailablePaymentMethods())) {
+                            /** @var Mage_Core_Model_Resource_Transaction $transaction */
+                            $transaction = Mage::getModel('core/resource_transaction');
+
+                            $order->setBaseTotalPaid(0);
+                            $payment->getMethodInstance()->authorize($payment, $order->getBaseTotalDue());
+                            $payment->setAmountAuthorized($order->getTotalDue())
+                                ->setBaseAmountAuthorized($order->getBaseTotalDue());
+
+                            $transaction->addObject($order);
+
+                            if ($quote->getId()) {
+                                $quote->setIsActive(false);
+                                $transaction->addObject($quote);
+                            }
+
+                            $transaction->save();
+                        }
+                    }
+
+                    $this->_redirect('checkout/onepage/success');
+                    return;
+                } catch (Creativestyle_AmazonPayments_Exception_InvalidTransaction $e) {
+                    $this->_handleInvalidTransactionException($e, $order);
+                    return;
+                } catch (Exception $e) {
+                    $this->_redirect('checkout/cart');
+                    return;
+                }
+
+            // no break
+            case Creativestyle_AmazonPayments_Model_Amazon_Mfa_AuthenticationStatus::ABANDONED:
+                $this->_redirect('*/*/invalidPayment');
+                return;
+
+            case Creativestyle_AmazonPayments_Model_Amazon_Mfa_AuthenticationStatus::FAILURE:
+                /** @var Mage_Sales_Model_Order $order */
+                $order = Mage::getModel('sales/order')->load($lastOrderId);
+                if ($order->getId()) {
+                    $order->cancel()->save();
+                }
+
+                $this->_getCheckoutSession()->addError(
+                    $this->__('There was an error processing your order. Please contact us or try again later.')
+                );
+                $this->_redirect('checkout/cart');
+                return;
+
+            default:
+                $this->_redirect('checkout/cart');
+                return;
+        }
+    }
+
+    public function invalidPaymentAction()
+    {
+        $session = $this->_getCheckoutSession();
+        $lastQuoteId = $session->getLastQuoteId();
+        $lastOrderId = $session->getLastOrderId();
+        $lastRecurringProfiles = $session->getLastRecurringProfileIds();
+        if (!$lastQuoteId || (!$lastOrderId && empty($lastRecurringProfiles))) {
+            $this->_redirect('checkout/cart');
+            return;
+        }
+
+        /** @var Mage_Sales_Model_Order $order */
+        $order = Mage::getModel('sales/order')->load($lastOrderId);
+
+        if (!$order->getId()) {
+            $this->_redirect('checkout/cart');
+            return;
+        }
+
+        if ($this->getRequest()->isPost()) {
+            /** @var Mage_Sales_Model_Order_Payment $payment */
+            $payment = $order->getPayment();
+
+            if (in_array($payment->getMethod(), $this->_getHelper()->getAvailablePaymentMethods())) {
+                $this->_getApi()->confirmOrderReference(
+                    null,
+                    $this->_getOrderReferenceId(),
+                    $this->_getUrl()->getCheckoutMultiFactorAuthenticationUrl()
+                );
+            }
+
+            $this->getResponse()->setBody(
+                $this->_jsonEncode(
+                    array(
+                        'success' => true,
+                        'error' => false
+                    )
+                )
+            );
+            return;
+        }
+
+        $this->loadLayout();
+        $this->_setHeadTitle('Amazon Pay');
+        $this->_setJsParams(array('order_reference_id' => $order->getExtOrderId()));
+        $this->renderLayout();
     }
 }

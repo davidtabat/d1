@@ -25,7 +25,12 @@
     AmazonPayments.setCallbacks({
         onPayButtonRender: function (button) {
             if (typeof Tooltip !== 'undefined') {
-                new Tooltip(button.down('img'), document.getElementById('amazon-pay-tooltip'));
+                if (AmazonPayments.isMobile()) {
+                    button.insert('<div class="amazon-pay-tooltip-link"/>');
+                    new Tooltip(button.down('.amazon-pay-tooltip-link'), document.getElementById('amazon-pay-tooltip'));
+                } else {
+                    new Tooltip(button.down('img'), document.getElementById('amazon-pay-tooltip'));
+                }
             }
         }
     });

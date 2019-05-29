@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,231 +11,340 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_Model_Service_Login
 {
+    const AMAZON_USER_ID_ATTRIBUTE = 'amazon_user_id';
 
-    const ACCOUNT_STATUS_OK = 1;
-    const ACCOUNT_STATUS_CONFIRM = 2;
-    const ACCOUNT_STATUS_GUEST = 3;
-    const ACCOUNT_STATUS_DATA_MISSING = 4;
-    const ACCOUNT_STATUS_ERROR = 16;
+    /**
+     * @var string
+     */
+    private $_accessToken;
 
-    protected $_amazonUserData;
+    /**
+     * @var mixed
+     */
+    private $_store;
 
-    protected $_customer = null;
+    /**
+     * @var Creativestyle_AmazonPayments_Model_Login_UserProfile|null
+     */
+    private $_userProfile;
 
-    protected $_websiteId = null;
+    /**
+     * @var Mage_Customer_Model_Customer|null
+     */
+    private $_customer = null;
 
-    public function __construct($amazonUserData)
+    /**
+     * @return Creativestyle_AmazonPayments_Model_Api_Login
+     */
+    protected function _getApi()
     {
-        if (!$this->_validateAmazonUserData($amazonUserData)) {
-            throw new Creativestyle_AmazonPayments_Exception('[LWA-service] Provided user profile is invalid');
-        }
-
-        $this->_amazonUserData = $amazonUserData;
+        /** @var Creativestyle_AmazonPayments_Model_Api_Login $api */
+        $api = Mage::getSingleton('amazonpayments/api_login');
+        return $api;
     }
 
     /**
-     * Returns instance of Amazon Payments config object
-     *
      * @return Creativestyle_AmazonPayments_Model_Config
      */
     protected function _getConfig()
     {
-        return Mage::getSingleton('amazonpayments/config');
+        /** @var Creativestyle_AmazonPayments_Model_Config $config */
+        $config = Mage::getSingleton('amazonpayments/config');
+        return $config;
+    }
+
+    /**
+     * @return Creativestyle_AmazonPayments_Helper_Data
+     */
+    protected function _getHelper()
+    {
+        /** @var Creativestyle_AmazonPayments_Helper_Data $helper */
+        $helper = Mage::helper('amazonpayments');
+        return $helper;
     }
 
     /**
      * @return Mage_Customer_Model_Session
      */
-    protected function _getCustomerSession()
+    protected function _getSession()
     {
-        return Mage::getSingleton('customer/session');
+        /** @var Mage_Customer_Model_Session $session */
+        $session = Mage::getSingleton('customer/session');
+        return $session;
     }
 
+    /**
+     * @return int|string|null
+     * @throws Mage_Core_Model_Store_Exception
+     */
     protected function _getWebsiteId()
     {
-        if (null === $this->_websiteId) {
-            $this->_websiteId = Mage::app()->getStore()->getWebsiteId();
-        }
-
-        return $this->_websiteId;
+        return Mage::app()->getStore($this->_store)->getWebsiteId();
     }
 
-    protected function _validateAmazonUserData($amazonUserData)
+    /**
+     * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
+    protected function _assertAmazonUserIdAttributeExists()
     {
-        return $amazonUserData instanceof Varien_Object
-            && $amazonUserData->getEmail() && $amazonUserData->getName() && $amazonUserData->getUserId();
-    }
-
-    protected function _getCustomer()
-    {
-        $amazonUserIdAttr = Mage::getResourceModel('catalog/eav_attribute')->loadByCode('customer', 'amazon_user_id');
-        if (!$amazonUserIdAttr->getId()) {
+        /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attributeModel */
+        $attributeModel = Mage::getResourceModel('catalog/eav_attribute')
+            ->loadByCode('customer', self::AMAZON_USER_ID_ATTRIBUTE);
+        if (!$attributeModel->getId()) {
             throw new Creativestyle_AmazonPayments_Exception(
-                '[LWA-service] amazon_user_id customer attribute does not exist'
+                sprintf('[service::Login] %s customer attribute does not exist', self::AMAZON_USER_ID_ATTRIBUTE)
             );
         }
-        
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
+    protected function _assertUserIsAuthenticated()
+    {
+        if (null === $this->_userProfile || !$this->_userProfile->validate()) {
+            throw new Creativestyle_AmazonPayments_Exception('[service::Login] User is not authenticated');
+        }
+
+        return true;
+    }
+
+    /**
+     * @return Mage_Customer_Model_Customer|null
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    protected function _getCustomerByUserId()
+    {
+        $this->_assertAmazonUserIdAttributeExists();
+
         if (null === $this->_customer) {
+            /** @var Mage_Customer_Model_Customer $customer */
             $customer = Mage::getModel('customer/customer');
+
+            /** @var Mage_Customer_Model_Resource_Customer_Collection $collection */
             $collection = $customer->getCollection()
-                ->addAttributeToFilter('amazon_user_id', $this->_amazonUserData->getUserId())
+                ->addAttributeToFilter(self::AMAZON_USER_ID_ATTRIBUTE, $this->getUserProfile()->getUserId())
                 ->setPageSize(1);
+
             if ($customer->getSharingConfig()->isWebsiteScope()) {
                 $collection->addAttributeToFilter('website_id', $this->_getWebsiteId());
             }
 
             if ($collection->count()) {
-                // @codingStandardsIgnoreStart
                 $this->_customer = $collection->getFirstItem();
-                // @codingStandardsIgnoreEnd
             }
         }
 
         return $this->_customer;
     }
 
+    /**
+     * @return Mage_Customer_Model_Customer|null
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Model_Store_Exception
+     */
     protected function _getCustomerByEmail()
     {
         if (null === $this->_customer) {
-            $this->_customer = Mage::getModel('customer/customer')
-                ->setWebsiteId($this->_getWebsiteId())
-                ->loadByEmail($this->_amazonUserData->getEmail());
-            if (!$this->_customer->getId()) {
-                $this->_customer = null;
+            /** @var Mage_Customer_Model_Customer $customer */
+            $customer = Mage::getModel('customer/customer');
+
+            if ($customer->getSharingConfig()->isWebsiteScope()) {
+                $customer->setData('website_id', $this->_getWebsiteId());
+            }
+
+            $customer->loadByEmail($this->getUserProfile()->getEmail());
+
+            if ($customer->getId()) {
+                $this->_customer = $customer;
             }
         }
 
         return $this->_customer;
     }
 
-    protected function _getEmptyCustomer()
+    /**
+     * @return array
+     */
+    protected function _getCustomerMandatoryAttributes()
     {
-        if (null === $this->_customer) {
-            $this->_customer = Mage::getModel('customer/customer');
-        }
-
-        return $this->_customer;
-    }
-
-    protected function _getCustomerRequiredData()
-    {
-        $requiredData = array();
+        $mandatoryAttributes = array();
+        /** @var Mage_Eav_Model_Config $eavConfig */
         $eavConfig = Mage::getSingleton('eav/config');
         foreach ($this->_getConfig()->getGlobalConfigData('customer_attributes') as $attributeCode => $attributeData) {
             $attributeModel = $eavConfig->getAttribute('customer', $attributeCode);
             if ($attributeModel instanceof Varien_Object) {
                 if ($attributeModel->getIsRequired()) {
-                    $requiredData[] = $attributeCode;
+                    $mandatoryAttributes[] = $attributeCode;
                 }
             }
         }
 
-        return $requiredData;
+        return $mandatoryAttributes;
     }
 
+    /**
+     * @param array $accountData
+     * @return Mage_Customer_Model_Customer
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Model_Store_Exception
+     * @throws Exception
+     */
     protected function _createCustomer($accountData = array())
     {
-        if ($customer = $this->_getEmptyCustomer()) {
-            $password = $customer->generatePassword(8);
-            $customerName = Mage::helper('amazonpayments')->explodeCustomerName($this->_amazonUserData->getName());
-            $customer->setId(null)
-                ->setWebsiteId($this->_getWebsiteId())
-                ->setSkipConfirmationIfEmail($this->_amazonUserData->getEmail())
-                ->setFirstname($customerName->getFirstname())
-                ->setLastname($customerName->getLastname())
-                ->setEmail($this->_amazonUserData->getEmail())
-                ->setPassword($password)
-                ->setPasswordConfirmation($password)
-                ->setConfirmation($password)
-                ->setAmazonUserId($this->_amazonUserData->getUserId());
+        $userProfile = $this->getUserProfile();
+        $customerName = $this->_getHelper()->explodeCustomerName($userProfile->getName());
 
-            foreach ($accountData as $attribute => $value) {
-                $customer->setData($attribute, $value);
-            }
+        /** @var Mage_Customer_Model_Customer $customer */
+        $customer = Mage::getModel('customer/customer');
+        $password = $customer->generatePassword(8);
+        $customer->setId(null)
+            ->setSkipConfirmationIfEmail($userProfile->getEmail())
+            ->setFirstname($customerName->getFirstname())
+            ->setLastname($customerName->getLastname())
+            ->setEmail($userProfile->getEmail())
+            ->setPassword($password)
+            ->setPasswordConfirmation($password)
+            ->setConfirmation($password)
+            ->setAmazonUserId($userProfile->getUserId());
 
-            // validate customer
-            $validation = $customer->validate();
-            if ($validation !== true && !empty($validation)) {
-                $validation = implode(", ", $validation);
-                throw new Creativestyle_AmazonPayments_Exception(
-                    '[LWA-service] error while creating customer account: ' . $validation
-                );
-            }
-
-            $customer->save();
-            return $customer;
+        if ($customer->getSharingConfig()->isWebsiteScope()) {
+            $customer->setData('website_id', $this->_getWebsiteId());
         }
 
-        throw new Creativestyle_AmazonPayments_Exception('[LWA-service] unable to create new customer account');
-    }
-
-    public function connect($accountData = array())
-    {
-        if (!$this->_getConfig()->isLoginActive()) {
-            return new Varien_Object(
-                array(
-                    'status' => self::ACCOUNT_STATUS_GUEST
-                )
-            );
-        } elseif (null !== $this->_getCustomer()) {
-            return new Varien_Object(
-                array(
-                    'status' => self::ACCOUNT_STATUS_OK,
-                    'customer' => $this->_getCustomer()
-                )
-            );
-        } elseif (null !== $this->_getCustomerByEmail()) {
-            if ($this->_getCustomerSession()->isLoggedIn()) {
-                $this->_getCustomerByEmail()->setAmazonUserId($this->_amazonUserData->getUserId())->save();
-                return new Varien_Object(
-                    array(
-                        'status' => self::ACCOUNT_STATUS_OK,
-                        'customer' => $this->_getCustomerByEmail()
-                    )
-                );
-            }
-
-            return new Varien_Object(
-                array(
-                    'status' => self::ACCOUNT_STATUS_CONFIRM,
-                    'customer' => $this->_getCustomerByEmail()
-                )
-            );
-        } else {
-            $requiredData = $this->_getCustomerRequiredData();
-            $postedData = array_keys($accountData);
-            $dataDiff = array_diff($requiredData, $postedData);
-            if (!(empty($requiredData) || empty($dataDiff))) {
-                return new Varien_Object(
-                    array(
-                        'status' => self::ACCOUNT_STATUS_DATA_MISSING,
-                        'required_data' => $requiredData
-                    )
-                );
-            } else {
-                $customer = $this->_createCustomer($accountData);
-                if (null !== $customer) {
-                    return new Varien_Object(
-                        array(
-                            'status' => self::ACCOUNT_STATUS_OK,
-                            'customer' => $customer
-                        )
-                    );
-                }
-            }
+        foreach ($accountData as $attribute => $value) {
+            $customer->setData($attribute, $value);
         }
 
-        return new Varien_Object(array('status' => self::ACCOUNT_STATUS_ERROR));
+        // validate customer
+        $validation = $customer->validate();
+        if ($validation !== true && !empty($validation)) {
+            $validation = implode(", ", $validation);
+            throw new Creativestyle_AmazonPayments_Exception(
+                sprintf('[service::Login] error while creating customer account: %s', $validation)
+            );
+        }
+
+        $customer->save();
+
+        return $customer;
     }
 
-    public function setWebsiteId($websiteId)
+    /**
+     * @param Mage_Customer_Model_Customer $customer
+     */
+    protected function _setCustomerAsLoggedIn(Mage_Customer_Model_Customer $customer)
     {
-        $this->_websiteId = $websiteId;
+        $this->_getSession()->setCustomerAsLoggedIn($customer);
+    }
+
+    /**
+     * @param Mage_Customer_Model_Customer $customer
+     * @param string $amazonUserId
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Exception
+     */
+    protected function _setCustomerUserId(Mage_Customer_Model_Customer $customer, $amazonUserId)
+    {
+        $this->_assertAmazonUserIdAttributeExists();
+        $customer->setData(self::AMAZON_USER_ID_ATTRIBUTE, $amazonUserId);
+        $customer->save();
+    }
+
+    /**
+     * @param string $accessToken
+     * @param mixed|null $store
+     * @return $this
+     * @throws Exception
+     */
+    public function authenticate($accessToken, $store = null)
+    {
+        $this->_userProfile = $this->_getApi()->getUserProfile($store, $accessToken);
+        $this->_accessToken = $accessToken;
+        $this->_store = $store;
         return $this;
+    }
+
+    /**
+     * @return Creativestyle_AmazonPayments_Model_Login_UserProfile
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
+    public function getUserProfile()
+    {
+        $this->_assertUserIsAuthenticated();
+        return $this->_userProfile;
+    }
+
+    /**
+     * @param callable $success
+     * @param callable $confirm
+     * @param callable $missingData
+     * @param null $password
+     * @param array $accountData
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function connect(
+        callable $success,
+        callable $confirm,
+        callable $missingData,
+        $password = null,
+        $accountData = array()
+    ) {
+        $this->_assertUserIsAuthenticated();
+
+        $customer = $this->_getCustomerByUserId();
+        if (null !== $customer) {
+            $this->_setCustomerAsLoggedIn($customer);
+            $success();
+            return;
+        }
+
+        $customer = $this->_getCustomerByEmail();
+        if (null !== $customer) {
+            if ($this->_getSession()->isLoggedIn()) {
+                $this->_setCustomerUserId($customer, $this->getUserProfile()->getUserId());
+                $this->_setCustomerAsLoggedIn($customer);
+                $success();
+                return;
+            } else {
+                if (null !== $password) {
+                    if ($customer->validatePassword($password)) {
+                        $this->_setCustomerUserId($customer, $this->getUserProfile()->getUserId());
+                        $this->_setCustomerAsLoggedIn($customer);
+                        $success();
+                        return;
+                    } else {
+                        $this->_getSession()->addError($this->_getHelper()->__('Invalid password'));
+                    }
+                }
+
+                $confirm($customer);
+                return;
+            }
+        }
+
+        $customerAttributes = $this->_getCustomerMandatoryAttributes();
+        $postedAttributes = array_keys($accountData);
+
+        if (!(empty($customerAttributes) || empty(array_diff($customerAttributes, $postedAttributes)))) {
+            $missingData($this->getUserProfile());
+            return;
+        } else {
+            $customer = $this->_createCustomer($accountData);
+            $this->_setCustomerAsLoggedIn($customer);
+            $success();
+            return;
+        }
     }
 }

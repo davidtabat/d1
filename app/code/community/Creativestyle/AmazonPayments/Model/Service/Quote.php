@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,16 +11,16 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_Model_Service_Quote extends Mage_Sales_Model_Service_Quote
 {
-
     /**
      * Validate quote data before converting to order
      *
      * @return Mage_Sales_Model_Service_Quote
+     * @throws Mage_Core_Exception
      */
     protected function _validate()
     {
@@ -92,13 +92,6 @@ class Creativestyle_AmazonPayments_Model_Service_Quote extends Mage_Sales_Model_
             );
         }
 
-        if ($quote->getPayment()->getAmazonSequenceNumber()) {
-            $order->getPayment()->setAdditionalInformation(
-                'amazon_sequence_number',
-                $quote->getPayment()->getAmazonSequenceNumber()
-            );
-        }
-
         if ($quote->getPayment()->getSkipOrderReferenceProcessing()) {
             $order->getPayment()->setSkipOrderReferenceProcessing(true);
         }
@@ -131,7 +124,6 @@ class Creativestyle_AmazonPayments_Model_Service_Quote extends Mage_Sales_Model_
         Mage::dispatchEvent('sales_model_service_quote_submit_before', array('order'=>$order, 'quote'=>$quote));
         try {
             $transaction->save();
-            $this->_inactivateQuote();
             Mage::dispatchEvent('sales_model_service_quote_submit_success', array('order'=>$order, 'quote'=>$quote));
         } catch (Exception $e) {
             if (!Mage::getSingleton('customer/session')->isLoggedIn()) {

@@ -49,12 +49,6 @@ class Creativestyle_AmazonPayments_Model_Config
     const XML_PATH_DESIGN_BUTTON_SIZE           = 'amazonpayments/design_pay/button_size';
     const XML_PATH_DESIGN_BUTTON_COLOR          = 'amazonpayments/design_pay/button_color';
 
-    const XML_PATH_DESIGN_RESPONSIVE            = 'amazonpayments/design/responsive';
-    const XML_PATH_DESIGN_ADDRESS_WIDTH         = 'amazonpayments/design/address_width';
-    const XML_PATH_DESIGN_ADDRESS_HEIGHT        = 'amazonpayments/design/address_height';
-    const XML_PATH_DESIGN_PAYMENT_WIDTH         = 'amazonpayments/design/payment_width';
-    const XML_PATH_DESIGN_PAYMENT_HEIGHT        = 'amazonpayments/design/payment_height';
-
     const XML_PATH_DESIGN_LOGIN_BUTTON_TYPE     = 'amazonpayments/design_login/login_button_type';
     const XML_PATH_DESIGN_LOGIN_BUTTON_SIZE     = 'amazonpayments/design_login/login_button_size';
     const XML_PATH_DESIGN_LOGIN_BUTTON_COLOR    = 'amazonpayments/design_login/login_button_color';
@@ -74,6 +68,17 @@ class Creativestyle_AmazonPayments_Model_Config
     const XML_PATH_TRANSACTION_TIMED_OUT_ORDER_STATUS   = 'amazonpayments/general/transaction_timed_out_order_status';
     const XML_PATH_AMAZON_REJECTED_ORDER_STATUS         = 'amazonpayments/general/amazon_rejected_order_status';
     const XML_PATH_PROCESSING_FAILURE_ORDER_STATUS      = 'amazonpayments/general/processing_failure_order_status';
+
+    /**
+     * @deprecated
+     */
+    const XML_PATH_DESIGN_RESPONSIVE            = 'amazonpayments/design/responsive';
+    const XML_PATH_DESIGN_ADDRESS_WIDTH         = 'amazonpayments/design/address_width';
+    const XML_PATH_DESIGN_ADDRESS_HEIGHT        = 'amazonpayments/design/address_height';
+    const XML_PATH_DESIGN_PAYMENT_WIDTH         = 'amazonpayments/design/payment_width';
+    const XML_PATH_DESIGN_PAYMENT_HEIGHT        = 'amazonpayments/design/payment_height';
+
+    const WIDGET_FORMAT_STRING                  = '%s/OffAmazonPayments/%s%s/lpa/js/Widgets.js';
 
     /**
      * Global config data array
@@ -124,7 +129,8 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function isPayActiveOnProductPage($store = null)
     {
-        return $this->isPayActive($store) && Mage::getStoreConfigFlag(self::XML_PATH_PRODUCT_PAGE_ACTIVE, $store);
+        return $this->isPayActive($store) && $this->isLoginActive($store)
+            && Mage::getStoreConfigFlag(self::XML_PATH_PRODUCT_PAGE_ACTIVE, $store);
     }
 
     /**
@@ -433,10 +439,11 @@ class Creativestyle_AmazonPayments_Model_Config
 
      * @param mixed|null $store
      * @return bool
+     * @deprecated
      */
     public function isResponsive($store = null)
     {
-        return Mage::getStoreConfigFlag(self::XML_PATH_DESIGN_RESPONSIVE, $store);
+        return true;
     }
 
     /**
@@ -445,7 +452,11 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function getPayButtonSize($store = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_DESIGN_PAY_BUTTON_SIZE, $store);
+        if ($this->isLoginActive()) {
+            return Mage::getStoreConfig(self::XML_PATH_DESIGN_PAY_BUTTON_SIZE, $store);
+        }
+
+        return Mage::getStoreConfig(self::XML_PATH_DESIGN_BUTTON_SIZE, $store);
     }
 
     /**
@@ -454,7 +465,11 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function getPayButtonColor($store = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_DESIGN_PAY_BUTTON_COLOR, $store);
+        if ($this->isLoginActive()) {
+            return Mage::getStoreConfig(self::XML_PATH_DESIGN_PAY_BUTTON_COLOR, $store);
+        }
+
+        return Mage::getStoreConfig(self::XML_PATH_DESIGN_BUTTON_COLOR, $store);
     }
 
     /**
@@ -463,6 +478,20 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function getPayButtonUrl($store = null)
     {
+        if (!$this->isLoginActive()) {
+            $buttonUrls = $this->getGlobalConfigData('button_urls');
+            $env = $this->getEnvironment($store);
+            if (isset($buttonUrls[$this->getRegion($store)][$env])) {
+                return sprintf(
+                    '%s?sellerId=%s&amp;size=%s&amp;color=%s',
+                    $buttonUrls[$this->getRegion($store)][$env],
+                    $this->getMerchantId($store),
+                    $this->getPayButtonSize($store),
+                    $this->getPayButtonColor($store)
+                );
+            }
+        }
+
         return null;
     }
 
@@ -636,7 +665,26 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function isCurrentLocaleAllowed($store = null)
     {
-        return true;
+        // no locale restriction when Login is enabled
+        if ($this->isLoginActive($store)) {
+            return true;
+        }
+
+        $currentLocale = Mage::app()->getLocale()->getLocaleCode();
+        $language = strtolower($currentLocale);
+        if (strpos($language, '_') !== 0) {
+            $language = substr($language, 0, strpos($language, '_'));
+        }
+
+        switch ($this->getRegion($store)) {
+            case 'de':
+                return ($language == 'de');
+            case 'uk':
+            case 'us':
+                return ($language == 'en');
+            default:
+                return false;
+        }
     }
 
     /**
@@ -673,45 +721,6 @@ class Creativestyle_AmazonPayments_Model_Config
     }
 
     /**
-     * Returns array of params needed for API connection
-     *
-     * @param mixed|null $store
-     * @return array
-     */
-    public function getApiConnectionParams($store = null)
-    {
-        return array(
-            'merchantId' => $this->getMerchantId($store),
-            'accessKey' => $this->getAccessKey($store),
-            'secretKey' => $this->getSecretKey($store),
-            'applicationName' => 'Creativestyle Amazon Payments Advanced Magento Extension',
-            'applicationVersion' => Mage::getConfig()->getNode('modules/Creativestyle_AmazonPayments/version'),
-            'region' => $this->getRegion($store),
-            'environment' => $this->getEnvironment($store),
-            'serviceUrl' => null,
-            'widgetUrl' => null,
-            'caBundleFile' => $this->getCaBundlePath(),
-            'clientId' => null,
-            'cnName' => 'sns.amazonaws.com'
-        );
-    }
-
-    /**
-     * Returns Amazon API Merchant Values object
-     *
-     * @param mixed|null $store
-     * @return OffAmazonPaymentsService_MerchantValues
-     */
-    public function getApiMerchantValues($store = null)
-    {
-        /** @var OffAmazonPaymentsService_MerchantValuesBuilder $apiMerchantValuesBuilder */
-        $apiMerchantValuesBuilder = OffAmazonPaymentsService_MerchantValuesBuilder::create(
-            $this->getApiConnectionParams($store)
-        );
-        return $apiMerchantValuesBuilder->build();
-    }
-
-    /**
      * Returns Widgets JS library URL
      *
      * @param mixed|null $store
@@ -719,23 +728,20 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function getWidgetJsUrl($store = null)
     {
-        return $this->getApiMerchantValues($store)->getWidgetUrl();
-    }
+        $region = $this->getRegion($store);
+        $widgetHosts = $this->getGlobalConfigData('widget_hosts');
+        $widgetUrl = sprintf(
+            self::WIDGET_FORMAT_STRING,
+            $region == 'us' ? $widgetHosts['us'] : $widgetHosts['eu'],
+            $region,
+            $this->isSandboxActive($store) ? '/sandbox' : ''
+        );
 
-    /**
-     * Returns Login API URL
-     *
-     * @param mixed|null $store
-     * @return string
-     */
-    public function getLoginApiUrl($store = null)
-    {
-        $apiUrls = $this->getGlobalConfigData('login_api_urls');
-        if (isset($apiUrls[$this->getRegion($store)][$this->getEnvironment($store)])) {
-            return $apiUrls[$this->getRegion($store)][$this->getEnvironment($store)];
+        if ($this->isLoginActive($store)) {
+            return $widgetUrl;
         }
 
-        return '';
+        return str_replace('lpa/', '', $widgetUrl);
     }
 
     /**

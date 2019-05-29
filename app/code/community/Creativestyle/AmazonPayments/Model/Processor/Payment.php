@@ -63,7 +63,7 @@ class Creativestyle_AmazonPayments_Model_Processor_Payment
     public function getPayment()
     {
         if (null === $this->_payment) {
-            throw new Creativestyle_AmazonPayments_Exception('Payment info object is not set');
+            throw new Creativestyle_AmazonPayments_Exception('[proc::Payment] Payment info object is not set');
         }
 
         return $this->_payment;
@@ -129,7 +129,11 @@ class Creativestyle_AmazonPayments_Model_Processor_Payment
      */
     public function order($transactionReferenceId)
     {
-        $this->_getApi()->confirmOrderReference($this->getStoreId(), $transactionReferenceId);
+        $this->_getApi()->confirmOrderReference(
+            $this->getStoreId(),
+            $transactionReferenceId,
+            Mage::getUrl('amazonpayments/checkout/mfa')
+        );
         $this->_processTransactionStateSimulation('OrderReference');
     }
 

@@ -27,17 +27,24 @@ class Creativestyle_AmazonPayments_Exception_InvalidTransaction extends Creative
     protected $_transactionType;
 
     /**
+     * @var boolean
+     */
+    protected $_isSync;
+
+    /**
      * @param string $txnType
      * @param array $state
+     * @param boolean $isSync
      * @param string $message
      * @param int $code
      * @param Throwable|null $previous
      */
-    public function __construct($txnType, array $state, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct($txnType, array $state, $isSync = true, $message = "", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->_transactionType = $txnType;
         $this->_state = $state;
+        $this->_isSync = $isSync;
     }
 
     /**
@@ -79,5 +86,30 @@ class Creativestyle_AmazonPayments_Exception_InvalidTransaction extends Creative
     public function getType()
     {
         return $this->_transactionType;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAuth()
+    {
+        return $this->getType() == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_TYPE_AUTH;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeclined()
+    {
+        return $this->getState()
+            == Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_DECLINED;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSync()
+    {
+        return $this->_isSync;
     }
 }

@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2015 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2015 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2015 - 2017 creativestyle GmbH
+ * @copyright  2015 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_Block_Adminhtml_SellerCentral extends Mage_Adminhtml_Block_Template
@@ -187,16 +187,6 @@ class Creativestyle_AmazonPayments_Block_Adminhtml_SellerCentral extends Mage_Ad
                         'amazonpayments/advanced_login/redirect',
                         array(
                             '_current' => false, '_secure' => true, '_nosid' => true, '_store' => $store->getId()
-                        )
-                    ),
-                    $urlModel->setStore($store->getId())->getUrl(
-                        'amazonpayments/advanced_login/redirect',
-                        array(
-                            'target' => 'checkout',
-                            '_current' => false,
-                            '_secure' => true,
-                            '_nosid' => true,
-                            '_store' => $store->getId()
                         )
                     )
                 );

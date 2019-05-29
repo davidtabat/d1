@@ -18,16 +18,13 @@
 /**
  * Login with Amazon button block
  *
- * @method string getButtonType()
- * @method $this setButtonType(string $value)
- * @method string getButtonSize()
- * @method $this setButtonSize(string $value)
- * @method string getButtonColor()
- * @method $this setButtonColor(string $value)
+ * @method string|null getMoveBefore()
+ * @method $this setMoveBefore(string $value)
  */
 class Creativestyle_AmazonPayments_Block_Login_Button extends Creativestyle_AmazonPayments_Block_Login_Abstract
 {
     const WIDGET_CONTAINER_ID_PREFIX = 'loginButtonWidget';
+    const WIDGET_CONTAINER_CLASS = 'loginButtonWidget';
 
     /**
      * @inheritdoc
@@ -37,7 +34,7 @@ class Creativestyle_AmazonPayments_Block_Login_Button extends Creativestyle_Amaz
     /**
      * @inheritdoc
      */
-    protected $_containerClass = self::WIDGET_CONTAINER_ID_PREFIX;
+    protected $_containerClass = self::WIDGET_CONTAINER_CLASS;
 
     /**
      * @inheritdoc
@@ -61,17 +58,5 @@ class Creativestyle_AmazonPayments_Block_Login_Button extends Creativestyle_Amaz
         }
 
         return parent::_isActive();
-    }
-
-    /**
-     * Checks if custom design is set for the button
-     *
-     * @return bool
-     */
-    public function isCustomDesignSet()
-    {
-        return $this->hasData('button_type')
-            || $this->hasData('button_size')
-            || $this->hasData('button_color');
     }
 }

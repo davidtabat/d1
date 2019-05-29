@@ -3,14 +3,14 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2018 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
  * by creativestyle GmbH
  *
  * @package    Creativestyle\AmazonPayments\Model\Payment
- * @copyright  2014 - 2018 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_Payment_Model_Method_Abstract
@@ -28,8 +28,6 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
     const CHECK_ORDER_TOTAL_MIN_MAX             = 32;
     const CHECK_RECURRING_PROFILES              = 64;
     const CHECK_ZERO_TOTAL                      = 128;
-
-    const SEQUENCE_NUMBER_KEY                   = 'amazon_sequence_number';
 
     protected $_code                            = 'amazonpayments_abstract';
     protected $_infoBlockType                   = 'amazonpayments/payment_info';
@@ -69,7 +67,9 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      */
     protected function _getConfig()
     {
-        return Mage::getSingleton('amazonpayments/config');
+        /** @var Creativestyle_AmazonPayments_Model_Config $config */
+        $config = Mage::getSingleton('amazonpayments/config');
+        return $config;
     }
 
     /**
@@ -110,6 +110,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
     /**
      * @param mixed|null $store
      * @return Varien_Object
+     * @throws Varien_Exception
      */
     protected function _getCustomStatusList($store = null)
     {
@@ -132,29 +133,31 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
 
     /**
      * Returns transaction sequence ID, comprised of order reference ID
-     * and subsequent unique number, it can be used as a transaction
-     * reference ID for requesting new transactions in Amazon Pay API
+     * and unique part, it can be next used as a transaction reference ID
+     * for requesting new transactions in Amazon Pay API
      *
      * @param Mage_Sales_Model_Order_Payment $payment
      * @return string
      */
     protected function _getTransactionSequenceId(Mage_Sales_Model_Order_Payment $payment)
     {
-        $sequenceNumber = $payment->getAdditionalInformation(self::SEQUENCE_NUMBER_KEY);
-        $sequenceNumber = null === $sequenceNumber ? 1 : ++$sequenceNumber;
-        $payment->setAdditionalInformation(self::SEQUENCE_NUMBER_KEY, $sequenceNumber);
-        return sprintf('%s-%s', $payment->getOrder()->getExtOrderId(), $sequenceNumber);
+        return substr(sprintf('%s-%s', $payment->getOrder()->getExtOrderId(), md5(uniqid())), 0, 27);
     }
 
     /**
      * @param string $transactionType
      * @param array|null $transactionInfo
      * @param array $states
+     * @param bool $isSync
      * @return bool
      * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
      */
-    protected function _assertTransactionState($transactionType, $transactionInfo = null, $states = array())
-    {
+    protected function _assertTransactionState(
+        $transactionType,
+        $transactionInfo = null,
+        $states = array(),
+        $isSync = true
+    ) {
         if ($transactionInfo) {
             $transactionInfoObj = new Varien_Object($transactionInfo);
             $transactionState = $transactionInfoObj->getData(
@@ -164,6 +167,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
                 throw new Creativestyle_AmazonPayments_Exception_InvalidTransaction(
                     $transactionType,
                     $transactionInfo,
+                    $isSync,
                     sprintf('Invalid Amazon Pay %s transaction status', $transactionType)
                 );
             }
@@ -194,6 +198,10 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Varien_Object $stateObject
      * @return Mage_Sales_Model_Order_Payment_Transaction
      * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
+     * @throws Mage_Core_Exception
+     * @throws Mage_Core_Model_Store_Exception
+     * @throws Varien_Exception
      */
     protected function _order(Mage_Sales_Model_Order_Payment $payment, $amount, Varien_Object $stateObject)
     {
@@ -232,6 +240,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
     /**
      * @param array|null $transactionInfo
      * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
      */
     protected function _validateOrderReferenceState($transactionInfo = null)
     {
@@ -258,6 +267,8 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @return Mage_Sales_Model_Order_Payment_Transaction
      * @throws Creativestyle_AmazonPayments_Exception
      * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
+     * @throws Mage_Core_Exception
+     * @throws Varien_Exception
      */
     protected function _authorize(
         Mage_Sales_Model_Order_Payment $payment,
@@ -297,7 +308,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
         }
 
         try {
-            $this->_validateAuthorizationState($transactionInfo);
+            $this->_validateAuthorizationState($transactionInfo, $isSync);
         } catch (Creativestyle_AmazonPayments_Exception_InvalidTransaction $e) {
             if ($this->_shouldReauthorizeAsynchronously($isSync, $e->getState(), $e->getReasonCode())) {
                 $transaction->setIsClosed(true);
@@ -321,9 +332,11 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
 
     /**
      * @param array|null $transactionInfo
+     * @param bool $isSync
      * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
      */
-    protected function _validateAuthorizationState($transactionInfo = null)
+    protected function _validateAuthorizationState($transactionInfo = null, $isSync = true)
     {
         return $this->_assertTransactionState(
             Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_TYPE_AUTH,
@@ -333,7 +346,8 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
                 Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_OPEN,
                 Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_COMPLETED,
                 Creativestyle_AmazonPayments_Model_Processor_Transaction::TRANSACTION_STATE_CLOSED
-            )
+            ),
+            $isSync
         );
     }
 
@@ -346,6 +360,9 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param string|null $softDescriptor
      * @return Mage_Sales_Model_Order_Payment_Transaction
      * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
+     * @throws Mage_Core_Exception
+     * @throws Varien_Exception
      */
     protected function _capture(
         Mage_Sales_Model_Order_Payment $payment,
@@ -386,6 +403,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
     /**
      * @param array|null $transactionInfo
      * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
      */
     protected function _validateCaptureState(array $transactionInfo = null)
     {
@@ -408,6 +426,9 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param $parentTransactionId
      * @return Mage_Sales_Model_Order_Payment_Transaction
      * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
+     * @throws Mage_Core_Exception
+     * @throws Varien_Exception
      */
     protected function _refund(
         Mage_Sales_Model_Order_Payment $payment,
@@ -446,6 +467,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
     /**
      * @param array|null $transactionInfo
      * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
      */
     protected function _validateRefundState(array $transactionInfo = null)
     {
@@ -465,8 +487,11 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Mage_Sales_Model_Order_Payment $payment
      * @param Mage_Sales_Model_Order_Payment_Transaction $transaction
      * @param Varien_Object $stateObject
-     * @param OffAmazonPaymentsService_Model|OffAmazonPayments_Model|null $transactionDetails
+     * @param array|null $transactionDetails
      * @return array|null
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
+     * @throws Varien_Exception
      */
     public function _fetchTransactionInfo(
         Mage_Sales_Model_Order_Payment $payment,
@@ -490,6 +515,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      *
      * @param Mage_Sales_Model_Quote|null $quote
      * @return bool
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function isAvailable($quote = null)
     {
@@ -539,31 +565,22 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param string $paymentAction
      * @param Varien_Object $stateObject
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
+     * @throws Mage_Core_Exception
+     * @throws Mage_Core_Model_Store_Exception
+     * @throws Varien_Exception
      */
     public function initialize($paymentAction, $stateObject)
     {
         /** @var Mage_Sales_Model_Order_Payment $payment */
         $payment = $this->getInfoInstance();
-        $orderReferenceId = $payment->getTransactionId();
 
         $this->_order(
             $payment,
             $payment->getOrder()->getBaseTotalDue(),
             $stateObject
         );
-
-        if (in_array($paymentAction, array(self::ACTION_AUTHORIZE, self::ACTION_AUTHORIZE_CAPTURE))) {
-            $this->_authorize(
-                $payment,
-                $payment->getOrder()->getBaseTotalDue(),
-                $stateObject,
-                $this->_getTransactionSequenceId($payment),
-                $orderReferenceId,
-                $this->_getConfig()->isAuthorizationSynchronous($payment->getOrder()->getStoreId()),
-                $this->_getConfig()->captureImmediately($payment->getOrder()->getStoreId()),
-                $this->_getConfig()->getSoftDescriptor($payment->getOrder()->getStoreId())
-            );
-        }
 
         return $this;
     }
@@ -572,6 +589,9 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Varien_Object $payment
      * @param float $amount
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function order(Varien_Object $payment, $amount)
     {
@@ -584,6 +604,10 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Varien_Object $payment
      * @param float $amount
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Creativestyle_AmazonPayments_Exception_InvalidTransaction
+     * @throws Mage_Core_Exception
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function authorize(Varien_Object $payment, $amount)
     {
@@ -609,6 +633,9 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Varien_Object $payment
      * @param float $amount
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function capture(Varien_Object $payment, $amount)
     {
@@ -633,6 +660,8 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Varien_Object $payment
      * @param float $amount
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
      */
     public function refund(Varien_Object $payment, $amount)
     {
@@ -657,6 +686,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Mage_Sales_Model_Order_Creditmemo $creditmemo
      * @param Mage_Sales_Model_Order_Payment $payment
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function processCreditmemo($creditmemo, $payment)
     {
@@ -675,8 +705,11 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Mage_Sales_Model_Order_Payment $payment
      * @param Mage_Sales_Model_Order_Payment_Transaction $transaction
      * @param Varien_Object $stateObject
-     * @param OffAmazonPaymentsService_Model|OffAmazonPayments_Model|null $transactionDetails
+     * @param array $transactionDetails
      * @return $this
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
+     * @throws Varien_Exception
      */
     public function importTransactionDetails(
         Mage_Sales_Model_Order_Payment $payment,
@@ -701,6 +734,9 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      * @param Mage_Payment_Model_Info $payment
      * @param string $transactionId
      * @return array|null
+     * @throws Creativestyle_AmazonPayments_Exception
+     * @throws Mage_Core_Exception
+     * @throws Varien_Exception
      */
     public function fetchTransactionInfo(Mage_Payment_Model_Info $payment, $transactionId)
     {
@@ -719,6 +755,7 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
     /**
      * @param Mage_Sales_Model_Order_Payment $payment
      * @return $this
+     * @throws Exception
      */
     public function closeOrderReference(Mage_Sales_Model_Order_Payment $payment)
     {
@@ -738,4 +775,3 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
             && Mage::helper('amazonpayments')->isOnePageCheckout();
     }
 }
-

@@ -14,14 +14,14 @@
  * @copyright  2014 - 2017 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
-class Creativestyle_AmazonPayments_Model_Lookup_Design_Button_Type_Pay
-    extends Creativestyle_AmazonPayments_Model_Lookup_Abstract
+class Creativestyle_AmazonPayments_Model_Lookup_Design_Button_Type_Pay extends
+ Creativestyle_AmazonPayments_Model_Lookup_Abstract
 {
     const TYPE_FULL     = 'PwA';
     const TYPE_SHORT    = 'Pay';
     const TYPE_LOGO     = 'A';
 
-    public function toOptionArray() 
+    public function toOptionArray()
     {
         if (null === $this->_options) {
             $this->_options = array(
