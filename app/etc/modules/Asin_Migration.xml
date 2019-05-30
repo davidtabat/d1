@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Asin_Migration>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Asin_Migration>
+    </modules>
+</config>

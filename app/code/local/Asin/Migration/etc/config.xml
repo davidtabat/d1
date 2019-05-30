@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Asin_Migration>
+            <version>0.1.0</version>
+        </Asin_Migration>
+    </modules>
+    <global>
+        <models>
+            <asin_migration>
+                <class>Asin_Migration_Model</class>
+                <resourceModel>migration_resource</resourceModel>
+            </asin_migration>
+            <migration_resource>
+                <class>Migration_Model_Resource</class>
+            </migration_resource>
+        </models>
+        <resources>
+            <asin_migration_setup>
+                <setup>
+                    <module>Asin_Migration</module>
+                </setup>
+            </asin_migration_setup>
+        </resources>
+    </global>
+</config>
