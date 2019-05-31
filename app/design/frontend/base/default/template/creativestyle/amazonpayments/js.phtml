@@ -26,6 +26,7 @@
     <script type="text/javascript">
         AmazonPaymentsOPC.init(checkout, billing, shipping, shippingMethod, payment, {
             live: <?php echo $this->isSandboxActive() ? 'false' : 'true' ?>,
+            formKey: '<?php echo Mage::getSingleton('core/session')->getFormKey(); ?>',
             continueButtonLabel: '<?php echo $continueLabel; ?>',
             pleaseWait: '<img src="<?php echo $ajaxLoaderImgUrl; ?>" alt="<?php echo $loadingNextStepLabel; ?>" title="<?php echo $loadingNextStepLabel; ?>" class="v-middle" /> <?php echo $loadingNextStepLabel; ?>'
         });
@@ -38,11 +39,14 @@
     window.onAmazonPaymentsReady = function() {
         AmazonPayments
             .renderButtons()
-            .initLogin()
 <?php if ($this->getIsCheckout()) : ?>
 <?php $orderReferenceId = $this->getOrderReferenceId(); ?>
+<?php $accessToken = $this->getAccessToken(); ?>
 <?php if ($orderReferenceId) : ?>
             .setOrderReferenceId('<?php echo $orderReferenceId; ?>')
+<?php endif; ?>
+<?php if ($accessToken) : ?>
+            .setAccessToken('<?php echo $accessToken; ?>')
 <?php endif; ?>
             .initCheckout({
                 responsive: true,
@@ -50,6 +54,18 @@
 
             })
 <?php endif; ?>
+
+<?php if ($this->getIsPayment()) : ?>
+<?php $orderReferenceId = $this->getOrderReferenceId(); ?>
+<?php if ($orderReferenceId) : ?>
+            .setOrderReferenceId('<?php echo $orderReferenceId; ?>')
+<?php endif; ?>
+            .invalidPayment({
+                urls: <?php echo $this->getCheckoutUrls(); ?>
+
+            })
+<?php endif; ?>
+
 <?php if ($this->isOnePageCheckout()) : ?>
             .initOnepageCheckout({
                 responsive: true,
@@ -59,10 +75,13 @@
         ;
     };
 
-<?php if ($this->isLoginActive() && $this->getIsLogout()) : ?>
+<?php if ($this->isLoginActive()) : ?>
     window.onAmazonLoginReady = function() {
         AmazonPayments
+            .initLogin()
+<?php if ($this->getIsLogout()) : ?>
             .logout()
+<?php endif; ?>
         ;
     };
 <?php endif; ?>

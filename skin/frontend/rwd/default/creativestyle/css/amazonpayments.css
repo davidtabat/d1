@@ -2,6 +2,11 @@
     line-height: 2.3;
     margin: 0 8px;
 }
+@media only screen and (max-width: 740px) {
+    .amazonpayments-or {
+        display: block;
+    }
+}
 .product-view .add-to-cart-buttons .amazonpayments-or {
     display: block;
     margin-bottom: 10px;
@@ -213,4 +218,18 @@ ol.apa {
 
 #opc-lpa #addressBookWidgetDiv {
     margin-right: 2%;
+}
+
+.amazon-pay-tooltip-link {
+    display: inline-block;
+    margin: 4px 4px 4px 8px;
+    width: 16px;
+    height: 16px;
+    background: url('../images/question-mark-icon.png') center center no-repeat;
+    background-size: contain;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+    filter: alpha(opacity=40);
+    -moz-opacity: 0.4;
+    -khtml-opacity: 0.4;
+    opacity: 0.4;
 }

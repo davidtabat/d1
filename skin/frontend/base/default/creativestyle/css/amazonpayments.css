@@ -193,3 +193,17 @@ ol.apa {
 #opc-lpa #addressBookWidgetDiv {
     margin-right: 2%;
 }
+
+.amazon-pay-tooltip-link {
+    display: inline-block;
+    margin: 4px 4px 4px 8px;
+    width: 16px;
+    height: 16px;
+    background: url('../images/question-mark-icon.png') center center no-repeat;
+    background-size: contain;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+    filter: alpha(opacity=40);
+    -moz-opacity: 0.4;
+    -khtml-opacity: 0.4;
+    opacity: 0.4;
+}

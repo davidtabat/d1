@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2017 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2017 creativestyle GmbH
+ * @copyright  2017 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_CartController extends Creativestyle_AmazonPayments_Controller_Action
@@ -46,6 +46,7 @@ class Creativestyle_AmazonPayments_CartController extends Creativestyle_AmazonPa
      * Initialize product instance from request data
      *
      * @return Mage_Catalog_Model_Product|false
+     * @throws Mage_Core_Model_Store_Exception
      */
     protected function _initProduct()
     {
@@ -86,7 +87,7 @@ class Creativestyle_AmazonPayments_CartController extends Creativestyle_AmazonPa
                     'error' => true,
                     'message' => $this->__('Some of the requested products are unavailable')
                 );
-                $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+                $this->_setJsonResponse($result);
                 return;
             }
 
@@ -108,17 +109,17 @@ class Creativestyle_AmazonPayments_CartController extends Creativestyle_AmazonPa
                 'success' => true,
                 'message' => $this->__(
                     '%s was added to your shopping cart.',
-                    Mage::helper('core')->escapeHtml($product->getName())
+                    $this->_getCoreHelper()->escapeHtml($product->getName())
                 )
             );
-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $this->_setJsonResponse($result);
         } catch (Mage_Core_Exception $e) {
             $result = array(
                 'success' => false,
                 'error' => true,
                 'error_messages' => array_unique(explode("\n", $e->getMessage()))
             );
-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $this->_setJsonResponse($result);
         } catch (Exception $e) {
             Mage::logException($e);
             $result = array(
@@ -126,7 +127,7 @@ class Creativestyle_AmazonPayments_CartController extends Creativestyle_AmazonPa
                 'error' => true,
                 'error_messages' => $e->getMessage()
             );
-            $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $this->_setJsonResponse($result);
         }
     }
 }

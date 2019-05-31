@@ -167,7 +167,7 @@ class Creativestyle_AmazonPayments_Block_Adminhtml_Info extends Mage_Adminhtml_B
             // @codingStandardsIgnoreEnd
         }
 
-        $result = array_unique($result);
+        $result = array_values(array_unique($result));
         return Mage::helper('core')->jsonEncode($result);
     }
 
@@ -204,7 +204,7 @@ class Creativestyle_AmazonPayments_Block_Adminhtml_Info extends Mage_Adminhtml_B
             }
         }
 
-        $result = array_unique($result);
+        $result = array_values(array_unique($result));
         return Mage::helper('core')->jsonEncode($result);
     }
 }

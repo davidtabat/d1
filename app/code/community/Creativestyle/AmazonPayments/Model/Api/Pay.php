@@ -59,11 +59,18 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
         return $this->_api[$store];
     }
 
+    /**
+     * @param array $response
+     * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
     protected function _assertNoErrorResponse($response)
     {
         if (isset($response['Error'])) {
             throw new Creativestyle_AmazonPayments_Exception(
-                isset($response['Error']['Message']) ? $response['Error']['Message'] : 'Amazon Pay API error',
+                '[api::Pay] ' . (
+                    isset($response['Error']['Message']) ? $response['Error']['Message'] : 'Amazon Pay API error'
+                ),
                 isset($response['ResponseStatus']) ? $response['ResponseStatus'] : 0
             );
         }
@@ -76,7 +83,7 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
      * @param string $orderReferenceId
      * @param string|null $addressConsentToken
      * @return mixed
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function getOrderReferenceDetails($store, $orderReferenceId, $addressConsentToken = null)
     {
@@ -106,7 +113,7 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
      * @param string $currency
      * @param string|null $storeName
      * @return array|null
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function setOrderReferenceDetails($store, $orderReferenceId, $amount, $currency, $storeName = null)
     {
@@ -137,14 +144,16 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
     /**
      * @param mixed|null $store
      * @param string $orderReferenceId
+     * @param string $successUrl
      * @return bool
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
-    public function confirmOrderReference($store, $orderReferenceId)
+    public function confirmOrderReference($store, $orderReferenceId, $successUrl)
     {
         $response = $this->_getApi($store)->confirmOrderReference(
             array(
                 'amazon_order_reference_id' => $orderReferenceId,
+                'success_url' => $successUrl
             )
         )->toArray();
 
@@ -158,7 +167,7 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
      * @param string $orderReferenceId
      * @param string|null $cancellationReason
      * @return bool
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function cancelOrderReference($store, $orderReferenceId, $cancellationReason = null)
     {
@@ -179,7 +188,7 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
      * @param string $orderReferenceId
      * @param string|null $closureReason
      * @return bool
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function closeOrderReference($store, $orderReferenceId, $closureReason = null)
     {
@@ -200,7 +209,7 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
      * @param string $orderReferenceId
      * @param string|null $sellerOrderId
      * @return bool
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function setOrderAttributes($store, $orderReferenceId, $sellerOrderId = null)
     {
@@ -227,7 +236,7 @@ class Creativestyle_AmazonPayments_Model_Api_Pay
      * @param string|null $sellerAuthorizationNote
      * @param string|null $softDescriptor
      * @return array|null
-     * @throws Exception
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     public function authorize(
         $store,

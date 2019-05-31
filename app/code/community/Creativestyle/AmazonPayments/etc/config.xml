@@ -4,7 +4,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2018 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -12,14 +12,14 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2018 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 -->
 <config>
     <modules>
         <Creativestyle_AmazonPayments>
-            <version>2.0.20</version>
+            <version>3.0.2</version>
         </Creativestyle_AmazonPayments>
     </modules>
     <global>
@@ -131,10 +131,6 @@
                     <GBP>United Kingdom</GBP>
                     <EUR>Eurozone</EUR>
                 </account_regions>
-                <regions>
-                    <de>Germany</de>
-                    <uk>United Kingdom</uk>
-                </regions>
                 <button_urls>
                     <de>
                         <sandbox>https://payments-sandbox.amazon.de/gp/widgets/button</sandbox>
@@ -149,20 +145,10 @@
                         <live>https://payments.amazon.com/gp/widgets/button</live>
                     </us>
                 </button_urls>
-                <login_api_urls>
-                    <de>
-                        <sandbox>https://api.sandbox.amazon.de/</sandbox>
-                        <live>https://api.amazon.de/</live>
-                    </de>
-                    <uk>
-                        <sandbox>https://api.sandbox.amazon.co.uk/</sandbox>
-                        <live>https://api.amazon.co.uk/</live>
-                    </uk>
-                    <us>
-                        <sandbox>https://api.sandbox.amazon.com/</sandbox>
-                        <live>https://api.amazon.com/</live>
-                    </us>
-                </login_api_urls>
+                <widget_hosts>
+                    <us>https://static-na.payments-amazon.com</us>
+                    <eu>https://static-eu.payments-amazon.com</eu>
+                </widget_hosts>
                 <customer_attributes>
                     <prefix />
                     <middlename/>
@@ -367,9 +353,10 @@
         </translate>
         <secure_url>
             <amazonpayments_checkout>/amazonpayments/checkout</amazonpayments_checkout>
-            <amazonpayments_login>/amazonpayments/advanced_login</amazonpayments_login>
+            <amazonpayments_login>/amazonpayments/login</amazonpayments_login>
             <amazonpayments_ipn>/amazonpayments/ipn</amazonpayments_ipn>
             <amazonpayments_ipn_legacy>/amazonpayments/advanced_ipn</amazonpayments_ipn_legacy>
+            <amazonpayments_login_legacy>/amazonpayments/advanced_login</amazonpayments_login_legacy>
         </secure_url>
     </frontend>
     <admin>
@@ -481,6 +468,10 @@
                 <pay_button_size>small</pay_button_size>
                 <pay_button_color>Gold</pay_button_color>
             </design_login>
+            <design_pay>
+                <button_size>large</button_size>
+                <button_color>orange</button_color>
+            </design_pay>
             <developer>
                 <log_active>1</log_active>
             </developer>

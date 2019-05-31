@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_OrderController extends Mage_Adminhtml_Controller_Action
@@ -23,7 +23,9 @@ class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_OrderController exte
      */
     protected function _getHelper()
     {
-        return Mage::helper('amazonpayments');
+        /** @var Creativestyle_AmazonPayments_Helper_Data $helper */
+        $helper = Mage::helper('amazonpayments');
+        return $helper;
     }
 
     /**
@@ -46,11 +48,8 @@ class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_OrderController exte
                         $order->save();
                     }
                 }
-            } catch (OffAmazonPaymentsService_Exception $e) {
-                $this->_getSession()->addError($e->getMessage());
-                Creativestyle_AmazonPayments_Model_Logger::logException($e);
             } catch (Exception $e) {
-                $this->_getSession()->addError($this->__('Failed to authorize the payment.'));
+                $this->_getSession()->addError($e->getMessage());
                 Mage::logException($e);
             }
 

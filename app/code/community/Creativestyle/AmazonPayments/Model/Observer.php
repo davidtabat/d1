@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_Model_Observer
@@ -27,7 +27,9 @@ class Creativestyle_AmazonPayments_Model_Observer
      */
     protected function _getConfig()
     {
-        return Mage::getSingleton('amazonpayments/config');
+        /** @var Creativestyle_AmazonPayments_Model_Config $config */
+        $config = Mage::getSingleton('amazonpayments/config');
+        return $config;
     }
 
     /**
@@ -37,7 +39,9 @@ class Creativestyle_AmazonPayments_Model_Observer
      */
     protected function _getHelper()
     {
-        return Mage::helper('amazonpayments');
+        /** @var Creativestyle_AmazonPayments_Helper_Data $helper */
+        $helper = Mage::helper('amazonpayments');
+        return $helper;
     }
 
     /**
@@ -73,6 +77,7 @@ class Creativestyle_AmazonPayments_Model_Observer
     /**
      * @param Mage_Sales_Model_Order_Payment_Transaction $transaction
      * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     protected function _shouldPollDataForTransaction(Mage_Sales_Model_Order_Payment_Transaction $transaction)
     {
@@ -92,6 +97,7 @@ class Creativestyle_AmazonPayments_Model_Observer
     /**
      * @param Mage_Sales_Model_Order_Payment_Transaction $transaction
      * @return bool
+     * @throws Creativestyle_AmazonPayments_Exception
      */
     protected function _shouldCloseTransaction(Mage_Sales_Model_Order_Payment_Transaction $transaction)
     {
@@ -121,12 +127,8 @@ class Creativestyle_AmazonPayments_Model_Observer
 
                     usleep(self::DATA_POLL_SLEEP_BETWEEN_TIME);
                 }
-            } catch (OffAmazonPaymentsService_Exception $e) {
+            } catch (Exception $e) {
                 Creativestyle_AmazonPayments_Model_Logger::logException($e);
-                if ($e->getStatusCode() == 503 && $e->getErrorCode() == 'RequestThrottled') {
-                    $count = self::DATA_POLL_TRANSACTION_LIMIT;
-                    break;
-                }
             }
         }
 
@@ -254,7 +256,7 @@ class Creativestyle_AmazonPayments_Model_Observer
         $observer->getEvent();
         try {
             $secureUrlsConfigNode = Mage::getConfig()->getNode('frontend/secure_url');
-            if (!$this->_getConfig()->isRedirectAuthenticationExperience()) {
+            if ($this->_getConfig()->isLoginActive() && !$this->_getConfig()->isRedirectAuthenticationExperience()) {
                 $secureUrlsConfigNode->addChild('amazonpayments_cart', '/checkout/cart');
             }
 

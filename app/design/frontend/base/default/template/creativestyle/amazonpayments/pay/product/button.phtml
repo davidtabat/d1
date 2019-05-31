@@ -20,10 +20,19 @@
 <?php if ($this->getEnableOr()) : ?>
     <span class="amazonpayments-or"><?php echo $this->__('-OR-'); ?></span>
 <?php endif; ?>
-    <a id="<?php echo $this->getContainerId(); ?>" class="<?php echo $this->getContainerClass(); ?>"
+<?php if ($this->isLoginActive()) : ?>
+    <a id="<?php echo $this->getContainerId(); ?>"
+         class="<?php echo $this->getContainerClass(); ?>"
 <?php foreach ($this->getDataAttributes() as $attributeKey => $attributeValue) : ?>
-        data-<?php echo $attributeKey; ?>="<?php echo $attributeValue; ?>"
+         data-<?php echo $attributeKey; ?>="<?php echo $attributeValue; ?>"
 <?php endforeach; ?>
     >
     </a>
+<?php else : ?>
+    <div id="<?php echo $this->getContainerId(); ?>" class="<?php echo $this->getContainerClass(); ?> with-tooltip">
+        <?php if ($buttonImgUrl = $this->getButtonWidgetUrl()) : ?>
+            <img src="<?php echo $buttonImgUrl; ?>"/>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
 </p>

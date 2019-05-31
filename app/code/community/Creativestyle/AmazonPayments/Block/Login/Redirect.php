@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2015 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2015 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,8 +11,14 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2015 - 2017 creativestyle GmbH
+ * @copyright  2015 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
+ */
+
+/**
+ * @method $this setAccessTokenParamName(string $accessToken)
+ * @method $this setRedirectUrl(string $redirectUrl)
+ * @method $this setFailureUrl(string $failureUrl)
  */
 class Creativestyle_AmazonPayments_Block_Login_Redirect extends Creativestyle_AmazonPayments_Block_Login_Abstract
 {
@@ -21,7 +27,7 @@ class Creativestyle_AmazonPayments_Block_Login_Redirect extends Creativestyle_Am
      *
      * @return string
      */
-    public function getAccessTokenParamName() 
+    public function getAccessTokenParamName()
     {
         if ($this->hasData('access_token_param_name')) {
             return $this->getData('access_token_param_name');
@@ -35,13 +41,19 @@ class Creativestyle_AmazonPayments_Block_Login_Redirect extends Creativestyle_Am
      *
      * @return string
      */
-    public function getRedirectUrl() 
+    public function getCheckoutRedirectUrl()
     {
-        if ($this->hasData('redirect_url')) {
-            return $this->getData('redirect_url');
-        }
+        return $this->_getUrl()->getPaySuccessUrl('%s');
+    }
 
-        return $this->getFailureUrl();
+    /**
+     * Returns redirect URL
+     *
+     * @return string
+     */
+    public function getRedirectUrl()
+    {
+        return $this->_getUrl()->getLoginRedirectUrl();
     }
 
     /**
@@ -49,7 +61,7 @@ class Creativestyle_AmazonPayments_Block_Login_Redirect extends Creativestyle_Am
      *
      * @return string
      */
-    public function getFailureUrl() 
+    public function getFailureUrl()
     {
         if ($this->hasData('failure_url')) {
             return $this->getData('failure_url');

@@ -47,7 +47,7 @@ class Creativestyle_AmazonPayments_Model_Api_Ipn
             return array($notification['RefundDetails'], $notification['RefundDetails']['AmazonRefundId']);
         }
 
-        throw new Creativestyle_AmazonPayments_Exception('Invalid IPN notification data', 500);
+        throw new Creativestyle_AmazonPayments_Exception('[api::Ipn] Invalid IPN notification data', 500);
     }
 
     /**
@@ -86,7 +86,7 @@ class Creativestyle_AmazonPayments_Model_Api_Ipn
             return $order->getPayment();
         }
 
-        throw new Creativestyle_AmazonPayments_Exception('Order for the payment transaction not found', 500);
+        throw new Creativestyle_AmazonPayments_Exception('[api::Ipn] Order for the payment transaction not found', 500);
     }
 
     /**
@@ -122,7 +122,7 @@ class Creativestyle_AmazonPayments_Model_Api_Ipn
 
         /** @var Creativestyle_AmazonPayments_Model_Payment_Abstract $methodInstance */
         $methodInstance = $payment->getMethodInstance();
-        $methodInstance->importTransactionDetails($payment, $transaction, new Varien_Object(), $transactionDetails);
+        $methodInstance->importTransactionDetails($payment, $transaction, new Varien_Object());
 
         $payment->getOrder()
             ->addRelatedObject($transaction)

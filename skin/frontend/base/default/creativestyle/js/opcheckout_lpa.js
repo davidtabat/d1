@@ -18,6 +18,7 @@ var AmazonPaymentsOPC = (function() {
 
     var options = {
         live: true,
+        formKey: null,
         continueButtonLabel: 'Continue',
         pleaseWait: 'Please wait...'
     };
@@ -245,7 +246,7 @@ var AmazonPaymentsOPC = (function() {
         refs.shippingMethod && (refs.shippingMethod.onComplete = shippingMethodOnCompleteWrapper(refs.shippingMethod.onComplete).bind(refs.shippingMethod));
 
         refs.payment && (refs.payment.form = document.createElement('form'));
-        refs.payment && (refs.payment.form.innerHTML = '<input type="text" name="payment[method]" value="amazonpayments_advanced' + (options.live ? '' : '_sandbox') + '"/>');
+        refs.payment && (refs.payment.form.innerHTML = '<input type="text" name="payment[method]" value="amazonpayments_advanced' + (options.live ? '' : '_sandbox') + '"/>' + (options.formKey ? '<input type="hidden" name="form_key" value="' + options.formKey + '">' : ''));
 
         refs.payment && (refs.payment.onSave = paymentOnSaveWrapper(refs.payment.onSave).bind(refs.payment));
         refs.payment && (refs.payment.onComplete = paymentOnCompleteWrapper(refs.payment.onComplete).bind(refs.payment));

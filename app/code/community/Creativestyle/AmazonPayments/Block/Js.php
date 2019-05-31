@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,13 +11,19 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 
 /**
  * Amazon Pay JS block
  *
+ * @method $this setOrderReferenceId(string $orderReferenceId)
+ * @method string getOrderReferenceId()
+ * @method $this setAccessToken(string $accessToken)
+ * @method string getAccessToken()
+ * @method $this setJsAppPage(string $appPage)
+ * @method string|null getJsAppPage()
  * @method $this setIsCheckout(int $value)
  * @method int getIsCheckout()
  * @method $this setIsLogout(int $value)
@@ -50,44 +56,40 @@ class Creativestyle_AmazonPayments_Block_Js extends Creativestyle_AmazonPayments
      * Returns JS app configuration
      *
      * @return string
+     * @throws Mage_Core_Model_Store_Exception
+     * @deprecated
      */
     public function getJsConfig()
     {
         $jsConfig = array(
             'merchantId' => $this->getMerchantId(),
             'clientId' => $this->getClientId(),
+            'region' => $this->getRegion(),
             'live' => !$this->isSandboxActive(),
             'popup' => $this->isPopupAuthenticationExperience(),
             'virtual' => $this->isQuoteVirtual(),
             'language' => $this->getDisplayLanguage(),
             'pay' => array(
                 'selector' => $this->getPayButtonSelector(),
-                'callbackUrl' => $this->getPayButtonCallbackUrl(),
+                'callbackUrl' => $this->getButtonCallbackUrl(),
                 'design' => $this->getPayButtonDesignParams()
             ),
             'login' => $this->isLoginActive() ? array(
                 'selector' => $this->getLoginButtonSelector(),
-                'callbackUrl' => $this->getLoginButtonCallbackUrl(),
+                'callbackUrl' => $this->getButtonCallbackUrl(),
                 'design' => $this->getLoginButtonDesignParams()
             ) : null,
-            'checkoutUrl' => $this->getCheckoutUrl(),
+            'checkoutUrl' => $this->_getUrl()->getCheckoutUrl(),
             'addToCartUrl' => $this->getAddToCartUrl(),
             'currency' => Mage::app()->getStore()->getBaseCurrencyCode()
         );
 
-        return $this->helper('core')->jsonEncode($jsConfig);
+        return $this->_jsonEncode($jsConfig);
     }
 
     /**
      * @return null|string
-     */
-    public function getCheckoutUrl()
-    {
-        return $this->getUrl('amazonpayments/checkout');
-    }
-
-    /**
-     * @return null|string
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function getAddToCartUrl()
     {
@@ -103,19 +105,20 @@ class Creativestyle_AmazonPayments_Block_Js extends Creativestyle_AmazonPayments
      * Returns callback URL for Amazon Pay button
      *
      * @return string|null
+     * @throws Mage_Core_Model_Store_Exception
      */
-    public function getPayButtonCallbackUrl()
+    public function getButtonCallbackUrl()
     {
         // no callback URL for APA button
-//        if (!$this->isLoginActive()) {
-//            return null;
-//        }
-
-        if ($this->isPopupAuthenticationExperience()) {
-            return $this->getUrl('amazonpayments/advanced_login', array('target' => 'checkout'));
+        if (!$this->isLoginActive()) {
+            return null;
         }
 
-        return $this->getUrl('amazonpayments/advanced_login/redirect', array('target' => 'checkout'));
+        if ($this->isPopupAuthenticationExperience()) {
+            return $this->_getUrl()->getLoginCallbackUrl();
+        }
+
+        return $this->_getUrl()->getLoginRedirectUrl();
     }
 
     /**
@@ -135,21 +138,7 @@ class Creativestyle_AmazonPayments_Block_Js extends Creativestyle_AmazonPayments
      */
     public function getPayButtonSelector()
     {
-        return sprintf('.%s', Creativestyle_AmazonPayments_Block_Pay_Button::WIDGET_CONTAINER_ID_PREFIX);
-    }
-
-    /**
-     * Returns callback URL for Login with Amazon button
-     *
-     * @return string
-     */
-    public function getLoginButtonCallbackUrl()
-    {
-        if ($this->isPopupAuthenticationExperience()) {
-            return Mage::getUrl('amazonpayments/advanced_login');
-        }
-
-        return Mage::getUrl('amazonpayments/advanced_login/redirect');
+        return sprintf('.%s', Creativestyle_AmazonPayments_Block_Pay_Button::WIDGET_CONTAINER_CLASS);
     }
 
     /**
@@ -165,13 +154,11 @@ class Creativestyle_AmazonPayments_Block_Js extends Creativestyle_AmazonPayments
     /**
      * Returns Login with Amazon buttons DOM selector
      *
-     * @return string|null
+     * @return string
      */
     public function getLoginButtonSelector()
     {
-        return $this->isLoginActive()
-            ? sprintf('.%s', Creativestyle_AmazonPayments_Block_Login_Button::WIDGET_CONTAINER_ID_PREFIX)
-            : null;
+        return sprintf('.%s', Creativestyle_AmazonPayments_Block_Login_Button::WIDGET_CONTAINER_CLASS);
     }
 
     /**
@@ -182,19 +169,123 @@ class Creativestyle_AmazonPayments_Block_Js extends Creativestyle_AmazonPayments
     public function getCheckoutUrls()
     {
         $urls = array(
-            'saveShipping' => $this->getUrl('amazonpayments/checkout/saveShipping'),
-            'saveShippingMethod' => $this->getUrl('amazonpayments/checkout/saveShippingMethod'),
-            'saveOrder' => $this->getUrl('amazonpayments/checkout/saveOrder'),
-            'saveCoupon' => $this->getUrl('amazonpayments/checkout/couponPost'),
-            'clearOrderReference' => $this->getUrl('amazonpayments/checkout/clearOrderReference'),
-            'cancelOrderReference' => $this->getUrl('amazonpayments/checkout/cancelOrderReference'),
-            'failure' => $this->getUrl('checkout/cart')
+            'saveShipping' => $this->_getUrl()->getCheckoutSaveShippingUrl(),
+            'saveShippingMethod' => $this->_getUrl()->getCheckoutSaveShippingMethodUrl(),
+            'saveOrder' => $this->_getUrl()->getCheckoutSaveOrderUrl(),
+            'saveCoupon' => $this->_getUrl()->getCheckoutSaveCouponUrl(),
+            'invalidPayment' => $this->_getUrl()->getCheckoutInvalidPaymentUrl(),
+            'cancelOrderReference' => $this->_getUrl()->getCheckoutCancelOrderReferenceUrl(),
+            'failure' => $this->_getUrl()->getCheckoutFailureUrl()
         );
         return $this->_jsonEncode($urls);
     }
 
+    /**
+     * @return bool
+     */
     public function isOnePageCheckout()
     {
-        return $this->helper('amazonpayments')->isOnePageCheckout();
+        return $this->_getHelper()->isOnePageCheckout();
+    }
+
+    /**
+     * @param array $arrayToFilter
+     * @return array
+     */
+    protected function _removeNullElementsFromArray(array $arrayToFilter)
+    {
+        return array_filter(
+            $arrayToFilter,
+            function ($element) {
+                return null !== $element;
+            }
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getButtonsConfig()
+    {
+        return $this->_removeNullElementsFromArray(
+            array(
+                'pay' => array(
+                    'selector' => $this->getPayButtonSelector(),
+                    'design' => $this->getPayButtonDesignParams()
+                ),
+                'login' => $this->isLoginActive() ? array(
+                    'selector' => $this->getLoginButtonSelector(),
+                    'design' => $this->getLoginButtonDesignParams()
+                ) : null
+            )
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getUrlsConfig()
+    {
+        return $this->_removeNullElementsFromArray(
+            array(
+                'checkout' => $this->_removeNullElementsFromArray(
+                    array(
+                        'saveShipping' => $this->isQuoteVirtual()
+                            ? null
+                            : $this->_getUrl()->getCheckoutSaveShippingUrl(),
+                    )
+                ),
+                'login' => $this->isLoginActive() ? array(
+                    'callback' => $this->_getUrl()->getLoginCallbackUrl(),
+                    'success' => $this->_getUrl()->getLoginSuccessUrl(),
+                    'failure' => $this->_getUrl()->getLoginFailureUrl(),
+                ) : null,
+                'pay' => $this->isLoginActive() ? null : array(
+                    'checkout' => $this->_getUrl()->getPayCallbackUrl(),
+                ),
+            )
+        );
+    }
+
+    /**
+     * Returns JS app configuration
+     *
+     * @return string
+     */
+    public function getJsAppConfig()
+    {
+        $appConfig = $this->_removeNullElementsFromArray(
+            array(
+                'merchantId' => $this->getMerchantId(),
+                'clientId' => $this->isLoginActive() ? $this->getClientId() : null,
+                'region' => $this->getRegion(),
+                'live' => !$this->isSandboxActive(),
+                'popup' => $this->isPopupAuthenticationExperience(),
+                'virtual' => $this->isQuoteVirtual(),
+                'language' => $this->getDisplayLanguage(),
+                'buttons' => $this->_getButtonsConfig(),
+                'urls' => $this->_getUrlsConfig(),
+                'checkoutUrl' => $this->getCheckoutUrl(),
+                'addToCartUrl' => $this->getAddToCartUrl(),
+                'currency' => $this->getCurrencyCode()
+            )
+        );
+
+        return $this->_jsonEncode($appConfig);
+    }
+
+    /**
+     * @return string
+     */
+    public function getJsAppSession()
+    {
+        $appSession = $this->_removeNullElementsFromArray(
+            array(
+                'orderReferenceId' => $this->getOrderReferenceId(),
+                'accessToken' => $this->getAccessToken()
+            )
+        );
+
+        return !empty($appSession) ? $this->_jsonEncode($appSession) : 'null';
     }
 }

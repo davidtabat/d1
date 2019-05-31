@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 ?>
@@ -36,7 +36,7 @@
                         ->setFieldNameFormat($this->getFieldNameFormat())->setObject($this->getFormData())
                         ->setForceUseCustomerAttributes(true)->toHtml(); ?>
                 </li>
-                <?php if ($this->isNewsletterEnabled()): ?>
+                <?php if ($this->isNewsletterEnabled()) : ?>
                 <li class="control">
                     <div class="input-box">
                         <input type="checkbox"
@@ -44,7 +44,7 @@
                                title="<?php echo $this->__('Sign Up for Newsletter') ?>"
                                value="1"
                                id="is_subscribed"
-                            <?php if($this->getFormData()->getIsSubscribed()): ?>
+                            <?php if ($this->getFormData()->getIsSubscribed()) : ?>
                                 checked="checked"
                             <?php endif; ?>
                                class="checkbox" />
@@ -54,19 +54,19 @@
                     <?php echo $this->getChildHtml('customer.form.register.newsletter')?>
                 </li>
                 <?php endif ?>
-            <?php $_dob = $this->getLayout()->createBlock('customer/widget_dob') ?>
-            <?php if ($_dob->isEnabled()): ?>
-                <li><?php echo $_dob->setFieldNameFormat($this->getFieldNameFormat())
+            <?php $dobBlock = $this->getLayout()->createBlock('customer/widget_dob') ?>
+            <?php if ($dobBlock->isEnabled()) : ?>
+                <li><?php echo $dobBlock->setFieldNameFormat($this->getFieldNameFormat())
                         ->setDate($this->getFormData()->getDob())->toHtml() ?></li>
             <?php endif ?>
-            <?php $_taxvat = $this->getLayout()->createBlock('customer/widget_taxvat') ?>
-            <?php if ($_taxvat->isEnabled()): ?>
-                <li><?php echo $_taxvat->setFieldNameFormat($this->getFieldNameFormat())
+            <?php $taxvatBlock = $this->getLayout()->createBlock('customer/widget_taxvat') ?>
+            <?php if ($taxvatBlock->isEnabled()) : ?>
+                <li><?php echo $taxvatBlock->setFieldNameFormat($this->getFieldNameFormat())
                         ->setTaxvat($this->getFormData()->getTaxvat())->toHtml() ?></li>
             <?php endif ?>
-            <?php $_gender = $this->getLayout()->createBlock('customer/widget_gender') ?>
-            <?php if ($_gender->isEnabled()): ?>
-                <li><?php echo $_gender->setFieldNameFormat($this->getFieldNameFormat())
+            <?php $genderBlock = $this->getLayout()->createBlock('customer/widget_gender') ?>
+            <?php if ($genderBlock->isEnabled()) : ?>
+                <li><?php echo $genderBlock->setFieldNameFormat($this->getFieldNameFormat())
                         ->setGender($this->getFormData()->getGender())->toHtml() ?></li>
             <?php endif ?>
             </ul>

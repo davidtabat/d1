@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2014 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2014 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2014 - 2017 creativestyle GmbH
+ * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 
@@ -58,7 +58,21 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
      */
     protected function _getConfig()
     {
-        return Mage::getSingleton('amazonpayments/config');
+        /** @var Creativestyle_AmazonPayments_Model_Config $config */
+        $config = Mage::getSingleton('amazonpayments/config');
+        return $config;
+    }
+
+    /**
+     * Returns instance of Amazon Payments URLs repository
+     *
+     * @return Creativestyle_AmazonPayments_Model_Url
+     */
+    protected function _getUrl()
+    {
+        /** @var Creativestyle_AmazonPayments_Model_Url $url */
+        $url = Mage::getSingleton('amazonpayments/url');
+        return $url;
     }
 
     /**
@@ -68,7 +82,9 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
      */
     protected function _getCheckoutSession()
     {
-        return Mage::getSingleton('checkout/session');
+        /** @var Mage_Checkout_Model_Session $session */
+        $session = Mage::getSingleton('checkout/session');
+        return $session;
     }
 
     /**
@@ -78,27 +94,33 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
      */
     protected function _getCustomerSession()
     {
-        return Mage::getSingleton('customer/session');
+        /** @var Mage_Customer_Model_Session $session */
+        $session = Mage::getSingleton('customer/session');
+        return $session;
     }
 
     /**
-     * Returns Amazon Pay helper
+     * Returns instance of Amazon Pay helper
      *
      * @return Creativestyle_AmazonPayments_Helper_Data
      */
     protected function _getHelper()
     {
-        return $this->helper('amazonpayments');
+        /** @var Creativestyle_AmazonPayments_Helper_Data $helper */
+        $helper = $this->helper('amazonpayments');
+        return $helper;
     }
 
     /**
-     * Returns Magento core helper
+     * Returns instance of Magento core helper
      *
      * @return Mage_Core_Helper_Data
      */
     protected function _getCoreHelper()
     {
-        return $this->helper('core');
+        /** @var Mage_Core_Helper_Data $helper */
+        $helper = $this->helper('core');
+        return $helper;
     }
 
     /**
@@ -119,6 +141,7 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
      * Checks whether current request is secure
      *
      * @return bool
+     * @throws Mage_Core_Model_Store_Exception
      */
     protected function _isConnectionSecure()
     {
@@ -258,13 +281,13 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
     }
 
     /**
-     * Returns order reference ID saved in session data
+     * Returns merchant account region
      *
-     * @return string|null
+     * @return string
      */
-    public function getOrderReferenceId()
+    public function getRegion()
     {
-        return $this->_getCheckoutSession()->getAmazonOrderReferenceId();
+        return $this->_getConfig()->getRegion();
     }
 
     /**
@@ -291,6 +314,7 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
      * Checks whether popup authentication experience shall be used
      *
      * @return bool
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function isPopupAuthenticationExperience()
     {
@@ -299,7 +323,8 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
         }
 
         return $this->_getConfig()->isPopupAuthenticationExperience()
-            || $this->_getConfig()->isAutoAuthenticationExperience() && $this->_isConnectionSecure();
+            || $this->_getConfig()->isAutoAuthenticationExperience()
+            && ($this->_isConnectionSecure() || !$this->isLoginActive());
     }
 
     /**
@@ -346,5 +371,17 @@ abstract class Creativestyle_AmazonPayments_Block_Abstract extends Mage_Core_Blo
     public function getQuoteBaseGrandTotal()
     {
         return (float)$this->_getQuote()->getBaseGrandTotal();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrencyCode()
+    {
+        try {
+            return Mage::app()->getStore()->getBaseCurrencyCode();
+        } catch (Mage_Core_Model_Store_Exception $e) {
+            return null;
+        }
     }
 }

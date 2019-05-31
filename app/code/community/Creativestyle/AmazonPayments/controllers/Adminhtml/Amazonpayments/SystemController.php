@@ -3,7 +3,7 @@
  * This file is part of the official Amazon Pay and Login with Amazon extension
  * for Magento 1.x
  *
- * (c) 2015 - 2017 creativestyle GmbH. All Rights reserved
+ * (c) 2015 - 2019 creativestyle GmbH. All Rights reserved
  *
  * Distribution of the derivatives reusing, transforming or being built upon
  * this software, is not allowed without explicit written permission granted
@@ -11,7 +11,7 @@
  *
  * @category   Creativestyle
  * @package    Creativestyle_AmazonPayments
- * @copyright  2015 - 2017 creativestyle GmbH
+ * @copyright  2015 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_SystemController extends Mage_Adminhtml_Controller_Action
@@ -68,56 +68,52 @@ class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_SystemController ext
         }
 
         try {
-            $api = new OffAmazonPaymentsService_Client(
+            /** @var AmazonPay_Client $api */
+            $api = new AmazonPay_Client(
                 array(
-                    'merchantId'        => trim($merchantId),
-                    'accessKey'         => trim($accessKey),
-                    'secretKey'         => trim($secretKey),
-                    'applicationName'   => 'Creativestyle Amazon Payments Advanced Magento Extension',
-                    'applicationVersion'
-                        => Mage::getConfig()->getNode('modules/Creativestyle_AmazonPayments/version'),
-                    'region'            => $this->_mapRegion($region),
-                    'environment'       => 'sandbox',
-                    'serviceURL'        => '',
-                    'widgetURL'         => '',
-                    'caBundleFile'      => '',
-                    'clientId'          => '',
-                    'cnName'            => 'sns.amazonaws.com'
+                    'merchant_id'   => trim($merchantId),
+                    'access_key'    => trim($accessKey),
+                    'secret_key'    => trim($secretKey),
+                    'region'        => $this->_mapRegion($region),
+                    'sandbox'       => true
                 )
             );
-            $apiRequest = new OffAmazonPaymentsService_Model_GetOrderReferenceDetailsRequest(
-                array(
-                    'SellerId'                  => trim($merchantId),
-                    'AmazonOrderReferenceId'    => 'P00-0000000-0000000'
-                )
-            );
-            $api->getOrderReferenceDetails($apiRequest);
-        } catch (OffAmazonPaymentsService_Exception $e) {
-            switch ($e->getErrorCode()) {
-                case 'InvalidOrderReferenceId':
-                    $result['messages'][] = $this->__(
-                        'Congratulations! Your Amazon Payments account settings seem to be OK.'
-                    );
-                    break;
-                case 'InvalidParameterValue':
-                    $result['valid'] = false;
-                    $result['messages'][] = $this->__('Whoops! Your Merchant ID seems to be invalid.');
-                    break;
-                case 'InvalidAccessKeyId':
-                    $result['valid'] = false;
-                    $result['messages'][] = $this->__('Whoops! Your Access Key ID seems to be invalid.');
-                    break;
-                case 'SignatureDoesNotMatch':
-                    $result['valid'] = false;
-                    $result['messages'][] = $this->__('Whoops! Your Secret Access Key seems to be invalid.');
-                    break;
-                default:
-                    $result['valid'] = false;
-                    $result['messages'][] = $this->__('Whoops! Something went wrong while validating your account.');
-                    break;
+
+            $response = $api->getOrderReferenceDetails(array(
+                'merchant_id' => trim($merchantId),
+                'amazon_order_reference_id' => 'P00-0000000-0000000'
+            ))->toArray();
+
+            if (isset($response['Error']['Code'])) {
+                switch ($response['Error']['Code']) {
+                    case 'InvalidOrderReferenceId':
+                        $result['messages'][] = $this->__(
+                            'Congratulations! Your Amazon Payments account settings seem to be OK.'
+                        );
+                        break;
+                    case 'InvalidParameterValue':
+                        $result['valid'] = false;
+                        $result['messages'][] = $this->__('Whoops! Your Merchant ID seems to be invalid.');
+                        break;
+                    case 'InvalidAccessKeyId':
+                        $result['valid'] = false;
+                        $result['messages'][] = $this->__('Whoops! Your Access Key ID seems to be invalid.');
+                        break;
+                    case 'SignatureDoesNotMatch':
+                        $result['valid'] = false;
+                        $result['messages'][] = $this->__('Whoops! Your Secret Access Key seems to be invalid.');
+                        break;
+                    default:
+                        $result['valid'] = false;
+                        $result['messages'][] = $this->__('Whoops! Something went wrong while validating your account.');
+                        break;
+                }
+            } else {
+                $result['valid'] = false;
+                $result['messages'][] = $this->__('Whoops! Something went wrong while validating your account.');
             }
-        } catch (Exception $ex) {
-            Mage::logException($ex);
+        } catch (Exception $e) {
+            Mage::logException($e);
             $result['valid'] = false;
             $result['messages'][] = $this->__('Whoops! Something went wrong while validating your account.');
         }
