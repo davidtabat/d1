@@ -10,10 +10,10 @@ $query = "SELECT sku, general_id FROM m2epro_amazon_listing_product WHERE sku !=
 $results = $readConnection->fetchAll($query);
 
 for ($i = 0; $i < sizeof($results); $i++) {
-    if ($product = Mage::getModel('catalog/product')->loadByAttribute('sku', $results[$i]['sku'])) {
-        $data = array('asin' => $results[$i]['general_id']);
-        $product->setData($data);
-        $product->save();
+    if ($productId = Mage::getModel('catalog/product')->getResource()->getIdBySku($results[$i]['sku'])) {
+        $product = Mage::getModel('catalog/product')->load($productId);
+        $product->setData('asin', $results[$i]['general_id']);
+        $product->getResource()->saveAttribute($product, 'asin');
         unset($product);
     }
 }
