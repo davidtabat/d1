@@ -14,7 +14,7 @@ class Jay_Producttitles_Model_Observer {
     		
     		$title = $product->getData('name');
     		$metaDescription = $product->getMetaDescription();
-
+            $code = Mage::app()->getStore()->getCode();
 	    	switch (Mage::app()->getStore()->getCode()) {
 	    		case 'kopiererhaus':
 	    			$title = $product->getData('name') . " | Günstig bei Kopiererhaus.de";
@@ -25,6 +25,11 @@ class Jay_Producttitles_Model_Observer {
 	    			$title = $product->getData('name') . " | Druckerhaus24";
 	    			$metaDescription = $product->getData('name') . " ✓ Gratis-Kaufberatung ✓ Bürogeräte bei Druckerhaus24 ✓ Markenware zu Top-Preisen ✓ Jetzt bestellen!";
 	    			break;
+
+                case 'imprireco_gmbh':
+                    $title = $product->getData('name') . " | ImpriReco";
+                    $metaDescription = $product->getData('name') . " Nous vous proposons des imprimantes d´occasion révisées par des professionnels, garanties 12 mois, à prix très intéressants !";
+                    break;
 	    	}	
     	
             $product->setMetaTitle($title);
