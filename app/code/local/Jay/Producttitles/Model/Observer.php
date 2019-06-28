@@ -14,7 +14,7 @@ class Jay_Producttitles_Model_Observer {
     		
     		$title = $product->getData('name');
     		$metaDescription = $product->getMetaDescription();
-            $code = Mage::app()->getStore()->getCode();
+
 	    	switch (Mage::app()->getStore()->getCode()) {
 	    		case 'kopiererhaus':
 	    			$title = $product->getData('name') . " | Günstig bei Kopiererhaus.de";
