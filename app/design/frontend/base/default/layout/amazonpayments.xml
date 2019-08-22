@@ -103,6 +103,9 @@
                 </block>
             </block>
         </reference>
+        <reference name="checkout.onepage.review.info.items.after">
+            <block type="amazonpayments/checkout_customFields" name="amazonpayments.checkout.custom_fields" template="creativestyle/amazonpayments/checkout/custom_fields.phtml"/>
+        </reference>
         <reference name="amazonpayments.js">
             <action method="setIsCheckout"><value>1</value></action>
         </reference>
@@ -130,6 +133,9 @@
             <block type="checkout/agreements" name="checkout.onepage.agreements" as="agreements" template="checkout/onepage/agreements.phtml"/>
             <block type="core/template" name="checkout.onepage.review.button" as="button" template="creativestyle/amazonpayments/checkout/review/button.phtml"/>
         </block>
+        <reference name="checkout.onepage.review.info.items.after">
+            <block type="amazonpayments/checkout_customFields" name="amazonpayments.checkout.custom_fields" template="creativestyle/amazonpayments/checkout/custom_fields.phtml"/>
+        </reference>
     </amazonpayments_checkout_review>
     <customer_account_login>
         <reference name="content">

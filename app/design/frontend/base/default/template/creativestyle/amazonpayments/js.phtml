@@ -32,7 +32,7 @@
         });
     </script>
 <?php endif; ?>
-<script type="text/javascript" src="<?php echo $this->getJsUrl('creativestyle/amazonpayments.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getAppJsUrl(); ?>"></script>
 <script type="text/javascript">
     AmazonPayments.setup(<?php echo $this->getJsConfig(); ?>);
 

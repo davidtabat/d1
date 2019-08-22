@@ -14,7 +14,9 @@
  * @copyright  2014 - 2019 creativestyle GmbH
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
-class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonPayments_Controller_Action
+
+class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonPayments_Controller_Action implements
+    Creativestyle_AmazonPayments_Controller_LoginInterface
 {
     const ACCESS_TOKEN_PARAM_NAME = 'access_token';
     const STATE_PARAM_NAME = 'state';
@@ -31,7 +33,7 @@ class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonP
     {
         $accessToken = $this->getRequest()->getParam(self::ACCESS_TOKEN_PARAM_NAME, null);
         $accessToken = str_replace('|', '%7C', $accessToken);
-        return urldecode($accessToken);
+        return $accessToken;
     }
 
     /**
@@ -131,12 +133,18 @@ class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonP
         }
     }
 
-    public function connectSuccess()
+    /**
+     * @inheritdoc
+     */
+    public function success()
     {
         $this->_redirectUrl($this->_getSuccessUrl());
     }
 
-    public function connectConfirm($email)
+    /**
+     * @inheritdoc
+     */
+    public function accountConfirm($email)
     {
         $update = $this->getLayout()->getUpdate();
         $update->addHandle('default');
@@ -157,11 +165,12 @@ class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonP
     }
 
     /**
-     * @param array $accountPost
-     * @param Creativestyle_AmazonPayments_Model_Login_UserProfile $userProfile
+     * @inheritdoc
      */
-    public function connectMissingAttributes($accountPost, $userProfile)
+    public function missingAttributes($userProfile)
     {
+        $accountPost = $this->getRequest()->getPost('account', array());
+
         $update = $this->getLayout()->getUpdate();
         $update->addHandle('default');
         $this->addActionLayoutHandles();
@@ -195,6 +204,7 @@ class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonP
     {
         $accessToken = $this->_extractAccessTokenFromUrl();
         if (null !== $accessToken) {
+            $accessToken = urldecode($accessToken);
             try {
                 $loginPost = $this->getRequest()->getPost('login', array());
                 $accountPost = $this->getRequest()->getPost('account', array());
@@ -202,15 +212,7 @@ class Creativestyle_AmazonPayments_LoginController extends Creativestyle_AmazonP
                 $this->_getLoginService()
                     ->authenticate($accessToken)
                     ->connect(
-                        function () {
-                            $this->connectSuccess();
-                        },
-                        function ($customer) {
-                            $this->connectConfirm($customer->getEmail());
-                        },
-                        function ($userProfile) use ($accountPost) {
-                            $this->connectMissingAttributes($accountPost, $userProfile);
-                        },
+                        $this,
                         isset($loginPost[self::PASSWORD_PARAM_NAME]) ? $loginPost[self::PASSWORD_PARAM_NAME] : null,
                         $accountPost
                     );

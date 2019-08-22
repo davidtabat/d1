@@ -20,14 +20,12 @@
 <script type="text/javascript">//<![CDATA[
     var accessToken = (new RegExp('[?|&|#]<?php echo $this->getAccessTokenParamName(); ?>=([^&;]+?)(&|#|;|$)')
         .exec(location.hash) || [,""])[1].replace(/\+/g,'%20') || null;
-    var state = (new RegExp('[?|&|#]state=([^&;]+?)(&|#|;|$)').exec(location.hash) || [,""])[1] || null;
+    var state = (new RegExp('[?|&|#]<?php echo $this->getStateParamName(); ?>=([^&;]+?)(&|#|;|$)').exec(location.hash) || [,""])[1] || null;
     if (typeof accessToken === 'string' && accessToken.match(/^Atza/)) {
         Mage.Cookies.set('amazon_Login_accessToken', decodeURIComponent(accessToken), null, '/', null, true);
-        if (state === 'checkout') {
-            window.location.href = '<?php echo $this->getCheckoutRedirectUrl(); ?>'.replace(/%s/, accessToken);
-        } else {
-            window.location.href = '<?php echo $this->getRedirectUrl(); ?>';
-        }
+        window.location.href = '<?php echo $this->getRedirectUrl(); ?>'
+            .replace(/%access_token/, accessToken)
+            .replace(/%state/, state);
     } else {
         window.location.href = '<?php echo $this->getFailureUrl(); ?>';
     }

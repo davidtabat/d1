@@ -275,6 +275,24 @@ class Creativestyle_AmazonPayments_Block_Js extends Creativestyle_AmazonPayments
     }
 
     /**
+     * Returns the URL of the frontend app JS file
+     *
+     * @return string
+     */
+    public function getAppJsUrl() {
+        $jsUrl = 'creativestyle/amazonpayments.min.js';
+
+        if (!$this->_getConfig()->isJsVersioningDisabled()) {
+            $jsUrl .= sprintf(
+                '?v=%s',
+                (string)Mage::getConfig()->getNode('modules/Creativestyle_AmazonPayments/version')
+            );
+        }
+
+        return $this->getJsUrl($jsUrl);
+    }
+
+    /**
      * @return string
      */
     public function getJsAppSession()

@@ -66,6 +66,12 @@ class Creativestyle_AmazonPayments_Model_Lookup_AccountRegion extends Creativest
                     'label' => Mage::helper('amazonpayments')->__('United States')
                         . sprintf(' (%s)', $this->_getRegionCurrencyCode('USD'))
                 );
+
+                $this->_options[] = array(
+                    'value' => 'JPY',
+                    'label' => Mage::helper('amazonpayments')->__('Japan')
+                        . sprintf(' (%s)', $this->_getRegionCurrencyCode('JPY'))
+                );
             }
         }
 

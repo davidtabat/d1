@@ -372,8 +372,32 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                 ->setSkipOrderReferenceProcessing($skipOrderReferenceProcessing);
 
             $customFields = $this->getRequest()->getPost('custom_fields', array());
+            $allowedFields = $this->_getConfig()->getCheckoutCustomFields();
+
             foreach ($customFields as $customFieldName => $customFieldValue) {
-                $this->_getQuote()->setData($customFieldName, $customFieldValue);
+                if (isset($allowedFields[$customFieldName])) {
+                    if (is_array($customFieldValue)) {
+                        foreach ($customFieldValue as $key => $value) {
+                            if (isset($allowedFields[$customFieldName][$key])) {
+                                switch ($customFieldName) {
+                                    case 'customer':
+                                        $this->_getQuote()->getCustomer()->setData($key, $value);
+                                        break;
+                                    case 'billing_address':
+                                        $this->_getQuote()->getBillingAddress()->setData($key, $value);
+                                        break;
+                                    case 'shipping_address':
+                                        $this->_getQuote()->getShippingAddress()->setData($key, $value);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    } else {
+                        $this->_getQuote()->setData($customFieldName, $customFieldValue);
+                    }
+                }
             }
 
             $simulation = $this->getRequest()->getPost('simulation', array());
@@ -404,6 +428,13 @@ class Creativestyle_AmazonPayments_CheckoutController extends Creativestyle_Amaz
                 'success' => true,
                 'error' => false
             );
+
+            if ($this->_getConfig()->getRegion() == 'us' || $this->_getConfig()->getRegion() == 'jp') {
+                $result['redirect'] = Mage::getUrl('*/*/mfa', array(
+                    'AuthenticationStatus' => Creativestyle_AmazonPayments_Model_Amazon_Mfa_AuthenticationStatus::SUCCESS
+                ));
+            }
+
             $this->_setJsonResponse($result);
         } catch (Creativestyle_AmazonPayments_Exception_InvalidTransaction $e) {
             $result = $this->_handleInvalidTransactionException($e);

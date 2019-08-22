@@ -155,6 +155,10 @@ class Creativestyle_AmazonPayments_Model_Processor_Order
                 $address->setPostcode($newAddress->getPostcode());
             }
 
+            if ($address->getRegion() != $newAddress->getRegion()) {
+                $address->setRegion($newAddress->getRegion());
+            }
+
             if ($address->getCountryId() != $newAddress->getCountryId()) {
                 $address->setCountryId($newAddress->getCountryId());
             }

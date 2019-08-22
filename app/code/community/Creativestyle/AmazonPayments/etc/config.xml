@@ -19,7 +19,7 @@
 <config>
     <modules>
         <Creativestyle_AmazonPayments>
-            <version>3.0.2</version>
+            <version>3.0.12</version>
         </Creativestyle_AmazonPayments>
     </modules>
     <global>
@@ -147,7 +147,8 @@
                 </button_urls>
                 <widget_hosts>
                     <us>https://static-na.payments-amazon.com</us>
-                    <eu>https://static-eu.payments-amazon.com</eu>
+                    <de>https://static-eu.payments-amazon.com</de>
+                    <jp>https://static-fe.payments-amazon.com</jp>
                 </widget_hosts>
                 <customer_attributes>
                     <prefix />

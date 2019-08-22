@@ -47,7 +47,7 @@ class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_DebugController exte
             )
             // @codingStandardsIgnoreEnd
         ) . '_apa_debug_' . Mage::getModel('core/date')->gmtTimestamp() . '.dmp';
-        $debugData = base64_encode(serialize($debugData));
+        $debugData = base64_encode(call_user_func('serialize', $debugData));
         Mage::app()->getResponse()->setHeader('Content-type', 'application/base64');
         Mage::app()->getResponse()->setHeader('Content-disposition', 'attachment;filename=' . $filename);
         Mage::app()->getResponse()->setBody($debugData);

@@ -79,6 +79,16 @@ class Creativestyle_AmazonPayments_Model_Service_Login
     }
 
     /**
+     * @return Mage_Checkout_Model_Session
+     */
+    protected function _getCheckoutSession()
+    {
+        /** @var Mage_Checkout_Model_Session $session */
+        $session = Mage::getSingleton('checkout/session');
+        return $session;
+    }
+
+    /**
      * @return int|string|null
      * @throws Mage_Core_Model_Store_Exception
      */
@@ -245,6 +255,21 @@ class Creativestyle_AmazonPayments_Model_Service_Login
      */
     protected function _setCustomerAsLoggedIn(Mage_Customer_Model_Customer $customer)
     {
+        /**
+         * The following operations on the quote model circumvent guest cart
+         * items removal, invoked after the successful authentication within
+         * the Magento session. It was introduced as a security fix in:
+         *   - CE 1.9.4.2
+         *   - EE 1.14.4.2
+         *   - SUPEE-11155 patch
+         *
+         * @var Mage_Sales_Model_Quote $quote
+         */
+        $quote = $this->_getCheckoutSession()->getQuote();
+        if (!$quote->getCustomerId()) {
+            $quote->setCustomerId($customer->getId())->save();
+        }
+
         $this->_getSession()->setCustomerAsLoggedIn($customer);
     }
 
@@ -286,18 +311,14 @@ class Creativestyle_AmazonPayments_Model_Service_Login
     }
 
     /**
-     * @param callable $success
-     * @param callable $confirm
-     * @param callable $missingData
+     * @param Creativestyle_AmazonPayments_Controller_LoginInterface $loginController
      * @param null $password
      * @param array $accountData
      * @throws Creativestyle_AmazonPayments_Exception
      * @throws Mage_Core_Model_Store_Exception
      */
     public function connect(
-        callable $success,
-        callable $confirm,
-        callable $missingData,
+        Creativestyle_AmazonPayments_Controller_LoginInterface $loginController,
         $password = null,
         $accountData = array()
     ) {
@@ -306,7 +327,7 @@ class Creativestyle_AmazonPayments_Model_Service_Login
         $customer = $this->_getCustomerByUserId();
         if (null !== $customer) {
             $this->_setCustomerAsLoggedIn($customer);
-            $success();
+            $loginController->success();
             return;
         }
 
@@ -315,35 +336,36 @@ class Creativestyle_AmazonPayments_Model_Service_Login
             if ($this->_getSession()->isLoggedIn()) {
                 $this->_setCustomerUserId($customer, $this->getUserProfile()->getUserId());
                 $this->_setCustomerAsLoggedIn($customer);
-                $success();
+                $loginController->success();
                 return;
             } else {
                 if (null !== $password) {
                     if ($customer->validatePassword($password)) {
                         $this->_setCustomerUserId($customer, $this->getUserProfile()->getUserId());
                         $this->_setCustomerAsLoggedIn($customer);
-                        $success();
+                        $loginController->success();
                         return;
                     } else {
                         $this->_getSession()->addError($this->_getHelper()->__('Invalid password'));
                     }
                 }
 
-                $confirm($customer);
+                $loginController->accountConfirm($customer->getEmail());
                 return;
             }
         }
 
         $customerAttributes = $this->_getCustomerMandatoryAttributes();
         $postedAttributes = array_keys($accountData);
+        $attributesDiff = array_diff($customerAttributes, $postedAttributes);
 
-        if (!(empty($customerAttributes) || empty(array_diff($customerAttributes, $postedAttributes)))) {
-            $missingData($this->getUserProfile());
+        if (!(empty($customerAttributes) || empty($attributesDiff))) {
+            $loginController->missingAttributes($this->getUserProfile());
             return;
         } else {
             $customer = $this->_createCustomer($accountData);
             $this->_setCustomerAsLoggedIn($customer);
-            $success();
+            $loginController->success();
             return;
         }
     }

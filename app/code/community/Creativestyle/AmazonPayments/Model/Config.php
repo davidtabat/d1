@@ -242,7 +242,7 @@ class Creativestyle_AmazonPayments_Model_Config
      */
     public function getClientId($store = null)
     {
-        return Mage::getStoreConfig(self::XML_PATH_LOGIN_CLIENT_ID, $store);
+        return trim(Mage::getStoreConfig(self::XML_PATH_LOGIN_CLIENT_ID, $store));
     }
 
     /**
@@ -264,6 +264,8 @@ class Creativestyle_AmazonPayments_Model_Config
                 return 'uk';
             case 'USD':
                 return 'us';
+            case 'JPY':
+                return 'jp';
             default:
                 return null;
         }
@@ -682,6 +684,8 @@ class Creativestyle_AmazonPayments_Model_Config
             case 'uk':
             case 'us':
                 return ($language == 'en');
+            case 'jp':
+                return ($language == 'ja');
             default:
                 return false;
         }
@@ -732,16 +736,16 @@ class Creativestyle_AmazonPayments_Model_Config
         $widgetHosts = $this->getGlobalConfigData('widget_hosts');
         $widgetUrl = sprintf(
             self::WIDGET_FORMAT_STRING,
-            $region == 'us' ? $widgetHosts['us'] : $widgetHosts['eu'],
+            isset($widgetHosts[$region]) ? $widgetHosts[$region] : $widgetHosts['de'],
             $region,
             $this->isSandboxActive($store) ? '/sandbox' : ''
         );
 
-        if ($this->isLoginActive($store)) {
-            return $widgetUrl;
+        if (!$this->isLoginActive($store) || $region == 'us') {
+            return str_replace('lpa/', '', $widgetUrl);
         }
 
-        return str_replace('lpa/', '', $widgetUrl);
+        return $widgetUrl;
     }
 
     /**
@@ -819,11 +823,24 @@ class Creativestyle_AmazonPayments_Model_Config
         return true;
     }
 
+    public function getCheckoutCustomFields()
+    {
+        return $this->getGlobalConfigData('custom_fields');
+    }
+
     /**
      * @return bool
      */
     public function isExtendedConfigEnabled()
     {
         return (bool)$this->getGlobalConfigData('extended_config');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isJsVersioningDisabled()
+    {
+        return (bool)$this->getGlobalConfigData('disable_js_versioning');
     }
 }

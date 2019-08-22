@@ -141,7 +141,15 @@ abstract class Creativestyle_AmazonPayments_Model_Payment_Abstract extends Mage_
      */
     protected function _getTransactionSequenceId(Mage_Sales_Model_Order_Payment $payment)
     {
-        return substr(sprintf('%s-%s', $payment->getOrder()->getExtOrderId(), md5(uniqid())), 0, 27);
+        return substr(
+            sprintf(
+                '%s-%s',
+                $payment->getOrder()->getExtOrderId(),
+                hash('sha512', uniqid())
+            ),
+            0,
+            27
+        );
     }
 
     /**

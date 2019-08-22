@@ -15,35 +15,26 @@
  * @author     Marek Zabrowarny <ticket@creativestyle.de>
  */
 
-/**
- * @method $this setAccessTokenParamName(string $accessToken)
- * @method $this setRedirectUrl(string $redirectUrl)
- * @method $this setFailureUrl(string $failureUrl)
- */
 class Creativestyle_AmazonPayments_Block_Login_Redirect extends Creativestyle_AmazonPayments_Block_Login_Abstract
 {
     /**
-     * Returns access token param name
+     * Returns name of the access token param passed along with the request
      *
      * @return string
      */
     public function getAccessTokenParamName()
     {
-        if ($this->hasData('access_token_param_name')) {
-            return $this->getData('access_token_param_name');
-        }
-
-        return 'access_token';
+        return Creativestyle_AmazonPayments_LoginController::ACCESS_TOKEN_PARAM_NAME;
     }
 
     /**
-     * Returns redirect URL
+     * Returns name of the state param passed along with the request
      *
      * @return string
      */
-    public function getCheckoutRedirectUrl()
+    public function getStateParamName()
     {
-        return $this->_getUrl()->getPaySuccessUrl('%s');
+        return Creativestyle_AmazonPayments_LoginController::STATE_PARAM_NAME;
     }
 
     /**
@@ -53,7 +44,12 @@ class Creativestyle_AmazonPayments_Block_Login_Redirect extends Creativestyle_Am
      */
     public function getRedirectUrl()
     {
-        return $this->_getUrl()->getLoginRedirectUrl();
+        return $this->_getUrl()->getLoginCallbackUrl(
+            array(
+                $this->getAccessTokenParamName() => '%access_token',
+                $this->getStateParamName() => '%state'
+            )
+        );
     }
 
     /**

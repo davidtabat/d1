@@ -600,6 +600,7 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction_DataMapper
                     'country_id' => $countryCode,
                     'city' => $transactionProcessor->getBillingAddressCity(),
                     'postcode' => $transactionProcessor->getBillingAddressPostalCode(),
+                    'region' => $transactionProcessor->getBillingAddressRegion(),
                     'telephone' => $transactionProcessor->getBillingAddressPhone()
                 )
             );
@@ -629,6 +630,7 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction_DataMapper
                     'country_id' => $countryCode,
                     'city' => $transactionProcessor->getShippingAddressCity(),
                     'postcode' => $transactionProcessor->getShippingAddressPostalCode(),
+                    'region' => $transactionProcessor->getShippingAddressRegion(),
                     'telephone' => $transactionProcessor->getShippingAddressPhone()
                 )
             );

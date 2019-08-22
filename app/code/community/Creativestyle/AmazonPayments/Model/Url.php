@@ -59,11 +59,12 @@ class Creativestyle_AmazonPayments_Model_Url extends Mage_Core_Model_Abstract
     }
 
     /**
+     * @param array|null $params
      * @return string
      */
-    public function getLoginCallbackUrl()
+    public function getLoginCallbackUrl($params = null)
     {
-        return $this->_getUrl(self::LOGIN_CALLBACK_PATH);
+        return $this->_getUrl(self::LOGIN_CALLBACK_PATH, $params);
     }
 
     /**
@@ -195,5 +196,4 @@ class Creativestyle_AmazonPayments_Model_Url extends Mage_Core_Model_Abstract
     {
         return $this->_getUrl(self::CHECKOUT_MULTI_FACTOR_AUTHENTICATION_PATH);
     }
-
 }

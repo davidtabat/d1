@@ -256,6 +256,17 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction
     }
 
     /**
+     * Extracts region from given Amazon Pay address object
+     *
+     * @param array|null $address
+     * @return string|null
+     */
+    protected function _extractRegionFromAmazonAddress($address = null)
+    {
+        return $address && isset($address['StateOrRegion']) ? $address['StateOrRegion'] : null;
+    }
+
+    /**
      * Extracts country code from given Amazon Pay address object
      *
      * @param array|null $address
@@ -612,6 +623,17 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction
     }
 
     /**
+     * Returns billing address region
+     *
+     * @return string|null
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
+    public function getBillingAddressRegion()
+    {
+        return $this->_extractRegionFromAmazonAddress($this->_getAmazonBillingAddress());
+    }
+
+    /**
      * Returns billing address country code
      *
      * @return string|null
@@ -688,6 +710,17 @@ class Creativestyle_AmazonPayments_Model_Processor_Transaction
     public function getShippingAddressPostalCode()
     {
         return $this->_extractPostalCodeFromAmazonAddress($this->_getAmazonShippingAddress());
+    }
+
+    /**
+     * Returns shipping address region
+     *
+     * @return string|null
+     * @throws Creativestyle_AmazonPayments_Exception
+     */
+    public function getShippingAddressRegion()
+    {
+        return $this->_extractRegionFromAmazonAddress($this->_getAmazonShippingAddress());
     }
 
     /**

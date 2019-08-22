@@ -27,6 +27,10 @@ class Creativestyle_AmazonPayments_Adminhtml_Amazonpayments_SystemController ext
                 return 'de';
             case 'GBP':
                 return 'uk';
+            case 'USD':
+                return 'us';
+            case 'JPY':
+                return 'jp';
             default:
                 return null;
         }

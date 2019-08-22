@@ -56,7 +56,9 @@ class Creativestyle_AmazonPayments_Controller_Checkout extends Creativestyle_Ama
      */
     protected function _getRequestParam($key)
     {
-        return isset($this->_requestParams[$key]) ? $this->_requestParams[$key] : null;
+        return isset($this->_requestParams[$key])
+            ? $this->_requestParams[$key]
+            : $this->getRequest()->getParam($key, null);
     }
 
     /**
