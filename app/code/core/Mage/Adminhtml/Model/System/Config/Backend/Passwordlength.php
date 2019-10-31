@@ -19,27 +19,32 @@
  * needs please refer to http://www.magento.com for more information.
  *
  * @category    Mage
- * @package     Mage_Customer
- * @copyright  Copyright (c) 2006-2018 Magento, Inc. (http://www.magento.com)
+ * @package     Mage
+ * @copyright  Copyright (c) 2006-2019 Magento, Inc. (http://www.magento.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 /**
- * Customer reset password form
+ * Password length config field backend model
  *
  * @category    Mage
- * @package     Mage_Customer
+ * @package     Mage_Adminhtml
  * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Mage_Customer_Block_Account_Changeforgotten extends Mage_Core_Block_Template
+class Mage_Adminhtml_Model_System_Config_Backend_Passwordlength extends  Mage_Core_Model_Config_Data
 {
     /**
-     * Retrieve minimum length of customer password
+     * Before save processing
      *
-     * @return int
+     * @throws Mage_Core_Exception
+     * @return Mage_Adminhtml_Model_System_Config_Backend_Passwordlength
      */
-    public function getMinPasswordLength()
+    protected function _beforeSave()
     {
-        return Mage::getModel('customer/customer')->getMinPasswordLength();
+        if ((int)$this->getValue() < Mage_Core_Model_App::ABSOLUTE_MIN_PASSWORD_LENGTH) {
+            Mage::throwException(Mage::helper('adminhtml')
+                ->__('Password must be at least of %d characters.', Mage_Core_Model_App::ABSOLUTE_MIN_PASSWORD_LENGTH));
+        }
+        return $this;
     }
 }

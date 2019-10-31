@@ -19,27 +19,23 @@
  * needs please refer to http://www.magento.com for more information.
  *
  * @category    Mage
- * @package     Mage_Customer
- * @copyright  Copyright (c) 2006-2018 Magento, Inc. (http://www.magento.com)
+ * @package     Mage
+ * @copyright  Copyright (c) 2006-2019 Magento, Inc. (http://www.magento.com)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/**
- * Customer reset password form
- *
- * @category    Mage
- * @package     Mage_Customer
- * @author      Magento Core Team <core@magentocommerce.com>
- */
-class Mage_Customer_Block_Account_Changeforgotten extends Mage_Core_Block_Template
-{
-    /**
-     * Retrieve minimum length of customer password
-     *
-     * @return int
-     */
-    public function getMinPasswordLength()
-    {
-        return Mage::getModel('customer/customer')->getMinPasswordLength();
-    }
-}
+/* @var $this Mage_Core_Model_Resource_Setup */
+$this->startSetup();
+
+$this->getConnection()->changeColumn(
+    $this->getTable('api/user'),
+    'api_key',
+    'api_key',
+    array(
+        'type' => Varien_Db_Ddl_Table::TYPE_TEXT,
+        'length' => 255,
+        'comment' => 'Api key'
+    )
+);
+
+$this->endSetup();
