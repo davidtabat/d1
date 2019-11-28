@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -11,15 +11,15 @@ class Ess_M2ePro_Model_Upgrade_Tables
     const M2E_PRO_TABLE_PREFIX = 'm2epro_';
 
     /** @var Ess_M2ePro_Model_Upgrade_MySqlSetup */
-    private $installer = NULL;
+    protected $_installer = null;
 
     /** @var Varien_Db_Adapter_Pdo_Mysql */
-    private $connection = NULL;
+    protected $_connection = null;
 
     /**
      * @var string[]
      */
-    private $entities = array();
+    protected $_entities = array();
 
     //########################################
 
@@ -29,8 +29,8 @@ class Ess_M2ePro_Model_Upgrade_Tables
      */
     public function setInstaller(Ess_M2ePro_Model_Upgrade_MySqlSetup $installer)
     {
-        $this->installer = $installer;
-        $this->connection = $installer->getConnection();
+        $this->_installer  = $installer;
+        $this->_connection = $installer->getConnection();
         return $this;
     }
 
@@ -60,6 +60,7 @@ class Ess_M2ePro_Model_Upgrade_Tables
             'amazon_template_new_product',
             'amazon_template_new_product_description',
             'amazon_template_new_product_specific',
+            'amazon_template_shipping',
             'ebay_dictionary_shipping_category',
             'ebay_message',
             'ebay_motor_specific',
@@ -69,6 +70,19 @@ class Ess_M2ePro_Model_Upgrade_Tables
             'ebay_template_general_payment',
             'ebay_template_general_shipping',
             'ebay_template_general_specific',
+            'buy_account',
+            'buy_item',
+            'buy_listing',
+            'buy_listing_auto_category_group',
+            'buy_listing_other',
+            'buy_listing_product',
+            'buy_listing_product_variation',
+            'buy_listing_product_variation_option',
+            'buy_marketplace',
+            'buy_order',
+            'buy_order_item',
+            'buy_template_selling_format',
+            'buy_template_synchronization',
             'buy_template_description',
             'buy_template_general',
             'play_account',
@@ -89,28 +103,52 @@ class Ess_M2ePro_Model_Upgrade_Tables
             'amazon_category',
             'amazon_category_description',
             'amazon_category_specific',
-            'primary_config',
-            'cache_config',
-            'synchronization_config'
+            'amazon_processed_inventory',
+            'processing_request',
+            'locked_object',
+            'buy_dictionary_category',
+            'buy_template_new_product',
+            'buy_template_new_product_core',
+            'buy_template_new_product_attribute',
+            'ebay_processing_action_item',
+            'amazon_processing_action_item',
+            'indexer_listing_product_parent',
+            'amazon_dictionary_shipping_override',
+            'amazon_template_shipping_override',
+            'amazon_template_shipping_override_service',
+            'amazon_template_shipping_template',
+            'product_change',
+            'synchronization_config',
+            'ebay_processing_action',
+            'amazon_processing_action',
+            'connector_pending_requester_single',
+            'connector_pending_requester_partial',
+            'amazon_processing_action_list_sku',
+            'listing_product_synchronization_instruction',
+            'walmart_order_action_processing',
+            'walmart_template_selling_format_shipping_override_service'
         );
 
         $currentTables = array();
         foreach (Mage::helper('M2ePro/Module_Database_Structure')->getMySqlTables() as $tableName) {
             $currentTables[] = str_replace('m2epro_', '', $tableName);
         }
+
         $allTables = array_values(array_unique(array_merge($oldTables, $currentTables)));
 
-        usort($allTables, function ($a,$b) {
+        usort(
+            $allTables, function ($a,$b) {
             return strlen($b) - strlen($a);
-        });
+            }
+        );
 
         foreach ($allTables as $table) {
             if ($table == 'ess_config') {
-                $this->entities[$table] = $this->getInstaller()->getTable($table);
+                $this->_entities[$table] = $this->getInstaller()->getTable($table);
                 continue;
             }
 
-            $this->entities[$table] = $this->getInstaller()->getTable(self::M2E_PRO_TABLE_PREFIX . $table);
+            $this->_entities[$table] = $this->getInstaller()->getTable(self::M2E_PRO_TABLE_PREFIX . $table);
         }
 
         return $this;
@@ -124,11 +162,11 @@ class Ess_M2ePro_Model_Upgrade_Tables
      */
     public function getInstaller()
     {
-        if (is_null($this->installer)) {
+        if ($this->_installer === null) {
             throw new Ess_M2ePro_Model_Exception_Setup("Installer does not exist.");
         }
 
-        return $this->installer;
+        return $this->_installer;
     }
 
     /**
@@ -137,11 +175,11 @@ class Ess_M2ePro_Model_Upgrade_Tables
      */
     public function getConnection()
     {
-        if (is_null($this->connection)) {
+        if ($this->_connection === null) {
             throw new Ess_M2ePro_Model_Exception_Setup("Connection does not exist.");
         }
 
-        return $this->connection;
+        return $this->_connection;
     }
 
     //########################################
@@ -152,7 +190,7 @@ class Ess_M2ePro_Model_Upgrade_Tables
         $currentTables = Mage::helper('M2ePro/Module_Database_Structure')->getMySqlTables();
 
         foreach ($currentTables as $table) {
-            $result[$table] = $this->entities[$table];
+            $result[$table] = $this->_entities[$table];
         }
 
         return $result;
@@ -160,7 +198,7 @@ class Ess_M2ePro_Model_Upgrade_Tables
 
     public function getAllHistoryEntities()
     {
-        return $this->entities;
+        return $this->_entities;
     }
 
     // ---------------------------------------
@@ -177,7 +215,7 @@ class Ess_M2ePro_Model_Upgrade_Tables
         );
 
         foreach ($currentConfigTables as $table) {
-            $result[$table] = $this->entities[$table];
+            $result[$table] = $this->_entities[$table];
         }
 
         return $result;
@@ -185,8 +223,10 @@ class Ess_M2ePro_Model_Upgrade_Tables
 
     public function getAllHistoryConfigEntities()
     {
-        return array_merge($this->getCurrentConfigEntities(),
-                           array('ess_config' => $this->entities['ess_config']));
+        return array_merge(
+            $this->getCurrentConfigEntities(),
+            array('ess_config' => $this->_entities['ess_config'])
+        );
     }
 
     //########################################
@@ -198,11 +238,11 @@ class Ess_M2ePro_Model_Upgrade_Tables
 
     public function getFullName($tableName)
     {
-        if (!isset($this->entities[$tableName])) {
+        if (!isset($this->_entities[$tableName])) {
             throw new Ess_M2ePro_Model_Exception_Setup("Table '{$tableName}' does not exist.");
         }
 
-        return $this->entities[$tableName];
+        return $this->_entities[$tableName];
     }
 
     //########################################

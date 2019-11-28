@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -40,7 +40,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_DatabaseBrokenTables
 
     //########################################
 
-    private function prepareTablesInfo()
+    protected function prepareTablesInfo()
     {
         $this->emptyTables        = $this->getEmptyTables();
         $this->notInstalledTables = $this->getNotInstalledTables();
@@ -49,13 +49,12 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_DatabaseBrokenTables
 
     //########################################
 
-    private function getEmptyTables()
+    protected function getEmptyTables()
     {
         $helper = Mage::helper('M2ePro/Module_Database_Structure');
 
         $emptyTables = array();
         foreach ($this->getGeneralTables() as $table) {
-
             if (!$helper->isTableReady($table)) {
                 continue;
             }
@@ -66,7 +65,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_DatabaseBrokenTables
         return $emptyTables;
     }
 
-    private function getNotInstalledTables()
+    protected function getNotInstalledTables()
     {
         $helper = Mage::helper('M2ePro/Module_Database_Structure');
 
@@ -78,13 +77,12 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_DatabaseBrokenTables
         return $notInstalledTables;
     }
 
-    private function getCrashedTables()
+    protected function getCrashedTables()
     {
         $helper = Mage::helper('M2ePro/Module_Database_Structure');
 
         $crashedTables = array();
         foreach ($helper->getMySqlTables() as $tableName) {
-
             if (!$helper->isTableExists($tableName)) {
                 continue;
             }
@@ -97,7 +95,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_DatabaseBrokenTables
 
     //########################################
 
-    private function getGeneralTables()
+    protected function getGeneralTables()
     {
         return array(
             'm2epro_primary_config',
@@ -106,8 +104,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_DatabaseBrokenTables
             'm2epro_wizard',
             'm2epro_marketplace',
             'm2epro_amazon_marketplace',
-            'm2epro_ebay_marketplace',
-            'm2epro_buy_marketplace'
+            'm2epro_ebay_marketplace'
         );
     }
 

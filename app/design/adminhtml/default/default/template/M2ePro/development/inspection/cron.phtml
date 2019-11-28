@@ -1,3 +1,16 @@
+<?php
+/*
+ * @author     M2E Pro Developers Team
+ * @copyright  M2E LTD
+ * @license    Commercial use is forbidden
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $this Ess_M2ePro_Block_Adminhtml_Development_Inspection_Cron */
+
+?>
+
 <table class="form-list" cellspacing="0" cellpadding="0">
 
     <tr>
@@ -98,8 +111,8 @@
             <td class="label" colspan="2" style="width: 600px">
                 <?php echo Mage::helper('M2ePro')->__(
                     'It is M2E Pro Cron System where you were registered automatically during the Extension Installation.
-                    No additional Settings are required. Our Service does HTTP calls to your Magento from IP address: <b>%server_ip%</b>.',
-                    $this->cronServiceIp
+                    No additional Settings are required. Our Service does HTTP calls to your Magento from IPs addresses: <b>%server_ips%</b>.',
+                    $this->cronServiceIps
                 ); ?>
             </td>
         </tr>

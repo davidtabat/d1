@@ -1,10 +1,18 @@
 <?php
-    /** @var Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Tabs_List $this */
+/*
+ * @author     M2E Pro Developers Team
+ * @copyright  M2E LTD
+ * @license    Commercial use is forbidden
+ */
 
-    $default = $this->getDefault();
-    $formData = $this->getFormData();
+// @codingStandardsIgnoreFile
 
-    $formData = array_merge($default, $formData);
+/** @var Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Tabs_List $this */
+
+$default = $this->getDefault();
+$formData = $this->getFormData();
+
+$formData = array_merge($default, $formData);
 
 ?>
 
@@ -179,8 +187,8 @@
                             <span>
                                 <?php echo Mage::helper('M2ePro')->__(
                                     '<b>Any:</b> List Items automatically with any Quantity available.<br/>
-                                    <b>More or Equal: </b> List Items automatically if the calculated Quantity according to the Price, Quantity and Format Policy is at least equal to the number you set.<br/>
-                                    <b>Between:</b> List Items automatically if the Quantity according to the Price, Quantity and Format Policy is between the minimum and maximum numbers you set.'
+                                    <b>More or Equal: </b> List Items automatically if the calculated Quantity according to the Selling Policy is at least equal to the number you set.<br/>
+                                    <b>Between:</b> List Items automatically if the Quantity according to the Selling Policy is between the minimum and maximum numbers you set.'
                                 ); ?>
                             </span>
                         </p>

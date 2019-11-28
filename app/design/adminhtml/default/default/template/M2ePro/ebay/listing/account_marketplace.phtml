@@ -1,3 +1,16 @@
+<?php
+/*
+ * @author     M2E Pro Developers Team
+ * @copyright  M2E LTD
+ * @license    Commercial use is forbidden
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $this Ess_M2ePro_Block_Adminhtml_Ebay_Listing_AccountMarketplace_Form */
+
+?>
+
 <style type="text/css">
 
     .switcher {
@@ -22,7 +35,8 @@
     VideoTutorialHandlerObj.closeCallback = function() { return true; };
 
     M2ePro.url.add(<?php echo json_encode(array(
-        'adminhtml_ebay_account/edit' => $this->getUrl('M2ePro/adminhtml_ebay_account/edit/')
+        'adminhtml_ebay_account/edit' => $this->getUrl('M2ePro/adminhtml_ebay_account/edit/'),
+        'adminhtml_ebay_marketplace/synchGetExecutingInfo' => $this->getUrl('M2ePro/adminhtml_ebay_marketplace/synchGetExecutingInfo/'),
     )); ?>);
 
 </script>

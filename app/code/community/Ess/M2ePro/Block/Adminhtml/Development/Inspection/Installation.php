@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -33,13 +33,13 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_Installation
     protected function prepareInfo()
     {
         $cacheConfig = Mage::helper('M2ePro/Module')->getCacheConfig();
-        $this->latestVersion = $cacheConfig->getGroupValue('/installation/', 'last_version');
+        $this->latestVersion = $cacheConfig->getGroupValue('/installation/', 'public_last_version');
+        $this->buildLatestVersion = $cacheConfig->getGroupValue('/installation/', 'build_last_version');
 
         $registryModel = Mage::getModel('M2ePro/Registry');
         $structureHelper = Mage::helper('M2ePro/Module_Database_Structure');
 
         if ($structureHelper->isTableExists($registryModel->getResource()->getMainTable())) {
-
             $this->installationVersionHistory = $registryModel
                     ->load('/installation/versions_history/', 'key')
                     ->getValueFromJson();
@@ -51,7 +51,6 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_Installation
 
         $lastVersion = array_pop($this->installationVersionHistory);
         if (!empty($lastVersion)) {
-
             $this->latestUpgradeDate        = $lastVersion['date'];
             $this->latestUpgradeFromVersion = $lastVersion['from'];
             $this->latestUpgradeToVersion   = $lastVersion['to'];
@@ -60,7 +59,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_Installation
 
     protected function isShown()
     {
-        if (is_null($this->latestVersion)) {
+        if ($this->latestVersion === null) {
             return false;
         }
 
