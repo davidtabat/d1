@@ -55,6 +55,7 @@
             		$trClass .= ' lastx';
             	$row = $this->getItemHtml($_item);
             	$countTr = preg_match_all("|<tr[^>]*>(.*)</tr[^>]*>|usiU",$row,$resultTR, PREG_PATTERN_ORDER);
+            	$currencyCode = Mage::app()->getLocale()->currency($_item->getOrderItem()->getOrder()->getData('order_currency_code'))->getSymbol();
             	
 			?>
 			<?php if ( $countTr > 0 ) foreach ( $resultTR[0] as $trIdx => $tr ) : ?>
@@ -79,10 +80,9 @@
 	                </td>
 	                <td class="col-qty"><?php echo ($result[1][3]) ?></td>
 					
-	                <td class="col-price"><?php echo number_format ($_item->getOrderItem()->getPrice(), 2, ',', ' '); ?> €</td>
+	                <td class="col-price"><?php echo ($result[1][4]) ?></td>
 					<td class="col-mwst1"><?php echo sprintf('%s%%', 0 + $_item->getOrderItem()->getTaxPercent()); ?></td>
-	                <td class="col-mwst2"><?php echo number_format ($_item->getOrderItem()->getTaxAmount(), 2, ',', ' '); ?> €</td>
-
+	                <td class="col-mwst2"><?php echo sprintf('%s%s', $currencyCode, number_format($_item->getOrderItem()->getTaxAmount(), 2, ',', ' ')); ?></td>
 	                <td class="col-subtotal"><?php echo ($result[1][4]) ?></td>
 	            </tr>
 	            <?php else : ?>
