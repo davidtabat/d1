@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -99,6 +99,18 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
             $prepared['qty_max_posted_value'] = (int)$data['qty_max_posted_value'];
         }
 
+        if (isset($data['lot_size_mode'])) {
+            $prepared['lot_size_mode'] = (int)$data['lot_size_mode'];
+        }
+
+        if (isset($data['lot_size_custom_value'])) {
+            $prepared['lot_size_custom_value'] = (int)$data['lot_size_custom_value'];
+        }
+
+        if (isset($data['lot_size_attribute'])) {
+            $prepared['lot_size_attribute'] = $data['lot_size_attribute'];
+        }
+
         if (isset($data['vat_percent'])) {
             $prepared['vat_percent'] = (float)$data['vat_percent'];
         }
@@ -134,7 +146,6 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
         }
 
         if (isset($data['fixed_price_coefficient'], $data['fixed_price_coefficient_mode'])) {
-
             $prepared['fixed_price_coefficient'] = $this->getFormattedPriceCoefficient(
                 $data['fixed_price_coefficient'], $data['fixed_price_coefficient_mode']
             );
@@ -151,7 +162,6 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
         }
 
         if (isset($data['start_price_coefficient'], $data['start_price_coefficient_mode'])) {
-
             $prepared['start_price_coefficient'] = $this->getFormattedPriceCoefficient(
                 $data['start_price_coefficient'], $data['start_price_coefficient_mode']
             );
@@ -168,7 +178,6 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
         }
 
         if (isset($data['reserve_price_coefficient'], $data['reserve_price_coefficient_mode'])) {
-
             $prepared['reserve_price_coefficient'] = $this->getFormattedPriceCoefficient(
                 $data['reserve_price_coefficient'], $data['reserve_price_coefficient_mode']
             );
@@ -185,7 +194,6 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
         }
 
         if (isset($data['buyitnow_price_coefficient'], $data['buyitnow_price_coefficient_mode'])) {
-
             $prepared['buyitnow_price_coefficient'] = $this->getFormattedPriceCoefficient(
                 $data['buyitnow_price_coefficient'], $data['buyitnow_price_coefficient_mode']
             );
@@ -265,7 +273,7 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
                 'percentage'    => (int)$data['charity_percentage'],
             );
 
-            $prepared['charity'] = json_encode($src);
+            $prepared['charity'] = Mage::helper('M2ePro')->jsonEncode($src);
         }
 
         if (isset($data['ignore_variations'])) {
@@ -277,7 +285,7 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Builder
 
     //########################################
 
-    private function getFormattedPriceCoefficient($priceCoeff, $priceCoeffMode)
+    protected function getFormattedPriceCoefficient($priceCoeff, $priceCoeffMode)
     {
         if ($priceCoeffMode == Ess_M2ePro_Model_Ebay_Template_SellingFormat::PRICE_COEFFICIENT_NONE) {
             return '';

@@ -8,19 +8,17 @@
 
 class Ess_M2ePro_Model_Upgrade_Migration_ToVersion6
 {
-    const DEVELOPMENT = false;
-
     const PREFIX_TABLE_BACKUP = '__backup_v5';
 
-    private $prefixSource = '__source';
+    protected $_prefixSource = '__source';
 
     /** @var Ess_M2ePro_Model_Upgrade_MySqlSetup */
-    private $installer = NULL;
+    protected $_installer = null;
 
     //########################################
 
-    private $generalDescriptionCorrelation = array();
-    private $unusedTemplatesDescriptionIds = array();
+    protected $_generalDescriptionCorrelation = array();
+    protected $_unusedTemplatesDescriptionIds = array();
 
     //########################################
 
@@ -29,7 +27,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion6
      */
     public function getInstaller()
     {
-        return $this->installer;
+        return $this->_installer;
     }
 
     /**
@@ -37,204 +35,139 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion6
      */
     public function setInstaller(Ess_M2ePro_Model_Upgrade_MySqlSetup $installer)
     {
-        $this->installer = $installer;
+        $this->_installer = $installer;
     }
 
     // ---------------------------------------
 
     public function startSetup()
     {
-        $this->installer->startSetup();
+        $this->_installer->startSetup();
     }
 
     public function endSetup()
     {
-        $this->installer->endSetup();
-    }
-
-    //########################################
-
-    private function prepareDevelopmentEnvironment()
-    {
-        $db = (string)Mage::getConfig()->getNode('global/resources/default_setup/connection/dbname');
-
-        $sourceTables = $this->installer->getConnection()->query(
-            "SHOW TABLES FROM {$db}
-            WHERE
-            Tables_in_{$db} LIKE '%{$this->prefixSource}_%'"
-        )->fetchAll();
-
-        if (empty($sourceTables)) {
-
-            $tables = $this->installer->getConnection()->query(
-                "SHOW TABLES FROM {$db}
-                WHERE
-                Tables_in_{$db} LIKE 'm2epro_%' OR
-                Tables_in_{$db} LIKE 'ess_%'"
-            )->fetchAll();
-
-            $sourceTables = array();
-            foreach ($tables as $table) {
-                $oldTable = current($table);
-
-                $newTable = str_replace('|ess','|ess'.$this->prefixSource,'|'.$oldTable);
-                $newTable = str_replace('|m2epro','|m2epro'.$this->prefixSource,$newTable);
-
-                $newTable = ltrim($newTable,'|');
-
-                $sourceTables[] = array('table' => $newTable);
-                $this->installer->getConnection()->query("RENAME TABLE `{$oldTable}` TO `{$newTable}`");
-            }
-        }
-
-        $tablesToDelete = $this->installer->getConnection()->query(
-            "SHOW TABLES FROM {$db}
-            WHERE
-            (Tables_in_{$db} LIKE 'm2epro_%' OR Tables_in_{$db} LIKE 'ess_%')
-             AND Tables_in_{$db} NOT LIKE '%{$this->prefixSource}%'"
-        )->fetchAll();
-
-        foreach ($tablesToDelete as $table) {
-            $table = current($table);
-            $this->installer->getConnection()->query("DROP TABLE `{$table}`");
-        }
-
-        foreach ($sourceTables as $table) {
-            $sourceTable = current($table);
-
-            $workingTable = str_replace('|ess'.$this->prefixSource,'|ess','|'.$sourceTable);
-            $workingTable = str_replace('|m2epro'.$this->prefixSource,'|m2epro',$workingTable);
-
-            $workingTable = ltrim($workingTable,'|');
-
-            $this->installer->getConnection()->multi_query(<<<SQL
-CREATE TABLE `{$workingTable}` LIKE `{$sourceTable}`;
-INSERT INTO `{$workingTable}` SELECT * FROM `{$sourceTable}`
-SQL
-            );
-        }
+        $this->_installer->endSetup();
     }
 
     //########################################
 
     public function backup()
     {
-        self::DEVELOPMENT && $this->prepareDevelopmentEnvironment();
-
         !$this->checkToSkipStep('m2epro'.self::PREFIX_TABLE_BACKUP.'_translation_text') &&
-            $this->backupOldVersionTables();
+        $this->backupOldVersionTables();
     }
 
     public function migrate()
     {
         $this->truncateTables();
         !$this->checkToSkipStep('m2epro_config') &&
-            $this->createMigrationTable();
+        $this->createMigrationTable();
 
         !$this->checkToSkipStep('m2epro_primary_config') &&
-            $this->processConfigTable();
+        $this->processConfigTable();
         !$this->checkToSkipStep('m2epro_synchronization_config') &&
-            $this->processPrimaryConfigTable();
+        $this->processPrimaryConfigTable();
         !$this->checkToSkipStep('m2epro_cache_config') &&
-            $this->processSynchronizationConfigTable();
+        $this->processSynchronizationConfigTable();
         !$this->checkToSkipStep('m2epro_wizard') &&
-            $this->createCacheConfigTable();
+        $this->createCacheConfigTable();
 
         !$this->checkToSkipStep('m2epro_attribute_set') &&
-            $this->processWizardTable();
+        $this->processWizardTable();
         !$this->checkToSkipStep('m2epro_listing_category') &&
-            $this->processAttributeSetTable();
+        $this->processAttributeSetTable();
         !$this->checkToSkipStep('m2epro_stop_queue') &&
-            $this->processListingCategoryTable();
+        $this->processListingCategoryTable();
 
         // skip is not necessary
         $this->createStopQueueTable();
 
         !$this->checkToSkipStep('m2epro_ebay_account_store_category') &&
-            $this->processEbayAccountTable();
+        $this->processEbayAccountTable();
         !$this->checkToSkipStep('m2epro_amazon_account') &&
-            $this->processEbayAccountStoreCategoryTable();
+        $this->processEbayAccountStoreCategoryTable();
         !$this->checkToSkipStep('m2epro_template_selling_format') &&
-            $this->processAmazonAccountTable();
+        $this->processAmazonAccountTable();
 
         !$this->checkToSkipStep('m2epro_ebay_template_selling_format') &&
-            $this->processTemplateSellingFormatTable();
+        $this->processTemplateSellingFormatTable();
         !$this->checkToSkipStep('m2epro_amazon_template_selling_format') &&
-            $this->processEbayTemplateSellingFormatTable();
+        $this->processEbayTemplateSellingFormatTable();
         !$this->checkToSkipStep('m2epro_buy_template_selling_format') &&
-            $this->processAmazonTemplateSellingFormatTable();
+        $this->processAmazonTemplateSellingFormatTable();
         !$this->checkToSkipStep('m2epro_play_template_selling_format') &&
-            $this->processBuyTemplateSellingFormatTable();
+        $this->processBuyTemplateSellingFormatTable();
         !$this->checkToSkipStep('m2epro_template_synchronization') &&
-            $this->processPlayTemplateSellingFormatTable();
+        $this->processPlayTemplateSellingFormatTable();
 
         !$this->checkToSkipStep('m2epro_ebay_template_synchronization') &&
-            $this->processTemplateSynchronizationTable();
+        $this->processTemplateSynchronizationTable();
         !$this->checkToSkipStep('m2epro_amazon_template_synchronization') &&
-            $this->processEbayTemplateSynchronizationTable();
+        $this->processEbayTemplateSynchronizationTable();
         !$this->checkToSkipStep('m2epro_buy_template_synchronization') &&
-            $this->processAmazonTemplateSynchronizationTable();
+        $this->processAmazonTemplateSynchronizationTable();
         !$this->checkToSkipStep('m2epro_play_template_synchronization') &&
-            $this->processBuyTemplateSynchronizationTable();
+        $this->processBuyTemplateSynchronizationTable();
         !$this->checkToSkipStep('m2epro_ebay_template_return') &&
-            $this->processPlayTemplateSynchronizationTable();
+        $this->processPlayTemplateSynchronizationTable();
 
         !$this->checkToSkipStep('m2epro_ebay_template_payment') &&
-            $this->processEbayTemplateReturnTable();
+        $this->processEbayTemplateReturnTable();
         !$this->checkToSkipStep('m2epro_ebay_template_payment_service') &&
-            $this->processEbayTemplatePaymentTable();
+        $this->processEbayTemplatePaymentTable();
         !$this->checkToSkipStep('m2epro_ebay_template_shipping') &&
-            $this->processEbayTemplatePaymentServiceTable();
+        $this->processEbayTemplatePaymentServiceTable();
         !$this->checkToSkipStep('m2epro_ebay_template_shipping_calculated') &&
-            $this->processEbayTemplateShippingTable();
+        $this->processEbayTemplateShippingTable();
         !$this->checkToSkipStep('m2epro_ebay_template_shipping_service') &&
-            $this->processEbayTemplateShippingCalculatedTable();
+        $this->processEbayTemplateShippingCalculatedTable();
         !$this->checkToSkipStep('m2epro_ebay_template_category') &&
-            $this->processEbayTemplateShippingServiceTable();
+        $this->processEbayTemplateShippingServiceTable();
         !$this->checkToSkipStep('m2epro_ebay_template_category_specific') &&
-            $this->processEbayTemplateCategoryTable();
+        $this->processEbayTemplateCategoryTable();
         !$this->checkToSkipStep('m2epro_ebay_template_description') &&
-            $this->processEbayTemplateCategorySpecificTable();
+        $this->processEbayTemplateCategorySpecificTable();
         !$this->checkToSkipStep('m2epro_listing') &&
-            $this->createEbayTemplateDescriptionTable();
+        $this->createEbayTemplateDescriptionTable();
 
         !$this->checkToSkipStep('m2epro_ebay_listing') &&
-            $this->processListingTable();
+        $this->processListingTable();
         !$this->checkToSkipStep('m2epro_amazon_listing') &&
-            $this->processEbayListingAndEbayTemplateDescriptionTables();
+        $this->processEbayListingAndEbayTemplateDescriptionTables();
         !$this->checkToSkipStep('m2epro_buy_listing') &&
-            $this->processAmazonListingTable();
+        $this->processAmazonListingTable();
         !$this->checkToSkipStep('m2epro_play_listing') &&
-            $this->processBuyListingTable();
+        $this->processBuyListingTable();
         !$this->checkToSkipStep('m2epro_listing_product') &&
-            $this->processPlayListingTable();
+        $this->processPlayListingTable();
 
         !$this->checkToSkipStep('m2epro_ebay_listing_product') &&
-            $this->createListingProductTable();
+        $this->createListingProductTable();
         !$this->checkToSkipStep('m2epro_amazon_listing_product') &&
-            $this->processEbayListingProductTable();
+        $this->processEbayListingProductTable();
         !$this->checkToSkipStep('m2epro_buy_listing_product') &&
-            $this->processAmazonListingProductTable();
+        $this->processAmazonListingProductTable();
         !$this->checkToSkipStep('m2epro_play_listing_product') &&
-            $this->processBuyListingProductTable();
+        $this->processBuyListingProductTable();
         !$this->checkToSkipStep('m2epro_listing_product_variation') &&
-            $this->processPlayListingProductTable();
+        $this->processPlayListingProductTable();
 
         !$this->checkToSkipStep('m2epro_ebay_listing_product_variation') &&
-            $this->processListingProductVariationTable();
+        $this->processListingProductVariationTable();
         !$this->checkToSkipStep('m2epro_ebay_marketplace') &&
-            $this->processEbayListingProductVariationTable();
+        $this->processEbayListingProductVariationTable();
 
         !$this->checkToSkipStep('m2epro_ebay_listing_auto_category') &&
-            $this->processEbayMarketplaceTable();
+        $this->processEbayMarketplaceTable();
         !$this->checkToSkipStep('m2epro_ebay_template_policy') &&
-            $this->processEbayListingAutoCategoryTable();
+        $this->processEbayListingAutoCategoryTable();
         !$this->checkToSkipStep('m2epro_ebay_listing_auto_filter') &&
-            $this->createEbayTemplatePolicy();
+        $this->createEbayTemplatePolicy();
         !$this->checkToSkipStep('m2epro_ebay_dictionary_policy') &&
-            $this->createEbayListingAutoFilter();
+        $this->createEbayListingAutoFilter();
         !$this->checkToSkipStep('m2epro_ebay_dictionary_policy') &&
-            $this->createEbayDictionaryPolicyTable();
+        $this->createEbayDictionaryPolicyTable();
 
         $this->processEbayConditionForMigration();
         $this->processEbayVariationIgnoreForMigration();
@@ -247,13 +180,13 @@ SQL
 
     //########################################
 
-    private function checkToSkipStep($nextTable)
+    protected function checkToSkipStep($nextTable)
     {
-        $nextTable = $this->installer->getTable($nextTable);
-        return (bool)$this->installer->tableExists($nextTable);
+        $nextTable = $this->_installer->getTable($nextTable);
+        return (bool)$this->_installer->tableExists($nextTable);
     }
 
-    private function backupOldVersionTables()
+    protected function backupOldVersionTables()
     {
         $oldTables = array(
             'ess_config',
@@ -314,44 +247,44 @@ SQL
         );
 
         foreach ($oldTables as $oldTable) {
+            $newTable = str_replace('|ess', '|ess'.self::PREFIX_TABLE_BACKUP, '|'.$oldTable);
+            $newTable = str_replace('|m2epro', '|m2epro'.self::PREFIX_TABLE_BACKUP, $newTable);
 
-            $newTable = str_replace('|ess','|ess'.self::PREFIX_TABLE_BACKUP,'|'.$oldTable);
-            $newTable = str_replace('|m2epro','|m2epro'.self::PREFIX_TABLE_BACKUP,$newTable);
+            $newTable = ltrim($newTable, '|');
 
-            $newTable = ltrim($newTable,'|');
+            $oldTable = $this->_installer->getTable($oldTable);
+            $newTable = $this->_installer->getTable($newTable);
 
-            $oldTable = $this->installer->getTable($oldTable);
-            $newTable = $this->installer->getTable($newTable);
-
-            $this->installer->getConnection()->query("DROP TABLE IF EXISTS `{$newTable}`");
-            $this->installer->getConnection()->query("RENAME TABLE `{$oldTable}` TO `{$newTable}`");
+            $this->_installer->getConnection()->query("DROP TABLE IF EXISTS `{$newTable}`");
+            $this->_installer->getConnection()->query("RENAME TABLE `{$oldTable}` TO `{$newTable}`");
         }
     }
 
     //########################################
 
-    private function truncateTables()
+    protected function truncateTables()
     {
         $tables = array(
-            $this->installer->getTable('m2epro_lock_item'),
-            $this->installer->getTable('m2epro_locked_object'),
-            $this->installer->getTable('m2epro_processing_request'),
-            $this->installer->getTable('m2epro_product_change'),
+            $this->_installer->getTable('m2epro_lock_item'),
+            $this->_installer->getTable('m2epro_locked_object'),
+            $this->_installer->getTable('m2epro_processing_request'),
+            $this->_installer->getTable('m2epro_product_change'),
         );
 
         $query = '';
         foreach ($tables as $table) {
-           $query .= "TRUNCATE {$table}; \n";
+            $query .= "TRUNCATE {$table}; \n";
         }
 
-        $query && $this->installer->getConnection()->multi_query($query);
+        $query && $this->_installer->getConnection()->multi_query($query);
     }
 
-    private function createMigrationTable()
+    protected function createMigrationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_migration_v6');
+        $newTable = $this->_installer->getTable('m2epro_migration_v6');
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 
 DROP TABLE IF EXISTS `{$newTable}`;
 CREATE TABLE `{$newTable}` (
@@ -367,17 +300,18 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processConfigTable()
+    protected function processConfigTable()
     {
-        $newTable = $this->installer->getTable('m2epro_config');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_config');
+        $newTable = $this->_installer->getTable('m2epro_config');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_config');
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 
 DROP TABLE IF EXISTS `{$newTable}`;
 CREATE TABLE `{$newTable}` (
@@ -398,13 +332,14 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $oldData = $this->installer->getConnection()->query(<<<SQL
+        $oldData = $this->_installer->getConnection()->query(
+            <<<SQL
 SELECT *
 FROM `{$oldTable}`
 SQL
-)->fetchAll();
+        )->fetchAll();
 
         $newData = array();
 
@@ -445,14 +380,13 @@ SQL
             '/product/index/cataloginventory_stock/' => '/product/index/cataloginventory_stock/', // (disabled)
             '/product/index/' => '/product/index/', // (mode)
             '/order/magento/settings/' => '/order/magento/settings/',
-                                                   // (create_with_first_product_options_when_variation_unavailable)
+            // (create_with_first_product_options_when_variation_unavailable)
             '/cache/amazon/listing/' => '/view/common/amazon/listing/', // (tutorial_shown)
             '/cache/buy/listing/' => '/view/common/buy/listing/', // (tutorial_shown)
             '/cache/play/listing/' => '/view/common/play/listing/', // (tutorial_shown)
         );
 
         foreach ($oldData as $oldRow) {
-
             $newRow = NULL;
             $oldRow['id'] = NULL;
 
@@ -469,18 +403,19 @@ SQL
                 $newRow['group'] = '/view/';
                 $newRow['key'] = 'show_products_thumbnails';
             }
+
             // ---------------------------------------
 
             // default component
             // ---------------------------------------
             if ($oldRow['group'] == '/component/' && $oldRow['key'] == 'default') {
                 if ($oldRow['value'] == 'ebay') {
-
-                    $tempData = $this->installer->getConnection()->fetchPairs(<<<SQL
+                    $tempData = $this->_installer->getConnection()->fetchPairs(
+                        <<<SQL
 SELECT REPLACE(REPLACE(`group`,'/',''),'component','') ,`value`
 FROM `{$oldTable}` WHERE `group` LIKE '/component/%' AND `key` = 'mode'
 SQL
-);
+                    );
                     unset($tempData['ebay']);
 
                     // all components are disabled
@@ -498,6 +433,7 @@ SQL
                 $newRow = $oldRow;
                 $newRow['group'] = '/view/common/component/';
             }
+
             // ---------------------------------------
 
             // /ebay|amazon/order/settings/marketplace_%id%/ (use_first_street_line_as_company)
@@ -505,6 +441,7 @@ SQL
             if (stripos($oldRow['group'], 'order/settings/marketplace_') !== false) {
                 $newRow = $oldRow;
             }
+
             // ---------------------------------------
 
             // ---------------------------------------
@@ -512,15 +449,16 @@ SQL
                 $newRow = $oldRow;
                 $newRow['group'] = $groupConversion[$oldRow['group']];
             }
+
             // ---------------------------------------
 
-            if (!is_null($newRow)) {
+            if ($newRow !== null) {
                 $newData[] = $newRow;
             }
         }
 
-        $this->installer->getConnection()->query("TRUNCATE {$newTable}");
-        !empty($newData) && $this->installer->getConnection()->insertMultiple($newTable, $newData);
+        $this->_installer->getConnection()->query("TRUNCATE {$newTable}");
+        !empty($newData) && $this->_installer->getConnection()->insertMultiple($newTable, $newData);
 
         // settings, that could be missing
         $missingSettings = array(
@@ -542,13 +480,10 @@ SQL
         $newData = array();
 
         foreach ($missingSettings as $oldGroup => $data) {
-
             foreach ($data['keys'] as $keyData) {
-
                 $found = false;
 
                 foreach ($oldData as $oldRow) {
-
                     if ($oldRow['group'] != $oldGroup ||
                         $oldRow['key']   != $keyData['key']) {
                         continue;
@@ -577,13 +512,14 @@ SQL
             }
         }
 
-        !empty($newData) && $this->installer->getConnection()->insertMultiple($newTable, $newData);
+        !empty($newData) && $this->_installer->getConnection()->insertMultiple($newTable, $newData);
 
         $tempMagentoConnectUrl = 'http://www.magentocommerce.com/magento-connect/customer-experience/';
         $tempMagentoConnectUrl .= 'alternative-sales-models/ebay-magento-integration-order-importing-and-stock-level';
         $tempMagentoConnectUrl .= '-synchronization-9193.html';
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 INSERT INTO `{$newTable}` (`group`,`key`,`value`,`notice`,`update_date`,`create_date`) VALUES
 ('/view/ebay/', 'mode', 'advanced', 'simple, advanced', '', ''),
 ('/view/ebay/notice/', 'disable_collapse', '0', '0 - disable, 1 - enable', '', ''),
@@ -602,15 +538,16 @@ INSERT INTO `{$newTable}` (`group`,`key`,`value`,`notice`,`update_date`,`create_
 ('/support/uservoice/', 'api_url', 'http://magento2ebay.uservoice.com/api/v1/', '', '', ''),
 ('/support/uservoice/', 'api_client_key', 'WEsfO8nFh3FXffUU1Oa7A', '', '', '');
 SQL
-);
+        );
     }
 
-    private function processPrimaryConfigTable()
+    protected function processPrimaryConfigTable()
     {
-        $newTable = $this->installer->getTable('m2epro_primary_config');
-        $oldTable = $this->installer->getTable('ess'.self::PREFIX_TABLE_BACKUP.'_config');
+        $newTable = $this->_installer->getTable('m2epro_primary_config');
+        $oldTable = $this->_installer->getTable('ess' . self::PREFIX_TABLE_BACKUP . '_config');
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 
 DROP TABLE IF EXISTS `{$newTable}`;
 CREATE TABLE `{$newTable}` (
@@ -633,15 +570,16 @@ COLLATE utf8_general_ci;
 INSERT `{$newTable}` SELECT * FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
-    private function processSynchronizationConfigTable()
+    protected function processSynchronizationConfigTable()
     {
-        $newTable = $this->installer->getTable('m2epro_synchronization_config');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_config');
+        $newTable = $this->_installer->getTable('m2epro_synchronization_config');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_config');
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 
 DROP TABLE IF EXISTS `{$newTable}`;
 CREATE TABLE `{$newTable}` (
@@ -662,9 +600,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $data = $this->installer->getConnection()->query(<<<SQL
+        $data = $this->_installer->getConnection()->query(
+            <<<SQL
 SELECT *
 FROM `{$oldTable}`
 WHERE `group` LIKE '/synchronization/%'
@@ -674,7 +613,7 @@ OR    `group` LIKE '/buy/synchronization/%'
 OR    `group` LIKE '/play/synchronization/%'
 
 SQL
-)->fetchAll();
+        )->fetchAll();
 
         $ignoreGroups = array(
             array('group' => '/templates/end/', 'key' => '*'),
@@ -684,12 +623,10 @@ SQL
         );
 
         foreach ($data as $key => &$item) {
-
             $item['id'] = NULL;
 
             foreach ($ignoreGroups as $groupData) {
-
-                if (stripos($item['group'],$groupData['group']) === false) {
+                if (stripos($item['group'], $groupData['group']) === false) {
                     continue;
                 }
 
@@ -704,12 +641,13 @@ SQL
             $item['group'] = str_replace('/synchronization/settings', NULL, $item['group']);
             $item['group'] = str_replace('/synchronization/', '/settings/', $item['group']);
 
-            $item['group'] == '/' && $item['group'] = NULL;
+            $item['group'] === '/' && $item['group'] = NULL;
         }
 
-        !empty($data) && $this->installer->getConnection()->insertMultiple($newTable, $data);
+        !empty($data) && $this->_installer->getConnection()->insertMultiple($newTable, $data);
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 
 UPDATE {$newTable}
 SET `group` = CONCAT(`group`,'circle/')
@@ -736,11 +674,12 @@ SQL
 
     // ---------------------------------------
 
-    private function createCacheConfigTable()
+    protected function createCacheConfigTable()
     {
-        $newTable = $this->installer->getTable('m2epro_cache_config');
+        $newTable = $this->_installer->getTable('m2epro_cache_config');
 
-        $this->installer->getConnection()->query(<<<SQL
+        $this->_installer->getConnection()->query(
+            <<<SQL
 
 DROP TABLE IF EXISTS `{$newTable}`;
 CREATE TABLE `{$newTable}` (
@@ -761,17 +700,18 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processWizardTable()
+    protected function processWizardTable()
     {
-        $newWizardTable = $this->installer->getTable('m2epro_wizard');
-        $configTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_config');
+        $newWizardTable = $this->_installer->getTable('m2epro_wizard');
+        $configTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_config');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newWizardTable};
 CREATE TABLE {$newWizardTable} (
@@ -790,190 +730,207 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
         // ---------------------------------------
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'migrationToV6',
             'view' => '*',
             'step' => NULL,
             'status' => 0,
             'type' => 1,
             'priority' => 1
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $step = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/main/' AND `key` = 'step'")
+        $step = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/main/' AND `key` = 'step'")
         );
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/main/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/main/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'installationCommon',
             'view' => 'common',
             'step' => $step,
             'status' => $status,
             'type' => 1,
             'priority' => 2
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/ebay/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/ebay/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'installationEbay',
             'view' => 'ebay',
             'step' => NULL,
             'status' => $status,
             'type' => 1,
             'priority' => 2
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $step = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/amazon/' AND `key` = 'step'")
+        $step = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/amazon/' AND `key` = 'step'")
         );
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/amazon/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/amazon/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'amazon',
             'view' => 'common',
             'step' => $step,
             'status' => $status,
             'type' => 0,
             'priority' => 3
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $step = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/buy/' AND `key` = 'step'")
+        $step = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/buy/' AND `key` = 'step'")
         );
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/buy/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/buy/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'buy',
             'view' => 'common',
             'step' => $step,
             'status' => $status,
             'type' => 0,
             'priority' => 4
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $step = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/amazonNewAsin/' AND `key` = 'step'")
+        $step = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/amazonNewAsin/' AND `key` = 'step'")
         );
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/amazonNewAsin/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/amazonNewAsin/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'amazonNewAsin',
             'view' => 'common',
             'step' => $step,
             'status' => $status,
             'type' => 0,
             'priority' => 5
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $step = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/buyNewSku/' AND `key` = 'step'")
+        $step = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/buyNewSku/' AND `key` = 'step'")
         );
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/buyNewSku/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/buyNewSku/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'buyNewSku',
             'view' => 'common',
             'step' => $step,
             'status' => $status,
             'type' => 0,
             'priority' => 6
-        ));
+            )
+        );
 
         // ---------------------------------------
 
-        $step = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/play/' AND `key` = 'step'")
+        $step = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/play/' AND `key` = 'step'")
         );
-        $status = $this->installer->getConnection()->fetchOne(
-            $this->installer->getConnection()
-                 ->select()
-                 ->from($configTable,'value')
-                 ->where("`group` = '/wizard/play/' AND `key` = 'status'")
+        $status = $this->_installer->getConnection()->fetchOne(
+            $this->_installer->getConnection()
+                             ->select()
+                             ->from($configTable, 'value')
+                             ->where("`group` = '/wizard/play/' AND `key` = 'status'")
         );
 
-        $this->installer->getConnection()->insert($newWizardTable,array(
+        $this->_installer->getConnection()->insert(
+            $newWizardTable, array(
             'nick' => 'play',
             'view' => 'common',
             'step' => $step,
             'status' => $status,
             'type' => 0,
             'priority' => 7
-        ));
+            )
+        );
 
         // ---------------------------------------
     }
 
-    private function processAttributeSetTable()
+    protected function processAttributeSetTable()
     {
-        $newTable = $this->installer->getTable('m2epro_attribute_set');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_attribute_set');
+        $newTable = $this->_installer->getTable('m2epro_attribute_set');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_attribute_set');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -993,21 +950,23 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT * FROM `{$oldTable}`
 WHERE object_type NOT IN (2,4);
 
 SQL
-);
-        $listingTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing');
+        );
+        $listingTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing');
         $templateSellingFormatTable =
-            $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_selling_format');
+            $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_selling_format');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DELETE {$newTable} FROM {$newTable}
 INNER JOIN {$listingTable}
@@ -1022,15 +981,16 @@ WHERE {$newTable}.object_type = 3
 AND {$templateSellingFormatTable}.component_mode = 'ebay'
 
 SQL
-);
+        );
     }
 
-    private function processListingCategoryTable()
+    protected function processListingCategoryTable()
     {
-        $newTable = $this->installer->getTable('m2epro_listing_category');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_category');
+        $newTable = $this->_installer->getTable('m2epro_listing_category');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_category');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1048,11 +1008,12 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $listingTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing');
+        $listingTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT {$oldTable}.* FROM `{$oldTable}`
@@ -1061,16 +1022,17 @@ ON {$listingTable}.id = {$oldTable}.listing_id
 WHERE {$listingTable}.component_mode != 'ebay'
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function createStopQueueTable()
+    protected function createStopQueueTable()
     {
-        $newTable = $this->installer->getTable('m2epro_stop_queue');
+        $newTable = $this->_installer->getTable('m2epro_stop_queue');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1093,25 +1055,25 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processEbayAccountTable()
+    protected function processEbayAccountTable()
     {
         $minSameTitleIndex = 2;
         $maxSameTitleIndex = 10;
 
-        $mainTable = $this->installer->getTable('m2epro_account');
-        $ebayTable = $this->installer->getTable('m2epro_ebay_account');
+        $mainTable = $this->_installer->getTable('m2epro_account');
+        $ebayTable = $this->_installer->getTable('m2epro_ebay_account');
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($mainTable, array('id', 'title'))
-            ->joinRight($ebayTable, 'id = account_id', 'ebay_info');
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($mainTable, array('id', 'title'))
+                                   ->joinRight($ebayTable, 'id = account_id', 'ebay_info');
 
-        $oldData = $this->installer->getConnection()->fetchAll($select);
+        $oldData = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($oldData)) {
             return;
@@ -1125,7 +1087,6 @@ SQL
 
         $migrationData = array();
         foreach ($oldData as $accountRow) {
-
             if (empty($accountRow['ebay_info'])) {
                 continue;
             }
@@ -1155,7 +1116,7 @@ SQL
                 'old_title' => $accountRow['title'],
             );
 
-            $this->installer->getConnection()->update(
+            $this->_installer->getConnection()->update(
                 $mainTable,
                 array('title' => $newTitle),
                 array('id = ?' => $accountRow['id'])
@@ -1166,21 +1127,22 @@ SQL
             return;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'ebay',
             'group' => 'accounts_rename',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processEbayAccountStoreCategoryTable()
+    protected function processEbayAccountStoreCategoryTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_account_store_category');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_account_store_category');
+        $newTable = $this->_installer->getTable('m2epro_ebay_account_store_category');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_account_store_category');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1200,10 +1162,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $select = $this->installer->getConnection()->select()->from($oldTable, '*');
-        $oldData = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()->select()->from($oldTable, '*');
+        $oldData = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($oldData)) {
             return;
@@ -1218,7 +1180,6 @@ SQL
 
         $newData = array();
         foreach ($oldData as $row) {
-
             $accountId = (int)$row['account_id'];
             $categoryId = (string)$row['category_id'];
 
@@ -1232,17 +1193,18 @@ SQL
             $newData[] = $row;
         }
 
-        !empty($newData) && $this->installer->getConnection()->insertMultiple($newTable, $newData);
+        !empty($newData) && $this->_installer->getConnection()->insertMultiple($newTable, $newData);
     }
 
     // ---------------------------------------
 
-    private function processAmazonAccountTable()
+    protected function processAmazonAccountTable()
     {
-        $newTable = $this->installer->getTable('m2epro_amazon_account');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_account');
+        $newTable = $this->_installer->getTable('m2epro_amazon_account');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_amazon_account');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1267,12 +1229,11 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
-        $select = $this->installer->getConnection()->select()->from($oldTable,'*');
+        );
+        $select = $this->_installer->getConnection()->select()->from($oldTable, '*');
 
         $newRows = array();
-        foreach ($this->installer->getConnection()->fetchAll($select) as $row) {
-
+        foreach ($this->_installer->getConnection()->fetchAll($select) as $row) {
             $row['marketplaces_data'] = json_decode($row['marketplaces_data'], true);
             $row['marketplace_id'] = key($row['marketplaces_data']);
             $row['server_hash'] = $row['marketplaces_data'][$row['marketplace_id']]['server_hash'];
@@ -1284,17 +1245,18 @@ SQL
             $newRows[] = $row;
         }
 
-        !empty($newRows) && $this->installer->getConnection()->insertMultiple($newTable, $newRows);
+        !empty($newRows) && $this->_installer->getConnection()->insertMultiple($newTable, $newRows);
     }
 
     //########################################
 
-    private function processTemplateSynchronizationTable()
+    protected function processTemplateSynchronizationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_template_synchronization');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_synchronization');
+        $newTable = $this->_installer->getTable('m2epro_template_synchronization');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_synchronization');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1316,9 +1278,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `id`,
@@ -1331,16 +1294,17 @@ SELECT `id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayTemplateSynchronizationTable()
+    protected function processEbayTemplateSynchronizationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_synchronization');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_synchronization');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1388,16 +1352,17 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $templateSynchTable = $this->installer->getTable(
+        $templateSynchTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_template_synchronization'
         );
-        $ebayTemplateSynchTable = $this->installer->getTable(
+        $ebayTemplateSynchTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_synchronization'
         );
 
-        $oldRows = $this->installer->getConnection()->query(<<<SQL
+        $oldRows = $this->_installer->getConnection()->query(
+            <<<SQL
 SELECT `{$ebayTemplateSynchTable}`.`template_synchronization_id`,
        0 AS `is_custom_template`,
        `{$ebayTemplateSynchTable}`.`list_mode`,
@@ -1442,7 +1407,7 @@ FROM `{$ebayTemplateSynchTable}`
 INNER JOIN `{$templateSynchTable}`
   ON `{$templateSynchTable}`.`id` = `{$ebayTemplateSynchTable}`.`template_synchronization_id`;
 SQL
-)->fetchAll();
+        )->fetchAll();
 
         $newRows = array();
         foreach ($oldRows as $oldRow) {
@@ -1460,11 +1425,13 @@ SQL
 
             if ($oldRow['relist_schedule_type'] == 2) {
                 $newRow['schedule_mode'] = 1;
-                $newRow['schedule_interval_settings'] = json_encode(array(
-                    'mode' => 0,
-                    'date_from' => NULL,
-                    'date_to'   => NULL,
-                ));
+                $newRow['schedule_interval_settings'] = json_encode(
+                    array(
+                                                                        'mode' => 0,
+                                                                        'date_from' => NULL,
+                                                                        'date_to'   => NULL,
+                    )
+                );
 
                 $newRow['schedule_week_settings'] = array();
 
@@ -1482,7 +1449,7 @@ SQL
                 );
 
                 list($monday,$tuesday,$wednesday,$thursday,$friday,$saturday,$sunday) = explode(
-                    '_',$oldRow['relist_schedule_week']
+                    '_', $oldRow['relist_schedule_week']
                 );
 
                 foreach ($daysOfWeeks as $day) {
@@ -1501,15 +1468,17 @@ SQL
             $newRows[] = $newRow;
         }
 
-        !empty($newRows) && $this->installer->getConnection()->insertMultiple($newTable,$newRows);
+        !empty($newRows) && $this->_installer->getConnection()->insertMultiple($newTable, $newRows);
     }
 
-    private function processAmazonTemplateSynchronizationTable()
+    protected function processAmazonTemplateSynchronizationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_amazon_template_synchronization');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_template_synchronization');
+        $newTable = $this->_installer->getTable('m2epro_amazon_template_synchronization');
+        $oldTable = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_amazon_template_synchronization');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1543,9 +1512,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `template_synchronization_id`,
@@ -1574,15 +1544,16 @@ SELECT `template_synchronization_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
-    private function processBuyTemplateSynchronizationTable()
+    protected function processBuyTemplateSynchronizationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_buy_template_synchronization');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_buy_template_synchronization');
+        $newTable = $this->_installer->getTable('m2epro_buy_template_synchronization');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_buy_template_synchronization');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1616,9 +1587,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `template_synchronization_id`,
@@ -1647,15 +1619,17 @@ SELECT `template_synchronization_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
-    private function processPlayTemplateSynchronizationTable()
+    protected function processPlayTemplateSynchronizationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_play_template_synchronization');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_play_template_synchronization');
+        $newTable = $this->_installer->getTable('m2epro_play_template_synchronization');
+        $oldTable = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_play_template_synchronization');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1689,9 +1663,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `template_synchronization_id`,
@@ -1720,17 +1695,18 @@ SELECT `template_synchronization_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processTemplateSellingFormatTable()
+    protected function processTemplateSellingFormatTable()
     {
-        $newTable = $this->installer->getTable('m2epro_template_selling_format');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_selling_format');
+        $newTable = $this->_installer->getTable('m2epro_template_selling_format');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_selling_format');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1748,9 +1724,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `id`,
@@ -1761,17 +1738,18 @@ SELECT `id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayTemplateSellingFormatTable()
+    protected function processEbayTemplateSellingFormatTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_selling_format');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_selling_format');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_selling_format');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_selling_format');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1812,10 +1790,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $select = $this->installer->getConnection()->select()->from($oldTable, '*');
-        $oldData = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()->select()->from($oldTable, '*');
+        $oldData = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($oldData)) {
             return;
@@ -1829,7 +1807,7 @@ SQL
             unset($row['customer_group_id']);
 
             $row['qty_max_posted_value_mode'] = 1;
-            if (is_null($row['qty_max_posted_value'])) {
+            if ($row['qty_max_posted_value'] === null) {
                 $row['qty_max_posted_value_mode'] = 0;
             }
 
@@ -1927,23 +1905,25 @@ SQL
             $newData[] = $row;
         }
 
-        !empty($newData) && $this->installer->getConnection()->insertMultiple($newTable, $newData);
+        !empty($newData) && $this->_installer->getConnection()->insertMultiple($newTable, $newData);
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'ebay',
             'group' => 'selling_format_currencies',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processAmazonTemplateSellingFormatTable()
+    protected function processAmazonTemplateSellingFormatTable()
     {
-        $newTable = $this->installer->getTable('m2epro_amazon_template_selling_format');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_template_selling_format');
+        $newTable = $this->_installer->getTable('m2epro_amazon_template_selling_format');
+        $oldTable = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_amazon_template_selling_format');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -1974,9 +1954,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `template_selling_format_id`,
@@ -2001,10 +1982,10 @@ SELECT `template_selling_format_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
 
-        $select = $this->installer->getConnection()->select()->from($oldTable, '*');
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()->select()->from($oldTable, '*');
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($data)) {
             return;
@@ -2015,21 +1996,22 @@ SQL
             $migrationData[(int)$row['template_selling_format_id']] = true;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'amazon',
             'group' => 'selling_format_currencies',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processBuyTemplateSellingFormatTable()
+    protected function processBuyTemplateSellingFormatTable()
     {
-        $newTable = $this->installer->getTable('m2epro_buy_template_selling_format');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_buy_template_selling_format');
+        $newTable = $this->_installer->getTable('m2epro_buy_template_selling_format');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_buy_template_selling_format');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2051,9 +2033,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `template_selling_format_id`,
@@ -2069,10 +2052,10 @@ SELECT `template_selling_format_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
 
-        $select = $this->installer->getConnection()->select()->from($oldTable, '*');
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()->select()->from($oldTable, '*');
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($data)) {
             return;
@@ -2083,21 +2066,22 @@ SQL
             $migrationData[(int)$row['template_selling_format_id']] = true;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'buy',
             'group' => 'selling_format_currencies',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processPlayTemplateSellingFormatTable()
+    protected function processPlayTemplateSellingFormatTable()
     {
-        $newTable = $this->installer->getTable('m2epro_play_template_selling_format');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_play_template_selling_format');
+        $newTable = $this->_installer->getTable('m2epro_play_template_selling_format');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_play_template_selling_format');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2122,9 +2106,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `template_selling_format_id`,
@@ -2143,10 +2128,10 @@ SELECT `template_selling_format_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
 
-        $select = $this->installer->getConnection()->select()->from($oldTable, '*');
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()->select()->from($oldTable, '*');
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($data)) {
             return;
@@ -2157,22 +2142,23 @@ SQL
             $migrationData[(int)$row['template_selling_format_id']] = true;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'play',
             'group' => 'selling_format_currencies',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
     //########################################
 
-    private function processEbayTemplateReturnTable()
+    protected function processEbayTemplateReturnTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_return');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_return');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2198,12 +2184,14 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $templateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_general');
-        $ebayTemplateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general');
+        $templateGeneral = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_general');
+        $ebayTemplateGeneral = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$templateGeneral}`.`id`,
@@ -2223,16 +2211,17 @@ INNER JOIN `{$templateGeneral}`
 ON `{$templateGeneral}`.`id` = `{$ebayTemplateGeneral}`.`template_general_id`
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayTemplatePaymentTable()
+    protected function processEbayTemplatePaymentTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_payment');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_payment');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2255,12 +2244,14 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $templateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_general');
-        $ebayTemplateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general');
+        $templateGeneral = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_general');
+        $ebayTemplateGeneral = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$templateGeneral}`.`id`,
@@ -2282,15 +2273,18 @@ INNER JOIN `{$templateGeneral}`
 ON `{$templateGeneral}`.`id` = `{$ebayTemplateGeneral}`.`template_general_id`
 
 SQL
-);
+        );
     }
 
-    private function processEbayTemplatePaymentServiceTable()
+    protected function processEbayTemplatePaymentServiceTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_payment_service');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general_payment');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_payment_service');
+        $oldTable = $this->_installer->getTable(
+            'm2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general_payment'
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2307,16 +2301,17 @@ COLLATE utf8_general_ci;
 INSERT INTO `{$newTable}` SELECT * FROM `{$oldTable}`
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayTemplateShippingTable()
+    protected function processEbayTemplateShippingTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_shipping');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_shipping');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2356,11 +2351,13 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
-        $templateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_general');
-        $ebayTemplateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general');
+        );
+        $templateGeneral = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_general');
+        $ebayTemplateGeneral = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general');
 
-        $data = $this->installer->getConnection()->query(<<<SQL
+        $data = $this->_installer->getConnection()->query(
+            <<<SQL
 SELECT `{$templateGeneral}`.`id`,
        `{$templateGeneral}`.`marketplace_id`,
        CONCAT(`{$templateGeneral}`.`title`, ' (shipping)') AS `title`,
@@ -2390,7 +2387,7 @@ FROM `{$ebayTemplateGeneral}`
 INNER JOIN `{$templateGeneral}`
 ON `{$templateGeneral}`.`id` = `{$ebayTemplateGeneral}`.`template_general_id`
 SQL
-)->fetchAll();
+        )->fetchAll();
 
         foreach ($data as &$row) {
             $internationalTrade = $row['international_trade'];
@@ -2409,16 +2406,17 @@ SQL
             }
         }
 
-        !empty($data) && $this->installer->getConnection()->insertMultiple($newTable, $data);
+        !empty($data) && $this->_installer->getConnection()->insertMultiple($newTable, $data);
     }
 
-    private function processEbayTemplateShippingCalculatedTable()
+    protected function processEbayTemplateShippingCalculatedTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_shipping_calculated');
-        $oldTable =
-            $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general_calculated_shipping');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_shipping_calculated');
+        $oldTable = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general_calculated_shipping');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2454,15 +2452,17 @@ COLLATE utf8_general_ci;
 INSERT INTO `{$newTable}` SELECT * FROM `{$oldTable}`
 
 SQL
-);
+        );
     }
 
-    private function processEbayTemplateShippingServiceTable()
+    protected function processEbayTemplateShippingServiceTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_shipping_service');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general_shipping');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_shipping_service');
+        $oldTable = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general_shipping');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2496,16 +2496,17 @@ SELECT `id`,
 FROM `{$oldTable}`
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayTemplateCategoryTable()
+    protected function processEbayTemplateCategoryTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_category');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_category');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2540,11 +2541,13 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
-        $templateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_general');
-        $ebayTemplateGeneral = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general');
+        );
+        $templateGeneral = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_general');
+        $ebayTemplateGeneral = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_template_general');
 
-        $oldRows = $this->installer->getConnection()->query(<<<SQL
+        $oldRows = $this->_installer->getConnection()->query(
+            <<<SQL
 SELECT {$templateGeneral}.id,
        {$templateGeneral}.update_date,
        {$templateGeneral}.create_date,
@@ -2558,7 +2561,6 @@ SQL
 
         $newRows = array();
         foreach ($oldRows as $oldRow) {
-
             $newRow = array(
                 'id' => $oldRow['id'],
 
@@ -2617,13 +2619,13 @@ SQL
 
             if ($newRow['store_category_main_mode'] == 1) {
                 $newRow['store_category_main_path'] = $this->getStoreCategoryPathById(
-                    $newRow['store_category_main_id'],$oldRow['account_id']
+                    $newRow['store_category_main_id'], $oldRow['account_id']
                 );
             }
 
             if ($newRow['store_category_secondary_mode'] == 1) {
                 $newRow['store_category_secondary_path'] = $this->getStoreCategoryPathById(
-                    $newRow['store_category_secondary_id'],$oldRow['account_id']
+                    $newRow['store_category_secondary_id'], $oldRow['account_id']
                 );
             }
 
@@ -2644,19 +2646,20 @@ SQL
             $newRows[] = $newRow;
         }
 
-        !empty($newRows) && $this->installer->getConnection()->insertMultiple($newTable,$newRows);
+        !empty($newRows) && $this->_installer->getConnection()->insertMultiple($newTable, $newRows);
     }
 
-    private function processEbayTemplateCategorySpecificTable()
+    protected function processEbayTemplateCategorySpecificTable()
     {
-        $newTable = $this->installer->getTable(
+        $newTable = $this->_installer->getTable(
             'm2epro_ebay_template_category_specific'
         );
-        $oldTable = $this->installer->getTable(
+        $oldTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general_specific'
         );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2680,16 +2683,17 @@ COLLATE utf8_general_ci;
 INSERT INTO {$newTable} SELECT * FROM {$oldTable}
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function createEbayTemplateDescriptionTable()
+    protected function createEbayTemplateDescriptionTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_description');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_description');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2734,17 +2738,18 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processListingTable()
+    protected function processListingTable()
     {
-        $newTable = $this->installer->getTable('m2epro_listing');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing');
+        $newTable = $this->_installer->getTable('m2epro_listing');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -2776,10 +2781,11 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $tmpTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_template_general');
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $tmpTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_template_general');
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$oldTable}`.`id`,
@@ -2804,16 +2810,17 @@ INNER JOIN {$tmpTable}
 ON {$tmpTable}.id = {$oldTable}.template_general_id;
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayListingAndEbayTemplateDescriptionTables()
+    protected function processEbayListingAndEbayTemplateDescriptionTables()
     {
-        $newEbayListingTable = $this->installer->getTable('m2epro_ebay_listing');
+        $newEbayListingTable = $this->_installer->getTable('m2epro_ebay_listing');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newEbayListingTable};
 CREATE TABLE {$newEbayListingTable} (
@@ -2884,24 +2891,25 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
-        $listingTable = $this->installer->getTable(
+        );
+        $listingTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_listing'
         );
-        $ebayListingTable = $this->installer->getTable(
+        $ebayListingTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_listing'
         );
-        $ebayTemplateGeneralTable = $this->installer->getTable(
+        $ebayTemplateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general'
         );
-        $templateDescriptionTable = $this->installer->getTable(
+        $templateDescriptionTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_template_description'
         );
-        $ebayTemplateDescriptionTable = $this->installer->getTable(
+        $ebayTemplateDescriptionTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_description'
         );
 
-        $oldListingsData = $this->installer->getConnection()->query(<<<SQL
+        $oldListingsData = $this->_installer->getConnection()->query(
+            <<<SQL
 SELECT {$ebayListingTable}.listing_id,
        {$ebayListingTable}.products_sold_count,
        {$ebayListingTable}.items_sold_count,
@@ -2920,9 +2928,9 @@ ON {$templateDescriptionTable}.id = {$ebayTemplateDescriptionTable}.template_des
 INNER JOIN {$ebayTemplateGeneralTable}
 ON {$ebayTemplateGeneralTable}.template_general_id = {$listingTable}.template_general_id
 SQL
-)->fetchAll();
+        )->fetchAll();
 
-        $newEbayTemplateDescriptionTable = $this->installer->getTable(
+        $newEbayTemplateDescriptionTable = $this->_installer->getTable(
             'm2epro_ebay_template_description'
         );
 
@@ -2932,17 +2940,15 @@ SQL
         $templatesDescriptionTitlesCounter = array();
 
         foreach ($oldListingsData as $oldListingData) {
-
             $newProductDetails = $this->convertProductDetails($oldListingData['product_details']);
 
             $newConditionValue = (int)$oldListingData['condition_value'];
             if ($oldListingData['condition_mode'] == 0) {
-
                 $tempValues = array(
                     1000,1500,1750,2000,2500,3000,4000,5000,6000,7000
                 );
 
-                if (!in_array($newConditionValue,$tempValues)) {
+                if (!in_array($newConditionValue, $tempValues)) {
                     if ($newConditionValue < min($tempValues)) {
                         $newConditionValue = min($tempValues);
                     } else if ($newConditionValue > max($tempValues)) {
@@ -2975,12 +2981,11 @@ SQL
             $key[] = (string)$oldListingData['enhancement'];
             $key[] = (int)$oldListingData['gallery_type'];
 
-            $key = md5(json_encode($key));
+            $key = sha1(json_encode($key));
 
             if (isset($templatesDescriptionTempData[$key])) {
                 $newTemplateDescriptionId = $templatesDescriptionTempData[$key];
             } else {
-
                 $title = $oldListingData['title'];
                 !isset($templatesDescriptionTitlesCounter[$title]) && $templatesDescriptionTitlesCounter[$title]= 0;
 
@@ -3024,16 +3029,18 @@ SQL
                     'create_date' => Mage::getModel('core/date')->gmtDate(NULL),
                 );
 
-                $this->installer->getConnection()->insert($newEbayTemplateDescriptionTable,$templateDescriptionData);
-                $newTemplateDescriptionId = $this->installer->getConnection()->lastInsertId();
+                $this->_installer->getConnection()->insert($newEbayTemplateDescriptionTable, $templateDescriptionData);
+                $newTemplateDescriptionId = $this->_installer->getConnection()->lastInsertId();
                 $templatesDescriptionTempData[$key] = $newTemplateDescriptionId;
             }
 
-            $this->generalDescriptionCorrelation[(int)$oldListingData['template_general_id']][] =
+            $this->_generalDescriptionCorrelation[(int)$oldListingData['template_general_id']][] =
                 $newTemplateDescriptionId;
 
-            $listingCategoryTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_category');
-            $listingAutoMode = $this->installer->getConnection()->query(<<<SQL
+            $listingCategoryTable = $this->_installer
+                ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_category');
+            $listingAutoMode = $this->_installer->getConnection()->query(
+                <<<SQL
 SELECT IF(COUNT(*) = 0, 0, 3) FROM {$listingCategoryTable}
 WHERE listing_id = {$oldListingData['listing_id']}
 SQL
@@ -3078,13 +3085,13 @@ SQL
                 'template_synchronization_id' => $oldListingData['template_synchronization_id'],
                 'template_synchronization_custom_id' => NULL
             );
-
         }
 
-        $oldTemplatesDescriptionIds = implode(',',array_unique($oldTemplatesDescriptionIds));
+        $oldTemplatesDescriptionIds = implode(',', array_unique($oldTemplatesDescriptionIds));
 
         if (!empty($oldTemplatesDescriptionIds)) {
-            $unusedTemplatesDescription = $this->installer->getConnection()->query(<<<SQL
+            $unusedTemplatesDescription = $this->_installer->getConnection()->query(
+                <<<SQL
 SELECT * FROM {$ebayTemplateDescriptionTable}
 INNER JOIN {$templateDescriptionTable}
 ON {$templateDescriptionTable}.id = {$ebayTemplateDescriptionTable}.template_description_id
@@ -3107,9 +3114,11 @@ SQL
                     'condition_attribute' => '',
                     'condition_note_mode' => 0,
                     'condition_note_template' => '',
-                    'product_details' => json_encode(array(
-                        'ean' => '', 'upc' => '', 'isbn' => '', 'epid' => '',
-                    )),
+                    'product_details' => json_encode(
+                        array(
+                                                         'ean' => '', 'upc' => '', 'isbn' => '', 'epid' => '',
+                        )
+                    ),
                     'cut_long_titles' => $templateDescription['cut_long_titles'],
                     'hit_counter' => $templateDescription['hit_counter'],
                     'editor_type' => $templateDescription['editor_type'],
@@ -3129,12 +3138,13 @@ SQL
                     'create_date' => Mage::getModel('core/date')->gmtDate(NULL),
                 );
 
-                $this->installer->getConnection()->insert($newEbayTemplateDescriptionTable,$templateDescriptionData);
-                $this->unusedTemplatesDescriptionIds[] = $this->installer->getConnection()->lastInsertId();
+                $this->_installer->getConnection()->insert($newEbayTemplateDescriptionTable, $templateDescriptionData);
+                $this->_unusedTemplatesDescriptionIds[] = $this->_installer->getConnection()->lastInsertId();
             }
         }
 
-        !empty($listingsRows) && $this->installer->getConnection()->insertMultiple($newEbayListingTable,$listingsRows);
+        !empty($listingsRows) && $this->_installer->getConnection()
+                                                  ->insertMultiple($newEbayListingTable, $listingsRows);
 
         $watermarksFolder = Mage::getBaseDir('var').'/M2ePro/ebay/template/description/watermarks/';
         if (!is_writable($watermarksFolder)) {
@@ -3150,12 +3160,13 @@ SQL
         }
     }
 
-    private function processAmazonListingTable()
+    protected function processAmazonListingTable()
     {
-        $newTable = $this->installer->getTable('m2epro_amazon_listing');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_listing');
+        $newTable = $this->_installer->getTable('m2epro_amazon_listing');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_amazon_listing');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3192,16 +3203,17 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $listingTable = $this->installer->getTable(
+        $listingTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_listing'
         );
-        $templateGeneralTable = $this->installer->getTable(
+        $templateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_template_general'
         );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$oldTable}`.`listing_id`,
@@ -3237,15 +3249,16 @@ INNER JOIN {$templateGeneralTable}
 ON {$templateGeneralTable}.template_general_id = {$listingTable}.template_general_id;
 
 SQL
-);
+        );
     }
 
-    private function processBuyListingTable()
+    protected function processBuyListingTable()
     {
-        $newTable = $this->installer->getTable('m2epro_buy_listing');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_buy_listing');
+        $newTable = $this->_installer->getTable('m2epro_buy_listing');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_buy_listing');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3286,16 +3299,17 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $listingTable = $this->installer->getTable(
+        $listingTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_listing'
         );
-        $templateGeneralTable = $this->installer->getTable(
+        $templateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_buy_template_general'
         );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$oldTable}`.`listing_id`,
@@ -3335,15 +3349,16 @@ INNER JOIN {$templateGeneralTable}
 ON {$templateGeneralTable}.template_general_id = {$listingTable}.template_general_id;
 
 SQL
-);
+        );
     }
 
-    private function processPlayListingTable()
+    protected function processPlayListingTable()
     {
-        $newTable = $this->installer->getTable('m2epro_play_listing');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_play_listing');
+        $newTable = $this->_installer->getTable('m2epro_play_listing');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_play_listing');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3383,16 +3398,17 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $listingTable = $this->installer->getTable(
+        $listingTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_listing'
         );
-        $templateGeneralTable = $this->installer->getTable(
+        $templateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_play_template_general'
         );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$oldTable}`.`listing_id`,
@@ -3431,16 +3447,17 @@ INNER JOIN {$templateGeneralTable}
 ON {$templateGeneralTable}.template_general_id = {$listingTable}.template_general_id;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function createListingProductTable()
+    protected function createListingProductTable()
     {
-        $newTable = $this->installer->getTable('m2epro_listing_product');
+        $newTable = $this->_installer->getTable('m2epro_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3470,17 +3487,18 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayListingProductTable()
+    protected function processEbayListingProductTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_listing_product');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_listing_product');
+        $newTable = $this->_installer->getTable('m2epro_ebay_listing_product');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3558,12 +3576,13 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $listingTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing');
-        $listingProductTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product');
+        $listingTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing');
+        $listingProductTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO {$newTable}
 SELECT {$oldTable}.listing_product_id,
@@ -3607,12 +3626,13 @@ INNER JOIN {$listingTable}
 ON {$listingTable}.id = {$listingProductTable}.listing_id
 
 SQL
-);
+        );
 
-        $newLPTable = $this->installer->getTable('m2epro_listing_product');
-        $oldLPTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product');
+        $newLPTable = $this->_installer->getTable('m2epro_listing_product');
+        $oldLPTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newLPTable}`
 SELECT `{$oldLPTable}`.`id`,
@@ -3632,15 +3652,16 @@ INNER JOIN `{$oldLPTable}`
 ON `{$oldLPTable}`.`id` = `{$oldTable}`.`listing_product_id`
 
 SQL
-);
+        );
     }
 
-    private function processAmazonListingProductTable()
+    protected function processAmazonListingProductTable()
     {
-        $newTable = $this->installer->getTable('m2epro_amazon_listing_product');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_listing_product');
+        $newTable = $this->_installer->getTable('m2epro_amazon_listing_product');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_amazon_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3683,9 +3704,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `listing_product_id`,
@@ -3708,12 +3730,13 @@ SELECT `listing_product_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
 
-        $newLPTable = $this->installer->getTable('m2epro_listing_product');
-        $oldLPTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product');
+        $newLPTable = $this->_installer->getTable('m2epro_listing_product');
+        $oldLPTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newLPTable}`
 SELECT `{$oldLPTable}`.`id`,
@@ -3733,15 +3756,16 @@ INNER JOIN `{$oldLPTable}`
 ON `{$oldLPTable}`.`id` = `{$oldTable}`.`listing_product_id`
 
 SQL
-);
+        );
     }
 
-    private function processBuyListingProductTable()
+    protected function processBuyListingProductTable()
     {
-        $newTable = $this->installer->getTable('m2epro_buy_listing_product');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_buy_listing_product');
+        $newTable = $this->_installer->getTable('m2epro_buy_listing_product');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_buy_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3785,9 +3809,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `listing_product_id`,
@@ -3811,12 +3836,13 @@ SELECT `listing_product_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
 
-        $newLPTable = $this->installer->getTable('m2epro_listing_product');
-        $oldLPTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product');
+        $newLPTable = $this->_installer->getTable('m2epro_listing_product');
+        $oldLPTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newLPTable}`
 SELECT `{$oldLPTable}`.`id`,
@@ -3836,15 +3862,16 @@ INNER JOIN `{$oldLPTable}`
 ON `{$oldLPTable}`.`id` = `{$oldTable}`.`listing_product_id`
 
 SQL
-);
+        );
     }
 
-    private function processPlayListingProductTable()
+    protected function processPlayListingProductTable()
     {
-        $newTable = $this->installer->getTable('m2epro_play_listing_product');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_play_listing_product');
+        $newTable = $this->_installer->getTable('m2epro_play_listing_product');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_play_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3895,9 +3922,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `listing_product_id`,
@@ -3925,12 +3953,13 @@ SELECT `listing_product_id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
 
-        $newLPTable = $this->installer->getTable('m2epro_listing_product');
-        $oldLPTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product');
+        $newLPTable = $this->_installer->getTable('m2epro_listing_product');
+        $oldLPTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newLPTable}`
 SELECT `{$oldLPTable}`.`id`,
@@ -3950,17 +3979,18 @@ INNER JOIN `{$oldLPTable}`
 ON `{$oldLPTable}`.`id` = `{$oldTable}`.`listing_product_id`
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processListingProductVariationTable()
+    protected function processListingProductVariationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_listing_product_variation');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product_variation');
+        $newTable = $this->_installer->getTable('m2epro_listing_product_variation');
+        $oldTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product_variation');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -3978,9 +4008,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `id`,
@@ -3991,17 +4022,19 @@ SELECT `id`,
 FROM `{$oldTable}`;
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayListingProductVariationTable()
+    protected function processEbayListingProductVariationTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_listing_product_variation');
-        $oldTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_listing_product_variation');
+        $newTable = $this->_installer->getTable('m2epro_ebay_listing_product_variation');
+        $oldTable = $this->_installer
+            ->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_ebay_listing_product_variation');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -4025,10 +4058,11 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $tmpTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_product_variation');
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $tmpTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_product_variation');
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newTable}`
 SELECT `{$oldTable}`.`listing_product_variation_id`,
@@ -4043,16 +4077,17 @@ INNER JOIN `{$tmpTable}`
 ON `{$tmpTable}`.`id` = `{$oldTable}`.`listing_product_variation_id`;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function processEbayMarketplaceTable()
+    protected function processEbayMarketplaceTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_marketplace');
+        $newTable = $this->_installer->getTable('m2epro_ebay_marketplace');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -4087,9 +4122,10 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO {$newTable} VALUES
   (1, 'USD', 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0),
@@ -4117,15 +4153,16 @@ INSERT INTO {$newTable} VALUES
   (23, 'SEK', 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0);
 
 SQL
-);
+        );
     }
 
-    private function processEbayListingAutoCategoryTable()
+    protected function processEbayListingAutoCategoryTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_listing_auto_category');
-        $newGroupTable = $this->installer->getTable('m2epro_ebay_listing_auto_category_group');
+        $newTable = $this->_installer->getTable('m2epro_ebay_listing_auto_category');
+        $newGroupTable = $this->_installer->getTable('m2epro_ebay_listing_auto_category_group');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -4164,12 +4201,13 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
 
-        $listingTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing');
-        $listingCategoryTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing_category');
+        $listingTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing');
+        $listingCategoryTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing_category');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 INSERT INTO `{$newGroupTable}`
 SELECT `{$listingTable}`.`id`,
@@ -4197,21 +4235,22 @@ ON {$listingTable}.id = {$listingCategoryTable}.listing_id
 WHERE `{$listingTable}`.`component_mode` = 'ebay';
 
 SQL
-);
+        );
     }
 
     // ---------------------------------------
 
-    private function processEbayConditionForMigration()
+    protected function processEbayConditionForMigration()
     {
-        $ebayTemplateGeneralTable = $this->installer->getTable(
+        $ebayTemplateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general'
         );
 
-        $select = $this->installer->getConnection()
+        $select = $this->_installer
+            ->getConnection()
             ->select()
             ->from($ebayTemplateGeneralTable, array('template_general_id', 'condition_mode', 'condition_value'));
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($data)) {
             return;
@@ -4229,10 +4268,10 @@ SQL
                 continue;
             }
 
-            if (isset($this->generalDescriptionCorrelation[(int)$row['template_general_id']])) {
+            if (isset($this->_generalDescriptionCorrelation[(int)$row['template_general_id']])) {
                 $descriptionTemplateIds = array_merge(
                     $descriptionTemplateIds,
-                    $this->generalDescriptionCorrelation[(int)$row['template_general_id']]
+                    $this->_generalDescriptionCorrelation[(int)$row['template_general_id']]
                 );
             }
         }
@@ -4241,51 +4280,51 @@ SQL
             return;
         }
 
-        $templateDescriptionTable = $this->installer->getTable(
+        $templateDescriptionTable = $this->_installer->getTable(
             'm2epro_ebay_template_description'
         );
 
-        $descriptionTemplateIds = array_map('intval',$descriptionTemplateIds);
+        $descriptionTemplateIds = array_map('intval', $descriptionTemplateIds);
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($templateDescriptionTable, array('id','title'))
-            ->where('id IN(?)', $descriptionTemplateIds);
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($templateDescriptionTable, array('id','title'))
+                                   ->where('id IN(?)', $descriptionTemplateIds);
 
-        $migrationData = $this->installer->getConnection()->fetchAll($select);
+        $migrationData = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($migrationData)) {
             return;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'ebay',
             'group' => 'condition_values',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processEbayVariationIgnoreForMigration()
+    protected function processEbayVariationIgnoreForMigration()
     {
-        $ebayTemplateGeneralTable = $this->installer->getTable(
+        $ebayTemplateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general'
         );
-        $templateGeneralTable = $this->installer->getTable(
+        $templateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_template_general'
         );
-        $listingTable = $this->installer->getTable(
+        $listingTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_listing'
         );
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($ebayTemplateGeneralTable, '')
-            ->join($templateGeneralTable, 'id=template_general_id', 'id')
-            ->where('variation_ignore = 1');
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($ebayTemplateGeneralTable, '')
+                                   ->join($templateGeneralTable, 'id=template_general_id', 'id')
+                                   ->where('variation_ignore = 1');
 
-        $generalTemplates = $this->installer->getConnection()->fetchAll($select);
+        $generalTemplates = $this->_installer->getConnection()->fetchAll($select);
         if (empty($generalTemplates)) {
             return;
         }
@@ -4295,40 +4334,44 @@ SQL
             $generalTemplateIds[] = $template['id'];
         }
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($listingTable, array('id', 'title'))
-            ->where('template_general_id IN (?)', $generalTemplateIds);
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($listingTable, array('id', 'title'))
+                                   ->where('template_general_id IN (?)', $generalTemplateIds);
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
         if (empty($data)) {
             return;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'ebay',
             'group' => 'variation_ignore',
             'data' => json_encode($data)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processListingsForMigration()
+    protected function processListingsForMigration()
     {
-        $listingTable = $this->installer->getTable('m2epro'.self::PREFIX_TABLE_BACKUP.'_listing');
+        $listingTable = $this->_installer->getTable('m2epro' . self::PREFIX_TABLE_BACKUP . '_listing');
 
-        $select = $this->installer->getConnection()
+        $select = $this->_installer
+            ->getConnection()
             ->select()
-            ->from($listingTable, array(
-                'id', 'title',
-                'component_mode',
-                'hide_products_others_listings',
-                'synchronization_start_type',
-                'synchronization_stop_type',
-            ));
+            ->from(
+                $listingTable, array(
+                    'id',
+                    'title',
+                    'component_mode',
+                    'hide_products_others_listings',
+                    'synchronization_start_type',
+                    'synchronization_stop_type',
+                )
+            );
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         $migrationHideData = array();
         $migrationSynchTypeData = array();
@@ -4342,7 +4385,6 @@ SQL
 
             if ((int)$row['synchronization_start_type'] != 1 ||
                 (int)$row['synchronization_stop_type'] != 0) {
-
                 $migrationSynchTypeData[(int)$row['id']] = array(
                     'title' => $row['title'],
                     'component_mode' => $row['component_mode'],
@@ -4350,7 +4392,7 @@ SQL
             }
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
 
         if (!empty($migrationHideData)) {
             $migrationTableData = array(
@@ -4358,7 +4400,7 @@ SQL
                 'group' => 'hide_products_others_listings',
                 'data' => json_encode($migrationHideData)
             );
-            $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+            $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
         }
 
         if (!empty($migrationSynchTypeData)) {
@@ -4367,29 +4409,29 @@ SQL
                 'group' => 'listing_synchronization_type',
                 'data' => json_encode($migrationSynchTypeData)
             );
-            $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+            $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
         }
     }
 
-    private function processEbayScheduleForMigration()
+    protected function processEbayScheduleForMigration()
     {
-        $ebayTemplateSynchronizationTable = $this->installer->getTable(
+        $ebayTemplateSynchronizationTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_synchronization'
         );
-        $templateSynchronizationTable = $this->installer->getTable(
+        $templateSynchronizationTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_template_synchronization'
         );
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($ebayTemplateSynchronizationTable, 'relist_schedule_type')
-            ->joinLeft(
-                $templateSynchronizationTable,
-                'id=template_synchronization_id',
-                array('id', 'title')
-            )->where('relist_schedule_type IN(1,2)');
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($ebayTemplateSynchronizationTable, 'relist_schedule_type')
+                                ->joinLeft(
+                                    $templateSynchronizationTable,
+                                    'id=template_synchronization_id',
+                                    array('id', 'title')
+                                )->where('relist_schedule_type IN(1,2)');
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($data)) {
             return;
@@ -4413,7 +4455,7 @@ SQL
             }
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
 
         if (!empty($migrationListData)) {
             $migrationTableData = array(
@@ -4421,7 +4463,7 @@ SQL
                 'group' => 'schedule_list',
                 'data' => json_encode($migrationListData)
             );
-            $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+            $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
         }
 
         if (!empty($migrationDelayData)) {
@@ -4430,59 +4472,61 @@ SQL
                 'group' => 'schedule_delay_after_end',
                 'data' => json_encode($migrationDelayData)
             );
-            $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+            $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
         }
     }
 
-    private function processCommonScheduleForMigration()
+    protected function processCommonScheduleForMigration()
     {
-        $templateSynchronizationTable = $this->installer->getTable(
+        $templateSynchronizationTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_template_synchronization'
         );
-        $amazonTemplateSynchronizationTable = $this->installer->getTable(
+        $amazonTemplateSynchronizationTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_amazon_template_synchronization'
         );
-        $buyTemplateSynchronizationTable = $this->installer->getTable(
+        $buyTemplateSynchronizationTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_buy_template_synchronization'
         );
-        $playTemplateSynchronizationTable = $this->installer->getTable(
+        $playTemplateSynchronizationTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_play_template_synchronization'
         );
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
 
-        $select = $this->installer->getConnection()
+        $select = $this->_installer
+            ->getConnection()
             ->select()
             ->from($templateSynchronizationTable, array('id', 'title', 'component_mode'))
             ->joinRight($amazonTemplateSynchronizationTable, 'id=template_synchronization_id', '')
             ->where('relist_schedule_type != 0');
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         $migrationData = array();
         if (!empty($data)) {
             $migrationData = array_merge($migrationData, $data);
         }
 
-        $select = $this->installer->getConnection()
+        $select = $this->_installer
+            ->getConnection()
             ->select()
             ->from($templateSynchronizationTable, array('id', 'title', 'component_mode'))
             ->joinRight($buyTemplateSynchronizationTable, 'id=template_synchronization_id', '')
             ->where('relist_schedule_type != 0');
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (!empty($data)) {
             $migrationData = array_merge($migrationData, $data);
         }
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($templateSynchronizationTable, array('id', 'title', 'component_mode'))
-            ->joinRight($playTemplateSynchronizationTable, 'id=template_synchronization_id', '')
-            ->where('relist_schedule_type != 0');
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($templateSynchronizationTable, array('id', 'title', 'component_mode'))
+                                   ->joinRight($playTemplateSynchronizationTable, 'id=template_synchronization_id', '')
+                                   ->where('relist_schedule_type != 0');
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (!empty($data)) {
             $migrationData = array_merge($migrationData, $data);
@@ -4497,20 +4541,20 @@ SQL
             'group' => 'relist_schedule',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processProductDetailsForMigration()
+    protected function processProductDetailsForMigration()
     {
-        $ebayTemplateGeneralTable = $this->installer->getTable(
+        $ebayTemplateGeneralTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_template_general'
         );
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($ebayTemplateGeneralTable, array('template_general_id', 'product_details'));
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($ebayTemplateGeneralTable, array('template_general_id', 'product_details'));
 
-        $data = $this->installer->getConnection()->fetchAll($select);
+        $data = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($data)) {
             return;
@@ -4532,10 +4576,10 @@ SQL
                     continue;
                 }
 
-                if (isset($this->generalDescriptionCorrelation[(int)$row['template_general_id']])) {
+                if (isset($this->_generalDescriptionCorrelation[(int)$row['template_general_id']])) {
                     $descriptionTemplateIds = array_merge(
                         $descriptionTemplateIds,
-                        $this->generalDescriptionCorrelation[(int)$row['template_general_id']]
+                        $this->_generalDescriptionCorrelation[(int)$row['template_general_id']]
                     );
                 }
 
@@ -4547,65 +4591,66 @@ SQL
             return;
         }
 
-        $descriptionTemplateIds = array_map('intval',$descriptionTemplateIds);
+        $descriptionTemplateIds = array_map('intval', $descriptionTemplateIds);
 
-        $templateDescriptionTable = $this->installer->getTable(
+        $templateDescriptionTable = $this->_installer->getTable(
             'm2epro_ebay_template_description'
         );
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($templateDescriptionTable, array('id', 'title'))
-            ->where('id IN(?)',$descriptionTemplateIds);
-        $migrationData = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($templateDescriptionTable, array('id', 'title'))
+                                   ->where('id IN(?)', $descriptionTemplateIds);
+        $migrationData = $this->_installer->getConnection()->fetchAll($select);
 
         if (empty($migrationData)) {
             return;
         }
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'ebay',
             'group' => 'product_details',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
-    private function processEbayUnusedDescriptionTemplatesForMigration()
+    protected function processEbayUnusedDescriptionTemplatesForMigration()
     {
-        $templateDescriptionTable = $this->installer->getTable(
+        $templateDescriptionTable = $this->_installer->getTable(
             'm2epro_ebay_template_description'
         );
 
-        if (empty($this->unusedTemplatesDescriptionIds)) {
+        if (empty($this->_unusedTemplatesDescriptionIds)) {
             return;
         }
 
-        $descriptionTemplateIds = array_map('intval', $this->unusedTemplatesDescriptionIds);
+        $descriptionTemplateIds = array_map('intval', $this->_unusedTemplatesDescriptionIds);
 
-        $select = $this->installer->getConnection()
-            ->select()
-            ->from($templateDescriptionTable, array('id','title'))
-            ->where('id IN(?)', $descriptionTemplateIds);
-        $migrationData = $this->installer->getConnection()->fetchAll($select);
+        $select = $this->_installer->getConnection()
+                                   ->select()
+                                   ->from($templateDescriptionTable, array('id','title'))
+                                   ->where('id IN(?)', $descriptionTemplateIds);
+        $migrationData = $this->_installer->getConnection()->fetchAll($select);
 
-        $migrationTable = $this->installer->getTable('m2epro_migration_v6');
+        $migrationTable = $this->_installer->getTable('m2epro_migration_v6');
         $migrationTableData = array(
             'component' => 'ebay',
             'group' => 'unused_description_templates',
             'data' => json_encode($migrationData)
         );
-        $this->installer->getConnection()->insert($migrationTable, $migrationTableData);
+        $this->_installer->getConnection()->insert($migrationTable, $migrationTableData);
     }
 
     // ---------------------------------------
 
-    private function createEbayTemplatePolicy()
+    protected function createEbayTemplatePolicy()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_template_policy');
+        $newTable = $this->_installer->getTable('m2epro_ebay_template_policy');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -4619,14 +4664,15 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
-    private function createEbayListingAutoFilter()
+    protected function createEbayListingAutoFilter()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_listing_auto_filter');
+        $newTable = $this->_installer->getTable('m2epro_ebay_listing_auto_filter');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -4650,14 +4696,15 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
-    private function createEbayDictionaryPolicyTable()
+    protected function createEbayDictionaryPolicyTable()
     {
-        $newTable = $this->installer->getTable('m2epro_ebay_dictionary_policy');
+        $newTable = $this->_installer->getTable('m2epro_ebay_dictionary_policy');
 
-        $this->installer->getConnection()->multi_query(<<<SQL
+        $this->_installer->getConnection()->multi_query(
+            <<<SQL
 
 DROP TABLE IF EXISTS {$newTable};
 CREATE TABLE {$newTable} (
@@ -4677,23 +4724,22 @@ CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 SQL
-);
+        );
     }
 
     //########################################
 
-    private function getCategoryPathById($categoryId, $delimiter = ' -> ')
+    protected function getCategoryPathById($categoryId, $delimiter = ' -> ')
     {
         $titles = array();
 
         for ($i = 1; $i < 8; $i++) {
+            $dictionaryTable = $this->_installer->getTable('m2epro_ebay_dictionary_category');
 
-            $dictionaryTable = $this->installer->getTable('m2epro_ebay_dictionary_category');
-
-            $category = $this->installer->getConnection()
-                 ->select()->from($dictionaryTable,'*')
-                 ->where('category_id = ?', $categoryId)
-                 ->query()->fetch();
+            $category = $this->_installer->getConnection()
+                                         ->select()->from($dictionaryTable, '*')
+                                         ->where('category_id = ?', $categoryId)
+                                         ->query()->fetch();
 
             if (empty($category) || ($i == 1 && !$category['is_leaf'])) {
                 return '';
@@ -4711,22 +4757,22 @@ SQL
         return implode($delimiter, array_reverse($titles));
     }
 
-    private function getStoreCategoryPathById($categoryId, $accountId, $delimiter = ' -> ')
+    protected function getStoreCategoryPathById($categoryId, $accountId, $delimiter = ' -> ')
     {
         if (empty($categoryId) || empty($accountId)) {
             return '';
         }
 
-        $ebayStoreCategoryTable = $this->installer->getTable(
+        $ebayStoreCategoryTable = $this->_installer->getTable(
             'm2epro'.self::PREFIX_TABLE_BACKUP.'_ebay_account_store_category'
         );
 
-        $categories = $this->installer->getConnection()
-            ->select()->from($ebayStoreCategoryTable,'*')
-            ->where('account_id = ?', $accountId)
-            ->where('category_id = ?', $categoryId)
-            ->query()
-            ->fetchAll();
+        $categories = $this->_installer->getConnection()
+                                       ->select()->from($ebayStoreCategoryTable, '*')
+                                       ->where('account_id = ?', $accountId)
+                                       ->where('category_id = ?', $categoryId)
+                                       ->query()
+                                       ->fetchAll();
 
         $path = array();
 
@@ -4739,7 +4785,7 @@ SQL
                 }
             }
 
-            if (is_null($currentCategory)) {
+            if ($currentCategory === null) {
                 break;
             }
 
@@ -4757,7 +4803,7 @@ SQL
 
     //########################################
 
-    private function convertProductDetails($oldProductDetails)
+    protected function convertProductDetails($oldProductDetails)
     {
         $newProductDetails = array(
             'ean' => '',
@@ -4772,16 +4818,19 @@ SQL
             isset($oldProductDetails['product_details_isbn_ca'])) {
             $newProductDetails['isbn'] = $oldProductDetails['product_details_isbn_ca'];
         }
+
         if (isset($oldProductDetails['product_details_epid_mode']) &&
             $oldProductDetails['product_details_epid_mode'] == 2 &&
             isset($oldProductDetails['product_details_epid_ca'])) {
             $newProductDetails['epid'] = $oldProductDetails['product_details_epid_ca'];
         }
+
         if (isset($oldProductDetails['product_details_ean_mode']) &&
             $oldProductDetails['product_details_ean_mode'] == 2 &&
             isset($oldProductDetails['product_details_ean_ca'])) {
             $newProductDetails['ean'] = $oldProductDetails['product_details_ean_ca'];
         }
+
         if (isset($oldProductDetails['product_details_upc_mode']) &&
             $oldProductDetails['product_details_upc_mode'] == 2 &&
             isset($oldProductDetails['product_details_upc_ca'])) {

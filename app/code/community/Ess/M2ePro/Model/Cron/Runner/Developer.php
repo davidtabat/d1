@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
 final class Ess_M2ePro_Model_Cron_Runner_Developer extends Ess_M2ePro_Model_Cron_Runner_Abstract
 {
-    private $allowedTasks = NULL;
+    protected $_allowedTasks = null;
 
     //########################################
 
@@ -24,6 +24,14 @@ final class Ess_M2ePro_Model_Cron_Runner_Developer extends Ess_M2ePro_Model_Cron
 
     //########################################
 
+    public function process()
+    {
+        session_write_close();
+        return parent::process();
+    }
+
+    //########################################
+
     /**
      * @return Ess_M2ePro_Model_Cron_Strategy_Abstract
      */
@@ -32,8 +40,8 @@ final class Ess_M2ePro_Model_Cron_Runner_Developer extends Ess_M2ePro_Model_Cron
         /** @var Ess_M2ePro_Model_Cron_Strategy_Abstract $strategyObject */
         $strategyObject = Mage::getModel('M2ePro/Cron_Strategy_Serial');
 
-        if (!empty($this->allowedTasks)) {
-            $strategyObject->setAllowedTasks($this->allowedTasks);
+        if (!empty($this->_allowedTasks)) {
+            $strategyObject->setAllowedTasks($this->_allowedTasks);
         }
 
         return $strategyObject;
@@ -47,7 +55,7 @@ final class Ess_M2ePro_Model_Cron_Runner_Developer extends Ess_M2ePro_Model_Cron
      */
     public function setAllowedTasks(array $tasks)
     {
-        $this->allowedTasks = $tasks;
+        $this->_allowedTasks = $tasks;
         return $this;
     }
 

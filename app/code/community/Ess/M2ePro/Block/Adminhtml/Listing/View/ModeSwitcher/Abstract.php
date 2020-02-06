@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -61,7 +61,7 @@ HTML;
         );
     }
 
-    private function getCurrentViewMode()
+    protected function getCurrentViewMode()
     {
         if (!isset($this->_data['current_view_mode'])) {
             throw new Ess_M2ePro_Model_Exception_Logic('View Mode is not set.');

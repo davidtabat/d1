@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -27,7 +27,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_ConflictedModules
 
     protected function isShown()
     {
-        return count(Mage::helper('M2ePro/Magento')->getConflictedModules()) > 0;
+        return !empty(Mage::helper('M2ePro/Magento')->getConflictedModules());
     }
 
     //########################################

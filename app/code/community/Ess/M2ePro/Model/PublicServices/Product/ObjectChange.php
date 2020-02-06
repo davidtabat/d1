@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -25,26 +25,37 @@
 
 class Ess_M2ePro_Model_PublicServices_Product_ObjectChange
 {
-    protected $observers = array();
+    const VERSION = '1.0.1';
+
+    protected $_productObservers   = array();
+    protected $_stockItemObservers = array();
 
     //########################################
 
     public function applyChanges()
     {
-        if (count($this->observers) <= 0) {
-            return $this;
-        }
-
         /** @var Ess_M2ePro_Model_Observer_Dispatcher $dispatcher */
         $dispatcher = Mage::getModel('M2ePro/Observer_Dispatcher');
 
-        foreach ($this->observers as $productObserver) {
+        foreach ($this->_productObservers as $productObserver) {
+            $dispatcher->catalogProductSaveAfter($productObserver);
+        }
 
-            $product = $productObserver->getEvent()->getData('product');
-            $stockItemObserver = $this->prepareStockItemObserver($product);
+        foreach ($this->_stockItemObservers as $stockItemObserver) {
+
+            /** @var $stockItem Mage_CatalogInventory_Model_Stock_Item */
+            $stockItem = $stockItemObserver->getData('item');
+
+            $reloadedStockItem = Mage::getModel('cataloginventory/stock_item');
+            $reloadedStockItem->setProductId($stockItem->getProductId())
+                              ->setStockId($stockItem->getStockId())
+                              ->loadByProduct($stockItem->getProductId());
+
+            foreach ($reloadedStockItem->getData() as $key => $value) {
+                $stockItem->setData($key, $value);
+            }
 
             $dispatcher->catalogInventoryStockItemSaveAfter($stockItemObserver);
-            $dispatcher->catalogProductSaveAfter($productObserver);
         }
 
         return $this->flushObservers();
@@ -55,7 +66,9 @@ class Ess_M2ePro_Model_PublicServices_Product_ObjectChange
      */
     public function flushObservers()
     {
-        $this->observers = array();
+        $this->_productObservers   = array();
+        $this->_stockItemObservers = array();
+
         return $this;
     }
 
@@ -68,34 +81,53 @@ class Ess_M2ePro_Model_PublicServices_Product_ObjectChange
      */
     public function observeProduct($product, $storeId = 0)
     {
-        $productId = $product instanceof Mage_Catalog_Model_Product ? $product->getId()
-                                                                    : $product;
-        $key = $productId.'##'.$storeId;
-
-        if (array_key_exists($key, $this->observers)) {
+        if ($this->isProductObserved($product, $storeId)) {
             return $this;
         }
 
         if (!($product instanceof Mage_Catalog_Model_Product)) {
-
             $product = Mage::getModel('catalog/product')
                 ->setStoreId($storeId)
                 ->load($product);
         }
 
-        $observer = $this->prepareProductObserver($product);
+        $key = $product->getId().'##'.$storeId;
+
+        $productObserver = $this->prepareProductObserver($product);
 
         /** @var Ess_M2ePro_Model_Observer_Dispatcher $dispatcher */
         $dispatcher = Mage::getModel('M2ePro/Observer_Dispatcher');
-        $dispatcher->catalogProductSaveBefore($observer);
+        $dispatcher->catalogProductSaveBefore($productObserver);
+        $this->_productObservers[$key] = $productObserver;
 
-        $this->observers[$key] = $observer;
+        $stockItemObserver               = $this->prepareStockItemObserver($product);
+        $this->_stockItemObservers[$key] = $stockItemObserver;
+
         return $this;
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Product|int $product
+     * @param int $storeId
+     * @return bool
+     */
+    public function isProductObserved($product, $storeId = 0)
+    {
+        $productId = $product instanceof Mage_Catalog_Model_Product ? $product->getId()
+                                                                    : $product;
+        $key = $productId.'##'.$storeId;
+
+        if (array_key_exists($key, $this->_productObservers) ||
+            array_key_exists($key, $this->_stockItemObservers)) {
+            return true;
+        }
+
+        return false;
     }
 
     // ---------------------------------------
 
-    private function prepareProductObserver(Mage_Catalog_Model_Product $product)
+    protected function prepareProductObserver(Mage_Catalog_Model_Product $product)
     {
         $event = new Varien_Event();
         $event->setProduct($product);
@@ -106,17 +138,13 @@ class Ess_M2ePro_Model_PublicServices_Product_ObjectChange
         return $observer;
     }
 
-    private function prepareStockItemObserver(Mage_Catalog_Model_Product $product)
+    protected function prepareStockItemObserver(Mage_Catalog_Model_Product $product)
     {
         /** @var $stockItem Mage_CatalogInventory_Model_Stock_Item */
         $stockItem = Mage::getModel('cataloginventory/stock_item');
-
-        $stockItem->loadByProduct($product->getId())
-                  ->setProductId($product->getId());
-
-        foreach ($product->getData('stock_item')->getData() as $key => $value) {
-            $stockItem->setOrigData($key, $value);
-        }
+        $stockItem->setStockId($stockItem->getStockId());
+        $stockItem->setProductId($product->getId());
+        $stockItem->loadByProduct($product->getId());
 
         $observer = new Varien_Event_Observer();
         $observer->setEvent(new Varien_Event());

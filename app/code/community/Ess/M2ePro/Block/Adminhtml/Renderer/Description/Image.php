@@ -2,14 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Renderer_Description_Image
     extends Ess_M2ePro_Block_Adminhtml_Renderer_Description_Abstract
 {
-    private $imageId;
+    protected $_imageId;
 
     //########################################
 
@@ -29,19 +29,24 @@ class Ess_M2ePro_Block_Adminhtml_Renderer_Description_Image
 
     public function getImageId()
     {
-        if (is_null($this->imageId)) {
-            $this->imageId = substr(sha1(
-                'image-' . $this->getData('index_number') . json_encode($this->getData('src'))
-            ), 20);
+        if ($this->_imageId === null) {
+            $this->_imageId = substr(
+                sha1(
+                    'image-' . $this->getData('index_number') . Mage::helper('M2ePro')->jsonEncode(
+                        $this->getData('src')
+                    )
+                ), 20
+            );
         }
-        return $this->imageId;
+
+        return $this->_imageId;
     }
 
     //########################################
 
-    public function isLinkMode()
+    public function isModeDefault()
     {
-        return $this->getData('linked_mode') == Ess_M2ePro_Helper_Module_Renderer_Description::IMAGES_MODE_NEW_WINDOW;
+        return $this->getData('linked_mode') == Ess_M2ePro_Helper_Module_Renderer_Description::IMAGES_MODE_DEFAULT;
     }
 
     //########################################

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -13,7 +13,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
     /**
      * @var null|Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
-    private $proxy = NULL;
+    protected $_proxy = null;
 
     //########################################
 
@@ -39,7 +39,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
 
         $this->reloadProduct();
 
-        $this->getProxy()->setData('name',$this->getProduct()->getName());
+        $this->getProxy()->setData('name', $this->getProduct()->getName());
 
         $this->getProxy()->setWebsiteIds($this->getProduct()->getWebsiteIds());
         $this->getProxy()->setCategoriesIds($this->getProduct()->getCategoryIds());
@@ -48,11 +48,12 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
             return;
         }
 
-        $this->getProxy()->setData('status',(int)$this->getProduct()->getStatus());
-        $this->getProxy()->setData('price',(float)$this->getProduct()->getPrice());
-        $this->getProxy()->setData('special_price',(float)$this->getProduct()->getSpecialPrice());
-        $this->getProxy()->setData('special_price_from_date',$this->getProduct()->getSpecialFromDate());
-        $this->getProxy()->setData('special_price_to_date',$this->getProduct()->getSpecialToDate());
+        $this->getProxy()->setData('status', (int)$this->getProduct()->getStatus());
+        $this->getProxy()->setData('price', (float)$this->getProduct()->getPrice());
+        $this->getProxy()->setData('special_price', (float)$this->getProduct()->getSpecialPrice());
+        $this->getProxy()->setData('special_price_from_date', $this->getProduct()->getSpecialFromDate());
+        $this->getProxy()->setData('special_price_to_date', $this->getProduct()->getSpecialToDate());
+        $this->getProxy()->setData('tier_price', $this->getProduct()->getTierPrice());
 
         $this->getProxy()->setAttributes($this->getTrackingAttributesWithValues());
     }
@@ -69,10 +70,10 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
     /**
      * @return Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
-    private function getProxy()
+    protected function getProxy()
     {
-        if (!is_null($this->proxy)) {
-            return $this->proxy;
+        if ($this->_proxy !== null) {
+            return $this->_proxy;
         }
 
         /** @var Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy $object */
@@ -81,12 +82,12 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
         $object->setProductId($this->getProductId());
         $object->setStoreId($this->getStoreId());
 
-        return $this->proxy = $object;
+        return $this->_proxy = $object;
     }
 
     // ---------------------------------------
 
-    private function clearStoredProxy()
+    protected function clearStoredProxy()
     {
         $key = $this->getProductId().'_'.$this->getStoreId();
         if ($this->isAddingProductProcess()) {
@@ -96,7 +97,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
         unset(self::$proxyStorage[$key]);
     }
 
-    private function storeProxy()
+    protected function storeProxy()
     {
         $key = $this->getProductId().'_'.$this->getStoreId();
         if ($this->isAddingProductProcess()) {
@@ -108,23 +109,24 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before extends Ess_M2ePro_Mode
 
     //########################################
 
-    private function getTrackingAttributes()
+    protected function getTrackingAttributes()
     {
         $attributes = array();
 
         foreach ($this->getAffectedListingsProducts() as $listingProduct) {
-            /** @var Ess_M2ePro_Model_Listing_Product $listingProduct */
-            $tempAttributes = $listingProduct->getTrackingAttributes();
-            $attributes = array_merge($attributes, $tempAttributes);
-        }
+            /** @var Ess_M2ePro_Model_Magento_Product_ChangeProcessor_Abstract $changeProcessor */
+            $changeProcessor = Mage::getModel(
+                'M2ePro/'.ucfirst($listingProduct->getComponentMode()).'_Magento_Product_ChangeProcessor'
+            );
+            $changeProcessor->setListingProduct($listingProduct);
 
-        $tempAttributes = Mage::getModel('M2ePro/Ebay_Listing_Other_Source')->getTrackingAttributes();
-        $attributes = array_merge($attributes, $tempAttributes);
+            $attributes = array_merge($attributes, $changeProcessor->getTrackingAttributes());
+        }
 
         return array_values(array_unique($attributes));
     }
 
-    private function getTrackingAttributesWithValues()
+    protected function getTrackingAttributesWithValues()
     {
         $attributes = array();
 

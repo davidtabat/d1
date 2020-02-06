@@ -2,14 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Model_Observer_Product_AddUpdate_Abstract extends Ess_M2ePro_Model_Observer_Product_Abstract
 {
-    private $affectedListingsProducts = array();
-    private $affectedOtherListings = array();
+    protected $_affectedListingsProducts = array();
 
     //########################################
 
@@ -29,31 +28,22 @@ abstract class Ess_M2ePro_Model_Observer_Product_AddUpdate_Abstract extends Ess_
 
     protected function areThereAffectedItems()
     {
-        return count($this->getAffectedListingsProducts()) > 0 ||
-               count($this->getAffectedOtherListings()) > 0;
+        return !empty($this->getAffectedListingsProducts());
     }
 
     // ---------------------------------------
 
+    /**
+     * @return Ess_M2ePro_Model_Listing_Product[]
+     */
     protected function getAffectedListingsProducts()
     {
-        if (!empty($this->affectedListingsProducts)) {
-            return $this->affectedListingsProducts;
+        if (!empty($this->_affectedListingsProducts)) {
+            return $this->_affectedListingsProducts;
         }
 
-        return $this->affectedListingsProducts = Mage::getResourceModel('M2ePro/Listing_Product')
-                                                            ->getItemsByProductId($this->getProductId());
-    }
-
-    protected function getAffectedOtherListings()
-    {
-        if (!empty($this->affectedOtherListings)) {
-            return $this->affectedOtherListings;
-        }
-
-        return $this->affectedOtherListings = Mage::getResourceModel('M2ePro/Listing_Other')->getItemsByProductId(
-            $this->getProductId(), array('component_mode' => Ess_M2ePro_Helper_Component_Ebay::NICK)
-        );
+        return $this->_affectedListingsProducts = Mage::getResourceModel('M2ePro/Listing_Product')
+                                                      ->getItemsByProductId($this->getProductId());
     }
 
     //########################################

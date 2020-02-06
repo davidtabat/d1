@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
@@ -10,9 +10,15 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
 {
     //########################################
 
-    const CONTROLLER_MODULE_MODULE          = 'adminhtml_development_module_module';
-    const CONTROLLER_MODULE_SYNCHRONIZATION = 'adminhtml_development_module_synchronization';
-    const CONTROLLER_MODULE_INTEGRATION     = 'adminhtml_development_module_integration';
+    const CONTROLLER_CRON_SYSTEM  = 'adminhtml_development_cron_system';
+    const CONTROLLER_CRON_AMAZON  = 'adminhtml_development_cron_amazon';
+    const CONTROLLER_CRON_EBAY    = 'adminhtml_development_cron_ebay';
+    const CONTROLLER_CRON_WALMART = 'adminhtml_development_cron_walmart';
+
+    const CONTROLLER_MODULE_INTEGRATION         = 'adminhtml_development_module_integration';
+    const CONTROLLER_MODULE_INTEGRATION_EBAY    = 'adminhtml_development_module_integration_ebay';
+    const CONTROLLER_MODULE_INTEGRATION_AMAZON  = 'adminhtml_development_module_integration_amazon';
+    const CONTROLLER_MODULE_INTEGRATION_WALMART = 'adminhtml_development_module_integration_walmart';
 
     const CONTROLLER_TOOLS_M2EPRO_GENERAL   = 'adminhtml_development_tools_m2ePro_general';
     const CONTROLLER_TOOLS_M2EPRO_INSTALL   = 'adminhtml_development_tools_m2ePro_install';
@@ -21,49 +27,48 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
 
     const CONTROLLER_DEBUG                  = 'adminhtml_development';
 
-    const CONTROLLER_BUILD                  = 'adminhtml_development_build';
-
     //########################################
 
     public function parseGeneralCommandsData($controller)
     {
         $tempClass = Mage::helper('M2ePro/View_Development_Controller')->loadControllerAndGetClassName($controller);
 
-        $reflectionClass = new ReflectionClass ($tempClass);
+        $reflectionClass = new ReflectionClass($tempClass);
         $reflectionMethods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
         // Get actions methods
         // ---------------------------------------
         $actions = array();
         foreach ($reflectionMethods as $reflectionMethod) {
-
             $className = $reflectionClass->getMethod($reflectionMethod->name)
                                          ->getDeclaringClass()->name;
             $methodName = $reflectionMethod->name;
 
-            if (substr($className,0,10) != 'Ess_M2ePro') {
+            if (substr($className, 0, 10) != 'Ess_M2ePro') {
                 continue;
             }
+
             if ($methodName == 'indexAction') {
                 continue;
             }
-            if (substr($methodName,strlen($methodName)-6) != 'Action') {
+
+            if (substr($methodName, strlen($methodName)-6) != 'Action') {
                 continue;
             }
 
-            $methodName = substr($methodName,0,strlen($methodName)-6);
+            $methodName = substr($methodName, 0, strlen($methodName)-6);
 
             $actions[] = $methodName;
         }
+
         // ---------------------------------------
 
         // Print method actions
         // ---------------------------------------
         $methods = array();
         foreach ($actions as $action) {
-
             $controllerName = Mage::helper('M2ePro/View_Development_Controller')->getControllerClassName($controller);
-            $reflectionMethod = new ReflectionMethod ($controllerName,$action.'Action');
+            $reflectionMethod = new ReflectionMethod($controllerName, $action.'Action');
 
             $commentsString = $this->getMethodComments($reflectionMethod);
 
@@ -110,11 +115,6 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
             preg_match('/@prompt_var[\s]*\"(.*)\"/', $commentsString, $matches);
             isset($matches[1]) && $methodPromptVar = $matches[1];
 
-            $methodComponents = false;
-            preg_match('/@components[ ]*(.*)/', $commentsString, $matches);
-            isset($matches[0]) && $methodComponents = true;
-            !empty($matches[1]) && $methodComponents = explode(',', $matches[1]);
-
             $methodNewWindow = false;
             preg_match('/new_window/', $commentsString, $matches);
             isset($matches[0]) && $methodNewWindow = true;
@@ -132,10 +132,10 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
                     'text' => $methodPrompt,
                     'var'  => $methodPromptVar
                 ),
-                'components'  => $methodComponents,
                 'new_window'  => $methodNewWindow
             );
         }
+
         // ---------------------------------------
 
         return $methods;
@@ -147,40 +147,41 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
     {
         $tempClass = Mage::helper('M2ePro/View_Development_Controller')->loadControllerAndGetClassName($controller);
 
-        $reflectionClass = new ReflectionClass ($tempClass);
+        $reflectionClass = new ReflectionClass($tempClass);
         $reflectionMethods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
         // Get actions methods
         // ---------------------------------------
         $actions = array();
         foreach ($reflectionMethods as $reflectionMethod) {
-
             $className = $reflectionClass->getMethod($reflectionMethod->name)->getDeclaringClass()->name;
             $methodName = $reflectionMethod->name;
 
-            if (substr($className,0,10) != 'Ess_M2ePro') {
+            if (substr($className, 0, 10) != 'Ess_M2ePro') {
                 continue;
             }
+
             if ($methodName == 'indexAction') {
                 continue;
             }
-            if (substr($methodName,strlen($methodName)-6) != 'Action') {
+
+            if (substr($methodName, strlen($methodName)-6) != 'Action') {
                 continue;
             }
 
-            $methodName = substr($methodName,0,strlen($methodName)-6);
+            $methodName = substr($methodName, 0, strlen($methodName)-6);
 
             $actions[] = $methodName;
         }
+
         // ---------------------------------------
 
         // Print method actions
         // ---------------------------------------
         $methods = array();
         foreach ($actions as $action) {
-
             $controllerName = Mage::helper('M2ePro/View_Development_Controller')->getControllerClassName($controller);
-            $reflectionMethod = new ReflectionMethod ($controllerName,$action.'Action');
+            $reflectionMethod = new ReflectionMethod($controllerName, $action.'Action');
 
             $commentsString = $this->getMethodComments($reflectionMethod);
 
@@ -219,6 +220,7 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
                 'new_window' => $methodNewWindow
             );
         }
+
         // ---------------------------------------
 
         return $methods;
@@ -226,10 +228,10 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
 
     //########################################
 
-    private function getMethodComments(ReflectionMethod $reflectionMethod)
+    protected function getMethodComments(ReflectionMethod $reflectionMethod)
     {
         $contentPhpFile = file_get_contents($reflectionMethod->getFileName());
-        $contentPhpFile = explode(chr(10),$contentPhpFile);
+        $contentPhpFile = explode(chr(10), $contentPhpFile);
 
         $commentsArray = array();
         for ($i=$reflectionMethod->getStartLine()-2;$i>0;$i--) {
@@ -242,7 +244,7 @@ class Ess_M2ePro_Helper_View_Development_Command extends Mage_Core_Helper_Abstra
         }
 
         $commentsArray = array_reverse($commentsArray);
-        $commentsString = implode(chr(10),$commentsArray);
+        $commentsString = implode(chr(10), $commentsArray);
 
         return $commentsString;
     }

@@ -2,16 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  2011-2015 ESS-UA [M2E Pro]
+ * @copyright  M2E LTD
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Lock_Transactional_Manager extends Varien_Object
 {
-    private $nick = 'undefined';
+    protected $_nick = 'undefined';
 
-    private $isTableLocked = false;
-    private $isTransactionStarted = false;
+    protected $_isTableLocked        = false;
+    protected $_isTransactionStarted = false;
 
     //########################################
 
@@ -19,7 +19,7 @@ class Ess_M2ePro_Model_Lock_Transactional_Manager extends Varien_Object
     {
         $args = func_get_args();
 
-        !empty($args[0]['nick']) && $this->nick = $args[0]['nick'];
+        !empty($args[0]['nick']) && $this->_nick = $args[0]['nick'];
 
         parent::__construct();
     }
@@ -43,20 +43,20 @@ class Ess_M2ePro_Model_Lock_Transactional_Manager extends Varien_Object
 
     public function unlock()
     {
-        $this->isTableLocked        && $this->unlockTable();
-        $this->isTransactionStarted && $this->commitTransaction();
+        $this->_isTableLocked && $this->unlockTable();
+        $this->_isTransactionStarted && $this->commitTransaction();
     }
 
     //########################################
 
-    private function getExclusiveLock()
+    protected function getExclusiveLock()
     {
         $this->startTransaction();
 
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         $lockId = (int)$connection->select()
             ->from($this->getTableName(), array('id'))
-            ->where('nick = ?', $this->nick)
+            ->where('nick = ?', $this->_nick)
             ->forUpdate()
             ->query()->fetchColumn();
 
@@ -68,18 +68,19 @@ class Ess_M2ePro_Model_Lock_Transactional_Manager extends Varien_Object
         return false;
     }
 
-    private function createExclusiveLock()
+    protected function createExclusiveLock()
     {
         $this->lockTable();
 
-        $lock = Mage::getModel('M2ePro/Lock_Transactional')->load($this->nick, 'nick');
+        $lock = Mage::getModel('M2ePro/Lock_Transactional')->load($this->_nick, 'nick');
 
-        if (is_null($lock->getId())) {
-
+        if ($lock->getId() === null) {
             $lock = Mage::getModel('M2ePro/Lock_Transactional');
-            $lock->setData(array(
-                'nick' => $this->nick,
-            ));
+            $lock->setData(
+                array(
+                    'nick' => $this->_nick,
+                )
+            );
             $lock->save();
         }
 
@@ -88,55 +89,55 @@ class Ess_M2ePro_Model_Lock_Transactional_Manager extends Varien_Object
 
     // ########################################
 
-    private function startTransaction()
+    protected function startTransaction()
     {
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         $connection->beginTransaction();
 
-        $this->isTransactionStarted = true;
+        $this->_isTransactionStarted = true;
     }
 
-    private function commitTransaction()
+    protected function commitTransaction()
     {
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         $connection->commit();
 
-        $this->isTransactionStarted = false;
+        $this->_isTransactionStarted = false;
     }
 
     // ----------------------------------------
 
-    private function lockTable()
+    protected function lockTable()
     {
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         $connection->query("LOCK TABLES `{$this->getTableName()}` WRITE");
 
-        $this->isTableLocked = true;
+        $this->_isTableLocked = true;
     }
 
-    private function unlockTable()
+    protected function unlockTable()
     {
         $connection = Mage::getSingleton('core/resource')->getConnection('core_write');
         $connection->query('UNLOCK TABLES');
 
-        $this->isTableLocked = false;
+        $this->_isTableLocked = false;
     }
 
-    private function getTableName()
+    protected function getTableName()
     {
-        return Mage::getSingleton('core/resource')->getTableName('m2epro_lock_transactional');
+        return Mage::helper('M2ePro/Module_Database_Structure')->getTableNameWithPrefix('m2epro_lock_transactional');
     }
 
     //########################################
 
     public function setNick($value)
     {
-        $this->nick = $value;
+        $this->_nick = $value;
     }
 
     public function getNick()
     {
-        return $this->nick;
+        return $this->_nick;
     }
 
     //########################################
