@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -26,15 +26,7 @@ class Ess_M2ePro_Model_Observer_Order extends Ess_M2ePro_Model_Observer_Abstract
             return;
         }
 
-        $order->addData(
-            array(
-            'magento_order_id'                           => $magentoOrder->getId(),
-            'magento_order_creation_failure'             => Ess_M2ePro_Model_Order::MAGENTO_ORDER_CREATION_FAILED_NO,
-            'magento_order_creation_latest_attempt_date' => Mage::helper('M2ePro')->getCurrentGmtDate()
-            )
-        );
-
-        $order->setMagentoOrder($magentoOrder);
+        $order->setData('magento_order_id', $magentoOrder->getId());
         $order->save();
     }
 

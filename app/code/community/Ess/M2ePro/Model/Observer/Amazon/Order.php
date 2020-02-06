@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -23,10 +23,9 @@ class Ess_M2ePro_Model_Observer_Amazon_Order extends Ess_M2ePro_Model_Observer_A
                 continue;
             }
 
+            /** @var $stockItem Mage_CatalogInventory_Model_Stock_Item */
             $stockItem = Mage::getModel('cataloginventory/stock_item')
-                ->setStockId(Mage::helper('M2ePro/Magento_Store')->getStockId($orderItem->getProduct()->getStore()))
-                ->setProductId($orderItem->getProductId())
-                ->loadByProduct($orderItem->getProduct());
+                                    ->loadByProduct($orderItem->getProductId());
 
             if (!$stockItem->getId()) {
                 continue;

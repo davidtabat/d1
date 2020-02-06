@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Servicing_Task_Marketplaces extends Ess_M2ePro_Model_Servicing_Task
 {
-    protected $_needToCleanCache = false;
+    private $needToCleanCache = false;
 
     //########################################
 
@@ -40,7 +40,7 @@ class Ess_M2ePro_Model_Servicing_Task_Marketplaces extends Ess_M2ePro_Model_Serv
             $this->processAmazonLastUpdateDates($data['amazon_last_update_dates']);
         }
 
-        if ($this->_needToCleanCache) {
+        if ($this->needToCleanCache) {
             Mage::helper('M2ePro/Data_Cache_Permanent')->removeTagValues('marketplace');
         }
     }
@@ -54,11 +54,11 @@ class Ess_M2ePro_Model_Servicing_Task_Marketplaces extends Ess_M2ePro_Model_Serv
             ->addFieldToFilter('status', Ess_M2ePro_Model_Marketplace::STATUS_ENABLE);
 
         $writeConn = Mage::getSingleton('core/resource')->getConnection('core_write');
-        $dictionaryTable = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_marketplace');
+        $dictionaryTable = Mage::getSingleton('core/resource')->getTableName('m2epro_ebay_dictionary_marketplace');
 
-        /** @var $marketplace Ess_M2ePro_Model_Marketplace */
+        /* @var $marketplace Ess_M2ePro_Model_Marketplace */
         foreach ($enabledMarketplaces as $marketplace) {
+
             if (!isset($lastUpdateDates[$marketplace->getNativeId()])) {
                 continue;
             }
@@ -66,21 +66,19 @@ class Ess_M2ePro_Model_Servicing_Task_Marketplaces extends Ess_M2ePro_Model_Serv
             $serverLastUpdateDate = $lastUpdateDates[$marketplace->getNativeId()];
 
             $select = $writeConn->select()
-                ->from(
-                    $dictionaryTable, array(
+                ->from($dictionaryTable, array(
                     'client_details_last_update_date'
-                    )
-                )
+                ))
                 ->where('marketplace_id = ?', $marketplace->getId());
 
             $clientLastUpdateDate = $writeConn->fetchOne($select);
 
-            if ($clientLastUpdateDate === null) {
+            if (is_null($clientLastUpdateDate)) {
                 $clientLastUpdateDate = $serverLastUpdateDate;
             }
 
             if ($clientLastUpdateDate < $serverLastUpdateDate) {
-                $this->_needToCleanCache = true;
+                $this->needToCleanCache = true;
             }
 
             $writeConn->update(
@@ -100,11 +98,11 @@ class Ess_M2ePro_Model_Servicing_Task_Marketplaces extends Ess_M2ePro_Model_Serv
             ->getMarketplacesAvailableForApiCreation();
 
         $writeConn = Mage::getSingleton('core/resource')->getConnection('core_write');
-        $dictionaryTable = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_amazon_dictionary_marketplace');
+        $dictionaryTable = Mage::getSingleton('core/resource')->getTableName('m2epro_amazon_dictionary_marketplace');
 
-        /** @var $marketplace Ess_M2ePro_Model_Marketplace */
+        /* @var $marketplace Ess_M2ePro_Model_Marketplace */
         foreach ($enabledMarketplaces as $marketplace) {
+
             if (!isset($lastUpdateDates[$marketplace->getNativeId()])) {
                 continue;
             }
@@ -112,21 +110,19 @@ class Ess_M2ePro_Model_Servicing_Task_Marketplaces extends Ess_M2ePro_Model_Serv
             $serverLastUpdateDate = $lastUpdateDates[$marketplace->getNativeId()];
 
             $select = $writeConn->select()
-                ->from(
-                    $dictionaryTable, array(
+                ->from($dictionaryTable, array(
                     'client_details_last_update_date'
-                    )
-                )
+                ))
                 ->where('marketplace_id = ?', $marketplace->getId());
 
             $clientLastUpdateDate = $writeConn->fetchOne($select);
 
-            if ($clientLastUpdateDate === null) {
+            if (is_null($clientLastUpdateDate)) {
                 $clientLastUpdateDate = $serverLastUpdateDate;
             }
 
             if ($clientLastUpdateDate < $serverLastUpdateDate) {
-                $this->_needToCleanCache = true;
+                $this->needToCleanCache = true;
             }
 
             $writeConn->update(

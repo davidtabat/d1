@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -31,7 +31,7 @@ abstract class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_Abstract
 
         if (!empty($filters)) {
             foreach ($filters as $name => $value) {
-                $filters[$name] = Mage::helper('M2ePro')->jsonEncode($value);
+                $filters[$name] = json_encode($value);
             }
 
             $requestData['filters'] = $filters;
@@ -43,18 +43,11 @@ abstract class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_Abstract
                 $requestData
             );
         } catch (Exception $exception) {
-            $this->getSynchronizationLog()->addMessage(
-                Mage::helper('M2ePro')->__($exception->getMessage()),
-                Ess_M2ePro_Model_Log_Abstract::TYPE_ERROR,
-                Ess_M2ePro_Model_Log_Abstract::PRIORITY_HIGH
-            );
-
-            Mage::helper('M2ePro/Module_Exception')->process($exception, false);
+            Mage::helper('M2ePro/Module_Exception')->process($exception);
             return false;
         }
 
-        $this->processErrorMessages($result['response']);
-        return $result['response'];
+        return json_decode($result['response'], true);
     }
 
     //########################################

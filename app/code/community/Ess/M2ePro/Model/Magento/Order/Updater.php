@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -14,10 +14,12 @@ class Ess_M2ePro_Model_Magento_Order_Updater
     // Cancel is not allowed for Orders which were put on Hold.
     // Cancel is not allowed for Orders which were Completed or Closed.
 
-    /** @var $_magentoOrder Mage_Sales_Model_Order */
-    protected $_magentoOrder = null;
+    //########################################
 
-    protected $_needSave = false;
+    /** @var $magentoOrder Mage_Sales_Model_Order */
+    private $magentoOrder = NULL;
+
+    private $needSave = false;
 
     //########################################
 
@@ -29,30 +31,27 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function setMagentoOrder(Mage_Sales_Model_Order $order)
     {
-        $this->_magentoOrder = $order;
+        $this->magentoOrder = $order;
 
         return $this;
     }
 
     //########################################
 
-    /**
-     * @return Mage_Customer_Model_Customer
-     */
-    protected function getMagentoCustomer()
+    private function getMagentoCustomer()
     {
-        if ($this->_magentoOrder->getCustomerIsGuest()) {
+        if ($this->magentoOrder->getCustomerIsGuest()) {
             return null;
         }
 
-        $customer = $this->_magentoOrder->getCustomer();
+        $customer = $this->magentoOrder->getCustomer();
         if ($customer instanceof Varien_Object && $customer->getId()) {
             return $customer;
         }
 
-        $customer = Mage::getModel('customer/customer')->load($this->_magentoOrder->getCustomerId());
+        $customer = Mage::getModel('customer/customer')->load($this->magentoOrder->getCustomerId());
         if ($customer->getId()) {
-            $this->_magentoOrder->setCustomer($customer);
+            $this->magentoOrder->setCustomer($customer);
         }
 
         return $customer->getId() ? $customer : null;
@@ -67,36 +66,36 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function updateShippingAddress(array $addressInfo)
     {
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             return;
         }
 
-        $shippingAddress = $this->_magentoOrder->getShippingAddress();
+        $shippingAddress = $this->magentoOrder->getShippingAddress();
         if ($shippingAddress instanceof Mage_Sales_Model_Order_Address) {
             $shippingAddress->addData($addressInfo);
             $shippingAddress->implodeStreetAddress()->save();
         } else {
             /** @var $shippingAddress Mage_Sales_Model_Order_Address */
             $shippingAddress = Mage::getModel('sales/order_address');
-            $shippingAddress->setCustomerId($this->_magentoOrder->getCustomerId());
+            $shippingAddress->setCustomerId($this->magentoOrder->getCustomerId());
             $shippingAddress->addData($addressInfo);
             $shippingAddress->implodeStreetAddress();
 
             // we need to set shipping address to order before address save to init parent_id field
-            $this->_magentoOrder->setShippingAddress($shippingAddress);
+            $this->magentoOrder->setShippingAddress($shippingAddress);
             $shippingAddress->save();
         }
 
         // we need to save order to update data in table sales_flat_order_grid
         // setData method will force magento model to save entity
-        $this->_magentoOrder->setForceUpdateGridRecords(false);
-        $this->_needSave = true;
+        $this->magentoOrder->setForceUpdateGridRecords(false);
+        $this->needSave = true;
     }
 
     public function updateShippingDescription($shippingDescription)
     {
-        $this->_magentoOrder->setData('shipping_description', $shippingDescription);
-        $this->_needSave = true;
+        $this->magentoOrder->setData('shipping_description', $shippingDescription);
+        $this->needSave = true;
     }
 
     //########################################
@@ -109,7 +108,7 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function updateCustomerEmail($email)
     {
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             return;
         }
 
@@ -117,15 +116,15 @@ class Ess_M2ePro_Model_Magento_Order_Updater
             return;
         }
 
-        if ($this->_magentoOrder->getCustomerEmail() != $email) {
-            $this->_magentoOrder->setCustomerEmail($email);
-            $this->_needSave = true;
+        if ($this->magentoOrder->getCustomerEmail() != $email) {
+            $this->magentoOrder->setCustomerEmail($email);
+            $this->needSave = true;
         }
 
-        if (!$this->_magentoOrder->getCustomerIsGuest()) {
+        if (!$this->magentoOrder->getCustomerIsGuest()) {
             $customer = $this->getMagentoCustomer();
 
-            if ($customer === null) {
+            if (is_null($customer)) {
                 return;
             }
 
@@ -144,17 +143,17 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function updateCustomerAddress(array $customerAddress)
     {
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             return;
         }
 
-        if ($this->_magentoOrder->getCustomerIsGuest()) {
+        if ($this->magentoOrder->getCustomerIsGuest()) {
             return;
         }
 
         $customer = $this->getMagentoCustomer();
 
-        if ($customer === null) {
+        if (is_null($customer)) {
             return;
         }
 
@@ -177,15 +176,14 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function updatePaymentData(array $newPaymentData)
     {
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             return;
         }
 
-        $payment = $this->_magentoOrder->getPayment();
+        $payment = $this->magentoOrder->getPayment();
 
         if ($payment instanceof Mage_Sales_Model_Order_Payment) {
-            $payment->setAdditionalData(Mage::helper('M2ePro')->serialize($newPaymentData));
-            $payment->save();
+            $payment->setAdditionalData(serialize($newPaymentData))->save();
         }
     }
 
@@ -199,7 +197,7 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function updateComments($comments)
     {
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             return;
         }
 
@@ -212,8 +210,8 @@ class Ess_M2ePro_Model_Magento_Order_Updater
         $header = '<br/><b><u>' . Mage::helper('M2ePro')->__('M2E Pro Notes') . ':</u></b><br/><br/>';
         $comments = implode('<br/><br/>', $comments);
 
-        $this->_magentoOrder->addStatusHistoryComment($header . $comments);
-        $this->_needSave = true;
+        $this->magentoOrder->addStatusHistoryComment($header . $comments);
+        $this->needSave = true;
     }
 
     //########################################
@@ -226,7 +224,7 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function updateStatus($status)
     {
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             return;
         }
 
@@ -234,51 +232,50 @@ class Ess_M2ePro_Model_Magento_Order_Updater
             return;
         }
 
-        if ($this->_magentoOrder->getState() == Mage_Sales_Model_Order::STATE_COMPLETE
-            || $this->_magentoOrder->getState() == Mage_Sales_Model_Order::STATE_CLOSED
+        if ($this->magentoOrder->getState() == Mage_Sales_Model_Order::STATE_COMPLETE
+            || $this->magentoOrder->getState() == Mage_Sales_Model_Order::STATE_CLOSED
         ) {
-            $this->_magentoOrder->setStatus($status);
+            $this->magentoOrder->setStatus($status);
         } else {
-            $this->_magentoOrder->setState(Mage_Sales_Model_Order::STATE_PROCESSING, $status);
+            $this->magentoOrder->setState(Mage_Sales_Model_Order::STATE_PROCESSING, $status);
         }
 
-        $this->_needSave = true;
+        $this->needSave = true;
     }
 
     //########################################
 
     public function cancel()
     {
-        $this->_magentoOrder->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
-        $this->_magentoOrder->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_UNHOLD, true);
+        $this->magentoOrder->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_CANCEL, true);
+        $this->magentoOrder->setActionFlag(Mage_Sales_Model_Order::ACTION_FLAG_UNHOLD, true);
 
-        if ($this->_magentoOrder->isCanceled()) {
+        if ($this->magentoOrder->isCanceled()) {
             //throw new Ess_M2ePro_Model_Exception('Cancel is not allowed for Orders which were already Canceled.');
             return;
         }
 
-        if ($this->_magentoOrder->canUnhold()) {
+        if ($this->magentoOrder->canUnhold()) {
             throw new Ess_M2ePro_Model_Exception('Cancel is not allowed for Orders which were put on Hold.');
         }
 
-        if ($this->_magentoOrder->getState() === Mage_Sales_Model_Order::STATE_COMPLETE ||
-            $this->_magentoOrder->getState() === Mage_Sales_Model_Order::STATE_CLOSED) {
+        if ($this->magentoOrder->getState() === Mage_Sales_Model_Order::STATE_COMPLETE ||
+            $this->magentoOrder->getState() === Mage_Sales_Model_Order::STATE_CLOSED) {
             throw new Ess_M2ePro_Model_Exception('Cancel is not allowed for Orders which were Completed or Closed.');
         }
 
         $allInvoiced = true;
-        foreach ($this->_magentoOrder->getAllItems() as $item) {
+        foreach ($this->magentoOrder->getAllItems() as $item) {
             if ($item->getQtyToInvoice()) {
                 $allInvoiced = false;
                 break;
             }
         }
-
         if ($allInvoiced) {
             throw new Ess_M2ePro_Model_Exception('Cancel is not allowed for Orders with Invoiced Items.');
         }
 
-        $this->_magentoOrder->cancel()->save();
+        $this->magentoOrder->cancel()->save();
     }
 
     //########################################
@@ -288,8 +285,8 @@ class Ess_M2ePro_Model_Magento_Order_Updater
      */
     public function finishUpdate()
     {
-        if ($this->_needSave) {
-            $this->_magentoOrder->save();
+        if ($this->needSave) {
+            $this->magentoOrder->save();
         }
     }
 

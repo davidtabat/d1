@@ -1,45 +1,41 @@
 MagentoBlock = Class.create();
 MagentoBlock.prototype = {
 
-    storageKeys: {
-        prefix: 'm2e_mb_'
-    },
-
     // ---------------------------------------
 
     initialize: function() {},
 
     // ---------------------------------------
 
-    getHashedStorage: function(id)
+    getHashedCookie: function(id)
     {
-        var hashedStorageKey = this.storageKeys.prefix + md5(id).substr(0, 10);
-        var resultStorage = LocalStorageObj.get(hashedStorageKey);
+        var hashedCookieKey = 'm2e_mb_' + md5(id).substr(0, 10);
+        var notHashedCookie = getCookie(id);
+        var resultCookie = null;
 
-        if (resultStorage === null) {
-            return '';
+        if (notHashedCookie !== "") {
+            deleteCookie(id, '/', '');
+            this.setHashedCookie(id);
+            resultCookie = notHashedCookie;
+        } else {
+            resultCookie = getCookie(hashedCookieKey);
         }
 
-        return resultStorage;
+        return resultCookie;
     },
 
-    setHashedStorage: function(id)
+    setHashedCookie: function(id)
     {
-        var hashedStorageKey = this.storageKeys.prefix + md5(id).substr(0, 10);
-        LocalStorageObj.set(hashedStorageKey, 1);
+        var hashedCookieKey = 'm2e_mb_' + md5(id).substr(0, 10);
+        setCookie(hashedCookieKey, 1, 3*365, '/');
     },
 
-    deleteHashedStorage: function(id)
+    deleteHashedCookie: function(id)
     {
-        var hashedStorageKey = this.storageKeys.prefix + md5(id).substr(0, 10);
+        var hashedCookieKey = 'm2e_mb_' + md5(id).substr(0, 10);
 
-        LocalStorageObj.remove(hashedStorageKey);
-        LocalStorageObj.remove(id);
-    },
-
-    deleteAllHashedStorage: function()
-    {
-        LocalStorageObj.removeAllByPrefix(this.storageKeys.prefix);
+        deleteCookie(hashedCookieKey, '/', '');
+        deleteCookie(id, '/', '');
     },
 
     // ---------------------------------------
@@ -67,7 +63,7 @@ MagentoBlock.prototype = {
         tempHtml2 += '</div>';
         $$('div.'+blockClass)[0].select('div.entry-edit-head div.entry-edit-head-right')[0].innerHTML = tempHtml2 + tempHtml;
 
-        this.deleteHashedStorage(blockClass);
+        this.deleteHashedCookie(blockClass);
 
         if (init == '0') {
             $$('div.'+blockClass+' div.fieldset')[0].show();
@@ -104,7 +100,7 @@ MagentoBlock.prototype = {
         tempHtml2 += '</div>';
         $$('div.'+blockClass)[0].select('div.entry-edit-head div.entry-edit-head-right')[0].innerHTML = tempHtml2 + tempHtml;
 
-        this.setHashedStorage(blockClass);
+        this.setHashedCookie(blockClass);
 
         if (init == '0') {
             $$('div.'+blockClass+' div.fieldset')[0].hide();
@@ -141,7 +137,7 @@ MagentoBlock.prototype = {
         var tempObj = blockObj.select('div.entry-edit-head div.entry-edit-head-left')[0];
         tempObj.setStyle({cursor: 'pointer'});
 
-        var isClosed = this.getHashedStorage(blockClass);
+        var isClosed = this.getHashedCookie(blockClass);
 
         if (isClosed == '' || isClosed == '0') {
             self.show(blockClass,'1');

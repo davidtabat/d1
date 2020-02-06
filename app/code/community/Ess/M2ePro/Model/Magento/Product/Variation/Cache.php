@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -35,7 +35,7 @@ class Ess_M2ePro_Model_Magento_Product_Variation_Cache extends Ess_M2ePro_Model_
 
     protected function getMethodData($methodName, $params = null)
     {
-        if ($this->getMagentoProduct() === null) {
+        if (is_null($this->getMagentoProduct())) {
             throw new Ess_M2ePro_Model_Exception('Magento Product was not set.');
         }
 
@@ -44,17 +44,17 @@ class Ess_M2ePro_Model_Magento_Product_Variation_Cache extends Ess_M2ePro_Model_
             $methodName,
         );
 
-        if ($params !== null) {
+        if (!is_null($params)) {
             $cacheKey[] = $params;
         }
 
         $cacheResult = $this->getMagentoProduct()->getCacheValue($cacheKey);
 
-        if ($this->getMagentoProduct()->isCacheEnabled() && $cacheResult !== null) {
+        if ($this->getMagentoProduct()->isCacheEnabled() && !is_null($cacheResult)) {
             return $cacheResult;
         }
 
-        if ($params !== null) {
+        if (!is_null($params)) {
             $data = call_user_func_array(array('parent', $methodName), $params);
         } else {
             $data = call_user_func(array('parent', $methodName));

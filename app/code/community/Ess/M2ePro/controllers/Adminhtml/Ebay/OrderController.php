@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -23,21 +23,16 @@ class Ess_M2ePro_Adminhtml_Ebay_OrderController extends Ess_M2ePro_Controller_Ad
              ->addJs('M2ePro/Order/Handler.js')
              ->addJs('M2ePro/Order/Edit/ItemHandler.js')
              ->addJs('M2ePro/Order/Edit/ShippingAddressHandler.js')
-             ->addJs('M2ePro/Ebay/Order/MigrationToV611Handler.js')
-             ->addJs('M2ePro/GridHandler.js')
-             ->addJs('M2ePro/Order/NoteHandler.js')
-             ->addJs('M2ePro/Plugin/ActionColumn.js');
+             ->addJs('M2ePro/Ebay/Order/MigrationToV611Handler.js');
 
-        $this->setPageHelpLink(NULL, NULL, "x/RQAJAQ");
+        $this->setComponentPageHelpLink('Sales+and+Orders+overview');
 
         return $this;
     }
 
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed(
-            Ess_M2ePro_Helper_View_Ebay::MENU_ROOT_NODE_NICK . '/orders'
-        );
+        return Mage::getSingleton('admin/session')->isAllowed('m2epro_ebay/orders');
     }
 
     //########################################
@@ -67,7 +62,7 @@ class Ess_M2ePro_Adminhtml_Ebay_OrderController extends Ess_M2ePro_Controller_Ad
 
         $this->_initAction();
 
-        $this->setPageHelpLink(NULL, NULL, "x/wYwVAQ");
+        $this->setComponentPageHelpLink('Manage+Order+Details');
 
         $this->_initPopUp();
 
@@ -144,14 +139,10 @@ class Ess_M2ePro_Adminhtml_Ebay_OrderController extends Ess_M2ePro_Controller_Ad
             }
         }
 
-        if (isset($data['street']) && is_array($data['street'])) {
-            $data['street'] = array_filter($data['street']);
-        }
-
         $shippingDetails = $order->getChildObject()->getShippingDetails();
         $shippingDetails['address'] = $data;
 
-        $order->setData('shipping_details', Mage::helper('M2ePro')->jsonEncode($shippingDetails));
+        $order->setData('shipping_details', json_encode($shippingDetails));
         $order->save();
 
         $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Order address has been updated.'));
@@ -161,283 +152,111 @@ class Ess_M2ePro_Adminhtml_Ebay_OrderController extends Ess_M2ePro_Controller_Ad
 
     //########################################
 
-    public function updateShippingStatusAction()
+    private function processConnector($action, array $params = array())
     {
         $ids = $this->getRequestIds();
 
-        if (empty($ids)) {
+        if (count($ids) == 0) {
             $this->_getSession()->addError(Mage::helper('M2ePro')->__('Please select Order(s).'));
-            $this->_redirect('*/*/index');
-            return;
+            return false;
         }
 
-        /** @var Ess_M2ePro_Model_Resource_Order_Collection $ordersCollection */
-        $ordersCollection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Order')
-            ->addFieldToFilter('id', array('in' => $ids));
-
-        $hasFailed = false;
-        $hasSucceeded = false;
-
-        foreach ($ordersCollection->getItems() as $order) {
-            /** @var Ess_M2ePro_Model_Order $order */
-
-            $order->getLog()->setInitiator(Ess_M2ePro_Helper_Data::INITIATOR_USER);
-
-            $shipmentsCollection = Mage::getResourceModel('sales/order_shipment_collection')
-                ->setOrderFilter($order->getMagentoOrderId());
-
-            if ($shipmentsCollection->getSize() === 0) {
-                $order->getChildObject()->updateShippingStatus(array()) ? $hasSucceeded = true
-                                                                        : $hasFailed = true;
-                continue;
-            }
-
-            foreach ($shipmentsCollection->getItems() as $shipment) {
-                /** @var Mage_Sales_Model_Order_Shipment $shipment */
-                if (!$shipment->getId()) {
-                    continue;
-                }
-
-                /** @var Ess_M2ePro_Model_Order_Shipment_Handler $handler */
-                $handler = Ess_M2ePro_Model_Order_Shipment_Handler::factory($order->getComponentMode());
-                $result  = $handler->handle($order, $shipment);
-
-                $result == Ess_M2ePro_Model_Order_Shipment_Handler::HANDLE_RESULT_SUCCEEDED ? $hasSucceeded = true
-                                                                                            : $hasFailed = true;
-            }
-        }
-
-        if (!$hasFailed && $hasSucceeded) {
-            $this->_getSession()->addSuccess(
-                Mage::helper('M2ePro')->__('Updating eBay Order(s) Status to Shipped in Progress...')
-            );
-        } elseif ($hasFailed && !$hasSucceeded) {
-            $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('eBay Order(s) can not be updated for Shipped Status.')
-            );
-        } elseif ($hasFailed && $hasSucceeded) {
-            $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('Some of eBay Order(s) can not be updated for Shipped Status.')
-            );
-        }
-
-        $this->_redirectUrl($this->_getRefererUrl());
+        return Mage::getModel('M2ePro/Connector_Ebay_Order_Dispatcher')->process($action, $ids, $params);
     }
+
+    // ---------------------------------------
 
     public function updatePaymentStatusAction()
     {
-        $ids = $this->getRequestIds();
-
-        if (empty($ids)) {
-            $this->_getSession()->addError(Mage::helper('M2ePro')->__('Please select Order(s).'));
-            return $this->_redirect('*/*/index');
-        }
-
-        /** @var Ess_M2ePro_Model_Resource_Order_Collection $ordersCollection */
-        $ordersCollection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Order')
-            ->addFieldToFilter('id', array('in' => $ids));
-
-        $hasFailed = false;
-        $hasSucceeded = false;
-
-        foreach ($ordersCollection->getItems() as $order) {
-            /** @var Ess_M2ePro_Model_Order $order */
-
-            $order->getChildObject()->updatePaymentStatus() ? $hasSucceeded = true
-                                                            : $hasFailed = true;
-        }
-
-        if (!$hasFailed && $hasSucceeded) {
+        if ($this->processConnector(Ess_M2ePro_Model_Connector_Ebay_Order_Dispatcher::ACTION_PAY)) {
             $this->_getSession()->addSuccess(
-                Mage::helper('M2ePro')->__('Updating eBay Order(s) Status to Paid in Progress...')
-            );
-        } elseif ($hasFailed && !$hasSucceeded) {
-            $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('eBay Order(s) can not be updated for Paid Status.')
-            );
-        } elseif ($hasFailed && $hasSucceeded) {
-            $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('Some of eBay Order(s) can not be updated for Paid Status.')
-            );
-        }
-
-        return $this->_redirectUrl($this->_getRefererUrl());
-    }
-
-    //########################################
-
-    public function markAsReadyForPickupAction()
-    {
-        if ($this->sendInStorePickupNotifications('ready_for_pickup')) {
-            $this->_getSession()->addSuccess(
-                Mage::helper('M2ePro')->__('Orders were successfully marked as Ready For Pickup.')
+                Mage::helper('M2ePro')->__('Payment status for selected eBay Order(s) was updated to Paid.')
             );
         } else {
             $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('Orders were not marked as Ready For Pickup.')
+                Mage::helper('M2ePro')->__('Payment status for selected eBay Order(s) was not updated.')
             );
         }
 
         return $this->_redirectUrl($this->_getRefererUrl());
     }
 
-    public function markAsPickedUpAction()
+    public function updateShippingStatusAction()
     {
-        if ($this->sendInStorePickupNotifications('picked_up')) {
+        if ($this->processConnector(Ess_M2ePro_Model_Connector_Ebay_Order_Dispatcher::ACTION_SHIP)) {
             $this->_getSession()->addSuccess(
-                Mage::helper('M2ePro')->__('Orders were successfully marked as Picked Up.')
+                Mage::helper('M2ePro')->__('Shipping status for selected eBay Order(s) was updated to Shipped.')
             );
         } else {
             $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('Orders were not marked as Picked Up.')
+                Mage::helper('M2ePro')->__('Shipping status for selected eBay Order(s) was not updated.')
             );
         }
 
         return $this->_redirectUrl($this->_getRefererUrl());
-    }
-
-    public function markAsCancelledAction()
-    {
-        if ($this->sendInStorePickupNotifications('cancelled')) {
-            $this->_getSession()->addSuccess(
-                Mage::helper('M2ePro')->__('Orders were successfully marked as Cancelled.')
-            );
-        } else {
-            $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('Orders were not marked as Cancelled.')
-            );
-        }
-
-        return $this->_redirectUrl($this->_getRefererUrl());
-    }
-
-    protected function sendInStorePickupNotifications($type)
-    {
-        $ids = $this->getRequestIds();
-
-        /** @var Ess_M2ePro_Model_Resource_Order_Collection $orderCollection */
-        $orderCollection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Order');
-        $orderCollection->addFieldToFilter('id', $ids);
-
-        /** @var Ess_M2ePro_Model_Order[] $orders */
-        $orders = $orderCollection->getItems();
-
-        $successMessage = '';
-        switch ($type) {
-            case 'ready_for_pickup':
-                $successMessage = Mage::helper('M2ePro')->__('Order was successfully marked as Ready For Pickup');
-                break;
-
-            case 'picked_up':
-                $successMessage = Mage::helper('M2ePro')->__('Order was successfully marked as Picked Up');
-                break;
-
-            case 'cancelled':
-                $successMessage = Mage::helper('M2ePro')->__('Order was successfully marked as Cancelled');
-                break;
-        }
-
-        foreach ($orders as $order) {
-            /** @var Ess_M2ePro_Model_Ebay_Order $ebayOrder */
-            $ebayOrder = $order->getChildObject();
-
-            $dispatcher = Mage::getModel('M2ePro/Ebay_Connector_Dispatcher');
-            $connector = $dispatcher->getVirtualConnector(
-                'store', 'update', 'order',
-                array('order_id' => $ebayOrder->getEbayOrderId(), 'type' => $type),
-                NULL, NULL, $order->getAccount()
-            );
-
-            try {
-                $dispatcher->process($connector);
-            } catch (Exception $exception) {
-                return false;
-            }
-
-            $order->addSuccessLog($successMessage);
-        }
-
-        return true;
     }
 
     //########################################
 
     public function createMagentoOrderAction()
     {
-        $ids = $this->getRequestIds();
-        $isForce = (bool)$this->getRequest()->getParam('force');
-        $warnings = 0;
-        $errors = 0;
+        $id = $this->getRequest()->getParam('id');
+        $force = $this->getRequest()->getParam('force');
 
-        foreach ($ids as $id) {
+        /** @var $order Ess_M2ePro_Model_Order */
+        $order = Mage::helper('M2ePro/Component_Ebay')->getObject('Order', (int)$id);
+        $order->getLog()->setInitiator(Ess_M2ePro_Helper_Data::INITIATOR_USER);
 
-            /** @var $order Ess_M2ePro_Model_Order */
-            $order = Mage::helper('M2ePro/Component_Ebay')->getObject('Order', (int)$id);
-            $order->getLog()->setInitiator(Ess_M2ePro_Helper_Data::INITIATOR_USER);
+        if (!is_null($order->getMagentoOrderId()) && $force != 'yes') {
+            // M2ePro_TRANSLATIONS
+            // Magento Order is already created for this eBay Order. Press Create Order Button to create new one.
+            $message = 'Magento Order is already created for this eBay Order. ' .
+                       'Press Create Order Button to create new one.';
 
-            if ($order->getMagentoOrderId() !== null && !$isForce) {
-                $warnings++;
-                continue;
-            }
-
-            // Create magento order
-            // ---------------------------------------
-            try {
-                $order->createMagentoOrder($isForce);
-            } catch (Exception $e) {
-                $errors++;
-            }
-
-            // ---------------------------------------
-
-            if ($order->getChildObject()->canCreatePaymentTransaction()) {
-                $order->getChildObject()->createPaymentTransactions();
-            }
-
-            if ($order->getChildObject()->canCreateInvoice()) {
-                $order->createInvoice();
-            }
-
-            if ($order->getChildObject()->canCreateShipment()) {
-                $order->createShipment();
-            }
-
-            if ($order->getChildObject()->canCreateTracks()) {
-                $order->getChildObject()->createTracks();
-            }
-
-            // ---------------------------------------
-            $order->updateMagentoOrderStatus();
-            // ---------------------------------------
-        }
-
-        if (!$errors && !$warnings) {
-            $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Magento order(s) were created.'));
-        }
-
-        if ($errors) {
-            $this->getSession()->addError(
-                Mage::helper('M2ePro')->__(
-                    '%count% Magento order(s) were not created. Please <a target="_blank" href="%url%">view Log</a>
-                for the details.',
-                    $errors, $this->getUrl('*/adminhtml_ebay_log/order')
-                )
-            );
-        }
-
-        if ($warnings) {
             $this->_getSession()->addWarning(
-                Mage::helper('M2ePro')->__(
-                    '%count% Magento order(s) are already created for the selected eBay order(s).', $warnings
-                )
+                Mage::helper('M2ePro')->__($message)
             );
+            $this->_redirect('*/*/view', array('id' => $id));
+            return;
         }
 
-        if (count($ids) == 1) {
-            $this->_redirect('*/*/view', array('id' => $ids[0]));
-        } else {
-            $this->_redirect('*/*/index');
+        // Create magento order
+        // ---------------------------------------
+        try {
+            $order->createMagentoOrder();
+            $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Magento Order was created.'));
+        } catch (Exception $e) {
+            $message = Mage::helper('M2ePro')->__(
+                'Magento Order was not created. Reason: %error_message%',
+                 Mage::getSingleton('M2ePro/Log_Abstract')->decodeDescription($e->getMessage())
+            );
+            $this->_getSession()->addError($message);
         }
+        // ---------------------------------------
+
+        if ($order->getChildObject()->canCreatePaymentTransaction()) {
+            $order->getChildObject()->createPaymentTransactions();
+        }
+
+        if ($order->getChildObject()->canCreateInvoice()) {
+            $result = $order->createInvoice();
+            $result && $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Invoice was created.'));
+        }
+
+        if ($order->getChildObject()->canCreateShipment()) {
+            $result = $order->createShipment();
+            $result && $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Shipment was created.'));
+        }
+
+        if ($order->getChildObject()->canCreateTracks()) {
+            $order->getChildObject()->createTracks();
+        }
+
+        // ---------------------------------------
+        $order->updateMagentoOrderStatus();
+        // ---------------------------------------
+
+        return $this->_redirectUrl($this->_getRefererUrl());
     }
 
     //########################################
@@ -454,7 +273,7 @@ class Ess_M2ePro_Adminhtml_Ebay_OrderController extends Ess_M2ePro_Controller_Ad
         /** @var $transaction Ess_M2ePro_Model_Ebay_Order_ExternalTransaction */
         $transaction = Mage::getModel('M2ePro/Ebay_Order_ExternalTransaction')->load($transactionId, 'transaction_id');
 
-        if ($transaction->getId() === null) {
+        if (is_null($transaction->getId())) {
             $this->_getSession()->addError(Mage::helper('M2ePro')->__('eBay Order Transaction does not exist.'));
             return $this->_redirect('*/adminhtml_ebay_order/index');
         }

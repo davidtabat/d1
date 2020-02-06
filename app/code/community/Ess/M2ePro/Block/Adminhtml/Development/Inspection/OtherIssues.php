@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -27,12 +27,18 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_OtherIssues
 
     protected function isShown()
     {
-        return $this->isGdLibraryUnAvailable() ||
+        return $this->isMagicQuotesEnabled() ||
+               $this->isGdLibraryUnAvailable() ||
                $this->isZendOpcacheAvailable() ||
                $this->isSystemLogNotEmpty();
     }
 
     //########################################
+
+    public function isMagicQuotesEnabled()
+    {
+        return (bool)ini_get('magic_quotes_gpc');
+    }
 
     public function isGdLibraryUnAvailable()
     {
@@ -52,7 +58,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_OtherIssues
 
         $resource = Mage::getSingleton('core/resource');
 
-        $tableName = Mage::helper('M2ePro/Module_Database_Structure')->getTableNameWithPrefix('m2epro_system_log');
+        $tableName = $resource->getTableName('m2epro_system_log');
 
         return (int)$resource->getConnection('core_read')
                              ->select()

@@ -25,7 +25,7 @@ AutoComplete.prototype = {
             $(id).writeAttribute('selected_id', selectedId);
         }
 
-        return new Autocomplete(id, {
+        new Autocomplete(id, {
             serviceUrl         : url,
             maxResults         : maxResults ,
             minChars           : 2,
@@ -74,8 +74,7 @@ var Autocomplete = function(el, options){
     maxHeight:300,
     deferRequestBy:0,
     width:0,
-    container:null,
-    dynamicQueryParamsCallback: null
+    container:null
   };
   if(options){Object.extend(this.options, options);}
   if(Autocomplete.isDomLoaded){
@@ -233,27 +232,15 @@ Autocomplete.prototype = {
         this.quantity = cr.quantity;
         this.suggest();
     } else if (!this.isBadQuery(this.currentValue)) {
-
-      var params = Object.extend(this.getDynamicQueryParams(), {
-          query     : this.currentValue,
-          maxResults: this.maxResults
-      });
-
       new Ajax.Request(this.serviceUrl, {
-        parameters: params,
+        parameters: {
+                        query     : this.currentValue,
+                        maxResults: this.maxResults
+                    },
         onComplete: this.processResponse.bind(this),
         method: 'get'
       });
     }
-  },
-
-  getDynamicQueryParams: function()
-  {
-    if (this.options.dynamicQueryParamsCallback) {
-       return this.options.dynamicQueryParamsCallback.call();
-    }
-
-    return {};
   },
 
   isBadQuery: function(q) {

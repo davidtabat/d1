@@ -2,11 +2,11 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
-class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Sub_Theme
+class Ess_M2EPro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Sub_Theme
     extends Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Sub_Abstract
 {
     //########################################
@@ -66,7 +66,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
 
     //########################################
 
-    protected function processExistProduct()
+    private function processExistProduct()
     {
         $possibleThemes = $this->getProcessor()->getPossibleThemes();
         $channelAttributes = array_keys(
@@ -79,14 +79,14 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         $themeMatcher->setSourceAttributes($channelAttributes);
 
         $matchedTheme = $themeMatcher->getMatchedTheme();
-        if ($matchedTheme === null) {
+        if (is_null($matchedTheme)) {
             return;
         }
 
         $this->getProcessor()->getTypeModel()->setChannelTheme($matchedTheme, false, false);
     }
 
-    protected function processNewProduct()
+    private function processNewProduct()
     {
         $possibleThemes = $this->getProcessor()->getPossibleThemes();
 
@@ -96,7 +96,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         $themeMatcher->setMagentoProduct($this->getProcessor()->getListingProduct()->getMagentoProduct());
 
         $matchedTheme = $themeMatcher->getMatchedTheme();
-        if ($matchedTheme === null) {
+        if (is_null($matchedTheme)) {
             return;
         }
 

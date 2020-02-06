@@ -2,16 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_AutoAction
 {
     /** @var Ess_M2ePro_Model_Upgrade_MySqlSetup */
-    protected $_installer = null;
+    private $installer = NULL;
 
-    protected $_forceAllSteps = false;
+    private $forceAllSteps = false;
 
     //########################################
 
@@ -20,7 +20,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_AutoAction
      */
     public function getInstaller()
     {
-        return $this->_installer;
+        return $this->installer;
     }
 
     /**
@@ -28,19 +28,19 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_AutoAction
      */
     public function setInstaller(Ess_M2ePro_Model_Upgrade_MySqlSetup $installer)
     {
-        $this->_installer = $installer;
+        $this->installer = $installer;
     }
 
     // ---------------------------------------
 
     public function setForceAllSteps($value = true)
     {
-        $this->_forceAllSteps = $value;
+        $this->forceAllSteps = $value;
     }
 
     //########################################
 
-    /**
+    /*
         CREATE TABLE m2epro_listing_auto_category (
             id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             group_id int(11) UNSIGNED NOT NULL,
@@ -164,15 +164,15 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_AutoAction
 
     //########################################
 
-    protected function isNeedToSkip()
+    private function isNeedToSkip()
     {
-        if ($this->_forceAllSteps) {
+        if ($this->forceAllSteps) {
             return false;
         }
 
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $tempTable = $this->_installer->getTable('m2epro_listing');
+        $tempTable = $this->installer->getTable('m2epro_listing');
         if ($connection->tableColumnExists($tempTable, 'categories_delete_action') === false) {
             return true;
         }
@@ -182,12 +182,11 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_AutoAction
 
     //########################################
 
-    protected function prepareStructure()
+    private function prepareStructure()
     {
-        $tempTable = $this->_installer->getTable('m2epro_temp_ebay_listing_auto_category_group');
+        $tempTable = $this->installer->getTable('m2epro_temp_ebay_listing_auto_category_group');
 
-        $this->_installer->run(
-            <<<SQL
+        $this->installer->run(<<<SQL
 
     DROP TABLE IF EXISTS `m2epro_listing_auto_category`;
     CREATE TABLE `m2epro_listing_auto_category` (
@@ -268,9 +267,9 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_AutoAction
 SQL
         );
 
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $tempTable = $this->_installer->getTable('m2epro_listing');
+        $tempTable = $this->installer->getTable('m2epro_listing');
         $tempTableIndexList = $connection->getIndexList($tempTable);
 
         if ($connection->tableColumnExists($tempTable, 'auto_mode') === false) {
@@ -317,7 +316,7 @@ SQL
             $connection->addKey($tempTable, 'auto_website_deleting_mode', 'auto_website_deleting_mode');
         }
 
-        $tempTable = $this->_installer->getTable('m2epro_amazon_listing');
+        $tempTable = $this->installer->getTable('m2epro_amazon_listing');
         $tempTableIndexList = $connection->getIndexList($tempTable);
 
         if ($connection->tableColumnExists($tempTable, 'auto_global_adding_description_template_id') === false) {
@@ -335,35 +334,30 @@ SQL
         }
 
         if (!isset($tempTableIndexList[strtoupper('auto_global_adding_description_template_id')])) {
-            $connection->addKey(
-                $tempTable,
-                'auto_global_adding_description_template_id', 'auto_global_adding_description_template_id'
-            );
+            $connection->addKey($tempTable,
+                'auto_global_adding_description_template_id', 'auto_global_adding_description_template_id');
         }
 
         if (!isset($tempTableIndexList[strtoupper('auto_website_adding_description_template_id')])) {
-            $connection->addKey(
-                $tempTable,
-                'auto_website_adding_description_template_id', 'auto_website_adding_description_template_id'
-            );
+            $connection->addKey($tempTable,
+                'auto_website_adding_description_template_id', 'auto_website_adding_description_template_id');
         }
     }
 
     //########################################
 
-    protected function migrateData()
+    private function migrateData()
     {
-        $connection = $this->_installer->getConnection();
-        $tempTable = $this->_installer->getTable('m2epro_ebay_listing');
+        $connection = $this->installer->getConnection();
+        $tempTable = $this->installer->getTable('m2epro_ebay_listing');
 
         if ($connection->tableColumnExists($tempTable, 'auto_mode') === false) {
             return;
         }
 
-        $tempTable = $this->_installer->getTable('m2epro_temp_ebay_listing_auto_category_group');
+        $tempTable = $this->installer->getTable('m2epro_temp_ebay_listing_auto_category_group');
 
-        $this->_installer->run(
-            <<<SQL
+        $this->installer->run(<<<SQL
 
     UPDATE `m2epro_listing` ml
         JOIN `m2epro_ebay_listing` mel ON (ml.id = mel.listing_id)
@@ -433,12 +427,11 @@ SQL
 
     //########################################
 
-    protected function deleteOldData()
+    private function deleteOldData()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $this->_installer->run(
-            <<<SQL
+        $this->installer->run(<<<SQL
 
     DROP TABLE IF EXISTS `m2epro_listing_category`;
     DROP TABLE IF EXISTS `m2epro_ebay_listing_auto_category`;
@@ -447,14 +440,14 @@ SQL
 SQL
         );
 
-        $oldTable = $this->_installer->getTable('m2epro_temp_ebay_listing_auto_category_group');
-        $newTable = $this->_installer->getTable('m2epro_ebay_listing_auto_category_group');
+        $oldTable = $this->installer->getTable('m2epro_temp_ebay_listing_auto_category_group');
+        $newTable = $this->installer->getTable('m2epro_ebay_listing_auto_category_group');
 
-        if ($this->_installer->tableExists($oldTable) && !$this->_installer->tableExists($newTable)) {
+        if ($this->installer->tableExists($oldTable) && !$this->installer->tableExists($newTable)) {
             $connection->query("RENAME TABLE `{$oldTable}` TO `{$newTable}`");
         }
 
-        $tempTable = $this->_installer->getTable('m2epro_ebay_listing');
+        $tempTable = $this->installer->getTable('m2epro_ebay_listing');
         $tempTableIndexList = $connection->getIndexList($tempTable);
 
         if (isset($tempTableIndexList[strtoupper('auto_mode')])) {
@@ -489,7 +482,7 @@ SQL
             $connection->dropColumn($tempTable, 'auto_website_deleting_mode');
         }
 
-        $tempTable = $this->_installer->getTable('m2epro_listing');
+        $tempTable = $this->installer->getTable('m2epro_listing');
 
         if ($connection->tableColumnExists($tempTable, 'categories_add_action') !== false) {
             $connection->dropColumn($tempTable, 'categories_add_action');

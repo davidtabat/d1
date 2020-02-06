@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -27,7 +27,7 @@ final class Ess_M2ePro_Model_Cron_Runner_Magento extends Ess_M2ePro_Model_Cron_R
 
     public function process()
     {
-        if (Mage::helper('M2ePro/Module')->getConfig()->getGroupValue('/cron/magento/', 'disabled')) {
+        if (Mage::helper('M2ePro/Module')->getConfig()->getGroupValue('/cron/magento/','disabled')) {
             return false;
         }
 
@@ -55,6 +55,7 @@ final class Ess_M2ePro_Model_Cron_Runner_Magento extends Ess_M2ePro_Model_Cron_R
         }
 
         if ($helper->isLastRunMoreThan(Ess_M2ePro_Helper_Module_Cron::RUNNER_SERVICE_MAX_INACTIVE_TIME)) {
+
             $helper->setRunner(Ess_M2ePro_Helper_Module_Cron::RUNNER_MAGENTO);
             $helper->setLastRunnerChange(Mage::helper('M2ePro')->getCurrentGmtDate());
         }
@@ -62,7 +63,7 @@ final class Ess_M2ePro_Model_Cron_Runner_Magento extends Ess_M2ePro_Model_Cron_R
 
     protected function isPossibleToRun()
     {
-        return Mage::helper('M2ePro/Data_Global')->getValue('cron_running') === null &&
+        return is_null(Mage::helper('M2ePro/Data_Global')->getValue('cron_running')) &&
                parent::isPossibleToRun();
     }
 
@@ -75,7 +76,7 @@ final class Ess_M2ePro_Model_Cron_Runner_Magento extends Ess_M2ePro_Model_Cron_R
          * It can cause problems with items that were cached in first execution.
          */
         // ---------------------------------------
-        Mage::helper('M2ePro/Data_Global')->setValue('cron_running', true);
+        Mage::helper('M2ePro/Data_Global')->setValue('cron_running',true);
         // ---------------------------------------
 
         parent::beforeStart();
@@ -84,9 +85,9 @@ final class Ess_M2ePro_Model_Cron_Runner_Magento extends Ess_M2ePro_Model_Cron_R
 
     //########################################
 
-    protected function distributeLoadIfNeed()
+    private function distributeLoadIfNeed()
     {
-        if (!Mage::helper('M2ePro/Module')->isProductionEnvironment()) {
+        if (Mage::helper('M2ePro/Module')->isDevelopmentEnvironment()) {
             return;
         }
 
@@ -96,7 +97,7 @@ final class Ess_M2ePro_Model_Cron_Runner_Magento extends Ess_M2ePro_Model_Cron_R
             return;
         }
 
-        sleep(rand(0, self::MAX_DISTRIBUTION_WAIT_INTERVAL));
+        sleep(rand(0,self::MAX_DISTRIBUTION_WAIT_INTERVAL));
     }
 
     //########################################

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -21,13 +21,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Log extends Ess_M2ePro_Block_Adminhtml_Wid
 
         // Set header text
         // ---------------------------------------
-        if (!Mage::helper('M2ePro/Component')->isSingleActiveComponent()) {
-            $componentName = Mage::helper('M2ePro/Component_Ebay')->getTitle();
-            $this->_headerText = Mage::helper('M2ePro')->__('%component_name% / Logs', $componentName);
-        } else {
-            $this->_headerText = Mage::helper('M2ePro')->__('Logs');
-        }
-
+        $this->_headerText = Mage::helper('M2ePro')->__('Logs');
         // ---------------------------------------
 
         // Set buttons actions
@@ -45,11 +39,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Log extends Ess_M2ePro_Block_Adminhtml_Wid
 
     protected function _toHtml()
     {
-        $translations = Mage::helper('M2ePro')->jsonEncode(
-            array(
+        $translations = json_encode(array(
             'Description' => Mage::helper('M2ePro')->__('Description')
-            )
-        );
+        ));
 
         $javascript = <<<JAVASCIRPT
 
@@ -66,7 +58,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Log extends Ess_M2ePro_Block_Adminhtml_Wid
 
 JAVASCIRPT;
 
-        $activeTab = $this->getData('active_tab') !== null ? $this->getData('active_tab')
+        $activeTab = !is_null($this->getData('active_tab')) ? $this->getData('active_tab')
             : Ess_M2ePro_Block_Adminhtml_Ebay_Log_Tabs::TAB_ID_LISTING;
         $tabsBlock = $this->getLayout()->createBlock(
             'M2ePro/adminhtml_ebay_log_tabs', '', array('active_tab' => $activeTab)

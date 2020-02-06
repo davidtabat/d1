@@ -2,17 +2,10 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
-use Ess_M2ePro_Model_Amazon_Listing_Product as AmazonListingProduct;
-use Ess_M2ePro_Model_Ebay_Listing_Product as EbayListingProduct;
-use Ess_M2ePro_Model_Walmart_Listing_Product as WalmartListingProduct;
-
-/**
- * @method AmazonListingProduct|EbayListingProduct|WalmartListingProduct getChildObject()
- */
 class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent_Abstract
 {
     const ACTION_LIST    = 1;
@@ -36,25 +29,21 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
     const STATUS_CHANGER_COMPONENT = 3;
     const STATUS_CHANGER_OBSERVER = 4;
 
-    const MOVING_LISTING_OTHER_SOURCE_KEY = 'moved_from_listing_other_id';
+    const SYNCH_STATUS_OK    = 0;
+    const SYNCH_STATUS_NEED  = 1;
+    const SYNCH_STATUS_SKIP  = 2;
 
-    /**
-     * It allows to delete an object without checking if it is isLocked()
-     * @var bool
-     */
-    protected $_canBeForceDeleted = false;
-
-    protected $_eventPrefix = 'm2epro_listing_product';
+    //########################################
 
     /**
      * @var Ess_M2ePro_Model_Listing
      */
-    protected $_listingModel = null;
+    protected $listingModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Magento_Product_Cache
      */
-    protected $_magentoProductModel = null;
+    protected $magentoProductModel = NULL;
 
     //########################################
 
@@ -66,45 +55,18 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
 
     //########################################
 
-    public function delete()
-    {
-        $temp = parent::delete();
-
-        $scheduledActions = Mage::getResourceModel('M2ePro/Listing_Product_ScheduledAction_Collection');
-        $scheduledActions->addFieldToFilter('listing_product_id', $this->getId());
-        foreach ($scheduledActions->getItems() as $item) {
-            /**@var Ess_M2ePro_Model_Listing_Product_ScheduledAction $item */
-            $item->delete();
-        }
-
-        $instructionCollection = Mage::getResourceModel('M2ePro/Listing_Product_Instruction_Collection');
-        $instructionCollection->addFieldToFilter('listing_product_id', $this->getId());
-        foreach ($instructionCollection->getItems() as $item) {
-            /**@var Ess_M2ePro_Model_Listing_Product_Instruction $item */
-            $item->delete();
-        }
-
-        return $temp;
-    }
-
-    //########################################
-
     /**
      * @return bool
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
     public function isLocked()
     {
-        if ($this->canBeForceDeleted()) {
-            return false;
+        if (parent::isLocked()) {
+            return true;
         }
 
         if ($this->isComponentModeEbay() && $this->getAccount()->getChildObject()->isModeSandbox()) {
             return false;
-        }
-
-        if (parent::isLocked()) {
-            return true;
         }
 
         if ($this->getStatus() == self::STATUS_LISTED) {
@@ -125,40 +87,22 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
             $variation->deleteInstance();
         }
 
-        /** @var Ess_M2ePro_Model_Listing_Product_Instruction[] $instructions */
-        $instructions = $this->getRelatedSimpleItems(
-            'Listing_Product_Instruction', 'listing_product_id', true
-        );
-        foreach ($instructions as $instruction) {
-            $instruction->deleteInstance();
-        }
-
-        /** @var Ess_M2ePro_Model_Listing_Product_ScheduledAction[] $scheduledActions */
-        $scheduledActions = $this->getRelatedSimpleItems(
-            'Listing_Product_ScheduledAction', 'listing_product_id', true
-        );
-        foreach ($scheduledActions as $scheduledAction) {
-            $scheduledAction->deleteInstance();
-        }
-
         $tempLog = Mage::getModel('M2ePro/Listing_Log');
         $tempLog->setComponentMode($this->getComponentMode());
-        $tempLog->addProductMessage(
-            $this->getListingId(),
-            $this->getProductId(),
-            $this->getId(),
-            Ess_M2ePro_Helper_Data::INITIATOR_UNKNOWN,
-            NULL,
-            Ess_M2ePro_Model_Listing_Log::ACTION_DELETE_PRODUCT_FROM_LISTING,
-            // M2ePro_TRANSLATIONS
+        $tempLog->addProductMessage($this->getListingId(),
+                                    $this->getProductId(),
+                                    $this->getId(),
+                                    Ess_M2ePro_Helper_Data::INITIATOR_UNKNOWN,
+                                    NULL,
+                                    Ess_M2ePro_Model_Listing_Log::ACTION_DELETE_PRODUCT_FROM_LISTING,
+                                    // M2ePro_TRANSLATIONS
                                     // Item was successfully Deleted
                                     'Item was successfully Deleted',
-            Ess_M2ePro_Model_Log_Abstract::TYPE_NOTICE,
-            Ess_M2ePro_Model_Log_Abstract::PRIORITY_MEDIUM
-        );
+                                    Ess_M2ePro_Model_Log_Abstract::TYPE_NOTICE,
+                                    Ess_M2ePro_Model_Log_Abstract::PRIORITY_MEDIUM);
 
-        $this->_listingModel        = NULL;
-        $this->_magentoProductModel = NULL;
+        $this->listingModel = NULL;
+        $this->magentoProductModel = NULL;
 
         $this->deleteChildInstance();
         $this->delete();
@@ -173,13 +117,13 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
      */
     public function getListing()
     {
-        if ($this->_listingModel === null) {
-            $this->_listingModel = Mage::helper('M2ePro/Component')->getCachedComponentObject(
-                $this->getComponentMode(), 'Listing', $this->getData('listing_id')
+        if (is_null($this->listingModel)) {
+            $this->listingModel = Mage::helper('M2ePro/Component')->getCachedComponentObject(
+                $this->getComponentMode(),'Listing',$this->getData('listing_id')
             );
         }
 
-        return $this->_listingModel;
+        return $this->listingModel;
     }
 
     /**
@@ -187,7 +131,7 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
      */
     public function setListing(Ess_M2ePro_Model_Listing $instance)
     {
-         $this->_listingModel = $instance;
+         $this->listingModel = $instance;
     }
 
     // ---------------------------------------
@@ -197,12 +141,12 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
      */
     public function getMagentoProduct()
     {
-        if ($this->_magentoProductModel === null) {
-            $this->_magentoProductModel = Mage::getModel('M2ePro/Magento_Product_Cache');
-            $this->_magentoProductModel->setProductId($this->getProductId());
+        if (is_null($this->magentoProductModel)) {
+            $this->magentoProductModel = Mage::getModel('M2ePro/Magento_Product_Cache');
+            $this->magentoProductModel->setProductId($this->getProductId());
         }
 
-        return $this->prepareMagentoProduct($this->_magentoProductModel);
+        return $this->prepareMagentoProduct($this->magentoProductModel);
     }
 
     /**
@@ -210,7 +154,7 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product_Cache $instance)
     {
-        $this->_magentoProductModel = $this->prepareMagentoProduct($instance);
+        $this->magentoProductModel = $this->prepareMagentoProduct($instance);
     }
 
     protected function prepareMagentoProduct(Ess_M2ePro_Model_Magento_Product_Cache $instance)
@@ -245,23 +189,10 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
 
     //########################################
 
-    /**
-     * @param bool $asObjects
-     * @param array $filters
-     * @param bool $tryToGetFromStorage
-     * @return Ess_M2ePro_Model_Listing_Product_Variation[]
-     */
-    public function getVariations($asObjects = false, array $filters = array(), $tryToGetFromStorage = true)
+    public function getVariations($asObjects = false, array $filters = array())
     {
-        $storageKey = "listing_product_{$this->getId()}_variations_" .
-                      sha1((string)$asObjects . Mage::helper('M2ePro')->jsonEncode($filters));
-
-        if ($tryToGetFromStorage && ($cacheData = Mage::helper('M2ePro/Data_Cache_Session')->getValue($storageKey))) {
-            return $cacheData;
-        }
-
         $variations = $this->getRelatedComponentItems(
-            'Listing_Product_Variation', 'listing_product_id', $asObjects, $filters
+            'Listing_Product_Variation','listing_product_id',$asObjects,$filters
         );
 
         if ($asObjects) {
@@ -270,14 +201,6 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
                 $variation->setListingProduct($this);
             }
         }
-
-        Mage::helper('M2ePro/Data_Cache_Session')->setValue(
-            $storageKey, $variations, array(
-            'listing_product',
-            "listing_product_{$this->getId()}",
-            "listing_product_{$this->getId()}_variations"
-            )
-        );
 
         return $variations;
     }
@@ -298,6 +221,14 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
     public function getProductId()
     {
         return (int)$this->getData('product_id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTriedToList()
+    {
+        return (bool)$this->getData('tried_to_list');
     }
 
     // ---------------------------------------
@@ -327,6 +258,53 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
     public function getAdditionalData()
     {
         return $this->getSettings('additional_data');
+    }
+
+    // ---------------------------------------
+
+    /**
+     * @return int
+     */
+    public function getSynchStatus()
+    {
+        return (int)$this->getData('synch_status');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSynchStatusOk()
+    {
+        return $this->getSynchStatus() == self::SYNCH_STATUS_OK;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSynchStatusNeed()
+    {
+        return $this->getSynchStatus() == self::SYNCH_STATUS_NEED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSynchStatusSkip()
+    {
+        return $this->getSynchStatus() == self::SYNCH_STATUS_SKIP;
+    }
+
+    // ---------------------------------------
+
+    /**
+     * @return array
+     */
+    public function getSynchReasons()
+    {
+        $reasons = $this->getData('synch_reasons');
+        $reasons = explode(',',$reasons);
+
+        return array_unique(array_filter($reasons));
     }
 
     //########################################
@@ -406,7 +384,7 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
     {
         return ($this->isNotListed() || $this->isSold() ||
                 $this->isStopped() || $this->isFinished() ||
-                $this->isHidden() || $this->isUnknown()) &&
+                $this->isUnknown()) &&
                 !$this->isBlocked();
     }
 
@@ -472,16 +450,11 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
         $title = Mage::helper('M2ePro')->__('Unknown');
 
         switch ($action) {
-            case self::ACTION_LIST:   $title = Mage::helper('M2ePro')->__('Listing'); 
-                break;
-            case self::ACTION_RELIST: $title = Mage::helper('M2ePro')->__('Relisting'); 
-                break;
-            case self::ACTION_REVISE: $title = Mage::helper('M2ePro')->__('Revising'); 
-                break;
-            case self::ACTION_STOP:   $title = Mage::helper('M2ePro')->__('Stopping'); 
-                break;
-            case self::ACTION_DELETE:   $title = Mage::helper('M2ePro')->__('Deleting'); 
-                break;
+            case self::ACTION_LIST:   $title = Mage::helper('M2ePro')->__('Listing'); break;
+            case self::ACTION_RELIST: $title = Mage::helper('M2ePro')->__('Relisting'); break;
+            case self::ACTION_REVISE: $title = Mage::helper('M2ePro')->__('Revising'); break;
+            case self::ACTION_STOP:   $title = Mage::helper('M2ePro')->__('Stopping'); break;
+            case self::ACTION_DELETE:   $title = Mage::helper('M2ePro')->__('Deleting'); break;
         }
 
         return $title;
@@ -489,14 +462,9 @@ class Ess_M2ePro_Model_Listing_Product extends Ess_M2ePro_Model_Component_Parent
 
     //########################################
 
-    public function canBeForceDeleted($value = NULL)
+    public function getTrackingAttributes()
     {
-        if ($value === null) {
-            return $this->_canBeForceDeleted;
-        }
-
-        $this->_canBeForceDeleted = $value;
-        return $this;
+        return $this->getChildObject()->getTrackingAttributes();
     }
 
     //########################################

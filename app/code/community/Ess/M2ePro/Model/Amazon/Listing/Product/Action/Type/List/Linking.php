@@ -2,20 +2,20 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
 {
-    /** @var Ess_M2ePro_Model_Listing_Product $_listingProduct */
-    protected $_listingProduct = null;
+    /** @var Ess_M2ePro_Model_Listing_Product $listingProduct */
+    private $listingProduct = null;
 
-    protected $_generalId = null;
+    private $generalId = null;
 
-    protected $_sku = null;
+    private $sku = null;
 
-    protected $_additionalData = array();
+    private $additionalData = array();
 
     //########################################
 
@@ -25,7 +25,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
      */
     public function setListingProduct(Ess_M2ePro_Model_Listing_Product $listingProduct)
     {
-        $this->_listingProduct = $listingProduct;
+        $this->listingProduct = $listingProduct;
         return $this;
     }
 
@@ -38,10 +38,10 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
         if (!Mage::helper('M2ePro/Component_Amazon')->isASIN($generalId) &&
             !Mage::helper('M2ePro')->isISBN10($generalId)
         ) {
-            throw new InvalidArgumentException('General ID "'.$generalId.'" is invalid.');
+            throw new InvalidArgumentException('General ID is invalid.');
         }
 
-        $this->_generalId = $generalId;
+        $this->generalId = $generalId;
         return $this;
     }
 
@@ -51,7 +51,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
      */
     public function setSku($sku)
     {
-        $this->_sku = $sku;
+        $this->sku = $sku;
         return $this;
     }
 
@@ -61,7 +61,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
      */
     public function setAdditionalData(array $data)
     {
-        $this->_additionalData = $data;
+        $this->additionalData = $data;
         return true;
     }
 
@@ -104,15 +104,13 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
             'store_id'       => $this->getListingProduct()->getListing()->getStoreId(),
         );
 
-        $helper = Mage::helper('M2ePro/Data');
-
         if ($this->getVariationManager()->isPhysicalUnit() &&
             $this->getVariationManager()->getTypeModel()->isVariationProductMatched()
         ) {
 
             /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_PhysicalUnit $typeModel */
             $typeModel = $this->getVariationManager()->getTypeModel();
-            $data['variation_product_options'] = $helper->jsonEncode($typeModel->getProductOptions());
+            $data['variation_product_options'] = json_encode($typeModel->getProductOptions());
         }
 
         if ($this->getVariationManager()->isRelationChildType()) {
@@ -120,11 +118,11 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
             $typeModel = $this->getVariationManager()->getTypeModel();
 
             if ($typeModel->isVariationProductMatched()) {
-                $data['variation_product_options'] = $helper->jsonEncode($typeModel->getRealProductOptions());
+                $data['variation_product_options'] = json_encode($typeModel->getRealProductOptions());
             }
 
             if ($typeModel->isVariationChannelMatched()) {
-                $data['variation_channel_options'] = $helper->jsonEncode($typeModel->getRealChannelOptions());
+                $data['variation_channel_options'] = json_encode($typeModel->getRealChannelOptions());
             }
         }
 
@@ -138,7 +136,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
 
     //########################################
 
-    protected function validate()
+    private function validate()
     {
         $listingProduct = $this->getListingProduct();
         if (empty($listingProduct)) {
@@ -158,17 +156,15 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
 
     //########################################
 
-    protected function linkSimpleOrIndividualProduct()
+    private function linkSimpleOrIndividualProduct()
     {
-        $this->getListingProduct()->addData(
-            array(
+        $this->getListingProduct()->addData(array(
             'general_id'          => $this->getGeneralId(),
             'is_isbn_general_id'  => Mage::helper('M2ePro')->isISBN($this->getGeneralId()),
             'is_general_id_owner' => Ess_M2ePro_Model_Amazon_Listing_Product::IS_GENERAL_ID_OWNER_NO,
             'sku'                 => $this->getSku(),
             'status'              => Ess_M2ePro_Model_Listing_Product::STATUS_STOPPED,
-            )
-        );
+        ));
         $this->getListingProduct()->save();
 
         $this->createAmazonItem();
@@ -176,16 +172,14 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
         return true;
     }
 
-    protected function linkChildProduct()
+    private function linkChildProduct()
     {
-        $this->getListingProduct()->addData(
-            array(
+        $this->getListingProduct()->addData(array(
             'general_id'         => $this->getGeneralId(),
             'is_isbn_general_id' => Mage::helper('M2ePro')->isISBN($this->getGeneralId()),
             'sku'                => $this->getSku(),
             'status'             => Ess_M2ePro_Model_Listing_Product::STATUS_STOPPED
-            )
-        );
+        ));
 
         /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Child $typeModel */
         $typeModel = $this->getVariationManager()->getTypeModel();
@@ -197,25 +191,20 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
             ->getTypeModel();
 
         $parentVariations = $parentTypeModel->getChannelVariations();
-        if (!isset($parentVariations[$this->_generalId])) {
+        if (!isset($parentVariations[$this->generalId])) {
             return false;
         }
 
-        $typeModel->setChannelVariation($parentVariations[$this->_generalId]);
+        $typeModel->setChannelVariation($parentVariations[$this->generalId]);
 
         $this->createAmazonItem();
 
-        try {
-            $parentTypeModel->getProcessor()->process();
-        } catch (\Exception $exception) {
-            Mage::helper('M2ePro/Module_Exception')->process($exception, false);
-            return false;
-        }
+        $parentTypeModel->getProcessor()->process();
 
         return true;
     }
 
-    protected function linkParentProduct()
+    private function linkParentProduct()
     {
         $data = $this->getAdditionalData();
         if (empty($data['parentage']) || $data['parentage'] != 'parent' || !empty($data['bad_parent'])) {
@@ -249,17 +238,11 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
         foreach ($data['variations']['asins'] as $generalId => $options) {
             $channelVariations[$generalId] = $options['specifics'];
         }
-
         $typeModel->setChannelVariations($channelVariations, false);
 
         $this->getListingProduct()->save();
 
-        try {
-            $typeModel->getProcessor()->process();
-        } catch (\Exception $exception) {
-            Mage::helper('M2ePro/Module_Exception')->process($exception, false);
-            return false;
-        }
+        $typeModel->getProcessor()->process();
 
         return true;
     }
@@ -269,15 +252,15 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
     /**
      * @return Ess_M2ePro_Model_Listing_Product
      */
-    protected function getListingProduct()
+    private function getListingProduct()
     {
-        return $this->_listingProduct;
+        return $this->listingProduct;
     }
 
     /**
      * @return Ess_M2ePro_Model_Amazon_Listing_Product
      */
-    protected function getAmazonListingProduct()
+    private function getAmazonListingProduct()
     {
         return $this->getListingProduct()->getChildObject();
     }
@@ -285,55 +268,51 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking
     /**
      * @return Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager
      */
-    protected function getVariationManager()
+    private function getVariationManager()
     {
         return $this->getAmazonListingProduct()->getVariationManager();
     }
 
     // ---------------------------------------
 
-    protected function getGeneralId()
+    private function getGeneralId()
     {
-        return $this->_generalId;
+        return $this->generalId;
     }
 
-    protected function getSku()
+    private function getSku()
     {
-        if ($this->_sku !== null) {
-            return $this->_sku;
+        if (!is_null($this->sku)) {
+            return $this->sku;
         }
 
         return $this->getAmazonListingProduct()->getSku();
     }
 
-    protected function getAdditionalData()
+    private function getAdditionalData()
     {
-        if (!empty($this->_additionalData)) {
-            return $this->_additionalData;
+        if (!empty($this->additionalData)) {
+            return $this->additionalData;
         }
 
-        return $this->_additionalData = $this->getDataFromAmazon();
+        return $this->additionalData = $this->getDataFromAmazon();
     }
 
     //########################################
 
-    protected function getDataFromAmazon()
+    private function getDataFromAmazon()
     {
         $params = array(
-            'item' => $this->_generalId,
+            'item' => $this->generalId,
             'variation_child_modification' => 'none',
         );
 
-        $dispatcherObject = Mage::getModel('M2ePro/Amazon_Connector_Dispatcher');
-        $connectorObj = $dispatcherObject->getVirtualConnector(
-            'product', 'search', 'byAsin',
-            $params, 'item',
-            $this->getListingProduct()->getListing()->getAccount()
-        );
+        $dispatcherObject = Mage::getModel('M2ePro/Connector_Amazon_Dispatcher');
+        $connectorObj = $dispatcherObject->getVirtualConnector('product', 'search', 'byAsin',
+                                                               $params, 'item',
+                                                               $this->getListingProduct()->getListing()->getAccount());
 
-        $dispatcherObject->process($connectorObj);
-
-        return $connectorObj->getResponseData();
+        return $dispatcherObject->process($connectorObj);
     }
 
     //########################################

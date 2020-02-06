@@ -15,9 +15,6 @@ AttributeCreator.prototype = {
     formId:         'general_create_new_attribute_form',
     addOptionValue: 'new-one-attribute',
 
-    // usually we are using "2" value for a CUSTOM_ATTRIBUTE constant
-    defaultNewlyCreatedOptionValue: 2,
-
     onSuccessCallback: null,
     onFailedCallback:  null,
 
@@ -206,12 +203,12 @@ AttributeCreator.prototype = {
         newOption.setAttribute('value', self.getNewlyCreatedAttributeValue(attributeParams));
         newOption.setAttribute('selected', 'selected');
 
-        self.selectObj.select('option').each(function(el) {
+        $$('select[id="' + self.selectObj.id + '"] option').each(function(el) {
             el.removeAttribute('selected');
         });
 
-        var existedOptionsCollection = self.haveOptgroup() ? self.selectObj.select('optgroup.M2ePro-custom-attribute-optgroup option')
-                                                           : self.selectObj.select('option');
+        var existedOptionsCollection = self.haveOptgroup() ? $$('select[id="' + self.selectObj.id + '"] optgroup.M2ePro-custom-attribute-optgroup option')
+                                                           : $$('select[id="' + self.selectObj.id + '"] option');
 
         var titles = [];
         existedOptionsCollection.each(function(el) {
@@ -246,19 +243,13 @@ AttributeCreator.prototype = {
             return attributeParams['code'];
         }
 
-        var optGroupObj = this.selectObj.select('optgroup.M2ePro-custom-attribute-optgroup').first();
+        var optGroupObj = $$('select[id="' + this.selectObj.id + '"] optgroup.M2ePro-custom-attribute-optgroup').first();
 
         if (optGroupObj.hasAttribute('new_option_value')) {
             return optGroupObj.getAttribute('new_option_value');
         }
 
-        var firstOption = this.selectObj.select('optgroup.M2ePro-custom-attribute-optgroup option').first();
-
-        if (firstOption.value && firstOption.value != this.addOptionValue) {
-            return firstOption.value;
-        }
-
-        return this.defaultNewlyCreatedOptionValue;
+        return $$('select[id="' + this.selectObj.id + '"] optgroup.M2ePro-custom-attribute-optgroup option').first().value;
     },
 
     // ---------------------------------------
@@ -267,27 +258,15 @@ AttributeCreator.prototype = {
     {
         var self = this;
 
-        // -- if select is empty -> inject each one empty option
-        if (self.selectObj.select('option').length == 0) {
+        var option = new Element('option', {
+            style: 'color: brown;',
+            value: this.addOptionValue
+        }).update(M2ePro.translator.translate('Create a New One...'));
 
-            self.selectObj.insertBefore(
-                new Element('option', {style: 'display: none;'}),
-                self.selectObj.firstChild
-            );
-        }
-        // --
-
-        if (!self.alreadyHaveAddedOption()) {
-            var option = new Element('option', {
-                style: 'color: brown;',
-                value: this.addOptionValue
-            }).update(M2ePro.translator.translate('Create a New One...'));
-
-            if (self.haveOptgroup()) {
-                self.selectObj.select('optgroup.M2ePro-custom-attribute-optgroup').first().appendChild(option);
-            } else {
-                self.selectObj.appendChild(option);
-            }
+        if (self.haveOptgroup()) {
+            $$('select[id="' + this.selectObj.id + '"] optgroup.M2ePro-custom-attribute-optgroup').first().appendChild(option);
+        } else {
+            self.selectObj.appendChild(option);
         }
 
         $(self.selectObj).observe('focus', function(event) {
@@ -392,13 +371,13 @@ AttributeCreator.prototype = {
 
     haveOptgroup: function()
     {
-        var obj = this.selectObj.select('optgroup.M2ePro-custom-attribute-optgroup').first();
+        var obj = $$('select[id="' + this.selectObj.id + '"] optgroup.M2ePro-custom-attribute-optgroup').first();
         return typeof obj != 'undefined';
     },
 
     alreadyHaveAddedOption: function()
     {
-        var obj = this.selectObj.select('option[value="' + this.addOptionValue + '"]').first();
+        var obj = $$('select[id="' + this.selectObj.id + '"] option[value="' + this.addOptionValue + '"]').first();
         return typeof obj != 'undefined';
     }
 

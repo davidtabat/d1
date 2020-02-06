@@ -2,20 +2,20 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_AttributeSet_Builder
 {
     /** @var Mage_Eav_Model_Entity_Attribute_Set */
-    protected $_attributeSetObj = null;
+    private $attributeSetObj  = null;
 
-    protected $_setName = null;
-    protected $_params  = array();
+    private $setName = null;
+    private $params = array();
 
-    protected $_entityTypeId;
-    protected $_skeletonId;
+    private $entityTypeId;
+    private $skeletonId;
 
     //########################################
 
@@ -27,71 +27,73 @@ class Ess_M2ePro_Model_Magento_AttributeSet_Builder
 
     // ---------------------------------------
 
-    protected function init()
+    private function init()
     {
-        if ($this->_entityTypeId === null) {
-            $this->_entityTypeId = Mage::getModel('catalog/product')->getResource()->getTypeId();
+        if (is_null($this->entityTypeId)) {
+            $this->entityTypeId = Mage::getModel('catalog/product')->getResource()->getTypeId();
         }
 
-        if ($this->_skeletonId !== null) {
+        if (!is_null($this->skeletonId)) {
+
             $skeletonAttributeSetId = Mage::getModel('eav/entity_attribute_set')
-                  ->load($this->_skeletonId)
+                  ->load($this->skeletonId)
                   ->getId();
 
-            !$skeletonAttributeSetId && $this->_skeletonId = null;
+            !$skeletonAttributeSetId && $this->skeletonId = null;
         }
+        !$this->skeletonId && Mage::getModel('catalog/product')->getDefaultAttributeSetId();
 
-        !$this->_skeletonId && Mage::getModel('catalog/product')->getDefaultAttributeSetId();
-
-        $this->_attributeSetObj = Mage::getModel('eav/entity_attribute_set')
-                                      ->load($this->_setName, 'attribute_set_name');
+        $this->attributeSetObj = Mage::getModel('eav/entity_attribute_set')
+                                       ->load($this->setName, 'attribute_set_name');
     }
 
-    protected function saveAttributeSet()
+    private function saveAttributeSet()
     {
-        if ($this->_attributeSetObj->getId()) {
-            return array('result' => true, 'obj' => $this->_attributeSetObj);
+        if ($this->attributeSetObj->getId()) {
+            return array('result' => true, 'obj' => $this->attributeSetObj);
         }
 
-        $this->_attributeSetObj->setEntityTypeId($this->_entityTypeId)
-                               ->setAttributeSetName($this->_setName);
+        $this->attributeSetObj->setEntityTypeId($this->entityTypeId)
+                              ->setAttributeSetName($this->setName);
 
         try {
-            $this->_attributeSetObj->validate();
-            $this->_attributeSetObj->save();
 
-            $this->_attributeSetObj->initFromSkeleton($this->_skeletonId)
-                                   ->save();
+            $this->attributeSetObj->validate();
+            $this->attributeSetObj->save();
+
+            $this->attributeSetObj->initFromSkeleton($this->skeletonId)
+                                  ->save();
+
         } catch (Exception $e) {
             return array('result' => false, 'error' => $e->getMessage());
         }
 
-        return array('result' => true, 'obj' => $this->_attributeSetObj);
+        return array('result' => true, 'obj' => $this->attributeSetObj);
     }
 
     //########################################
 
     public function setName($value)
     {
-        $this->_setName = $value;
+        $this->setName = $value;
         return $this;
     }
 
     public function setParams(array $value = array())
     {
-        $this->_params = $value;
+        $this->params = $value;
         return $this;
     }
 
     public function setEntityTypeId($value)
     {
-        $this->_entityTypeId = $value;
+        $this->entityTypeId = $value;
         return $this;
     }
 
     public function setSkeletonAttributeSetId($value)
     {
-        $this->_skeletonId = $value;
+        $this->skeletonId = $value;
         return $this;
     }
 

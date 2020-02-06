@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,14 +11,14 @@ use Ess_M2ePro_Model_Amazon_Template_Description_Specific as DescriptionSpecific
 class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
 {
     /**
-     * @var $_magentoProduct Ess_M2ePro_Model_Magento_Product
+     * @var $magentoProduct Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProduct = null;
+    private $magentoProduct = null;
 
     /**
-     * @var $_descriptionSpecificTemplateModel Ess_M2ePro_Model_Amazon_Template_Description_Specific
+     * @var $descriptionSpecificTemplateModel Ess_M2ePro_Model_Amazon_Template_Description_Specific
      */
-    protected $_descriptionSpecificTemplateModel = null;
+    private $descriptionSpecificTemplateModel = null;
 
     //########################################
 
@@ -28,7 +28,7 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $magentoProduct)
     {
-        $this->_magentoProduct = $magentoProduct;
+        $this->magentoProduct = $magentoProduct;
         return $this;
     }
 
@@ -37,7 +37,7 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
      */
     public function getMagentoProduct()
     {
-        return $this->_magentoProduct;
+        return $this->magentoProduct;
     }
 
     // ---------------------------------------
@@ -48,7 +48,7 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
      */
     public function setDescriptionSpecificTemplate(Ess_M2ePro_Model_Amazon_Template_Description_Specific $instance)
     {
-        $this->_descriptionSpecificTemplateModel = $instance;
+        $this->descriptionSpecificTemplateModel = $instance;
         return $this;
     }
 
@@ -57,7 +57,7 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
      */
     public function getDescriptionSpecificTemplate()
     {
-        return $this->_descriptionSpecificTemplateModel;
+        return $this->descriptionSpecificTemplateModel;
     }
 
     //########################################
@@ -68,13 +68,13 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
     public function getPath()
     {
         $xpath = $this->getDescriptionSpecificTemplate()->getXpath();
-        $xpathParts = explode('/', $xpath);
+        $xpathParts = explode('/',$xpath);
 
         $path = '';
         $isFirst = true;
 
         foreach ($xpathParts as $part) {
-            list($tag,$index) = explode('-', $part);
+            list($tag,$index) = explode('-',$part);
 
             if (!$tag) {
                 continue;
@@ -88,19 +88,19 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
         $templateObj = $this->getDescriptionSpecificTemplate();
 
         if ($templateObj->isModeNone()) {
+
             $path .= '[]';
-            $path .= str_repeat('}', substr_count($path, '{'));
+            $path .= str_repeat('}',substr_count($path,'{'));
 
             return $path;
         }
 
         $path .= '%data%';
-        $path .= str_repeat('}', substr_count($path, '{'));
+        $path .= str_repeat('}',substr_count($path,'{'));
 
-        $encodedValue = Mage::helper('M2ePro')->jsonEncode($this->getValue());
         $path = str_replace(
             '%data%',
-            '{"value": ' .$encodedValue. ',"attributes": ' .$this->getValueAttributes(). '}',
+            '{"value": ' .json_encode($this->getValue()). ',"attributes": ' .$this->getValueAttributes(). '}',
             $path
         );
 
@@ -122,8 +122,8 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
         }
 
         $templateObj->isTypeInt()      && $value = (int)$value;
-        $templateObj->isTypeFloat()    && $value = (float)str_replace(',', '.', $value);
-        $templateObj->isTypeDateTime() && $value = str_replace(' ', 'T', $value);
+        $templateObj->isTypeFloat()    && $value = (float)str_replace(',','.',$value);
+        $templateObj->isTypeDateTime() && $value = str_replace(' ','T',$value);
 
         return $value;
     }
@@ -135,6 +135,7 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
         $attributes = array();
 
         foreach ($templateObj->getAttributes() as $index => $attribute) {
+
             list($attributeName) = array_keys($attribute);
 
             $attributeData = $attribute[$attributeName];
@@ -144,12 +145,12 @@ class Ess_M2ePro_Model_Amazon_Template_Description_Specific_Source
                 : $this->getMagentoProduct()->getAttributeValue($attributeData['custom_attribute']);
 
             $attributes[$index] = array(
-                'name'  => str_replace(' ', '', $attributeName),
+                'name'  => str_replace(' ','',$attributeName),
                 'value' => $attributeValue,
             );
         }
 
-        return Mage::helper('M2ePro')->jsonEncode($attributes);
+        return json_encode($attributes);
     }
 
     //########################################

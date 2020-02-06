@@ -2,25 +2,25 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option
 {
-    /** @var Ess_M2ePro_Model_Magento_Product $_magentoProduct */
-    protected $_magentoProduct = null;
+    /** @var Ess_M2ePro_Model_Magento_Product $magentoProduct */
+    private $magentoProduct = null;
 
-    protected $_destinationOptions = array();
+    private $destinationOptions = array();
 
-    protected $_destinationOptionsLocalVocabularyNames = array();
+    private $destinationOptionsLocalVocabularyNames = array();
 
-    protected $_destinationOptionsServerVocabularyNames = array();
+    private $destinationOptionsServerVocabularyNames = array();
 
-    protected $_matchedAttributes = array();
+    private $matchedAttributes = array();
 
-    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option_Resolver $_resolver */
-    protected $_resolver = null;
+    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option_Resolver $resolver */
+    private $resolver = null;
 
     //########################################
 
@@ -30,30 +30,30 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $magentoProduct)
     {
-        $this->_magentoProduct = $magentoProduct;
+        $this->magentoProduct = $magentoProduct;
         return $this;
     }
 
     // ---------------------------------------
 
+//    $destinationOptions = array(
+//        'B00005N5PF' => array(
+//          'Color' => 'Red',
+//          'Size'  => 'XL',
+//        ),
+//        ...
+//    )
+
     /**
-     * $destinationOptions = array(
-     *       'B00005N5PF' => array(
-     *         'Color' => 'Red',
-     *         'Size'  => 'XL',
-     *       ),
-     *       ...
-     *   )
-     *
      * @param array $destinationOptions
      * @return $this
      */
     public function setDestinationOptions(array $destinationOptions)
     {
-        $this->_destinationOptions = $destinationOptions;
+        $this->destinationOptions = $destinationOptions;
 
-        $this->_destinationOptionsLocalVocabularyNames  = array();
-        $this->_destinationOptionsServerVocabularyNames = array();
+        $this->destinationOptionsLocalVocabularyNames  = array();
+        $this->destinationOptionsServerVocabularyNames = array();
 
         return $this;
     }
@@ -64,7 +64,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option
      */
     public function setMatchedAttributes(array $matchedAttributes)
     {
-        $this->_matchedAttributes = $matchedAttributes;
+        $this->matchedAttributes = $matchedAttributes;
         return $this;
     }
 
@@ -101,20 +101,20 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option
 
     //########################################
 
-    protected function validate()
+    private function validate()
     {
-        if ($this->_magentoProduct === null) {
+        if (is_null($this->magentoProduct)) {
             throw new Ess_M2ePro_Model_Exception('Magento Product was not set.');
         }
 
-        if (empty($this->_destinationOptions)) {
+        if (empty($this->destinationOptions)) {
             throw new Ess_M2ePro_Model_Exception('Destination Options is empty.');
         }
     }
 
     // ---------------------------------------
 
-    protected function matchGeneralIdByNames(array $sourceOption)
+    private function matchGeneralIdByNames(array $sourceOption)
     {
         $sourceOptionNames = array();
         foreach ($sourceOption as $attribute => $option) {
@@ -123,48 +123,43 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option
 
         $this->getResolver()
             ->setSourceOption($sourceOptionNames)
-            ->setDestinationOptions($this->_destinationOptions)
-            ->setMatchedAttributes($this->_matchedAttributes);
+            ->setDestinationOptions($this->destinationOptions)
+            ->setMatchedAttributes($this->matchedAttributes);
 
         return $this->getResolver()->resolve()->getResolvedGeneralId();
     }
 
-    protected function matchGeneralIdByLocalVocabulary(array $sourceOption)
+    private function matchGeneralIdByLocalVocabulary(array $sourceOption)
     {
         $this->getResolver()
             ->setSourceOption($this->getSourceOptionNames($sourceOption))
             ->setDestinationOptions($this->getDestinationOptionLocalVocabularyNames())
-            ->setMatchedAttributes($this->_matchedAttributes);
+            ->setMatchedAttributes($this->matchedAttributes);
 
         return $this->getResolver()->resolve()->getResolvedGeneralId();
     }
 
-    protected function matchGeneralIdByServerVocabulary(array $sourceOption)
+    private function matchGeneralIdByServerVocabulary(array $sourceOption)
     {
         $this->getResolver()
             ->setSourceOption($this->getSourceOptionNames($sourceOption))
             ->setDestinationOptions($this->getDestinationOptionServerVocabularyNames())
-            ->setMatchedAttributes($this->_matchedAttributes);
+            ->setMatchedAttributes($this->matchedAttributes);
 
         return $this->getResolver()->resolve()->getResolvedGeneralId();
     }
 
     // ---------------------------------------
 
-    protected function getSourceOptionNames($sourceOption)
+    private function getSourceOptionNames($sourceOption)
     {
-        $magentoOptionNames = $this->_magentoProduct->getVariationInstance()->getTitlesVariationSet();
+        $magentoOptionNames = $this->magentoProduct->getVariationInstance()->getTitlesVariationSet();
 
         $resultNames = array();
         foreach ($sourceOption as $attribute => $option) {
             $names = array();
-            if (isset($magentoOptionNames[$attribute]['values'])) {
-                $attributeValues = $magentoOptionNames[$attribute]['values'];
-                foreach ($attributeValues as $defaultValue => $optionValues) {
-                    if (in_array($option, $optionValues, true)) {
-                        $names = $magentoOptionNames[$attribute]['values'][$defaultValue];
-                    }
-                }
+            if (isset($magentoOptionNames[$attribute])) {
+                $names = $magentoOptionNames[$attribute]['values'][$option];
             }
 
             $resultNames[$attribute] = $this->prepareOptionNames($option, $names);
@@ -173,57 +168,57 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Option
         return $resultNames;
     }
 
-    protected function getDestinationOptionLocalVocabularyNames()
+    private function getDestinationOptionLocalVocabularyNames()
     {
-        if (!empty($this->_destinationOptionsLocalVocabularyNames)) {
-            return $this->_destinationOptionsLocalVocabularyNames;
+        if (!empty($this->destinationOptionsLocalVocabularyNames)) {
+            return $this->destinationOptionsLocalVocabularyNames;
         }
 
         $vocabularyHelper = Mage::helper('M2ePro/Component_Amazon_Vocabulary');
 
-        foreach ($this->_destinationOptions as $generalId => $destinationOption) {
+        foreach ($this->destinationOptions as $generalId => $destinationOption) {
             foreach ($destinationOption as $attributeName => $optionName) {
-                $this->_destinationOptionsLocalVocabularyNames[$generalId][$attributeName] = $this->prepareOptionNames(
+                $this->destinationOptionsLocalVocabularyNames[$generalId][$attributeName] = $this->prepareOptionNames(
                     $optionName, $vocabularyHelper->getLocalOptionNames($attributeName, $optionName)
                 );
             }
         }
 
-        return $this->_destinationOptionsLocalVocabularyNames;
+        return $this->destinationOptionsLocalVocabularyNames;
     }
 
-    protected function getDestinationOptionServerVocabularyNames()
+    private function getDestinationOptionServerVocabularyNames()
     {
-        if (!empty($this->_destinationOptionsServerVocabularyNames)) {
-            return $this->_destinationOptionsServerVocabularyNames;
+        if (!empty($this->destinationOptionsServerVocabularyNames)) {
+            return $this->destinationOptionsServerVocabularyNames;
         }
 
         $vocabularyHelper = Mage::helper('M2ePro/Component_Amazon_Vocabulary');
 
-        foreach ($this->_destinationOptions as $generalId => $destinationOption) {
+        foreach ($this->destinationOptions as $generalId => $destinationOption) {
             foreach ($destinationOption as $attributeName => $optionName) {
-                $this->_destinationOptionsServerVocabularyNames[$generalId][$attributeName] = $this->prepareOptionNames(
+                $this->destinationOptionsServerVocabularyNames[$generalId][$attributeName] = $this->prepareOptionNames(
                     $optionName, $vocabularyHelper->getServerOptionNames($attributeName, $optionName)
                 );
             }
         }
 
-        return $this->_destinationOptionsServerVocabularyNames;
+        return $this->destinationOptionsServerVocabularyNames;
     }
 
     //########################################
 
-    protected function getResolver()
+    private function getResolver()
     {
-        if ($this->_resolver !== null) {
-            return $this->_resolver;
+        if (!is_null($this->resolver)) {
+            return $this->resolver;
         }
 
-        $this->_resolver = Mage::getModel('M2ePro/Amazon_Listing_Product_Variation_Matcher_Option_Resolver');
-        return $this->_resolver;
+        $this->resolver = Mage::getModel('M2ePro/Amazon_Listing_Product_Variation_Matcher_Option_Resolver');
+        return $this->resolver;
     }
 
-    protected function prepareOptionNames($option, array $names = array())
+    private function prepareOptionNames($option, array $names = array())
     {
         $names[] = $option;
         $names = array_unique($names);

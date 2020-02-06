@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -13,26 +13,24 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
 
     public function run($skus = NULL)
     {
-        $requestSkus = array_unique(
-            array_merge(
-                Mage::getResourceModel('M2ePro/Amazon_Listing_Product_Repricing')->getSkus(
-                    $this->getAccount(), $skus, false
-                ),
-                Mage::getResourceModel('M2ePro/Amazon_Listing_Other')->getRepricingSkus(
-                    $this->getAccount(), $skus, false
-                )
-            )
-        );
+        $existedSkus = array_unique(array_merge(
+            Mage::getResourceModel('M2ePro/Amazon_Listing_Product_Repricing')->getAllSkus($this->getAccount(), true),
+            Mage::getResourceModel('M2ePro/Amazon_Listing_Other')->getAllRepricingSkus($this->getAccount(), true)
+        ));
+
+        if (is_null($skus)) {
+            $requestSkus = $existedSkus;
+        } else {
+            $requestSkus = array_intersect($skus, $existedSkus);
+        }
 
         if (empty($requestSkus)) {
             return false;
         }
 
-        $response = $this->sendRequest(
-            array(
+        $response = $this->sendRequest(array(
             'skus_list' => $requestSkus,
-            )
-        );
+        ));
 
         if ($response === false || empty($response['status'])) {
             return false;
@@ -41,7 +39,7 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
         $offersProductPrices = array();
         foreach ($response['offers'] as $offerData) {
             $productPrice = $offerData['product_price'];
-            if ($productPrice === null) {
+            if (is_null($productPrice)) {
                 continue;
             }
 
@@ -49,7 +47,7 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
         }
 
         if (empty($offersProductPrices)) {
-            return true;
+            return false;
         }
 
         $this->updateListingsProductsPrices($offersProductPrices);
@@ -67,15 +65,11 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
 
     //########################################
 
-    protected function updateListingsProductsPrices(array $offersProductPrices)
+    private function updateListingsProductsPrices(array $offersProductPrices)
     {
-        $keys = array_map(
-            function($el){
-            return (string)$el; 
-            }, array_keys($offersProductPrices)
-        );
+        $keys = array_map(function($el){ return (string)$el; }, array_keys($offersProductPrices));
 
-        /** @var Ess_M2ePro_Model_Resource_Listing_Product_Collection $listingProductCollection */
+        /** @var Ess_M2ePro_Model_Mysql4_Listing_Product_Collection $listingProductCollection */
         $listingProductCollection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Product');
         $listingProductCollection->addFieldToFilter('is_variation_parent', 0);
         $listingProductCollection->addFieldToFilter('is_repricing', 1);
@@ -99,7 +93,7 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
                 'main_table.product_id',
                 'second_table.listing_product_id',
                 'second_table.sku',
-                'second_table.online_regular_price',
+                'second_table.online_price',
             )
         );
 
@@ -113,28 +107,23 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
 
             $offerProductPrice = $offersProductPrices[strtolower($listingProductData['sku'])];
 
-            if ($offerProductPrice !== null &&
-                $listingProductData['online_regular_price'] != $offerProductPrice
+            if (!is_null($offerProductPrice) &&
+                $listingProductData['online_price'] != $offerProductPrice
             ) {
                 $connWrite->update(
-                    Mage::helper('M2ePro/Module_Database_Structure')
-                        ->getTableNameWithPrefix('m2epro_amazon_listing_product'),
-                    array('online_regular_price' => $offerProductPrice),
+                    $resource->getTableName('m2epro_amazon_listing_product'),
+                    array('online_price' => $offerProductPrice),
                     array('listing_product_id = ?' => $listingProductId)
                 );
             }
         }
     }
 
-    protected function updateListingsOthersPrices(array $offersProductPrices)
+    private function updateListingsOthersPrices(array $offersProductPrices)
     {
-        $keys = array_map(
-            function($el){
-            return (string)$el; 
-            }, array_keys($offersProductPrices)
-        );
+        $keys = array_map(function($el){ return (string)$el; }, array_keys($offersProductPrices));
 
-        /** @var Ess_M2ePro_Model_Resource_Listing_Other_Collection $listingOtherCollection */
+        /** @var Ess_M2ePro_Model_Mysql4_Listing_Other_Collection $listingOtherCollection */
         $listingOtherCollection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Other');
         $listingOtherCollection->addFieldToFilter('account_id', $this->getAccount()->getId());
         $listingOtherCollection->addFieldToFilter('sku', array('in' => $keys));
@@ -163,12 +152,11 @@ class Ess_M2ePro_Model_Amazon_Repricing_Synchronization_ActualPrice
 
             $offerProductPrice = $offersProductPrices[strtolower($listingOtherData['sku'])];
 
-            if ($offerProductPrice !== null &&
+            if (!is_null($offerProductPrice) &&
                 $offerProductPrice != $listingOtherData['online_price']
             ) {
                 $connWrite->update(
-                    Mage::helper('M2ePro/Module_Database_Structure')
-                        ->getTableNameWithPrefix('m2epro_amazon_listing_other'),
+                    $resource->getTableName('m2epro_amazon_listing_other'),
                     array(
                         'online_price' => $offerProductPrice,
                     ),

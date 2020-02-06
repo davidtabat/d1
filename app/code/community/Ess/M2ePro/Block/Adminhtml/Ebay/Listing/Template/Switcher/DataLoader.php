@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -17,24 +17,20 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
         if ($source instanceof Ess_M2ePro_Helper_Data_Session) {
             $data = $this->getDataFromSession($source, $params);
         }
-
         if ($source instanceof Ess_M2ePro_Model_Listing) {
             $data = $this->getDataFromListing($source, $params);
         }
-
-        if ($source instanceof Ess_M2ePro_Model_Resource_Listing_Product_Collection) {
+        if ($source instanceof Ess_M2ePro_Model_Mysql4_Listing_Product_Collection) {
             $data = $this->getDataFromListingProducts($source, $params);
         }
-
         if ($this->isTemplateInstance($source)) {
             $data = $this->getDataFromTemplate($source, $params);
         }
-
         if ($source instanceof Mage_Core_Controller_Request_Http) {
             $data = $this->getDataFromRequest($source, $params);
         }
 
-        if ($data === null) {
+        if (is_null($data)) {
             throw new InvalidArgumentException('Data source is invalid.');
         }
 
@@ -46,10 +42,8 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
         $marketplace = NULL;
         if ($data['marketplace_id']) {
-            $marketplace = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
-                'Marketplace',
-                $data['marketplace_id']
-            );
+            $marketplace = Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Marketplace',
+                                                                                  $data['marketplace_id']);
         }
 
         $storeId = (int)$data['store_id'];
@@ -88,13 +82,12 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     //########################################
 
-    protected function getDataFromSession(Ess_M2ePro_Helper_Data_Session $source, array $params = array())
+    private function getDataFromSession(Ess_M2ePro_Helper_Data_Session $source, array $params = array())
     {
         // ---------------------------------------
         if (!isset($params['session_key'])) {
             throw new Ess_M2ePro_Model_Exception_Logic('Session key is not defined.');
         }
-
         $sessionKey = $params['session_key'];
         $sessionData = $source->getValue($sessionKey);
         // ---------------------------------------
@@ -124,7 +117,6 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
                 'force_parent' => false
             );
         }
-
         // ---------------------------------------
 
         return array(
@@ -139,7 +131,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     //########################################
 
-    protected function getDataFromListing(Ess_M2ePro_Model_Listing $source, array $params = array())
+    private function getDataFromListing(Ess_M2ePro_Model_Listing $source, array $params = array())
     {
         // ---------------------------------------
         $accountId = $source->getAccountId();
@@ -166,7 +158,6 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
                 'force_parent' => false
             );
         }
-
         // ---------------------------------------
 
         return array(
@@ -181,7 +172,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     //########################################
 
-    protected function getDataFromListingProducts($source, array $params = array())
+    private function getDataFromListingProducts($source, array $params = array())
     {
         // ---------------------------------------
         /** @var Ess_M2ePro_Model_Listing_Product $listingProductFirst */
@@ -193,7 +184,6 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
         foreach ($source as $listingProduct) {
             $productIds[] = $listingProduct->getData('product_id');
         }
-
         // ---------------------------------------
 
         // ---------------------------------------
@@ -212,7 +202,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
             $templateMode = NULL;
             $forceParent = false;
 
-            if ($source->getSize() <= 200) {
+            if ($source->count() <= 200) {
                 foreach ($source as $listingProduct) {
                     $manager = Mage::getModel('M2ePro/Ebay_Template_Manager')
                         ->setTemplate($nick)
@@ -221,7 +211,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
                     $currentProductTemplateId = $manager->getIdColumnValue();
                     $currentProductTemplateMode = $manager->getModeValue();
 
-                    if ($templateId === null && $templateMode === null) {
+                    if (is_null($templateId) && is_null($templateMode)) {
                         $templateId = $currentProductTemplateId;
                         $templateMode = $currentProductTemplateMode;
                         continue;
@@ -238,7 +228,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
                 $forceParent = true;
             }
 
-            if ($templateMode === null) {
+            if (is_null($templateMode)) {
                 $templateMode = Ess_M2ePro_Model_Ebay_Template_Manager::MODE_PARENT;
             }
 
@@ -248,7 +238,6 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
                 'force_parent' => $forceParent
             );
         }
-
         // ---------------------------------------
 
         return array(
@@ -263,7 +252,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     //########################################
 
-    protected function isTemplateInstance($source)
+    private function isTemplateInstance($source)
     {
         if ($source instanceof Ess_M2ePro_Model_Ebay_Template_Payment
             || $source instanceof Ess_M2ePro_Model_Ebay_Template_Shipping
@@ -278,11 +267,12 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
         return false;
     }
 
-    protected function isHorizontalTemplate($source)
+    private function isHorizontalTemplate($source)
     {
         if ($source instanceof Ess_M2ePro_Model_Template_SellingFormat ||
             $source instanceof Ess_M2ePro_Model_Template_Synchronization ||
             $source instanceof Ess_M2ePro_Model_Template_Description) {
+
             return true;
         }
 
@@ -291,7 +281,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     // ---------------------------------------
 
-    protected function getTemplateNick($source)
+    private function getTemplateNick($source)
     {
         if (!$this->isHorizontalTemplate($source)) {
             return $source->getNick();
@@ -312,7 +302,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     //########################################
 
-    protected function getDataFromTemplate($source, array $params = array())
+    private function getDataFromTemplate($source, array $params = array())
     {
         $attributeSets = Mage::helper('M2ePro/Magento_AttributeSet')
             ->getAll(Ess_M2ePro_Helper_Magento_Abstract::RETURN_TYPE_IDS);
@@ -342,19 +332,14 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher_DataLoader
 
     //########################################
 
-    protected function getDataFromRequest(Mage_Core_Controller_Request_Http $source, array $params = array())
+    private function getDataFromRequest(Mage_Core_Controller_Request_Http $source, array $params = array())
     {
         $id   = $source->getParam('id');
         $nick = $source->getParam('nick');
         $mode = $source->getParam('mode', Ess_M2ePro_Model_Ebay_Template_Manager::MODE_CUSTOM);
 
         $attributeSets = $source->getParam('attribute_sets', '');
-        $attributeSets = array_filter(explode(',', $attributeSets));
-
-        if (empty($attributeSets)) {
-            $attributeSets = Mage::helper('M2ePro/Magento_AttributeSet')
-                ->getAll(Ess_M2ePro_Helper_Magento_Abstract::RETURN_TYPE_IDS);
-        }
+        $attributeSets = explode(',', $attributeSets);
 
         return array(
             'account_id'                 => $source->getParam('account_id'),

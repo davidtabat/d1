@@ -2,21 +2,6 @@ EbayListingOtherGridHandler = Class.create(ListingOtherGridHandler, {
 
     // ---------------------------------------
 
-    tryToMove: function(listingId)
-    {
-        this.movingHandler.submit(listingId, this.onSuccess)
-    },
-
-    onSuccess: function(listingId)
-    {
-        setLocation(M2ePro.url.get('adminhtml_ebay_listing_categorySettings/index', {
-                listing_id: listingId,
-            })
-        );
-    },
-
-    // ---------------------------------------
-
     getComponent: function()
     {
         return 'ebay';
@@ -58,7 +43,38 @@ EbayListingOtherGridHandler = Class.create(ListingOtherGridHandler, {
 
     getMaxProductsInPart: function()
     {
-        return 10;
+        var maxProductsInPart = 10;
+        var selectedProductsArray = this.getSelectedProductsArray();
+
+        if (selectedProductsArray.length <= 25) {
+            maxProductsInPart = 5;
+        }
+        if (selectedProductsArray.length <= 15) {
+            maxProductsInPart = 3;
+        }
+        if (selectedProductsArray.length <= 8) {
+            maxProductsInPart = 2;
+        }
+        if (selectedProductsArray.length <= 4) {
+            maxProductsInPart = 1;
+        }
+
+        return maxProductsInPart;
+    },
+
+    // ---------------------------------------
+
+    prepareActions: function($super)
+    {
+        $super();
+
+        this.actionHandler = new EbayListingOtherActionHandler(this);
+
+        this.actions = Object.extend(this.actions, {
+            relistAction: this.actionHandler.relistAction.bind(this.actionHandler),
+            reviseAction: this.actionHandler.reviseAction.bind(this.actionHandler),
+            stopAction: this.actionHandler.stopAction.bind(this.actionHandler)
+        });
     }
 
     // ---------------------------------------

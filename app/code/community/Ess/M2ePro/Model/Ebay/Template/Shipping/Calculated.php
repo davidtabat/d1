@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -22,15 +22,17 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated extends Ess_M2ePro_Mode
     const WEIGHT_CUSTOM_VALUE           = 1;
     const WEIGHT_CUSTOM_ATTRIBUTE       = 2;
 
+    //########################################
+
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Shipping
      */
-    protected $_shippingTemplateModel = null;
+    private $shippingTemplateModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source[]
      */
-    protected $_shippingCalculatedSourceModels = array();
+    private $shippingCalculatedSourceModels = array();
 
     //########################################
 
@@ -45,8 +47,8 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated extends Ess_M2ePro_Mode
     public function deleteInstance()
     {
         $temp = parent::deleteInstance();
-        $temp && $this->_shippingTemplateModel = null;
-        $temp && $this->_shippingCalculatedSourceModels = array();
+        $temp && $this->shippingTemplateModel = NULL;
+        $temp && $this->shippingCalculatedSourceModels = array();
         return $temp;
     }
 
@@ -57,13 +59,13 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated extends Ess_M2ePro_Mode
      */
     public function getShippingTemplate()
     {
-        if ($this->_shippingTemplateModel === null) {
-            $this->_shippingTemplateModel = Mage::helper('M2ePro')->getCachedObject(
+        if (is_null($this->shippingTemplateModel)) {
+            $this->shippingTemplateModel = Mage::helper('M2ePro')->getCachedObject(
                 'Ebay_Template_Shipping', $this->getId(), NULL, array('template')
             );
         }
 
-        return $this->_shippingTemplateModel;
+        return $this->shippingTemplateModel;
     }
 
     /**
@@ -71,7 +73,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated extends Ess_M2ePro_Mode
      */
     public function setShippingTemplate(Ess_M2ePro_Model_Ebay_Template_Shipping $instance)
     {
-         $this->_shippingTemplateModel = $instance;
+         $this->shippingTemplateModel = $instance;
     }
 
     // ---------------------------------------
@@ -84,17 +86,17 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated extends Ess_M2ePro_Mode
     {
         $productId = $magentoProduct->getProductId();
 
-        if (!empty($this->_shippingCalculatedSourceModels[$productId])) {
-            return $this->_shippingCalculatedSourceModels[$productId];
+        if (!empty($this->shippingCalculatedSourceModels[$productId])) {
+            return $this->shippingCalculatedSourceModels[$productId];
         }
 
-        $this->_shippingCalculatedSourceModels[$productId] = Mage::getModel(
+        $this->shippingCalculatedSourceModels[$productId] = Mage::getModel(
             'M2ePro/Ebay_Template_Shipping_Calculated_Source'
         );
-        $this->_shippingCalculatedSourceModels[$productId]->setMagentoProduct($magentoProduct);
-        $this->_shippingCalculatedSourceModels[$productId]->setShippingCalculatedTemplate($this);
+        $this->shippingCalculatedSourceModels[$productId]->setMagentoProduct($magentoProduct);
+        $this->shippingCalculatedSourceModels[$productId]->setShippingCalculatedTemplate($this);
 
-        return $this->_shippingCalculatedSourceModels[$productId];
+        return $this->shippingCalculatedSourceModels[$productId];
     }
 
     //########################################
@@ -238,6 +240,28 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated extends Ess_M2ePro_Mode
     public function getInternationalHandlingCost()
     {
         return (float)$this->getData('international_handling_cost');
+    }
+
+    //########################################
+
+    /**
+     * @return array
+     */
+    public function getTrackingAttributes()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    public function getUsedAttributes()
+    {
+        return array_unique(array_merge(
+            $this->getPackageSizeAttributes(),
+            $this->getDimensionAttributes(),
+            $this->getWeightAttributes()
+        ));
     }
 
     //########################################

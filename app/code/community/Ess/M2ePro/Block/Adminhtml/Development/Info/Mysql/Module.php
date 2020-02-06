@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -26,17 +26,16 @@ class Ess_M2ePro_Block_Adminhtml_Development_Info_Mysql_Module extends Mage_Admi
 
     public function getInfoTables()
     {
-        $tablesData = array_merge(
-            $this->getConfigTables(),
-            $this->getLocksAndChangeTables(),
-            $this->getAdditionalTables()
-        );
+        $tablesData = array_merge($this->getConfigTables(),
+                                  $this->getLocksAndChangeTables(),
+                                  $this->getAdditionalTables());
 
         $helper = Mage::helper('M2ePro/Module_Database_Structure');
 
         $tablesInfo = array();
         foreach ($tablesData as $category => $tables) {
             foreach ($tables as $tableName) {
+
                 $tablesInfo[$category][$tableName] = array(
                     'count' => 0, 'url'   => '#'
                 );
@@ -57,42 +56,36 @@ class Ess_M2ePro_Block_Adminhtml_Development_Info_Mysql_Module extends Mage_Admi
 
     //########################################
 
-    protected function getConfigTables()
+    private function getConfigTables()
     {
         return array(
             'Config' => array(
-                'm2epro_config',
                 'm2epro_primary_config',
-                'm2epro_cache_config',
-                'm2epro_registry'
+                'm2epro_config',
+                'm2epro_synchronization_config',
+                'm2epro_cache_config'
             )
         );
     }
 
-    protected function getLocksAndChangeTables()
+    private function getLocksAndChangeTables()
+    {
+        return array(
+            'Locks / Changes' => array(
+                'm2epro_lock_item',
+                'm2epro_locked_object',
+                'm2epro_product_change',
+                'm2epro_order_change'
+            )
+        );
+    }
+
+    private function getAdditionalTables()
     {
         return array(
             'Additional' => array(
-                'm2epro_lock_item',
-                'm2epro_lock_transactional',
-                'm2epro_listing_product_instruction',
-                'm2epro_listing_product_scheduled_action',
-                'm2epro_order_change',
-                'm2epro_operation_history',
-            )
-        );
-    }
-
-    protected function getAdditionalTables()
-    {
-        return array(
-            'Processing' => array(
-                'm2epro_processing',
-                'm2epro_processing_lock',
-                'm2epro_request_pending_single',
-                'm2epro_request_pending_partial',
-                'm2epro_connector_pending_requester_single',
-                'm2epro_connector_pending_requester_partial',
+                'm2epro_processing_request',
+                'm2epro_operation_history'
             )
         );
     }

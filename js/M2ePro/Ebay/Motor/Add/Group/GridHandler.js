@@ -43,21 +43,10 @@ EbayMotorAddGroupGridHandler = Class.create(GridHandler, {
 
     removeGroup: function()
     {
-        var self = this,
-            groups = self.getGridMassActionObj().checkedString.split(',');
-
-        groups.each(function(group){
-            var index = EbayMotorsHandlerObj.selectedData.groups.indexOf(group);
-
-            if (index > -1) {
-                EbayMotorsHandlerObj.selectedData.groups.splice(index, 1);
-            }
-        });
-
-        EbayMotorsHandlerObj.updateSelectedData();
+        var self = this;
 
         new Ajax.Request(M2ePro.url.get('adminhtml_ebay_motor/removeGroup'), {
-            method: 'post',
+            postmethod: 'post',
             parameters: {
                 groups_ids: self.getGridMassActionObj().checkedString
             },
@@ -120,7 +109,7 @@ EbayMotorAddGroupGridHandler = Class.create(GridHandler, {
         var self = this;
 
         new Ajax.Request(M2ePro.url.get('adminhtml_ebay_motor/removeItemFromGroup'), {
-            method: 'post',
+            postmethod: 'post',
             parameters: {
                 items_ids: itemId,
                 group_id: groupId
@@ -129,13 +118,6 @@ EbayMotorAddGroupGridHandler = Class.create(GridHandler, {
 
                 if (transport.responseText == '0') {
                     if ($(el).up('tbody').select('tr').length == 1) {
-                        var index = EbayMotorsHandlerObj.selectedData.groups.indexOf(''+groupId);
-
-                        if (index > -1) {
-                            EbayMotorsHandlerObj.selectedData.groups.splice(index, 1);
-                            EbayMotorsHandlerObj.updateSelectedData();
-                        }
-
                         Windows.getFocusedWindow().close();
                         return;
                     }
@@ -151,7 +133,7 @@ EbayMotorAddGroupGridHandler = Class.create(GridHandler, {
         var self = this;
 
         new Ajax.Request(M2ePro.url.get('adminhtml_ebay_motor/removeFilterFromGroup'), {
-            method: 'post',
+            postmethod: 'post',
             parameters: {
                 filters_ids: filterId,
                 group_id: groupId
@@ -160,13 +142,6 @@ EbayMotorAddGroupGridHandler = Class.create(GridHandler, {
 
                 if (transport.responseText == '0') {
                     if ($(el).up('tbody').select('tr').length == 1) {
-                        var index = EbayMotorsHandlerObj.selectedData.groups.indexOf(''+groupId);
-
-                        if (index > -1) {
-                            EbayMotorsHandlerObj.selectedData.groups.splice(index, 1);
-                            EbayMotorsHandlerObj.updateSelectedData();
-                        }
-
                         Windows.getFocusedWindow().close();
                         return;
                     }
@@ -175,7 +150,7 @@ EbayMotorAddGroupGridHandler = Class.create(GridHandler, {
                 }
             }
         });
-    }
+    },
 
     //##################################
 

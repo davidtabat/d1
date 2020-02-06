@@ -2,29 +2,31 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Model_Cron_Task_Abstract
 {
-    const NICK = NULL;
-
-    protected $_initiator = Ess_M2ePro_Helper_Data::INITIATOR_UNKNOWN;
+    private $initiator = Ess_M2ePro_Helper_Data::INITIATOR_UNKNOWN;
 
     /**
-     * @var Ess_M2ePro_Model_Lock_Item_Manager
+     * @var Ess_M2ePro_Model_LockItem
      */
-    protected $_lockItemManager = null;
+    private $lockItem       = NULL;
+    /**
+     * @var Ess_M2ePro_Model_LockItem
+     */
+    private $parentLockItem = NULL;
 
     /**
-     * @var Ess_M2ePro_Model_Cron_OperationHistory
+     * @var Ess_M2ePro_Model_OperationHistory
      */
-    protected $_operationHistory = null;
+    private $operationHistory       = NULL;
     /**
-     * @var Ess_M2ePro_Model_Cron_OperationHistory
+     * @var Ess_M2ePro_Model_OperationHistory
      */
-    protected $_parentOperationHistory = null;
+    private $parentOperationHistory = NULL;
 
     //########################################
 
@@ -43,34 +45,25 @@ abstract class Ess_M2ePro_Model_Cron_Task_Abstract
         $result = true;
 
         try {
-            Mage::dispatchEvent(
-                Ess_M2ePro_Model_Cron_Strategy_Abstract::PROGRESS_START_EVENT_NAME,
-                array('progress_nick' => $this->getNick())
-            );
 
             $tempResult = $this->performActions();
 
-            if ($tempResult !== null && !$tempResult) {
+            if (!is_null($tempResult) && !$tempResult) {
                 $result = false;
             }
 
-            Mage::dispatchEvent(
-                Ess_M2ePro_Model_Cron_Strategy_Abstract::PROGRESS_STOP_EVENT_NAME,
-                array('progress_nick' => $this->getNick())
-            );
+            $this->getLockItem()->activate();
 
-            $this->getLockItemManager()->activate();
         } catch (Exception $exception) {
+
             $result = false;
 
-            $this->getOperationHistory()->addContentData(
-                'exceptions', array(
+            $this->getOperationHistory()->setContentData('exception', array(
                 'message' => $exception->getMessage(),
                 'file'    => $exception->getFile(),
                 'line'    => $exception->getLine(),
                 'trace'   => $exception->getTraceAsString(),
-                )
-            );
+            ));
 
             Mage::helper('M2ePro/Module_Exception')->process($exception);
         }
@@ -82,84 +75,64 @@ abstract class Ess_M2ePro_Model_Cron_Task_Abstract
 
     // ---------------------------------------
 
+    abstract protected function getNick();
+
+    abstract protected function getMaxMemoryLimit();
+
+    // ---------------------------------------
+
     abstract protected function performActions();
 
     //########################################
 
-    protected function getNick()
-    {
-        $nick = static::NICK;
-        if (empty($nick)) {
-            throw new Ess_M2ePro_Model_Exception_Logic('Task NICK is not defined.');
-        }
-
-        return $nick;
-    }
-
-    // ---------------------------------------
-
     public function setInitiator($value)
     {
-        $this->_initiator = (int)$value;
+        $this->initiator = (int)$value;
     }
 
     public function getInitiator()
     {
-        return $this->_initiator;
+        return $this->initiator;
     }
 
     // ---------------------------------------
 
     /**
-     * @param Ess_M2ePro_Model_Lock_Item_Manager $lockItemManager
+     * @param Ess_M2ePro_Model_LockItem $object
      * @return $this
      */
-    public function setLockItemManager(Ess_M2ePro_Model_Lock_Item_Manager $lockItemManager)
+    public function setParentLockItem(Ess_M2ePro_Model_LockItem $object)
     {
-        $this->_lockItemManager = $lockItemManager;
+        $this->parentLockItem = $object;
         return $this;
     }
 
     /**
-     * @return Ess_M2ePro_Model_Lock_Item_Manager
+     * @return Ess_M2ePro_Model_LockItem
      */
-    public function getLockItemManager()
+    public function getParentLockItem()
     {
-        return $this->_lockItemManager;
+        return $this->parentLockItem;
     }
 
     // ---------------------------------------
 
     /**
-     * @param Ess_M2ePro_Model_Cron_OperationHistory $object
+     * @param Ess_M2ePro_Model_OperationHistory $object
      * @return $this
      */
-    public function setParentOperationHistory(Ess_M2ePro_Model_Cron_OperationHistory $object)
+    public function setParentOperationHistory(Ess_M2ePro_Model_OperationHistory $object)
     {
-        $this->_parentOperationHistory = $object;
+        $this->parentOperationHistory = $object;
         return $this;
     }
 
     /**
-     * @return Ess_M2ePro_Model_Cron_OperationHistory
+     * @return Ess_M2ePro_Model_OperationHistory
      */
     public function getParentOperationHistory()
     {
-        return $this->_parentOperationHistory;
-    }
-
-    // ---------------------------------------
-
-    /**
-     * @return Ess_M2ePro_Model_Synchronization_Log
-     */
-    protected function getSynchronizationLog()
-    {
-        $synchronizationLog = Mage::getModel('M2ePro/Synchronization_Log');
-        $synchronizationLog->setInitiator($this->_initiator);
-        $synchronizationLog->setOperationHistoryId($this->getOperationHistory()->getId());
-
-        return $synchronizationLog;
+        return $this->parentOperationHistory;
     }
 
     //########################################
@@ -176,54 +149,79 @@ abstract class Ess_M2ePro_Model_Cron_Task_Abstract
 
         return $this->isModeEnabled() &&
                (($startFrom <= $currentTimeStamp && $this->isIntervalExceeded()) ||
-                 $this->getInitiator() == Ess_M2ePro_Helper_Data::INITIATOR_DEVELOPER);
+                 $this->getInitiator() == Ess_M2ePro_Helper_Data::INITIATOR_DEVELOPER) &&
+               !$this->getLockItem()->isExist();
     }
 
     //########################################
 
     protected function initialize()
     {
+        Mage::helper('M2ePro/Client')->setMemoryLimit($this->getMaxMemoryLimit());
         Mage::helper('M2ePro/Module_Exception')->setFatalErrorHandler();
     }
 
     protected function updateLastAccess()
     {
-        $this->setConfigValue('last_access', Mage::helper('M2ePro')->getCurrentGmtDate());
+        $this->setConfigValue('last_access',Mage::helper('M2ePro')->getCurrentGmtDate());
     }
 
     protected function updateLastRun()
     {
-        $this->setConfigValue('last_run', Mage::helper('M2ePro')->getCurrentGmtDate());
+        $this->setConfigValue('last_run',Mage::helper('M2ePro')->getCurrentGmtDate());
     }
 
     // ---------------------------------------
 
     protected function beforeStart()
     {
+        if ($this->getLockItem()->isExist()) {
+            throw new Ess_M2ePro_Model_Exception('Lock item "'.$this->getLockItem()->getNick().'" already exists.');
+        }
+
+        $parentId = $this->getParentLockItem() ? $this->getParentLockItem()->getRealId() : null;
+        $this->getLockItem()->create($parentId);
+        $this->getLockItem()->makeShutdownFunction();
+
         $parentId = $this->getParentOperationHistory()
             ? $this->getParentOperationHistory()->getObject()->getId() : null;
-        $nick = str_replace("/", "_", $this->getNick());
-        $this->getOperationHistory()->start('cron_task_'.$nick, $parentId, $this->getInitiator());
+        $this->getOperationHistory()->start('cron_task_'.$this->getNick(), $parentId, $this->getInitiator());
         $this->getOperationHistory()->makeShutdownFunction();
     }
 
     protected function afterEnd()
     {
         $this->getOperationHistory()->stop();
+        $this->getLockItem()->remove();
     }
 
     //########################################
 
     /**
-     * @return Ess_M2ePro_Model_Cron_OperationHistory
+     * @return Ess_M2ePro_Model_LockItem
+     */
+    protected function getLockItem()
+    {
+        if (!is_null($this->lockItem)) {
+            return $this->lockItem;
+        }
+
+        $this->lockItem = Mage::getModel('M2ePro/LockItem');
+        $this->lockItem->setNick('cron_task_'.$this->getNick());
+
+        return $this->lockItem;
+    }
+
+    /**
+     * @return Ess_M2ePro_Model_OperationHistory
      */
     protected function getOperationHistory()
     {
-        if ($this->_operationHistory !== null) {
-            return $this->_operationHistory;
+        if (!is_null($this->operationHistory)) {
+            return $this->operationHistory;
         }
 
-        return $this->_operationHistory = Mage::getModel('M2ePro/Cron_OperationHistory');
+        return $this->operationHistory = Mage::getModel('M2ePro/OperationHistory');
     }
 
     // ---------------------------------------
@@ -243,7 +241,7 @@ abstract class Ess_M2ePro_Model_Cron_Task_Abstract
     {
         $lastRun = $this->getConfigValue('last_run');
 
-        if ($lastRun === null) {
+        if (is_null($lastRun)) {
             return true;
         }
 
@@ -255,94 +253,26 @@ abstract class Ess_M2ePro_Model_Cron_Task_Abstract
 
     //########################################
 
-    protected function processTaskException(Exception $exception)
-    {
-        $this->getOperationHistory()->addContentData(
-            'exceptions', array(
-            'message' => $exception->getMessage(),
-            'file'    => $exception->getFile(),
-            'line'    => $exception->getLine(),
-            'trace'   => $exception->getTraceAsString(),
-            )
-        );
-
-        $this->getSynchronizationLog()->addMessage(
-            Mage::helper('M2ePro')->__($exception->getMessage()),
-            Ess_M2ePro_Model_Log_Abstract::TYPE_ERROR,
-            Ess_M2ePro_Model_Log_Abstract::PRIORITY_HIGH
-        );
-
-        Mage::helper('M2ePro/Module_Exception')->process($exception);
-    }
-
-    protected function processTaskAccountException($message, $file, $line, $trace = null)
-    {
-        $this->getOperationHistory()->addContentData(
-            'exceptions', array(
-            'message' => $message,
-            'file'    => $file,
-            'line'    => $line,
-            'trace'   => $trace,
-            )
-        );
-
-        $this->getSynchronizationLog()->addMessage(
-            $message,
-            Ess_M2ePro_Model_Log_Abstract::TYPE_ERROR,
-            Ess_M2ePro_Model_Log_Abstract::PRIORITY_HIGH
-        );
-    }
-
-    //########################################
-
-    protected function setRegistryValue($key, $value)
-    {
-        $registryModel = Mage::getModel('M2ePro/Registry')->load($key, 'key');
-        $registryModel->setData('key', $key);
-        $registryModel->setData('value', $value);
-        $registryModel->save();
-    }
-
-    protected function deleteRegistryValue($key)
-    {
-        $registryModel = Mage::getModel('M2ePro/Registry');
-        $registryModel->load($key, 'key');
-
-        if ($registryModel->getId()) {
-            $registryModel->delete();
-        }
-    }
-
-    protected function getRegistryValue($key)
-    {
-        $registryModel = Mage::getModel('M2ePro/Registry');
-        $registryModel->load($key, 'key');
-
-        return $registryModel->getValue();
-    }
-
-    //########################################
-
-    protected function getConfig()
+    private function getConfig()
     {
         return Mage::helper('M2ePro/Module')->getConfig();
     }
 
-    protected function getConfigGroup()
+    private function getConfigGroup()
     {
         return '/cron/task/'.$this->getNick().'/';
     }
 
     // ---------------------------------------
 
-    protected function setConfigValue($key, $value)
-    {
-        return $this->getConfig()->setGroupValue($this->getConfigGroup(), $key, $value);
-    }
-
-    protected function getConfigValue($key)
+    private function getConfigValue($key)
     {
         return $this->getConfig()->getGroupValue($this->getConfigGroup(), $key);
+    }
+
+    private function setConfigValue($key, $value)
+    {
+        return $this->getConfig()->setGroupValue($this->getConfigGroup(), $key, $value);
     }
 
     //########################################

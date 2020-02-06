@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -33,10 +33,8 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
     public function setRunner($value)
     {
         if ($this->getRunner() != $value) {
-            $this->log(
-                "Cron runner was changed from [" . $this->getRunner() . "] to [" . $value . "] - ".
-                Mage::helper('M2ePro')->getCurrentGmtDate(), 'cron_runner_change'
-            );
+            $this->log("Cron runner was changed from [" . $this->getRunner() . "] to [" . $value . "] - ".
+                        Mage::helper('M2ePro')->getCurrentGmtDate(), 'cron_runner_change');
         }
 
         return $this->setConfigValue('runner', $value);
@@ -73,7 +71,7 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
         $isHours && $interval *= 3600;
 
         $lastRunnerChange = $this->getLastRunnerChange();
-        if ($lastRunnerChange === null) {
+        if (is_null($lastRunnerChange)) {
             return false;
         }
 
@@ -89,7 +87,7 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
 
     public function setLastAccess($value)
     {
-        return $this->setConfigValue('last_access', $value);
+        return $this->setConfigValue('last_access',$value);
     }
 
     // ---------------------------------------
@@ -99,7 +97,7 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
         $isHours && $interval *= 3600;
 
         $lastAccess = $this->getLastAccess();
-        if ($lastAccess === null) {
+        if (is_null($lastAccess)) {
             return false;
         }
 
@@ -115,7 +113,7 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
 
     public function setLastRun($value)
     {
-        return $this->setConfigValue('last_run', $value);
+        return $this->setConfigValue('last_run',$value);
     }
 
     // ---------------------------------------
@@ -125,7 +123,7 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
         $isHours && $interval *= 3600;
 
         $lastRun = $this->getLastRun();
-        if ($lastRun === null) {
+        if (is_null($lastRun)) {
             return false;
         }
 
@@ -146,26 +144,26 @@ class Ess_M2ePro_Helper_Module_Cron extends Mage_Core_Helper_Abstract
 
     //########################################
 
-    protected function getConfig()
+    private function getConfig()
     {
         return Mage::helper('M2ePro/Module')->getConfig();
     }
 
     // ---------------------------------------
 
-    protected function getConfigValue($key)
+    private function getConfigValue($key)
     {
         return $this->getConfig()->getGroupValue('/cron/', $key);
     }
 
-    protected function setConfigValue($key, $value)
+    private function setConfigValue($key, $value)
     {
         return $this->getConfig()->setGroupValue('/cron/', $key, $value);
     }
 
     //########################################
 
-    protected function log($message, $type)
+    private function log($message, $type)
     {
         /** @var Ess_M2ePro_Model_Log_System $log */
         $log = Mage::getModel('M2ePro/Log_System');

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -45,6 +45,7 @@ class Ess_M2ePro_Model_Amazon_Search_Dispatcher
     {
         /** @var $listingProduct Ess_M2ePro_Model_Listing_Product */
         foreach ($listingsProducts as $key => $listingProduct) {
+
             if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
                 unset($listingsProducts[$key]);
                 continue;
@@ -71,6 +72,7 @@ class Ess_M2ePro_Model_Amazon_Search_Dispatcher
                 $settingsSearch->resetStep();
                 $settingsSearch->process();
             }
+
         } catch (Exception $exception) {
             Mage::helper('M2ePro/Module_Exception')->process($exception);
             return false;
@@ -81,7 +83,7 @@ class Ess_M2ePro_Model_Amazon_Search_Dispatcher
 
     //########################################
 
-    protected function checkSearchConditions(Ess_M2ePro_Model_Listing_Product $listingProduct)
+    private function checkSearchConditions(Ess_M2ePro_Model_Listing_Product $listingProduct)
     {
         /** @var Ess_M2ePro_Model_Amazon_Listing_Product $amazonListingProduct */
         $amazonListingProduct = $listingProduct->getChildObject();

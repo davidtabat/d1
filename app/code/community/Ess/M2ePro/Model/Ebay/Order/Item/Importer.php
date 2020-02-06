@@ -2,20 +2,20 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Ebay_Order_Item_Importer
 {
-    /** @var $_item Ess_M2ePro_Model_Ebay_Order_Item */
-    protected $_item = null;
+    /** @var $item Ess_M2ePro_Model_Ebay_Order_Item */
+    private $item = NULL;
 
     //########################################
 
     public function __construct(Ess_M2ePro_Model_Ebay_Order_Item $item)
     {
-        $this->_item = $item;
+        $this->item = $item;
     }
 
     //########################################
@@ -23,23 +23,19 @@ class Ess_M2ePro_Model_Ebay_Order_Item_Importer
     public function getDataFromChannel()
     {
         $params = array();
-        $params['item_id'] = $this->_item->getItemId();
+        $params['item_id'] = $this->item->getItemId();
 
-        $variationSku = $this->_item->getVariationSku();
+        $variationSku = $this->item->getVariationSku();
         if (!empty($variationSku)) {
             $params['variation_sku'] = $variationSku;
         }
 
-        $dispatcherObj = Mage::getModel('M2ePro/Ebay_Connector_Dispatcher');
-        $connectorObj = $dispatcherObj->getVirtualConnector(
-            'item', 'get', 'info',
-            $params, 'result', null,
-            $this->_item->getParentObject()->getOrder()->getAccount()
-        );
+        $dispatcherObj = Mage::getModel('M2ePro/Connector_Ebay_Dispatcher');
+        $connectorObj = $dispatcherObj->getVirtualConnector('item', 'get', 'info',
+                                                            $params, 'result', NULL,
+                                                            $this->item->getParentObject()->getOrder()->getAccount());
 
-        $dispatcherObj->process($connectorObj);
-
-        return $connectorObj->getResponseData();
+        return $dispatcherObj->process($connectorObj);
     }
 
     //########################################
@@ -65,6 +61,7 @@ class Ess_M2ePro_Model_Ebay_Order_Item_Importer
         }
 
         if (strlen($sku) > Ess_M2ePro_Helper_Magento_Product::SKU_MAX_LENGTH) {
+
             $hashLength = 10;
             $savedSkuLength = Ess_M2ePro_Helper_Magento_Product::SKU_MAX_LENGTH - $hashLength - 1;
             $hash = Mage::helper('M2ePro')->generateUniqueHash($sku, $hashLength);
@@ -94,7 +91,7 @@ class Ess_M2ePro_Model_Ebay_Order_Item_Importer
      * @param array $itemData
      * @return float
      */
-    protected function getNewProductPrice(array $itemData)
+    private function getNewProductPrice(array $itemData)
     {
         $allowedCurrencies = Mage::getSingleton('directory/currency')->getConfigAllowCurrencies();
         $baseCurrencies = Mage::getSingleton('directory/currency')->getConfigBaseCurrencies();
@@ -126,9 +123,9 @@ class Ess_M2ePro_Model_Ebay_Order_Item_Importer
      * @param array $itemData
      * @return array
      */
-    protected function getNewProductImages(array $itemData)
+    private function getNewProductImages(array $itemData)
     {
-        if (empty($itemData['pictureUrl'])) {
+        if (count($itemData['pictureUrl']) == 0) {
             return array();
         }
 
@@ -163,7 +160,7 @@ class Ess_M2ePro_Model_Ebay_Order_Item_Importer
         return $images;
     }
 
-    protected function createDestinationFolder($itemTitle)
+    private function createDestinationFolder($itemTitle)
     {
         $baseTmpImageName = Mage::helper('M2ePro')->convertStringToSku($itemTitle);
 

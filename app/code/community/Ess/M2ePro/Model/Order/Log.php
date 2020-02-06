@@ -2,14 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Order_Log extends Ess_M2ePro_Model_Log_Abstract
 {
-    /** @var int|null  */
-    protected $_initiator = null;
+    protected $initiator = NULL;
 
     //########################################
 
@@ -27,16 +26,8 @@ class Ess_M2ePro_Model_Order_Log extends Ess_M2ePro_Model_Log_Abstract
      */
     public function setInitiator($initiator = Ess_M2ePro_Helper_Data::INITIATOR_UNKNOWN)
     {
-        $this->_initiator = (int)$initiator;
+        $this->initiator = (int)$initiator;
         return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getInitiator()
-    {
-        return $this->_initiator;
     }
 
     // ########################################
@@ -51,10 +42,8 @@ class Ess_M2ePro_Model_Order_Log extends Ess_M2ePro_Model_Log_Abstract
 
     protected function createMessage($dataForAdd)
     {
-        $dataForAdd['initiator'] = $this->_initiator ? $this->_initiator : Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION;
+        $dataForAdd['initiator'] = $this->initiator ? $this->initiator : Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION;
         $dataForAdd['component_mode'] = $this->getComponentMode();
-
-        $this->isObjectNew(true);
 
         $this->setId(null)
             ->setData($dataForAdd)
@@ -67,7 +56,7 @@ class Ess_M2ePro_Model_Order_Log extends Ess_M2ePro_Model_Log_Abstract
             'order_id'        => $orderId,
             'description'     => $description,
             'type'            => (int)$type,
-            'additional_data' => Mage::helper('M2ePro')->jsonEncode($additionalData)
+            'additional_data' => json_encode($additionalData)
         );
 
         return $dataForAdd;

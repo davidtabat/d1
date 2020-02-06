@@ -2,25 +2,25 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
 {
-    /** @var Ess_M2ePro_Model_Magento_Product $_magentoProduct */
-    protected $_magentoProduct = null;
+    /** @var Ess_M2ePro_Model_Magento_Product $magentoProduct */
+    private $magentoProduct = null;
 
-    protected $_sourceAttributes = array();
+    private $sourceAttributes = array();
 
-    protected $_destinationAttributes = array();
+    private $destinationAttributes = array();
 
-    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute_Resolver $_resolver */
-    protected $_resolver = null;
+    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute_Resolver $resolver */
+    private $resolver = null;
 
-    protected $_matchedAttributes = null;
+    private $matchedAttributes = null;
 
-    protected $_canUseDictionary = true;
+    private $canUseDictionary = true;
 
     //########################################
 
@@ -30,10 +30,10 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $product)
     {
-        $this->_magentoProduct   = $product;
-        $this->_sourceAttributes = array();
+        $this->magentoProduct = $product;
+        $this->sourceAttributes = array();
 
-        $this->_matchedAttributes = null;
+        $this->matchedAttributes = null;
 
         return $this;
     }
@@ -46,10 +46,10 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function setSourceAttributes(array $attributes)
     {
-        $this->_sourceAttributes = $attributes;
-        $this->_magentoProduct   = null;
+        $this->sourceAttributes = $attributes;
+        $this->magentoProduct   = null;
 
-        $this->_matchedAttributes = null;
+        $this->matchedAttributes = null;
 
         return $this;
     }
@@ -60,8 +60,8 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function setDestinationAttributes(array $attributes)
     {
-        $this->_destinationAttributes = $attributes;
-        $this->_matchedAttributes     = null;
+        $this->destinationAttributes = $attributes;
+        $this->matchedAttributes     = null;
 
         return $this;
     }
@@ -74,7 +74,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function canUseDictionary($flag = true)
     {
-        $this->_canUseDictionary = $flag;
+        $this->canUseDictionary = $flag;
         return $this;
     }
 
@@ -111,11 +111,11 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function getMatchedAttributes()
     {
-        if ($this->_matchedAttributes === null) {
+        if (is_null($this->matchedAttributes)) {
             $this->match();
         }
 
-        return $this->_matchedAttributes;
+        return $this->matchedAttributes;
     }
 
     // ---------------------------------------
@@ -125,7 +125,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function isFullyMatched()
     {
-        return empty($this->getMagentoUnmatchedAttributes()) && empty($this->getChannelUnmatchedAttributes());
+        return count($this->getMagentoUnmatchedAttributes()) <= 0 && count($this->getChannelUnmatchedAttributes()) <= 0;
     }
 
     /**
@@ -133,7 +133,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
      */
     public function isNotMatched()
     {
-        return empty($this->getMatchedAttributes());
+        return count($this->getMatchedAttributes()) <= 0;
     }
 
     /**
@@ -160,19 +160,19 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
     public function getChannelUnmatchedAttributes()
     {
         $matchedChannelAttributes = array_values($this->getMatchedAttributes());
-        return array_diff($this->_destinationAttributes, $matchedChannelAttributes);
+        return array_diff($this->destinationAttributes, $matchedChannelAttributes);
     }
 
     //########################################
 
-    protected function match()
+    private function match()
     {
-        if ($this->_magentoProduct !== null && $this->_magentoProduct->isGroupedType() &&
-            !$this->_magentoProduct->getVariationVirtualAttributes()
+        if (!is_null($this->magentoProduct) && $this->magentoProduct->isGroupedType() &&
+            !$this->magentoProduct->getVariationVirtualAttributes()
         ) {
-            $channelAttribute = reset($this->_destinationAttributes);
+            $channelAttribute = reset($this->destinationAttributes);
 
-            $this->_matchedAttributes = array(
+            $this->matchedAttributes = array(
                 Ess_M2ePro_Model_Magento_Product_Variation::GROUPED_PRODUCT_ATTRIBUTE_LABEL => $channelAttribute
             );
 
@@ -183,7 +183,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
             return;
         }
 
-        if (!$this->_canUseDictionary) {
+        if (!$this->canUseDictionary) {
             return;
         }
 
@@ -194,7 +194,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
         $this->matchByServerVocabulary();
     }
 
-    protected function matchByNames()
+    private function matchByNames()
     {
         $this->getResolver()->clearSourceAttributes();
 
@@ -212,12 +212,12 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
             );
         }
 
-        $this->_matchedAttributes = $this->getResolver()->resolve()->getResolvedAttributes();
+        $this->matchedAttributes = $this->getResolver()->resolve()->getResolvedAttributes();
 
         return $this->isFullyMatched();
     }
 
-    protected function matchByLocalVocabulary()
+    private function matchByLocalVocabulary()
     {
         $this->getResolver()->clearSourceAttributes();
 
@@ -235,12 +235,12 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
             );
         }
 
-        $this->_matchedAttributes = $this->getResolver()->resolve()->getResolvedAttributes();
+        $this->matchedAttributes = $this->getResolver()->resolve()->getResolvedAttributes();
 
         return $this->isFullyMatched();
     }
 
-    protected function matchByServerVocabulary()
+    private function matchByServerVocabulary()
     {
         $this->getResolver()->clearSourceAttributes();
 
@@ -258,38 +258,38 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
             );
         }
 
-        $this->_matchedAttributes = $this->getResolver()->resolve()->getResolvedAttributes();
+        $this->matchedAttributes = $this->getResolver()->resolve()->getResolvedAttributes();
 
         return $this->isFullyMatched();
     }
 
     //########################################
 
-    protected function getSourceAttributes()
+    private function getSourceAttributes()
     {
-        if (!empty($this->_sourceAttributes)) {
-            return $this->_sourceAttributes;
+        if (!empty($this->sourceAttributes)) {
+            return $this->sourceAttributes;
         }
 
-        if ($this->_magentoProduct !== null) {
-            $magentoVariations = $this->_magentoProduct
+        if (!is_null($this->magentoProduct)) {
+            $magentoVariations = $this->magentoProduct
                 ->getVariationInstance()
                 ->getVariationsTypeStandard();
 
-            $this->_sourceAttributes = array_keys($magentoVariations['set']);
+            $this->sourceAttributes = array_keys($magentoVariations['set']);
         }
 
-        return $this->_sourceAttributes;
+        return $this->sourceAttributes;
     }
 
-    protected function getSourceAttributesData()
+    private function getSourceAttributesData()
     {
-        if ($this->_magentoProduct !== null) {
-            $magentoAttributesNames = $this->_magentoProduct
+        if (!is_null($this->magentoProduct)) {
+            $magentoAttributesNames = $this->magentoProduct
                 ->getVariationInstance()
                 ->getTitlesVariationSet();
 
-            $magentoStandardVariations = $this->_magentoProduct
+            $magentoStandardVariations = $this->magentoProduct
                 ->getVariationInstance()
                 ->getVariationsTypeStandard();
 
@@ -309,12 +309,12 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
         return array_fill_keys($this->getSourceAttributes(), array());
     }
 
-    protected function getDestinationAttributes()
+    private function getDestinationAttributes()
     {
-        return $this->_destinationAttributes;
+        return $this->destinationAttributes;
     }
 
-    protected function getDestinationAttributesLocalVocabularyData()
+    private function getDestinationAttributesLocalVocabularyData()
     {
         $vocabularyHelper = Mage::helper('M2ePro/Component_Amazon_Vocabulary');
 
@@ -326,7 +326,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
         return $resultData;
     }
 
-    protected function getDestinationAttributesServerVocabularyData()
+    private function getDestinationAttributesServerVocabularyData()
     {
         $vocabularyHelper = Mage::helper('M2ePro/Component_Amazon_Vocabulary');
 
@@ -340,17 +340,17 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute
 
     // ---------------------------------------
 
-    protected function getResolver()
+    private function getResolver()
     {
-        if ($this->_resolver !== null) {
-            return $this->_resolver;
+        if (!is_null($this->resolver)) {
+            return $this->resolver;
         }
 
-        $this->_resolver = Mage::getModel('M2ePro/Amazon_Listing_Product_Variation_Matcher_Attribute_Resolver');
-        return $this->_resolver;
+        $this->resolver = Mage::getModel('M2ePro/Amazon_Listing_Product_Variation_Matcher_Attribute_Resolver');
+        return $this->resolver;
     }
 
-    protected function prepareAttributeNames($attribute, array $names = array())
+    private function prepareAttributeNames($attribute, array $names = array())
     {
         $names[] = $attribute;
         $names = array_unique($names);

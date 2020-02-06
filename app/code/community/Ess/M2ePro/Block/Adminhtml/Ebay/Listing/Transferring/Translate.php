@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -43,12 +43,13 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Translate extends Mag
         $account = $this->getAccount();
 
         if ($account) {
-            $info['ebay_user_title'] = $account->getTitle();
+            $ebayInfo = json_decode($account->getEbayInfo(), true);
+            $ebayInfo['UserID'] && $info['ebay_user_id'] = $ebayInfo['UserID'];
 
-            $translationInfo = Mage::helper('M2ePro')->jsonDecode($account->getTranslationInfo());
+            $translationInfo = json_decode($account->getTranslationInfo(), true);
             isset($translationInfo['currency']) && $info['translation_currency'] = $translationInfo['currency'];
-            $info['translation_balance'] = isset($translationInfo['credit']['prepaid']) ?
-                                           $translationInfo['credit']['prepaid'] : 'N/A';
+            isset($translationInfo['credit'])   && isset($translationInfo['credit']['prepaid']) &&
+                $info['translation_balance'] = $translationInfo['credit']['prepaid'];
             isset($translationInfo['credit']['translation']) && isset($translationInfo['credit']['used']) &&
             $info['translation_total_credits'] =
                 $translationInfo['credit']['translation']- $translationInfo['credit']['used'];
@@ -72,19 +73,17 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Translate extends Mag
             $translationServices[$name] = array(
                 'name'     => $name,
                 'title'    => $title,
-                'avg_cost' => $avgCost !== null ? $avgCost : '0.00'
+                'avg_cost' => !is_null($avgCost) ? $avgCost : '0.00'
             );
         }
 
         $mixedServices = $this->_getMixedServices();
         if (count($mixedServices) > 1) {
-            $translationServices = array_merge(
-                array('default_mixed' => array(
+            $translationServices = array_merge(array('default_mixed' => array(
                 'name'     => 'default_mixed',
                 'title'    => Mage::helper('M2ePro')->__("Use current Translation Plan for each Item"),
                 'avg_cost' => $this->_getMixedAvgCost($mixedServices, $translationServices),
-                )), $translationServices
-            );
+            )), $translationServices);
         }
 
         return $translationServices;
@@ -112,18 +111,18 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Translate extends Mag
 
     //########################################
 
-    protected function _getEbayListing()
+    private function _getEbayListing()
     {
         if (!$listingId = $this->getData('listing_id')) {
             throw new Ess_M2ePro_Model_Exception('Listing is not defined');
         }
 
-        return Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing', (int)$listingId)->getChildObject();
+        return Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing',(int)$listingId)->getChildObject();
     }
 
     //########################################
 
-    protected function _getMixedServices()
+    private function _getMixedServices()
     {
         $productsIds = $this->getData('products_ids');
         $productsIds = explode(',', $productsIds);
@@ -146,7 +145,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Translate extends Mag
         return $mixedServices;
     }
 
-    protected function _getMixedAvgCost($mixedServices, $translationServices)
+    private function _getMixedAvgCost($mixedServices, $translationServices)
     {
         $totalAvgCost = 0;
         $totalProducts = 0;

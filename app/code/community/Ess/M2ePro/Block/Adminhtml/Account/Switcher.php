@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Account_Switcher extends Ess_M2ePro_Block_Adminhtml_Component_Switcher
 {
-    protected $_paramName = 'account';
+    protected $paramName = 'account';
 
     //########################################
 
@@ -21,24 +21,18 @@ class Ess_M2ePro_Block_Adminhtml_Account_Switcher extends Ess_M2ePro_Block_Admin
         return Mage::helper('M2ePro')->__($this->getComponentLabel('%component% Account'));
     }
 
-    protected function loadItems()
+    public function getItems()
     {
         $collection = Mage::getModel('M2ePro/Account')->getCollection()
                                                       ->setOrder('component_mode', 'ASC')
                                                       ->setOrder('title', 'ASC');
 
-        if ($this->getData('component_mode') !== null) {
+        if (!is_null($this->getData('component_mode'))) {
             $collection->addFieldToFilter('component_mode', $this->getData('component_mode'));
         }
 
-        if (!$collection->getSize()) {
-            $this->_items = array();
-            return;
-        }
-
         if ($collection->getSize() < 2) {
-            $this->_hasDefaultOption = false;
-            $this->setIsDisabled(true);
+            return array();
         }
 
         $items = array();
@@ -46,16 +40,22 @@ class Ess_M2ePro_Block_Adminhtml_Account_Switcher extends Ess_M2ePro_Block_Admin
         foreach ($collection as $account) {
             /** @var $account Ess_M2ePro_Model_Account */
 
-            $componentMode = $account->getComponentMode();
+            if (!isset($items[$account->getComponentMode()]['label'])) {
+                $label = '';
+                if (isset($componentTitles[$account->getComponentMode()])) {
+                    $label = $componentTitles[$account->getComponentMode()];
+                }
 
-            $items[$componentMode]['label'] = ucfirst($componentMode);
-            $items[$componentMode]['value'][] = array(
+                $items[$account->getComponentMode()]['label'] = $label;
+            }
+
+            $items[$account->getComponentMode()]['value'][] = array(
                 'value' => $account->getId(),
                 'label' => $account->getTitle()
             );
         }
 
-        $this->_items = $items;
+        return $items;
     }
 
     //########################################

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -10,34 +10,6 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
 {
     const SETTING_FIELD_TYPE_JSON          = 'json';
     const SETTING_FIELD_TYPE_SERIALIZATION = 'serialization';
-
-    protected $_isObjectCreatingState = false;
-
-    //########################################
-
-    public function isObjectCreatingState($value = null)
-    {
-        if ($value === null) {
-            return $this->_isObjectCreatingState;
-        }
-
-        $this->_isObjectCreatingState = $value;
-        return $this->_isObjectCreatingState;
-    }
-
-    //########################################
-
-    public function save()
-    {
-        if ($this->isObjectNew()) {
-            $this->isObjectCreatingState(true);
-        }
-
-        $result = parent::save();
-
-        $this->isObjectCreatingState(false);
-        return $result;
-    }
 
     //########################################
 
@@ -49,15 +21,13 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      */
     public function loadInstance($id, $field = NULL)
     {
-        $this->load($id, $field);
+        $this->load($id,$field);
 
-        if ($this->getId() === null) {
-            throw new Ess_M2ePro_Model_Exception_Logic(
-                'Instance does not exist.',
-                array('id'    => $id,
+        if (is_null($this->getId())) {
+            throw new Ess_M2ePro_Model_Exception_Logic('Instance does not exist.',
+                                                       array('id'    => $id,
                                                              'field' => $field,
-                'model' => $this->_resourceName)
-            );
+                                                             'model' => $this->_resourceName));
         }
 
         return $this;
@@ -69,11 +39,11 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      */
     public function isLocked()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        if ($this->isSetProcessingLock(NULL)) {
+        if ($this->isLockedObject(NULL)) {
             return true;
         }
 
@@ -86,7 +56,7 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      */
     public function deleteInstance()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
@@ -102,102 +72,95 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
 
     public function delete()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        $this->deleteProcessingLocks();
+        $this->deleteObjectLocks();
         return parent::delete();
     }
 
-    public function deleteProcessings()
+    public function deleteProcessingRequests()
     {
-        $processingIds = array();
-        foreach ($this->getProcessingLocks() as $processingLock) {
-            $processingIds[] = $processingLock->getProcessingId();
+        $processingRequestsHashes = array();
+        foreach ($this->getObjectLocks() as $lockedObject) {
+            $processingRequestsHashes[] = $lockedObject->getRelatedHash();
         }
 
-        /** @var $collection Mage_Core_Model_Resource_Db_Collection_Abstract */
-        $collection = Mage::getModel('M2ePro/Processing')->getCollection();
-        $collection->addFieldToFilter('id', array('in'=>array_unique($processingIds)));
+        /** @var $collection Mage_Core_Model_Mysql4_Collection_Abstract */
+        $collection = Mage::getModel('M2ePro/Processing_Request')->getCollection();
+        $collection->addFieldToFilter('hash', array('in'=>array_unique($processingRequestsHashes)));
 
-        foreach ($collection->getItems() as $processing) {
-            /** @var $processing Ess_M2ePro_Model_Processing */
-
-            /** @var Ess_M2ePro_Model_Processing_Runner $processingRunner */
-            $processingRunner = Mage::getModel($processing->getModel());
-            $processingRunner->setProcessingObject($processing);
-
-            $processingRunner->complete();
+        foreach ($collection->getItems() as $processingRequest) {
+            /** @var $processingRequest Ess_M2ePro_Model_Processing_Request */
+            //->__('Request was deleted during object deleting.')
+            $processingRequest->getResponserRunner()->complete('Request was deleted during object deleting.');
         }
     }
 
     //########################################
 
-    public function addProcessingLock($tag = NULL, $processingId = NULL)
+    public function addObjectLock($tag = NULL, $relatedHash = NULL, $description = NULL)
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        if ($this->isSetProcessingLock($tag, $processingId)) {
+        if ($this->isLockedObject($tag,$relatedHash)) {
             return;
         }
 
-        $model = Mage::getModel('M2ePro/Processing_Lock');
+        $model = Mage::getModel('M2ePro/LockedObject');
 
         $dataForAdd = array(
-            'processing_id' => $processingId,
-            'model_name'    => $this->_resourceName,
-            'object_id'     => $this->getId(),
-            'tag'           => $tag,
+            'model_name' => $this->_resourceName,
+            'object_id' => $this->getId(),
+            'related_hash' => $relatedHash,
+            'tag' => $tag,
+            'description' => $description
         );
 
         $model->setData($dataForAdd)->save();
     }
 
-    public function deleteProcessingLocks($tag = false, $processingId = false)
+    public function deleteObjectLocks($tag = false, $relatedHash = false)
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        foreach ($this->getProcessingLocks($tag, $processingId) as $processingLock) {
-            $processingLock->deleteInstance();
+        $lockedObjects = $this->getObjectLocks($tag,$relatedHash);
+        foreach ($lockedObjects as $lockedObject) {
+            /** @var $lockedObject Ess_M2ePro_Model_LockedObject */
+            $lockedObject->deleteInstance();
         }
     }
 
     // ---------------------------------------
 
-    public function isSetProcessingLock($tag = false, $processingId = false)
+    public function isLockedObject($tag = false, $relatedHash = false)
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        return !empty($this->getProcessingLocks($tag, $processingId));
+        return count($this->getObjectLocks($tag,$relatedHash)) > 0;
     }
 
-    /**
-     * @param bool|false $tag
-     * @param bool|false $processingId
-     * @return Ess_M2ePro_Model_Processing_Lock[]
-     * @throws Ess_M2ePro_Model_Exception_Logic
-     */
-    public function getProcessingLocks($tag = false, $processingId = false)
+    public function getObjectLocks($tag = false, $relatedHash = false)
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        $lockedCollection = Mage::getModel('M2ePro/Processing_Lock')->getCollection();
+        $lockedCollection = Mage::getModel('M2ePro/LockedObject')->getCollection();
 
-        $lockedCollection->addFieldToFilter('model_name', $this->_resourceName);
-        $lockedCollection->addFieldToFilter('object_id', $this->getId());
+        $lockedCollection->addFieldToFilter('model_name',$this->_resourceName);
+        $lockedCollection->addFieldToFilter('object_id',$this->getId());
 
-        $tag === null && $tag = array('null' =>true);
-        $tag !== false && $lockedCollection->addFieldToFilter('tag', $tag);
-        $processingId !== false && $lockedCollection->addFieldToFilter('processing_id', $processingId);
+        is_null($tag) && $tag = array('null'=>true);
+        $tag !== false && $lockedCollection->addFieldToFilter('tag',$tag);
+        $relatedHash !== false && $lockedCollection->addFieldToFilter('related_hash',$relatedHash);
 
         return $lockedCollection->getItems();
     }
@@ -213,24 +176,20 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      * @return array|Ess_M2ePro_Model_Abstract[]
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    protected function getRelatedSimpleItems(
-        $modelName,
-        $fieldName,
-        $asObjects = false,
-        array $filters = array(),
-        array $sort = array()
-    ) {
-        if ($this->getId() === null) {
+    protected function getRelatedSimpleItems($modelName, $fieldName, $asObjects = false,
+                                             array $filters = array(), array $sort = array())
+    {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        $tempModel = Mage::getModel('M2ePro/' . $modelName);
+        $tempModel = Mage::getModel('M2ePro/'.$modelName);
 
-        if ($tempModel === null || !($tempModel instanceof Ess_M2ePro_Model_Abstract)) {
+        if (is_null($tempModel) || !($tempModel instanceof Ess_M2ePro_Model_Abstract)) {
             return array();
         }
 
-        return $this->getRelatedItems($tempModel, $fieldName, $asObjects, $filters, $sort);
+        return $this->getRelatedItems($tempModel,$fieldName,$asObjects,$filters,$sort);
     }
 
     /**
@@ -242,22 +201,19 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      * @return array|Ess_M2ePro_Model_Abstract[]
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    protected function getRelatedItems(
-        Ess_M2ePro_Model_Abstract $model,
-        $fieldName,
-        $asObjects = false,
-        array $filters = array(),
-        array $sort = array()
-    ) {
-        if ($this->getId() === null) {
+    protected function getRelatedItems(Ess_M2ePro_Model_Abstract $model, $fieldName, $asObjects = false,
+                                       array $filters = array(), array $sort = array())
+    {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        /** @var $tempCollection Mage_Core_Model_Resource_Db_Collection_Abstract */
+        /** @var $tempCollection Mage_Core_Model_Mysql4_Collection_Abstract */
         $tempCollection = $model->getCollection();
         $tempCollection->addFieldToFilter(new Zend_Db_Expr("`{$fieldName}`"), $this->getId());
 
         foreach ($filters as $field=>$filter) {
+
             if ($filter instanceof Zend_Db_Expr) {
                 $tempCollection->getSelect()->where((string)$filter);
                 continue;
@@ -272,8 +228,7 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
                 $order != Varien_Data_Collection::SORT_ORDER_DESC) {
                 continue;
             }
-
-            $tempCollection->setOrder($field, $order);
+            $tempCollection->setOrder($field,$order);
         }
 
         if ((bool)$asObjects) {
@@ -298,24 +253,22 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
     {
         $settings = $this->getData((string)$fieldName);
 
-        if ($settings === null) {
+        if (is_null($settings)) {
             return array();
         }
 
         if ($encodeType == self::SETTING_FIELD_TYPE_JSON) {
-            $settings = Mage::helper('M2ePro')->jsonDecode($settings);
+            $settings = @json_decode($settings, true);
         } else if ($encodeType == self::SETTING_FIELD_TYPE_SERIALIZATION) {
-            $settings = Mage::helper('M2ePro')->unserialize($settings);
+            $settings = @unserialize($settings);
         } else {
-            throw new Ess_M2ePro_Model_Exception_Logic(
-                Mage::helper('M2ePro')->__(
-                    'Encoding type "%encode_type%" is not supported.',
-                    $encodeType
-                )
-            );
+            throw new Ess_M2ePro_Model_Exception_Logic(Mage::helper('M2ePro')->__(
+                'Encoding type "%encode_type%" is not supported.',
+                $encodeType
+                ));
         }
 
-        return !empty($settings) ? $settings : array();
+        return is_array($settings) ? $settings : array();
     }
 
     /**
@@ -326,12 +279,11 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      *
      * @return mixed|null
      */
-    public function getSetting(
-        $fieldName,
-        $settingNamePath,
-        $defaultValue = null,
-        $encodeType = self::SETTING_FIELD_TYPE_JSON
-    ) {
+    public function getSetting($fieldName,
+                               $settingNamePath,
+                               $defaultValue = NULL,
+                               $encodeType = self::SETTING_FIELD_TYPE_JSON)
+    {
         if (empty($settingNamePath)) {
             return $defaultValue;
         }
@@ -369,16 +321,14 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
     public function setSettings($fieldName, array $settings = array(), $encodeType = self::SETTING_FIELD_TYPE_JSON)
     {
         if ($encodeType == self::SETTING_FIELD_TYPE_JSON) {
-            $settings = Mage::helper('M2ePro')->jsonEncode($settings);
+            $settings = json_encode($settings);
         } else if ($encodeType == self::SETTING_FIELD_TYPE_SERIALIZATION) {
-            $settings = Mage::helper('M2ePro')->serialize($settings);
+            $settings = serialize($settings);
         } else {
-            throw new Ess_M2ePro_Model_Exception_Logic(
-                Mage::helper('M2ePro')->__(
-                    'Encoding type "%encode_type%" is not supported.',
-                    $encodeType
-                )
-            );
+            throw new Ess_M2ePro_Model_Exception_Logic(Mage::helper('M2ePro')->__(
+                'Encoding type "%encode_type%" is not supported.',
+                $encodeType
+            ));
         }
 
         $this->setData((string)$fieldName, $settings);
@@ -394,12 +344,11 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
      *
      * @return Ess_M2ePro_Model_Abstract
      */
-    public function setSetting(
-        $fieldName,
-        $settingNamePath,
-        $settingValue,
-        $encodeType = self::SETTING_FIELD_TYPE_JSON
-    ) {
+    public function setSetting($fieldName,
+                               $settingNamePath,
+                               $settingValue,
+                               $encodeType = self::SETTING_FIELD_TYPE_JSON)
+    {
         if (empty($settingNamePath)) {
             return $this;
         }
@@ -430,6 +379,19 @@ abstract class Ess_M2ePro_Model_Abstract extends Mage_Core_Model_Abstract
         $this->setSettings($fieldName, $settings, $encodeType);
 
         return $this;
+    }
+
+    //########################################
+
+    public function getDataSnapshot()
+    {
+        $data = $this->getData();
+
+        foreach ($data as &$value) {
+            !is_null($value) && !is_array($value) && $value = (string)$value;
+        }
+
+        return $data;
     }
 
     //########################################

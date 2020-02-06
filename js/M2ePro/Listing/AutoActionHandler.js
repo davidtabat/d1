@@ -2,17 +2,12 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
 
     // ---------------------------------------
 
+    controller: 'adminhtml_common_listing_autoAction',
+
     internalData: {},
 
     magentoCategoryIdsFromOtherGroups: {},
     magentoCategoryTreeChangeEventInProgress: false,
-
-    // ---------------------------------------
-
-    getController: function()
-    {
-        throw Error('Method should be overrided and return controller')
-    },
 
     // ---------------------------------------
 
@@ -26,7 +21,7 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
 
             var unique = true;
 
-            new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/isCategoryGroupTitleUnique'), {
+            new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/isCategoryGroupTitleUnique'), {
                 method: 'get',
                 asynchronous: false,
                 parameters: {
@@ -50,9 +45,9 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
 
     // ---------------------------------------
 
-    loadAutoActionHtml: function(mode)
+    loadAutoActionHtml: function(mode, callback)
     {
-        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/index'), {
+        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/index'), {
             method: 'get',
             asynchronous: true,
             parameters: {
@@ -64,9 +59,11 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
                 var title = M2ePro.translator.translate('Auto Add/Remove Rules');
 
                 this.clear();
-                Windows.closeAll();
                 this.openPopUp(title, content);
 
+                if (typeof callback == 'function') {
+                    callback();
+                }
             }.bind(this)
         });
     },
@@ -75,15 +72,14 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
 
     openPopUp: function(title, content)
     {
-        var self = this;
-        var popup = Dialog.info(null, {
+        var config = {
             draggable: true,
             resizable: true,
             closable: true,
             className: "magento",
             windowClassName: "popup-window",
             title: title,
-            top: 20,
+            top: 50,
             maxHeight: 500,
             width: 900,
             zIndex: 100,
@@ -91,18 +87,23 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
             hideEffect: Element.hide,
             showEffect: Element.show,
             closeCallback: function() {
-
                 ListingAutoActionHandlerObj.clear();
+
                 return true;
             }
-        });
+        };
 
-        popup.options.destroyOnClose = true;
+        try {
+            Windows.getFocusedWindow() || Dialog.info(null, config);
+            Windows.getFocusedWindow().setTitle(title);
+            $('modal_dialog_message').innerHTML = content;
+            $('modal_dialog_message').innerHTML.evalScripts();
+        } catch (ignored) {}
 
-        $('modal_dialog_message').innerHTML = content;
-        $('modal_dialog_message').innerHTML.evalScripts();
-
-        self.autoHeightFix();
+        setTimeout(function() {
+            Windows.getFocusedWindow().content.style.height = '';
+            Windows.getFocusedWindow().content.style.maxHeight = '500px';
+        }, 50);
     },
 
     // ---------------------------------------
@@ -124,7 +125,7 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
 
     loadAutoCategoryForm: function(groupId, callback)
     {
-        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/getAutoCategoryFormHtml'), {
+        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/getAutoCategoryFormHtml'), {
             method: 'get',
             asynchronous: true,
             parameters: {
@@ -177,7 +178,7 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
             showEffect: Element.show,
             id: "selected-category-already-used",
             ok: function() {
-                new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/deleteCategory'), {
+                new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/deleteCategory'), {
                     method: 'post',
                     asynchronous: true,
                     parameters: {
@@ -344,7 +345,7 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
             return;
         }
 
-        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/deleteCategoryGroup'), {
+        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/deleteCategoryGroup'), {
             method: 'post',
             asynchronous: true,
             parameters: {
@@ -393,13 +394,12 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
 
         ListingAutoActionHandlerObj.collectData();
 
-        var callback = function() {
-            var mode = ListingAutoActionHandlerObj.internalData.auto_mode;
-            Windows.closeAll.bind(Windows)();
-            if (mode == M2ePro.php.constant('Ess_M2ePro_Model_Listing::AUTO_MODE_CATEGORY')) {
-                ListingAutoActionHandlerObj.loadAutoActionHtml.bind(ListingAutoActionHandlerObj)();
-            }
-        };
+        var callback;
+        if (ListingAutoActionHandlerObj.internalData.auto_mode == M2ePro.php.constant('Ess_M2ePro_Model_Listing::AUTO_MODE_CATEGORY')) {
+            callback = ListingAutoActionHandlerObj.loadAutoActionHtml.bind(ListingAutoActionHandlerObj);
+        } else {
+            callback = Windows.getFocusedWindow().close.bind(Windows.getFocusedWindow());
+        }
 
         ListingAutoActionHandlerObj.submitData(callback);
     },
@@ -444,7 +444,7 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
     {
         var data = this.internalData;
 
-        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/save'), {
+        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/save'), {
             method: 'post',
             asynchronous: true,
             parameters: {
@@ -466,12 +466,11 @@ ListingAutoActionHandler = Class.create(CommonHandler, {
             return;
         }
 
-        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.getController() + '/reset'), {
+        new Ajax.Request(M2ePro.url.get(ListingAutoActionHandlerObj.controller + '/reset'), {
             method: 'post',
             asynchronous: true,
             parameters: {},
             onSuccess: function(transport) {
-                Windows.closeAll();
                 ListingAutoActionHandlerObj.loadAutoActionHtml();
             }
         });

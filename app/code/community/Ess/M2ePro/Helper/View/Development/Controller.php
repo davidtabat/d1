@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -42,7 +42,6 @@ class Ess_M2ePro_Helper_View_Development_Controller extends Mage_Core_Helper_Abs
         if (count($parts)) {
             $file .= DS . implode(DS, $parts);
         }
-
         $file .= DS.uc_words($controller, DS).'Controller.php';
         return $file;
     }
@@ -64,6 +63,7 @@ class Ess_M2ePro_Helper_View_Development_Controller extends Mage_Core_Helper_Abs
     protected function _includeControllerClass($controllerFileName, $controllerClassName)
     {
         if (!class_exists($controllerClassName, false)) {
+
             if (!file_exists($controllerFileName)) {
                 return false;
             }

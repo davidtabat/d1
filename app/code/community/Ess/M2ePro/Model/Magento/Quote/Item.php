@@ -2,30 +2,30 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_Quote_Item
 {
     /** @var Mage_Sales_Model_Quote */
-    protected $_quote = null;
+    private $quote = NULL;
 
     /** @var Ess_M2ePro_Model_Order_Item_Proxy */
-    protected $_proxyItem = null;
+    private $proxyItem = NULL;
 
     /** @var Mage_Catalog_Model_Product */
-    protected $_product = null;
+    private $product = NULL;
 
     /** @var Mage_GiftMessage_Model_Message */
-    protected $_giftMessage = null;
+    private $giftMessage = NULL;
 
     //########################################
 
     public function init(Mage_Sales_Model_Quote $quote, Ess_M2ePro_Model_Order_Item_Proxy $proxyItem)
     {
-        $this->_quote     = $quote;
-        $this->_proxyItem = $proxyItem;
+        $this->quote = $quote;
+        $this->proxyItem = $proxyItem;
 
         return $this;
     }
@@ -38,39 +38,39 @@ class Ess_M2ePro_Model_Magento_Quote_Item
      */
     public function getProduct()
     {
-        if ($this->_product !== null) {
-            return $this->_product;
+        if (!is_null($this->product)) {
+            return $this->product;
         }
 
-        if ($this->_proxyItem->getMagentoProduct()->isGroupedType()) {
-            $this->_product = $this->getAssociatedGroupedProduct();
+        if ($this->proxyItem->getMagentoProduct()->isGroupedType()) {
+            $this->product = $this->getAssociatedGroupedProduct();
 
-            if ($this->_product === null) {
-                throw new Ess_M2ePro_Model_Exception('There are no associated Products found for Grouped Product.');
+            if (is_null($this->product)) {
+                throw new Ess_M2ePro_Model_Exception('There is no associated Products found for Grouped Product.');
             }
         } else {
-            $this->_product = $this->_proxyItem->getProduct();
+            $this->product = $this->proxyItem->getProduct();
 
-            if ($this->_proxyItem->getMagentoProduct()->isBundleType()) {
-                $this->_product->setPriceType(Mage_Catalog_Model_Product_Type_Abstract::CALCULATE_PARENT);
+            if ($this->proxyItem->getMagentoProduct()->isBundleType()) {
+                $this->product->setPriceType(Mage_Catalog_Model_Product_Type_Abstract::CALCULATE_PARENT);
             }
         }
 
         // tax class id should be set before price calculation
-        $this->_product->setTaxClassId($this->getProductTaxClassId());
+        $this->product->setTaxClassId($this->getProductTaxClassId());
 
-        return $this->_product;
+        return $this->product;
     }
 
     // ---------------------------------------
 
-    protected function getAssociatedGroupedProduct()
+    private function getAssociatedGroupedProduct()
     {
-        $associatedProducts = $this->_proxyItem->getAssociatedProducts();
+        $associatedProducts = $this->proxyItem->getAssociatedProducts();
         $associatedProductId = reset($associatedProducts);
 
         $product = Mage::getModel('catalog/product')
-            ->setStoreId($this->_quote->getStoreId())
+            ->setStoreId($this->quote->getStoreId())
             ->load($associatedProductId);
 
         return $product->getId() ? $product : null;
@@ -78,15 +78,15 @@ class Ess_M2ePro_Model_Magento_Quote_Item
 
     //########################################
 
-    protected function getProductTaxClassId()
+    private function getProductTaxClassId()
     {
-        $proxyOrder = $this->_proxyItem->getProxyOrder();
-        $itemTaxRate = $this->_proxyItem->getTaxRate();
-        $isOrderHasTax = $this->_proxyItem->getProxyOrder()->hasTax();
+        $proxyOrder = $this->proxyItem->getProxyOrder();
+        $itemTaxRate = $this->proxyItem->getTaxRate();
+        $isOrderHasTax = $this->proxyItem->getProxyOrder()->hasTax();
         $hasRatesForCountry = Mage::getSingleton('M2ePro/Magento_Tax_Helper')
-            ->hasRatesForCountry($this->_quote->getShippingAddress()->getCountryId());
+            ->hasRatesForCountry($this->quote->getShippingAddress()->getCountryId());
         $calculationBasedOnOrigin = Mage::getSingleton('M2ePro/Magento_Tax_Helper')
-            ->isCalculationBasedOnOrigin($this->_quote->getStore());
+            ->isCalculationBasedOnOrigin($this->quote->getStore());
 
         if ($proxyOrder->isTaxModeNone()
             || ($proxyOrder->isTaxModeChannel() && $itemTaxRate <= 0)
@@ -107,10 +107,10 @@ class Ess_M2ePro_Model_Magento_Quote_Item
         // ---------------------------------------
         /** @var $taxRuleBuilder Ess_M2ePro_Model_Magento_Tax_Rule_Builder */
         $taxRuleBuilder = Mage::getModel('M2ePro/Magento_Tax_Rule_Builder');
-        $taxRuleBuilder->buildProductTaxRule(
+        $taxRuleBuilder->buildTaxRule(
             $itemTaxRate,
-            $this->_quote->getShippingAddress()->getCountryId(),
-            $this->_quote->getCustomerTaxClassId()
+            $this->quote->getShippingAddress()->getCountryId(),
+            $this->quote->getCustomerTaxClassId()
         );
 
         $taxRule = $taxRuleBuilder->getRule();
@@ -120,16 +120,16 @@ class Ess_M2ePro_Model_Magento_Quote_Item
         return array_shift($productTaxClasses);
     }
 
-    protected function getProductTaxRate()
+    private function getProductTaxRate()
     {
         /** @var $taxCalculator Mage_Tax_Model_Calculation */
         $taxCalculator = Mage::getSingleton('tax/calculation');
 
         $request = $taxCalculator->getRateRequest(
-            $this->_quote->getShippingAddress(),
-            $this->_quote->getBillingAddress(),
-            $this->_quote->getCustomerTaxClassId(),
-            $this->_quote->getStore()
+            $this->quote->getShippingAddress(),
+            $this->quote->getBillingAddress(),
+            $this->quote->getCustomerTaxClassId(),
+            $this->quote->getStore()
         );
         $request->setProductClassId($this->getProduct()->getTaxClassId());
 
@@ -141,16 +141,17 @@ class Ess_M2ePro_Model_Magento_Quote_Item
     public function getRequest()
     {
         $request = new Varien_Object();
-        $request->setQty($this->_proxyItem->getQty());
+        $request->setQty($this->proxyItem->getQty());
 
-        // grouped product doesn't have options
-        if ($this->_proxyItem->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_GROUPED) {
+        // grouped and downloadable products doesn't have options
+        if ($this->proxyItem->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_GROUPED ||
+            $this->proxyItem->getProduct()->getTypeId() == Mage_Downloadable_Model_Product_Type::TYPE_DOWNLOADABLE) {
             return $request;
         }
 
         /** @var $magentoProduct Ess_M2ePro_Model_Magento_Product */
         $magentoProduct = Mage::getModel('M2ePro/Magento_Product')->setProduct($this->getProduct());
-        $options = $this->_proxyItem->getOptions();
+        $options = $this->proxyItem->getOptions();
 
         if (empty($options)) {
             return $request;
@@ -162,8 +163,6 @@ class Ess_M2ePro_Model_Magento_Quote_Item
             $request->setBundleOption($options);
         } else if ($magentoProduct->isConfigurableType()) {
             $request->setSuperAttribute($options);
-        } else if ($magentoProduct->isDownloadableType()) {
-            $request->setLinks($options);
         }
 
         return $request;
@@ -180,17 +179,17 @@ class Ess_M2ePro_Model_Magento_Quote_Item
 
     public function getGiftMessage()
     {
-        if ($this->_giftMessage !== null) {
-            return $this->_giftMessage;
+        if (!is_null($this->giftMessage)) {
+            return $this->giftMessage;
         }
 
-        $giftMessageData = $this->_proxyItem->getGiftMessage();
+        $giftMessageData = $this->proxyItem->getGiftMessage();
 
         if (!is_array($giftMessageData)) {
             return NULL;
         }
 
-        $giftMessageData['customer_id'] = (int)$this->_quote->getCustomerId();
+        $giftMessageData['customer_id'] = (int)$this->quote->getCustomerId();
         /** @var $giftMessage Mage_GiftMessage_Model_Message */
         $giftMessage = Mage::getModel('giftmessage/message')->addData($giftMessageData);
 
@@ -198,21 +197,21 @@ class Ess_M2ePro_Model_Magento_Quote_Item
             return NULL;
         }
 
-        $this->_giftMessage = $giftMessage->save();
+        $this->giftMessage = $giftMessage->save();
 
-        return $this->_giftMessage;
+        return $this->giftMessage;
     }
 
     //########################################
 
     public function getAdditionalData(Mage_Sales_Model_Quote_Item $quoteItem)
     {
-        return Mage::helper('M2ePro')->serialize(
-            array_merge(
-                Mage::helper('M2ePro')->unserialize($quoteItem->getAdditionalData()),
-                $this->_proxyItem->getAdditionalData()
-            )
-        );
+        $additionalData = $this->proxyItem->getAdditionalData();
+
+        $existAdditionalData = $quoteItem->getAdditionalData();
+        $existAdditionalData = is_string($existAdditionalData) ? @unserialize($existAdditionalData) : array();
+
+        return serialize(array_merge((array)$existAdditionalData, $additionalData));
     }
 
     //########################################

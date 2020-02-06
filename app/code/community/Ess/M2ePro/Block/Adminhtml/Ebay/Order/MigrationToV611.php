@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -10,7 +10,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Order_MigrationToV611 extends Mage_Adminht
 {
     const ORDERS_COUNT_PER_AJAX_REQUEST = 10000;
 
-    protected $_notMigratedOrdersCount = 0;
+    private $notMigratedOrdersCount = 0;
 
     //########################################
 
@@ -24,13 +24,13 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Order_MigrationToV611 extends Mage_Adminht
 
     public function setNotMigratedOrdersCount($ordersCount)
     {
-        $this->_notMigratedOrdersCount = $ordersCount;
+        $this->notMigratedOrdersCount = $ordersCount;
         return $this;
     }
 
     public function getNotMigratedOrdersCount()
     {
-        return $this->_notMigratedOrdersCount;
+        return $this->notMigratedOrdersCount;
     }
 
     public function getOrdersCountPerAjaxRequest()

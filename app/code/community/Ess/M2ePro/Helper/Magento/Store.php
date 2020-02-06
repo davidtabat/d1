@@ -2,15 +2,15 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Helper_Magento_Store extends Mage_Core_Helper_Abstract
 {
-    protected $_defaultWebsite    = null;
-    protected $_defaultStoreGroup = null;
-    protected $_defaultStore      = null;
+    private $defaultWebsite = NULL;
+    private $defaultStoreGroup = NULL;
+    private $defaultStore = NULL;
 
     //########################################
 
@@ -28,53 +28,52 @@ class Ess_M2ePro_Helper_Magento_Store extends Mage_Core_Helper_Abstract
 
     public function getDefaultWebsite()
     {
-        if ($this->_defaultWebsite === null) {
-            $this->_defaultWebsite = Mage::getModel('core/website')->load(1, 'is_default');
-            if ($this->_defaultWebsite->getId() === null) {
-                $this->_defaultWebsite = Mage::getModel('core/website')->load(0);
-                if ($this->_defaultWebsite->getId() === null) {
+        if (is_null($this->defaultWebsite)) {
+            $this->defaultWebsite = Mage::getModel('core/website')->load(1,'is_default');
+            if (is_null($this->defaultWebsite->getId())) {
+                $this->defaultWebsite = Mage::getModel('core/website')->load(0);
+                if (is_null($this->defaultWebsite->getId())) {
                     throw new Ess_M2ePro_Model_Exception('Getting default website is failed');
                 }
             }
         }
-
-        return $this->_defaultWebsite;
+        return $this->defaultWebsite;
     }
 
     public function getDefaultStoreGroup()
     {
-        if ($this->_defaultStoreGroup === null) {
+        if (is_null($this->defaultStoreGroup)) {
+
             $defaultWebsite = $this->getDefaultWebsite();
             $defaultStoreGroupId = $defaultWebsite->getDefaultGroupId();
 
-            $this->_defaultStoreGroup = Mage::getModel('core/store_group')->load($defaultStoreGroupId);
-            if ($this->_defaultStoreGroup->getId() === null) {
-                $this->_defaultStoreGroup = Mage::getModel('core/store_group')->load(0);
-                if ($this->_defaultStoreGroup->getId() === null) {
+            $this->defaultStoreGroup = Mage::getModel('core/store_group')->load($defaultStoreGroupId);
+            if (is_null($this->defaultStoreGroup->getId())) {
+                $this->defaultStoreGroup = Mage::getModel('core/store_group')->load(0);
+                if (is_null($this->defaultStoreGroup->getId())) {
                     throw new Ess_M2ePro_Model_Exception('Getting default store group is failed');
                 }
             }
         }
-
-        return $this->_defaultStoreGroup;
+        return $this->defaultStoreGroup;
     }
 
     public function getDefaultStore()
     {
-        if ($this->_defaultStore === null) {
+        if (is_null($this->defaultStore)) {
+
             $defaultStoreGroup = $this->getDefaultStoreGroup();
             $defaultStoreId = $defaultStoreGroup->getDefaultStoreId();
 
-            $this->_defaultStore = Mage::getModel('core/store')->load($defaultStoreId);
-            if ($this->_defaultStore->getId() === null) {
-                $this->_defaultStore = Mage::getModel('core/store')->load(0);
-                if ($this->_defaultStore->getId() === null) {
+            $this->defaultStore = Mage::getModel('core/store')->load($defaultStoreId);
+            if (is_null($this->defaultStore->getId())) {
+                $this->defaultStore = Mage::getModel('core/store')->load(0);
+                if (is_null($this->defaultStore->getId())) {
                     throw new Ess_M2ePro_Model_Exception('Getting default store is failed');
                 }
             }
         }
-
-        return $this->_defaultStore;
+        return $this->defaultStore;
     }
 
     // ---------------------------------------
@@ -133,21 +132,6 @@ class Ess_M2ePro_Helper_Magento_Store extends Mage_Core_Helper_Abstract
         $website = $this->getWebsite($storeId);
 
         return $website ? $website->getName() : '';
-    }
-
-    //########################################
-
-    /**
-     * Multi Stock is not supported by core Magento functionality.
-     * app/code/core/Mage/CatalogInventory/Model/Stock/Item.php::getStockId()
-     * But by changing this method the M2e Pro can be made compatible with a custom solution
-     *
-     * @param null|string|bool|int|Mage_Core_Model_Store $store
-     * @return int
-     */
-    public function getStockId($store)
-    {
-        return Mage_CatalogInventory_Model_Stock::DEFAULT_STOCK_ID;
     }
 
     //########################################

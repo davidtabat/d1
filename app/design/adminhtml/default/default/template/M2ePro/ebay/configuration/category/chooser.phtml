@@ -1,28 +1,18 @@
 <?php
-/*
- * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
- * @license    Commercial use is forbidden
- */
+    $categoryMode = $this->getRequest()->getParam('mode');
+    $categoryValue = $this->getRequest()->getParam('value');
 
-// @codingStandardsIgnoreFile
+    $translations = array();
 
-/** @var $this Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Category_Edit_Primary_Tabs_Chooser */
+    // ->__('<b>Note:</b> All changes you have made will be automatically applied to all M2E Pro Listings where this Category is used.')
+    $text = '<b>Note:</b> All changes you have made will be automatically applied to all M2E Pro Listings where this Category is used.';
+    $translations[$text] = Mage::helper('M2ePro')->__($text);
 
-$categoryMode = $this->getRequest()->getParam('mode');
-$categoryValue = $this->getRequest()->getParam('value');
+    // ->__('Do not show any more')
+    $text = 'Do not show any more';
+    $translations[$text] = Mage::helper('M2ePro')->__($text);
 
-$translations = array();
-
-// ->__('<b>Note:</b> All changes you have made will be automatically applied to all M2E Pro Listings where this Category is used.')
-$text = '<b>Note:</b> All changes you have made will be automatically applied to all M2E Pro Listings where this Category is used.';
-$translations[$text] = Mage::helper('M2ePro')->__($text);
-
-// ->__('Do not show any more')
-$text = 'Do not show any more';
-$translations[$text] = Mage::helper('M2ePro')->__($text);
-
-$translations = json_encode($translations);
+    $translations = json_encode($translations);
 
 ?>
 <script type="text/javascript">
@@ -51,7 +41,7 @@ $translations = json_encode($translations);
 
                 <tbody>
 
-                    <?php if ($this->marketplaceData !== null): ?>
+                    <?php if (!is_null($this->marketplaceData)): ?>
                         <tr>
                             <td class="label" style="width: 110px;">
                                 <label style="width: 100px;"><?php echo Mage::helper('M2ePro')->__('eBay Site'); ?>: </label>
@@ -62,7 +52,7 @@ $translations = json_encode($translations);
                         </tr>
                     <?php endif; ?>
 
-                    <?php if ($this->accountData !== null): ?>
+                    <?php if (!is_null($this->accountData)): ?>
                         <tr>
                             <td class="label" style="width: 110px;">
                                 <label style="width: 100px;"><?php echo Mage::helper('M2ePro')->__('Account'); ?>: </label>

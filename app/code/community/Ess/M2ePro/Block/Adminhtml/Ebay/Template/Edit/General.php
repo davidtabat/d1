@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,7 +11,7 @@
  */
 class Ess_M2ePro_Block_Adminhtml_Ebay_Template_Edit_General extends Mage_Adminhtml_Block_Widget
 {
-    protected $_enabledMarketplaces = null;
+    private $enabledMarketplaces = NULL;
 
     //########################################
 
@@ -49,16 +49,16 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_Edit_General extends Mage_Adminht
 
     public function getEnabledMarketplaces()
     {
-        if ($this->_enabledMarketplaces === null) {
+        if (is_null($this->enabledMarketplaces)) {
             $collection = Mage::getModel('M2ePro/Marketplace')->getCollection();
             $collection->addFieldToFilter('component_mode', Ess_M2ePro_Helper_Component_Ebay::NICK);
             $collection->addFieldToFilter('status', Ess_M2ePro_Model_Marketplace::STATUS_ENABLE);
             $collection->setOrder('sorder', 'ASC');
 
-            $this->_enabledMarketplaces = $collection;
+            $this->enabledMarketplaces = $collection;
         }
 
-        return $this->_enabledMarketplaces->getItems();
+        return $this->enabledMarketplaces->getItems();
     }
 
     public function getMarketplaceId()

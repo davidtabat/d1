@@ -1,16 +1,6 @@
 BlockNotice = Class.create();
 BlockNotice.prototype = {
 
-    storageKeys: {
-        prefix: 'm2e_bn_',
-        shown: '_was_shown',
-        closed: '_closed',
-        hiddenContent: '_hidden_content',
-        expandedContent: '_expanded_content'
-    },
-
-    storageObj: null,
-
     // ---------------------------------------
 
     initialize: function(type)
@@ -21,35 +11,35 @@ BlockNotice.prototype = {
 
     // ---------------------------------------
 
-    getHashedStorage: function(id)
+    getHashedCookie: function(id)
     {
-        var hashedStorageKey = this.storageKeys.prefix + md5(id).substr(0, 10);
-        var resultStorage = LocalStorageObj.get(hashedStorageKey);
+        var hashedCookieKey = 'm2e_bn_' + md5(id).substr(0, 10);
+        var notHashedCookie = getCookie(id);
+        var resultCookie = null;
 
-        if (resultStorage === null) {
-            return '';
+        if (notHashedCookie !== "") {
+            deleteCookie(id, '/', '');
+            this.setHashedCookie(id);
+            resultCookie = notHashedCookie;
+        } else {
+            resultCookie = getCookie(hashedCookieKey);
         }
 
-        return resultStorage;
+        return resultCookie;
     },
 
-    setHashedStorage: function(id)
+    setHashedCookie: function(id)
     {
-        var hashedStorageKey = this.storageKeys.prefix + md5(id).substr(0, 10);
-        LocalStorageObj.set(hashedStorageKey, 1);
+        var hashedCookieKey = 'm2e_bn_' + md5(id).substr(0, 10);
+        setCookie(hashedCookieKey, 1, 3*365, '/');
     },
 
-    deleteHashedStorage: function(id)
+    deleteHashedCookie: function(id)
     {
-        var hashedStorageKey = this.storageKeys.prefix + md5(id).substr(0, 10);
+        var hashedCookieKey = 'm2e_bn_' + md5(id).substr(0, 10);
 
-        LocalStorageObj.remove(hashedStorageKey);
-        LocalStorageObj.remove(id);
-    },
-
-    deleteAllHashedStorage: function()
-    {
-        LocalStorageObj.removeAllByPrefix(this.storageKeys.prefix);
+        deleteCookie(hashedCookieKey, '/', '');
+        deleteCookie(id, '/', '');
     },
 
     // ---------------------------------------
@@ -95,7 +85,7 @@ BlockNotice.prototype = {
             object.writeAttribute("onclick",self.type+'NoticeObj.hideContent(\'' + id + '\')');
         });
 
-        this.deleteHashedStorage(id + this.storageKeys.closed);
+        this.deleteHashedCookie(id+'_closed_content');
 
         return true;
     },
@@ -119,7 +109,7 @@ BlockNotice.prototype = {
             object.writeAttribute("onclick",self.type+'NoticeObj.showContent(\'' + id + '\')');
         });
 
-        this.setHashedStorage(id + this.storageKeys.closed);
+        this.setHashedCookie(id+'_closed_content');
 
         return true;
     },
@@ -133,7 +123,7 @@ BlockNotice.prototype = {
             return false;
         }
         $(id).show();
-        this.deleteHashedStorage(id + this.storageKeys.hiddenContent);
+        this.deleteHashedCookie(id+'_hide_block');
         return true;
     },
 
@@ -148,7 +138,7 @@ BlockNotice.prototype = {
             return false;
         }
         $(id).remove();
-        this.setHashedStorage(id + this.storageKeys.hiddenContent);
+        this.setHashedCookie(id+'_hide_block');
         return true;
     },
 
@@ -256,7 +246,7 @@ BlockNotice.prototype = {
 
     getHeaderHtml: function(id,title,subtitle,collapseable,hideblock)
     {
-        var isClosedContent = this.getHashedStorage(id + this.storageKeys.closed);
+        var isClosedContent = this.getHashedCookie(id+'_closed_content');
         if (BLOCK_NOTICES_DISABLE_COLLAPSE) {
             isClosedContent = 0;
         }
@@ -314,7 +304,7 @@ BlockNotice.prototype = {
 
     getContentHtml: function(id,content,collapseable)
     {
-        var isClosedContent = this.getHashedStorage(id + this.storageKeys.closed);
+        var isClosedContent = this.getHashedCookie(id+'_closed_content');
         if (BLOCK_NOTICES_DISABLE_COLLAPSE) {
             isClosedContent = 0;
         }
@@ -352,14 +342,14 @@ BlockNotice.prototype = {
         return headerHtml + '<div style="clear: both;"></div>' + contentHtml;
     },
 
-    setObjectState: function(object)
+    setCookiesForHide: function(object)
     {
         var id = object.id;
-        var isHideBlock     = this.getHashedStorage(id + this.storageKeys.hiddenContent) == 1;
-        var isClosedContent = this.getHashedStorage(id + this.storageKeys.closed) == 1;
+        var isHideBlock = this.getHashedCookie(id + '_hide_block') == 1;
+        var isClosedContent = this.getHashedCookie(id + '_closed_content') == 1;
 
         if (!isHideBlock && !isClosedContent) {
-            this.setHashedStorage(id + this.storageKeys.closed);
+            this.setHashedCookie(id + '_closed_content');
         }
     },
 
@@ -427,7 +417,7 @@ BlockNotice.prototype = {
 
     collapseHelpBlockIntoIcon: function(object)
     {
-        if (this.getHashedStorage(object.id + this.storageKeys.closed) != 1 || object.hasClassName('no-icon')) {
+        if (this.getHashedCookie(object.id + '_closed_content') != 1 || object.hasClassName('no-icon')) {
             return false;
         }
 
@@ -441,12 +431,6 @@ BlockNotice.prototype = {
                && !parentContainer.hasClassName('popup-window')) {
 
             parentContainer = parentContainer.up();
-
-            try {
-                parentContainer.hasClassName('entry-edit');
-            } catch (e) {
-                return false;
-            }
         }
 
         if ((parentContainer.id == 'page:main-container' && !$(object.getAttribute('help_icon_dest_id')))
@@ -505,35 +489,35 @@ BlockNotice.prototype = {
 
         object.addClassName('is_prepared');
 
-        var id           = this.getPreparedId(object);
-        var title        = this.getPreparedTitle(object);
-        var subtitle     = this.getPreparedSubTitle(object);
+        var id = this.getPreparedId(object);
+        var title = this.getPreparedTitle(object);
+        var subtitle = this.getPreparedSubTitle(object);
         var collapseable = this.getPreparedCollapseable(object);
-        var hideblock    = this.getPreparedHideBlock(object);
-        var alwaysShow   = this.getPreparedAlwaysShow(object);
+        var hideblock = this.getPreparedHideBlock(object);
+        var alwaysShow = this.getPreparedAlwaysShow(object);
 
-        if ((!alwaysShow && !BLOCK_NOTICES_SHOW) || (hideblock && this.getHashedStorage(id + this.storageKeys.hiddenContent) == '1')) {
+        if ((!alwaysShow && !BLOCK_NOTICES_SHOW) || (hideblock && this.getHashedCookie(id+'_hide_block') == '1')) {
             object.remove();
             return;
         }
 
-        if ((IS_VIEW_INTEGRATION || IS_VIEW_WIZARD || IS_VIEW_CONFIGURATION) && !BLOCK_NOTICES_DISABLE_COLLAPSE
+        if ((IS_VIEW_EBAY || IS_VIEW_COMMON || IS_VIEW_CONFIGURATION) && !BLOCK_NOTICES_DISABLE_COLLAPSE
             && !alwaysShow && this.collapseHelpBlockIntoIcon(object)) {
 
             object.remove();
             return;
         }
 
-        var headerHtml   = this.getHeaderHtml(id,title,subtitle,collapseable,hideblock);
-        var contentHtml  = this.getContentHtml(id,object.innerHTML,collapseable);
+        var headerHtml = this.getHeaderHtml(id,title,subtitle,collapseable,hideblock);
+        var contentHtml = this.getContentHtml(id,object.innerHTML,collapseable);
         object.innerHTML = this.getFinalHtml(headerHtml,contentHtml);
 
         object.removeClassName('block_notices_module');
         object.addClassName('block_notices');
 
-        if (this.getHashedStorage(id + this.storageKeys.expandedContent) != 1) {
-            this.setObjectState(object);
-            this.setHashedStorage(id + this.storageKeys.expandedContent);
+        if (this.getHashedCookie(id+'_was_shown') != 1) {
+            this.setCookiesForHide(object);
+            this.setHashedCookie(id+'_was_shown');
         }
     }
 

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -23,35 +23,29 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Specific_Wrapper
         $this->_headerText = Mage::helper('M2ePro')->__('eBay Categories Specifics');
 
         // ---------------------------------------
-        $this->_addButton(
-            'back', array(
+        $this->_addButton('back', array(
             'label'     => Mage::helper('M2ePro')->__('Back'),
             'class'     => 'back back_category_button',
             'onclick'   => 'EbayListingCategorySpecificWrapperHandlerObj.renderPrevCategory();'
-            )
-        );
+        ));
         // ---------------------------------------
 
         // ---------------------------------------
-        $this->_addButton(
-            'continue', array(
+        $this->_addButton('continue', array(
             'id'        => 'save_button',
             'label'     => Mage::helper('M2ePro')->__('Continue'),
             'class'     => 'scalable next continue specifics_buttons',
             'onclick'   => "EbayListingCategorySpecificWrapperHandlerObj.save();"
-            )
-        );
+        ));
         // ---------------------------------------
 
         // ---------------------------------------
-        $this->_addButton(
-            'next_category_header_button', array(
+        $this->_addButton('next_category_header_button', array(
             'id'        => 'next_category_header_button',
             'label'     => Mage::helper('M2ePro')->__('Next Category'),
             'class'     => 'next next_category_button specifics_buttons',
             'onclick'   => "EbayListingCategorySpecificWrapperHandlerObj.renderNextCategory();"
-            )
-        );
+        ));
         // ---------------------------------------
 
         $this->setTemplate('M2ePro/ebay/listing/category/specific/wrapper.phtml');
@@ -77,7 +71,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Specific_Wrapper
         );
 
         $viewHeaderBlock = $this->getLayout()->createBlock(
-            'M2ePro/adminhtml_listing_view_header', '',
+            'M2ePro/adminhtml_listing_view_header','',
             array('listing' => $listing)
         );
 
@@ -126,43 +120,33 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Specific_Wrapper
         $urls = array();
 
         $path = 'adminhtml_ebay_listing_categorySettings/stepThreeSaveCategorySpecificsToSession';
-        $urls[$path] = $this->getUrl(
-            '*/' . $path, array(
+        $urls[$path] = $this->getUrl('*/' . $path, array(
             '_current' => true
-            )
-        );
+        ));
 
         $path = 'adminhtml_ebay_listing_categorySettings/stepThreeGetCategorySpecifics';
-        $urls[$path] = $this->getUrl(
-            '*/' . $path, array(
+        $urls[$path] = $this->getUrl('*/' . $path, array(
             '_current' => true
-            )
-        );
+        ));
 
         $path = 'adminhtml_ebay_listing_categorySettings/save';
-        $urls[$path] = $this->getUrl(
-            '*/' . $path, array(
+        $urls[$path] = $this->getUrl('*/' . $path, array(
             '_current' => true
-            )
-        );
+        ));
 
         $path = 'adminhtml_ebay_listing_categorySettings';
-        $urls[$path] = $this->getUrl(
-            '*/' . $path, array(
+        $urls[$path] = $this->getUrl('*/' . $path, array(
             'step' => 2,
             '_current' => true,
             'skip_get_suggested' => true
-            )
-        );
+        ));
 
-        $path = 'adminhtml_ebay_listing_categorySettings/review';
-        $urls[$path] = $this->getUrl(
-            '*/' . $path, array(
-            '_current' => true
-            )
-        );
+        $path = 'adminhtml_ebay_listing/review';
+        $urls[$path] = $this->getUrl('*/' . $path, array(
+            '_current' => true,
+        ));
 
-        $urls = Mage::helper('M2ePro')->jsonEncode($urls);
+        $urls = json_encode($urls);
         // ---------------------------------------
 
         // M2ePro_TRANSLATIONS
@@ -170,7 +154,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Specific_Wrapper
         $text = 'Loading. Please wait';
         $translations[$text] = Mage::helper('M2ePro')->__($text);
 
-        $translations = Mage::helper('M2ePro')->jsonEncode($translations);
+        $translations = json_encode($translations);
         // ---------------------------------------
 
         $javascript = <<<HTML

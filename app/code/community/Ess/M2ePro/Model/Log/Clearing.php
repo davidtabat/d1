@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -12,8 +12,6 @@ class Ess_M2ePro_Model_Log_Clearing
     const LOG_OTHER_LISTINGS    = 'other_listings';
     const LOG_SYNCHRONIZATIONS  = 'synchronizations';
     const LOG_ORDERS            = 'orders';
-
-    const LOG_EBAY_PICKUP_STORE = 'ebay_pickup_store';
 
     //########################################
 
@@ -25,8 +23,8 @@ class Ess_M2ePro_Model_Log_Clearing
 
         $config = Mage::helper('M2ePro/Module')->getConfig();
 
-        $mode = $config->getGroupValue('/logs/clearing/'.$log.'/', 'mode');
-        $days = $config->getGroupValue('/logs/clearing/'.$log.'/', 'days');
+        $mode = $config->getGroupValue('/logs/clearing/'.$log.'/','mode');
+        $days = $config->getGroupValue('/logs/clearing/'.$log.'/','days');
 
         $mode = (int)$mode;
         $days = (int)$days;
@@ -36,7 +34,7 @@ class Ess_M2ePro_Model_Log_Clearing
         }
 
         $minTime = $this->getMinTimeByDays($days);
-        $this->clearLogByMinTime($log, $minTime);
+        $this->clearLogByMinTime($log,$minTime);
 
         return true;
     }
@@ -50,7 +48,7 @@ class Ess_M2ePro_Model_Log_Clearing
         $timestamp = Mage::helper('M2ePro')->getCurrentGmtDate(true);
         $minTime = Mage::helper('M2ePro')->getDate($timestamp+60*60*24*365*10);
 
-        $this->clearLogByMinTime($log, $minTime);
+        $this->clearLogByMinTime($log,$minTime);
 
         return true;
     }
@@ -71,29 +69,28 @@ class Ess_M2ePro_Model_Log_Clearing
         }
 
         if ($days <= 0) {
-           return false;
+           $days = 90;
         }
 
         $config = Mage::helper('M2ePro/Module')->getConfig();
 
-        $config->setGroupValue('/logs/clearing/'.$log.'/', 'mode', $mode);
-        $config->setGroupValue('/logs/clearing/'.$log.'/', 'days', $days);
+        $config->setGroupValue('/logs/clearing/'.$log.'/','mode', $mode);
+        $config->setGroupValue('/logs/clearing/'.$log.'/','days', $days);
 
         return true;
     }
 
     //########################################
 
-    protected function isValidLogType($log)
+    private function isValidLogType($log)
     {
         return $log == self::LOG_LISTINGS ||
                $log == self::LOG_OTHER_LISTINGS ||
                $log == self::LOG_SYNCHRONIZATIONS ||
-               $log == self::LOG_ORDERS ||
-               $log == self::LOG_EBAY_PICKUP_STORE;
+               $log == self::LOG_ORDERS;
     }
 
-    protected function getMinTimeByDays($days)
+    private function getMinTimeByDays($days)
     {
         $timestamp = Mage::helper('M2ePro')->getCurrentGmtDate(true);
         $dateTimeArray = getdate($timestamp);
@@ -105,12 +102,12 @@ class Ess_M2ePro_Model_Log_Clearing
         $day = $dateTimeArray['mday'];
         $year = $dateTimeArray['year'];
 
-        $timeStamp = mktime($hours, $minutes, $seconds, $month, $day - $days, $year);
+        $timeStamp = mktime($hours,$minutes,$seconds,$month,$day - $days, $year);
 
         return Mage::helper('M2ePro')->getDate($timeStamp);
     }
 
-    protected function clearLogByMinTime($log, $minTime)
+    private function clearLogByMinTime($log, $minTime)
     {
         $table = NULL;
 
@@ -127,11 +124,9 @@ class Ess_M2ePro_Model_Log_Clearing
             case self::LOG_ORDERS:
                 $table = Mage::getResourceModel('M2ePro/Order_Log')->getMainTable();
                 break;
-            case self::LOG_EBAY_PICKUP_STORE:
-                $table = Mage::getResourceModel('M2ePro/Ebay_Account_PickupStore_Log')->getMainTable();
         }
 
-        if ($table === null) {
+        if (is_null($table)) {
             return;
         }
 
@@ -139,7 +134,7 @@ class Ess_M2ePro_Model_Log_Clearing
 
         /** @var $connWrite Varien_Db_Adapter_Pdo_Mysql */
         $connWrite = Mage::getSingleton('core/resource')->getConnection('core_write');
-        $connWrite->delete($table, $where);
+        $connWrite->delete($table,$where);
     }
 
     //########################################

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -29,38 +29,22 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
 
     protected function _prepareCollection()
     {
-        /** @var Ess_M2ePro_Model_Account $account */
-        $accountId = $this->getRequest()->getParam('account');
-        $marketplaceId = $this->getRequest()->getParam('marketplace');
-
-        $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID;
-        if ($account = Mage::helper('M2ePro/Component')->getCachedUnknownObject('Account', $accountId)) {
-            $storeId = $account->getChildObject()->getRelatedStoreId($marketplaceId);
-        }
-
-        /** @var $collection Ess_M2ePro_Model_Resource_Magento_Product_Collection */
-        $collection = Mage::getConfig()->getModelInstance(
-            'Ess_M2ePro_Model_Resource_Magento_Product_Collection',
-            Mage::getModel('catalog/product')->getResource()
-        );
-
-        $collection->setStoreId($storeId)
-            ->addAttributeToSelect('name')
+        $collection = Mage::getModel('catalog/product')->getCollection()
             ->addAttributeToSelect('sku')
-            ->addAttributeToSelect('type_id');
-
-        $collection->joinStockItem(
-            array(
-            'qty' => 'qty',
-            'is_in_stock' => 'is_in_stock'
-            )
-        );
-
-        $collection->addFieldToFilter(
-            array(
-                array('attribute'=>'type_id','neq'=>'virtual'),
-            )
-        );
+            ->addAttributeToSelect('name')
+            ->addAttributeToSelect('type_id')
+            ->joinField('qty',
+                        'cataloginventory/stock_item',
+                        'qty',
+                        'product_id=entity_id',
+                        '{{table}}.stock_id=1',
+                        'left')
+            ->joinField('is_in_stock',
+                        'cataloginventory/stock_item',
+                        'is_in_stock',
+                        'product_id=entity_id',
+                        '{{table}}.stock_id=1',
+                        'left');
 
         $this->setCollection($collection);
 
@@ -69,8 +53,7 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
 
     protected function _prepareColumns()
     {
-        $this->addColumn(
-            'product_id', array(
+        $this->addColumn('product_id', array(
             'header'       => Mage::helper('M2ePro')->__('Product ID'),
             'align'        => 'right',
             'type'         => 'number',
@@ -78,11 +61,9 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
             'index'        => 'entity_id',
             'filter_index' => 'entity_id',
             'frame_callback' => array($this, 'callbackColumnProductId')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'title', array(
+        $this->addColumn('title', array(
             'header'       => Mage::helper('M2ePro')->__('Product Title / Product SKU'),
             'align'        => 'left',
             'type'         => 'text',
@@ -91,16 +72,14 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
             'filter_index' => 'name',
             'frame_callback' => array($this, 'callbackColumnTitle'),
             'filter_condition_callback' => array($this, 'callbackFilterTitle')
-            )
-        );
+        ));
 
         $tempTypes = Mage::getSingleton('catalog/product_type')->getOptionArray();
         if (isset($tempTypes['virtual'])) {
             unset($tempTypes['virtual']);
         }
 
-        $this->addColumn(
-            'type', array(
+        $this->addColumn('type', array(
             'header'    => Mage::helper('M2ePro')->__('Type'),
             'align'     => 'left',
             'width'     => '120px',
@@ -109,11 +88,9 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
             'index'     => 'type_id',
             'filter_index' => 'type_id',
             'options' => $tempTypes
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'stock_availability', array(
+        $this->addColumn('stock_availability', array(
             'header'=> Mage::helper('M2ePro')->__('Stock Availability'),
             'width' => '100px',
             'index' => 'is_in_stock',
@@ -125,11 +102,9 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
                 0 => Mage::helper('M2ePro')->__('Out of Stock')
             ),
             'frame_callback' => array($this, 'callbackColumnStockAvailability')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'actions', array(
+        $this->addColumn('actions', array(
             'header'       => Mage::helper('M2ePro')->__('Actions'),
             'align'        => 'left',
             'type'         => 'text',
@@ -137,8 +112,7 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
             'filter'       => false,
             'sortable'     => false,
             'frame_callback' => array($this, 'callbackColumnActions'),
-            )
-        );
+        ));
 
     }
 
@@ -150,7 +124,7 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
         $withoutImageHtml = '<a href="'.$url.'" target="_blank">'.$productId.'</a>&nbsp;';
 
         $showProductsThumbnails = (bool)(int)Mage::helper('M2ePro/Module')->getConfig()->getGroupValue(
-            '/view/', 'show_products_thumbnails'
+            '/view/','show_products_thumbnails'
         );
         if (!$showProductsThumbnails) {
             return $withoutImageHtml;
@@ -160,14 +134,13 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
         $magentoProduct = Mage::getModel('M2ePro/Magento_Product');
         $magentoProduct->setProduct($product);
 
-        $imageResized = $magentoProduct->getThumbnailImage();
-        if ($imageResized === null) {
+        $imageUrlResized = $magentoProduct->getThumbnailImageLink();
+        if (is_null($imageUrlResized)) {
             return $withoutImageHtml;
         }
 
-        $imageHtml = $productId.'<hr /><img style="max-width: 100px; max-height: 100px;" src="'.
-            $imageResized->getUrl().'" />';
-        $withImageHtml = str_replace('>'.$productId.'<', '>'.$imageHtml.'<', $withoutImageHtml);
+        $imageHtml = $productId.'<hr /><img src="'.$imageUrlResized.'" />';
+        $withImageHtml = str_replace('>'.$productId.'<','>'.$imageHtml.'<',$withoutImageHtml);
 
         return $withImageHtml;
     }
@@ -177,7 +150,7 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_Mapping_Grid extends Mage_Adminht
         $value = '<div style="margin-left: 3px">'.Mage::helper('M2ePro')->escapeHtml($value);
 
         $tempSku = $row->getData('sku');
-        if ($tempSku === null) {
+        if (is_null($tempSku)) {
             $tempSku = Mage::getModel('M2ePro/Magento_Product')->setProductId($row->getData('entity_id'))->getSku();
         }
 

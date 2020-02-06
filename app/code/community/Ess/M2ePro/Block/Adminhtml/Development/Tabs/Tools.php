@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -26,8 +26,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Tools extends Mage_Adminhtml_B
 
     protected function _beforeToHtml()
     {
-        $this->setChild(
-            'development_tools_m2epro_general',
+        $this->setChild('development_tools_m2epro_general',
             $this->getLayout()->createBlock(
                 'M2ePro/adminhtml_development_tabs_command_group',
                 '',
@@ -35,8 +34,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Tools extends Mage_Adminhtml_B
             )
         );
 
-        $this->setChild(
-            'development_tools_m2epro_install',
+        $this->setChild('development_tools_m2epro_install',
             $this->getLayout()->createBlock(
                 'M2ePro/adminhtml_development_tabs_command_group',
                 '',
@@ -44,8 +42,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Tools extends Mage_Adminhtml_B
             )
         );
 
-        $this->setChild(
-            'development_tools_magento',
+        $this->setChild('development_tools_magento',
             $this->getLayout()->createBlock(
                 'M2ePro/adminhtml_development_tabs_command_group',
                 '',
@@ -53,8 +50,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Tools extends Mage_Adminhtml_B
             )
         );
 
-        $this->setChild(
-            'development_tools_additional',
+        $this->setChild('development_tools_additional',
             $this->getLayout()->createBlock(
                 'M2ePro/adminhtml_development_tabs_command_group',
                 '',

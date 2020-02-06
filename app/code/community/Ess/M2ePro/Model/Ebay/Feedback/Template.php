@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,7 +11,7 @@ class Ess_M2ePro_Model_Ebay_Feedback_Template extends Ess_M2ePro_Model_Component
     /**
      * @var Ess_M2ePro_Model_Account
      */
-    protected $_accountModel = null;
+    private $accountModel = NULL;
 
     //########################################
 
@@ -26,7 +26,7 @@ class Ess_M2ePro_Model_Ebay_Feedback_Template extends Ess_M2ePro_Model_Component
     public function deleteInstance()
     {
         $temp = parent::deleteInstance();
-        $temp && $this->_accountModel = null;
+        $temp && $this->accountModel = NULL;
         return $temp;
     }
 
@@ -37,13 +37,13 @@ class Ess_M2ePro_Model_Ebay_Feedback_Template extends Ess_M2ePro_Model_Component
      */
     public function getAccount()
     {
-        if ($this->_accountModel === null) {
-            $this->_accountModel = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
-                'Account', $this->getData('account_id')
+        if (is_null($this->accountModel)) {
+            $this->accountModel = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
+                'Account',$this->getData('account_id')
             );
         }
 
-        return $this->_accountModel;
+        return $this->accountModel;
     }
 
     /**
@@ -51,7 +51,7 @@ class Ess_M2ePro_Model_Ebay_Feedback_Template extends Ess_M2ePro_Model_Component
      */
     public function setAccount(Ess_M2ePro_Model_Account $instance)
     {
-        $this->_accountModel = $instance;
+        $this->accountModel = $instance;
     }
 
     //########################################

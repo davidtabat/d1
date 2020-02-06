@@ -2,27 +2,28 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Model_Order_Item_Proxy
 {
-    /** @var Ess_M2ePro_Model_Ebay_Order_Item|Ess_M2ePro_Model_Amazon_Order_Item|Ess_M2ePro_Model_Walmart_Order_Item */
-    protected $_item = null;
+    /** @var Ess_M2ePro_Model_Ebay_Order_Item|Ess_M2ePro_Model_Amazon_Order_Item|
+     * Ess_M2ePro_Model_Buy_Order_Item */
+    protected $item = NULL;
 
-    protected $_qty = null;
+    protected $qty = NULL;
 
-    protected $_subtotal = null;
+    protected $subtotal = NULL;
 
-    protected $_additionalData = array();
+    protected $additionalData = array();
 
     //########################################
 
     public function __construct(Ess_M2ePro_Model_Component_Child_Abstract $item)
     {
-        $this->_item     = $item;
-        $this->_subtotal = $this->getOriginalPrice() * $this->getOriginalQty();
+        $this->item = $item;
+        $this->subtotal = $this->getOriginalPrice() * $this->getOriginalQty();
     }
 
     //########################################
@@ -32,7 +33,7 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
      */
     public function getProxyOrder()
     {
-        return $this->_item->getParentObject()->getOrder()->getProxy();
+        return $this->item->getParentObject()->getOrder()->getProxy();
     }
 
     //########################################
@@ -43,7 +44,7 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
      */
     public function equals(Ess_M2ePro_Model_Order_Item_Proxy $that)
     {
-        if ($this->getProductId() === null || $that->getProductId() === null) {
+        if (is_null($this->getProductId()) || is_null($that->getProductId())) {
             return false;
         }
 
@@ -61,8 +62,8 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
         $thatOptionsValues = array_values($thatOptions);
 
         if (count($thisOptions) != count($thatOptions)
-            || !empty(array_diff($thisOptionsKeys, $thatOptionsKeys))
-            || !empty(array_diff($thisOptionsValues, $thatOptionsValues))
+            || count(array_diff($thisOptionsKeys, $thatOptionsKeys)) > 0
+            || count(array_diff($thisOptionsValues, $thatOptionsValues)) > 0
         ) {
             return false;
         }
@@ -72,7 +73,7 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
         $thatAssociatedProducts = $that->getAssociatedProducts();
 
         if (count($thisAssociatedProducts) != count($thatAssociatedProducts)
-            || !empty(array_diff($thisAssociatedProducts, $thatAssociatedProducts))
+            || count(array_diff($thisAssociatedProducts, $thatAssociatedProducts)) > 0
         ) {
             return false;
         }
@@ -83,7 +84,7 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
     public function merge(Ess_M2ePro_Model_Order_Item_Proxy $that)
     {
         $this->setQty($this->getQty() + $that->getOriginalQty());
-        $this->_subtotal += $that->getOriginalPrice() * $that->getOriginalQty();
+        $this->subtotal += $that->getOriginalPrice() * $that->getOriginalQty();
 
         // merge additional data
         // ---------------------------------------
@@ -94,7 +95,7 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
 
         $thisAdditionalData[$identifier]['items'][] = $thatAdditionalData[$identifier]['items'][0];
 
-        $this->_additionalData = $thisAdditionalData;
+        $this->additionalData = $thisAdditionalData;
         // ---------------------------------------
     }
 
@@ -102,29 +103,29 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
 
     public function getProduct()
     {
-        return $this->_item->getParentObject()->getProduct();
+        return $this->item->getParentObject()->getProduct();
     }
 
     public function getProductId()
     {
-        return $this->_item->getParentObject()->getProductId();
+        return $this->item->getParentObject()->getProductId();
     }
 
     public function getMagentoProduct()
     {
-        return $this->_item->getParentObject()->getMagentoProduct();
+        return $this->item->getParentObject()->getMagentoProduct();
     }
 
     //########################################
 
     public function getOptions()
     {
-        return $this->_item->getParentObject()->getAssociatedOptions();
+        return $this->item->getParentObject()->getAssociatedOptions();
     }
 
     public function getAssociatedProducts()
     {
-        return $this->_item->getParentObject()->getAssociatedProducts();
+        return $this->item->getParentObject()->getAssociatedProducts();
     }
 
     //########################################
@@ -136,7 +137,7 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
 
     public function getPrice()
     {
-        return $this->_subtotal / $this->getQty();
+        return $this->subtotal / $this->getQty();
     }
 
     abstract public function getOriginalPrice();
@@ -149,17 +150,16 @@ abstract class Ess_M2ePro_Model_Order_Item_Proxy
             throw new InvalidArgumentException('QTY cannot be less than zero.');
         }
 
-        $this->_qty = (int)$qty;
+        $this->qty = (int)$qty;
 
         return $this;
     }
 
     public function getQty()
     {
-        if ($this->_qty !== null) {
-            return $this->_qty;
+        if (!is_null($this->qty)) {
+            return $this->qty;
         }
-
         return $this->getOriginalQty();
     }
 

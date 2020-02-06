@@ -2,18 +2,18 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent
     extends Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_LogicalUnit
 {
-    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor $_processor */
-    protected $_processor = null;
+    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor $processor */
+    private $processor = null;
 
-    /** @var Ess_M2ePro_Model_Listing_Product[] $_childListingsProducts */
-    protected $_childListingsProducts = null;
+    /** @var Ess_M2ePro_Model_Listing_Product[] $childListingsProducts */
+    private $childListingsProducts = null;
 
     //########################################
 
@@ -22,15 +22,13 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getProcessor()
     {
-        if ($this->_processor === null) {
-            $this->_processor = Mage::getModel(
-                'M2ePro/Amazon_Listing_Product_Variation_Manager'
-                . '_Type_Relation_Parent_Processor'
-            );
-            $this->_processor->setListingProduct($this->getListingProduct());
+        if (is_null($this->processor)) {
+            $this->processor = Mage::getModel('M2ePro/Amazon_Listing_Product_Variation_Manager'
+                . '_Type_Relation_Parent_Processor');
+            $this->processor->setListingProduct($this->getListingProduct());
         }
 
-        return $this->_processor;
+        return $this->processor;
     }
 
     /**
@@ -38,8 +36,8 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getChildListingsProducts()
     {
-        if ($this->isCacheEnabled() && $this->_childListingsProducts !== null) {
-            return $this->_childListingsProducts;
+        if ($this->isCacheEnabled() && !is_null($this->childListingsProducts)) {
+            return $this->childListingsProducts;
         }
 
         $collection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Product');
@@ -58,7 +56,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
             $amazonChildListingProduct->getVariationManager()->getTypeModel()->enableCache();
         }
 
-        return $this->_childListingsProducts = $childListingsProducts;
+        return $this->childListingsProducts = $childListingsProducts;
     }
 
     //########################################
@@ -131,6 +129,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
             'additional_data', 'variation_product_attributes', $this->getRealMagentoAttributes()
         );
 
+        $this->setVirtualProductAttributes(array(), false);
         $this->setVirtualChannelAttributes(array(), false);
 
         $this->restoreAllRemovedProductOptions(false);
@@ -318,7 +317,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         );
 
         if (empty($matchedAttributes)) {
-            return array();
+            return NULL;
         }
 
         ksort($matchedAttributes);
@@ -476,7 +475,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         );
 
         if (empty($attributesSets)) {
-            return array();
+            return null;
         }
 
         foreach ($this->getVirtualChannelAttributes() as $virtualAttribute => $virtualValue) {
@@ -528,7 +527,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         );
 
         if (empty($channelVariations)) {
-            return array();
+            return null;
         }
 
         $virtualChannelAttributes = $this->getVirtualChannelAttributes();
@@ -739,7 +738,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         return $this->getUnusedOptions($this->getChannelVariations(), $this->getUsedChannelOptions());
     }
 
-    protected function getUnusedOptions($currentOptions, $usedOptions)
+    private function getUnusedOptions($currentOptions, $usedOptions)
     {
         if (empty($currentOptions)) {
             return array();
@@ -752,6 +751,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         $unusedOptions = array();
 
         foreach ($currentOptions as $id => $currentOption) {
+
             $isExist = false;
             foreach ($usedOptions as $option) {
                 if ($option != $currentOption) {
@@ -774,7 +774,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
 
     // ---------------------------------------
 
-    protected function getCurrentProductOptions()
+    private function getCurrentProductOptions()
     {
         $magentoProductVariations = $this->getMagentoProduct()->getVariationInstance()->getVariationsTypeStandard();
 
@@ -803,11 +803,10 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      * @throws Ess_M2ePro_Model_Exception
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    public function createChildListingProduct(
-        array $productOptions,
-        array $channelOptions = array(),
-        $generalId = null
-    ) {
+    public function createChildListingProduct(array $productOptions,
+                                              array $channelOptions = array(),
+                                              $generalId = null)
+    {
         $data = array(
             'listing_id' => $this->getListingProduct()->getListingId(),
             'product_id' => $this->getListingProduct()->getProductId(),
@@ -819,28 +818,14 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
             'is_variation_parent'     => 0,
             'variation_parent_id'     => $this->getListingProduct()->getId(),
             'template_description_id' => $this->getAmazonListingProduct()->getTemplateDescriptionId(),
-            'template_shipping_id'    => $this->getAmazonListingProduct()->getTemplateShippingId(),
-            'template_product_tax_code_id' => $this->getAmazonListingProduct()->getTemplateProductTaxCodeId(),
         );
 
         /** @var Ess_M2ePro_Model_Listing_Product $childListingProduct */
         $childListingProduct = Mage::helper('M2ePro/Component_Amazon')->getModel('Listing_Product')->setData($data);
         $childListingProduct->save();
 
-        $instruction = Mage::getModel('M2ePro/Listing_Product_Instruction');
-        $instruction->setData(
-            array(
-            'listing_product_id' => $childListingProduct->getId(),
-            'component'          => Ess_M2ePro_Helper_Component_Amazon::NICK,
-            'type'               => Ess_M2ePro_Model_Listing::INSTRUCTION_TYPE_PRODUCT_ADDED,
-            'initiator'          => Ess_M2ePro_Model_Listing::INSTRUCTION_INITIATOR_ADDING_PRODUCT,
-            'priority'           => 70,
-            )
-        );
-        $instruction->save();
-
         if ($this->isCacheEnabled()) {
-            $this->_childListingsProducts[$childListingProduct->getId()] = $childListingProduct;
+            $this->childListingsProducts[$childListingProduct->getId()] = $childListingProduct;
         }
 
         /** @var Ess_M2ePro_Model_Amazon_Listing_Product $amazonChildListingProduct */
@@ -880,7 +865,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
         }
 
         if ($this->isCacheEnabled()) {
-            unset($this->_childListingsProducts[$listingProductId]);
+            unset($this->childListingsProducts[$listingProductId]);
         }
 
         return true;
@@ -914,12 +899,8 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
             /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager $childVariationManager */
             $childVariationManager = $childListingProduct->getChildObject()->getVariationManager();
 
-            if ($this->getMagentoProduct()->isProductWithVariations()) {
-                $childVariationManager->getTypeModel()->unsetChannelVariation();
-                $childVariationManager->setIndividualType();
-            } else {
-                $childVariationManager->setSimpleType();
-            }
+            $childVariationManager->getTypeModel()->unsetChannelVariation();
+            $childVariationManager->setIndividualType();
 
             $childListingProduct->save();
         }

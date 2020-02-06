@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -17,32 +17,6 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Option extends Ess_M2ePr
     {
         parent::_construct();
         $this->_init('M2ePro/Amazon_Listing_Product_Variation_Option');
-    }
-
-    //########################################
-
-    protected function _afterSave()
-    {
-        $listingProductId = $this->getListingProduct()->getId();
-        $variationId      = $this->getListingProductVariation()->getId();
-
-        Mage::helper('M2ePro/Data_Cache_Session')->removeTagValues(
-            "listing_product_{$listingProductId}_variation_{$variationId}_options"
-        );
-
-        return parent::_afterSave();
-    }
-
-    protected function _beforeDelete()
-    {
-        $listingProductId = $this->getListingProduct()->getId();
-        $variationId      = $this->getListingProductVariation()->getId();
-
-        Mage::helper('M2ePro/Data_Cache_Session')->removeTagValues(
-            "listing_product_{$listingProductId}_variation_{$variationId}_options"
-        );
-
-        return parent::_beforeDelete();
     }
 
     //########################################
@@ -230,6 +204,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Option extends Ess_M2ePr
         $simpleAttributes = $this->getListingProduct()->getMagentoProduct()->getProduct()->getOptions();
 
         foreach ($simpleAttributes as $tempAttribute) {
+
             if (!(bool)(int)$tempAttribute->getData('is_require')) {
                 continue;
             }
@@ -247,6 +222,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Option extends Ess_M2ePr
             }
 
             foreach ($tempAttribute->getValues() as $tempOption) {
+
                 $option = strtolower($this->getParentObject()->getOption());
 
                 if (strtolower($tempOption->getData('default_title')) != $option &&
@@ -255,7 +231,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Option extends Ess_M2ePr
                     continue;
                 }
 
-                if ($tempOption->getData('sku') !== null &&
+                if (!is_null($tempOption->getData('sku')) &&
                     $tempOption->getData('sku') !== false) {
                     $tempSku = $tempOption->getData('sku');
                 }

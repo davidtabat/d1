@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,17 +11,17 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
     /**
      * @var Ess_M2ePro_Model_Account
      */
-    protected $_accountModel = null;
+    private $accountModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Marketplace
      */
-    protected $_marketplaceModel = null;
+    private $marketplaceModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProductModel = null;
+    protected $magentoProductModel = NULL;
 
     //########################################
 
@@ -36,9 +36,9 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
     public function deleteInstance()
     {
         $temp = parent::deleteInstance();
-        $temp && $this->_accountModel = null;
-        $temp && $this->_marketplaceModel = null;
-        $temp && $this->_magentoProductModel = null;
+        $temp && $this->accountModel = NULL;
+        $temp && $this->marketplaceModel = NULL;
+        $temp && $this->magentoProductModel = NULL;
         return $temp;
     }
 
@@ -49,13 +49,13 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
      */
     public function getAccount()
     {
-        if ($this->_accountModel === null) {
-            $this->_accountModel = Mage::helper('M2ePro/Component_Amazon')->getCachedObject(
-                'Account', $this->getAccountId()
+        if (is_null($this->accountModel)) {
+            $this->accountModel = Mage::helper('M2ePro/Component_Amazon')->getCachedObject(
+                'Account',$this->getAccountId()
             );
         }
 
-        return $this->_accountModel;
+        return $this->accountModel;
     }
 
     /**
@@ -63,7 +63,7 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
      */
     public function setAccount(Ess_M2ePro_Model_Account $instance)
     {
-         $this->_accountModel = $instance;
+         $this->accountModel = $instance;
     }
 
     // ---------------------------------------
@@ -73,13 +73,13 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
      */
     public function getMarketplace()
     {
-        if ($this->_marketplaceModel === null) {
-            $this->_marketplaceModel = Mage::helper('M2ePro/Component_Amazon')->getCachedObject(
+        if (is_null($this->marketplaceModel)) {
+            $this->marketplaceModel = Mage::helper('M2ePro/Component_Amazon')->getCachedObject(
                 'Marketplace', $this->getMarketplaceId()
             );
         }
 
-        return $this->_marketplaceModel;
+        return $this->marketplaceModel;
     }
 
     /**
@@ -87,7 +87,7 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
      */
     public function setMarketplace(Ess_M2ePro_Model_Marketplace $instance)
     {
-         $this->_marketplaceModel = $instance;
+         $this->marketplaceModel = $instance;
     }
 
     // ---------------------------------------
@@ -97,13 +97,13 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
      */
     public function getMagentoProduct()
     {
-        if ($this->_magentoProductModel) {
-            return $this->_magentoProductModel;
+        if ($this->magentoProductModel) {
+            return $this->magentoProductModel;
         }
 
-        return $this->_magentoProductModel = Mage::getModel('M2ePro/Magento_Product')
-                                                 ->setStoreId($this->getStoreId())
-                                                 ->setProductId($this->getProductId());
+        return $this->magentoProductModel = Mage::getModel('M2ePro/Magento_Product')
+                ->setStoreId($this->getStoreId())
+                ->setProductId($this->getProductId());
     }
 
     /**
@@ -111,7 +111,7 @@ class Ess_M2ePro_Model_Amazon_Item extends Ess_M2ePro_Model_Component_Abstract
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $instance)
     {
-        $this->_magentoProductModel = $instance;
+        $this->magentoProductModel = $instance;
     }
 
     //########################################

@@ -2,35 +2,30 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Grid
     extends Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_Grid
 {
-    protected $_selectedIds = array();
+    private $selectedIds = array();
 
-    protected $_currentCategoryId;
+    private $currentCategoryId = NULL;
 
     //########################################
 
-    protected function getCollectionIds()
+    private function getCollectionIds()
     {
-        $ids = $this->getData('collection_ids');
-        if ($ids !== null) {
+        if (!is_null($ids = $this->getData('collection_ids'))) {
             return $ids;
         }
 
-        /* We use the default store view due to this
-         * app/code/community/Ess/M2ePro/Block/Adminhtml/Ebay/Listing/Product/Grid.php
-         * $collection->setStoreId(Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID);
-         */
         $ids = Mage::helper('M2ePro/Magento_Category')->getProductsFromCategories(
-            array($this->getCurrentCategoryId()), Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID
+            array($this->getCurrentCategoryId()), $this->_getStore()->getId()
         );
 
-        $this->setData('collection_ids', $ids);
+        $this->setData('collection_ids',$ids);
         return $ids;
     }
 
@@ -46,12 +41,12 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Grid
             return parent::_prepareMassaction();
         }
 
-        $ids = array_filter(explode(',', $ids));
-        $ids = array_merge($ids, $this->getSelectedIds());
-        $ids = array_intersect($ids, $this->getCollectionIds());
+        $ids = array_filter(explode(',',$ids));
+        $ids = array_merge($ids,$this->getSelectedIds());
+        $ids = array_intersect($ids,$this->getCollectionIds());
         $ids = array_values(array_unique($ids));
 
-        $this->getRequest()->setPost($this->getMassactionBlock()->getFormFieldNameInternal(), implode(',', $ids));
+        $this->getRequest()->setPost($this->getMassactionBlock()->getFormFieldNameInternal(),implode(',',$ids));
 
         return parent::_prepareMassaction();
     }
@@ -60,26 +55,26 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Grid
 
     public function setSelectedIds(array $ids)
     {
-        $this->_selectedIds = $ids;
+        $this->selectedIds = $ids;
         return $this;
     }
 
     public function getSelectedIds()
     {
-        return $this->_selectedIds;
+        return $this->selectedIds;
     }
 
     // ---------------------------------------
 
     public function setCurrentCategoryId($currentCategoryId)
     {
-        $this->_currentCategoryId = $currentCategoryId;
+        $this->currentCategoryId = $currentCategoryId;
         return $this;
     }
 
     public function getCurrentCategoryId()
     {
-        return $this->_currentCategoryId;
+        return $this->currentCategoryId;
     }
 
     //########################################
@@ -92,7 +87,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Grid
             array('category_id' => 'category_id')
         );
 
-        $collection->addFieldToFilter('category_id', $this->_currentCategoryId);
+        $collection->addFieldToFilter('category_id', $this->currentCategoryId);
 
         parent::setCollection($collection);
     }
@@ -111,6 +106,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Grid
                 method: 'get',
                 onSuccess: function(transport) {
                     var massGridObj = {$this->getMassactionBlock()->getJsObjectName()};
+
                     massGridObj.initialCheckedString = massGridObj.checkedString;
 
                     var response = transport.responseText.evalJSON();
@@ -132,20 +128,20 @@ JS;
     protected function _toHtml()
     {
         $html = parent::_toHtml();
+
         $js = '';
 
-        if (!$this->getRequest()->isXmlHttpRequest() || $this->getRequest()->getParam('category_change')) {
-            $jsObjectName = $this->getMassactionBlock()->getJsObjectName();
-            $checkedString = implode(',', array_intersect($this->getCollectionIds(), $this->_selectedIds));
-
+        if ($this->getRequest()->getParam('category_change')) {
+            $checkedString = implode(',', array_intersect($this->getCollectionIds(), $this->selectedIds));
             $js .= <<<HTML
 <script type="text/javascript">
-    {$jsObjectName}.checkedString = '{$checkedString}';
-    {$jsObjectName}.initCheckboxes();
-    {$jsObjectName}.checkCheckboxes();
-    {$jsObjectName}.updateCount();
+    {$this->getMassactionBlock()->getJsObjectName()}.checkedString = '{$checkedString}';
+    {$this->getMassactionBlock()->getJsObjectName()}.initCheckboxes();
+    {$this->getMassactionBlock()->getJsObjectName()}.checkCheckboxes();
+    {$this->getMassactionBlock()->getJsObjectName()}.updateCount();
 
-    {$jsObjectName}.initialCheckedString = {$jsObjectName}.checkedString;
+    {$this->getMassactionBlock()->getJsObjectName()}.initialCheckedString =
+        {$this->getMassactionBlock()->getJsObjectName()}.checkedString;
 </script>
 HTML;
         }

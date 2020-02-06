@@ -85,7 +85,7 @@ WizardEbayProductDetails.prototype = {
                     );
                 }
 
-                return false;
+                return flase;
             }).bind(this)
         })
     },

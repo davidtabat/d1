@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -13,60 +13,79 @@ class Ess_M2ePro_Adminhtml_Configuration_LicenseController
 
     public function confirmKeyAction()
     {
-        if (!$this->getRequest()->isAjax() || !$this->getRequest()->isPost()) {
-            $this->_getSession()->addSuccess(
-                Mage::helper('M2ePro')->__('Configurations saved successfully.')
+        if ($this->getRequest()->isPost()) {
+
+            $post = $this->getRequest()->getPost();
+
+            // Save settings
+            // ---------------------------------------
+            $key = strip_tags($post['key']);
+            Mage::helper('M2ePro/Primary')->getConfig()->setGroupValue(
+                '/'.Mage::helper('M2ePro/Module')->getName().'/license/','key',(string)$key
             );
-            return $this->_redirectUrl($this->_getRefererUrl());
-        }
+            // ---------------------------------------
 
-        $post = $this->getRequest()->getPost();
-        $primaryConfig = Mage::helper('M2ePro/Primary')->getConfig();
-
-        // Save settings
-        // ---------------------------------------
-        $key = strip_tags($post['key']);
-        $primaryConfig->setGroupValue(
-            '/'.Mage::helper('M2ePro/Module')->getName().'/license/', 'key', (string)$key
-        );
-        // ---------------------------------------
-
-        try {
             Mage::getModel('M2ePro/Servicing_Dispatcher')->processTask(
                 Mage::getModel('M2ePro/Servicing_Task_License')->getPublicNick()
             );
-        } catch (Exception $e) {
-            return $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__($e->getMessage())
+
+            $this->_getSession()->addSuccess(
+                Mage::helper('M2ePro')->__('The License Key has been successfully updated.')
             );
         }
 
-        $this->_getSession()->addSuccess(
-            Mage::helper('M2ePro')->__('Extension Key updated successfully.')
-        );
-
-        return $this->getResponse()->setBody(Mage::helper('M2ePro')->jsonEncode(array('success' => true)));
+        $this->_redirectUrl($this->_getRefererUrl());
     }
-
-    //########################################
 
     public function refreshStatusAction()
     {
-        try {
-            Mage::getModel('M2ePro/Servicing_Dispatcher')->processTask(
-                Mage::getModel('M2ePro/Servicing_Task_License')->getPublicNick()
-            );
-        } catch (Exception $e) {
-            $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__($e->getMessage())
-            );
-
-            return $this->_redirectUrl($this->_getRefererUrl());
-        }
+        Mage::getModel('M2ePro/Servicing_Dispatcher')->processTask(
+            Mage::getModel('M2ePro/Servicing_Task_License')->getPublicNick()
+        );
 
         $this->_getSession()->addSuccess(
-            Mage::helper('M2ePro')->__('Extension Key refreshed successfully.')
+            Mage::helper('M2ePro')->__('The License Status has been successfully refreshed.')
         );
+
+        $this->_redirectUrl($this->_getRefererUrl());
+    }
+
+    // ---------------------------------------
+
+    public function checkLicenseAction()
+    {
+        $result = false;
+
+        $enabledComponents = Mage::helper('M2ePro/Component')->getActiveComponents();
+
+        if (count($enabledComponents) > 0) {
+            $result = true;
+            foreach ($enabledComponents as $enabledComponent) {
+                if (Mage::helper('M2ePro/Module_License')->isNoneMode($enabledComponent)) {
+                    $result = false;
+                    break;
+                }
+            }
+        }
+
+        return $this->getResponse()->setBody(json_encode(array('ok' => $result)));
+    }
+
+    // ---------------------------------------
+
+    public function componentSetTrialAction()
+    {
+        if (!is_null($component = $this->getRequest()->getParam('component'))) {
+            if (Mage::helper('M2ePro/Module_License')->setTrial($component)) {
+                $expirationDate = Mage::helper('M2ePro/Module_License')->getTextExpirationDate($component);
+                $this->_getSession()->addSuccess(
+                     Mage::helper('M2ePro')->__(
+                         'Trial License Key was successfully obtained. It will be valid until %date%.',
+                         $expirationDate
+                     )
+                );
+            }
+        }
 
         $this->_redirectUrl($this->_getRefererUrl());
     }

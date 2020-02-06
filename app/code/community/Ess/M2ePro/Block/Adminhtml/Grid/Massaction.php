@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -58,7 +58,6 @@ class Ess_M2ePro_Block_Adminhtml_Grid_Massaction extends Mage_Adminhtml_Block_Wi
 window['{$this->getJsObjectName()}'] = {$this->getJsObjectName()};
 HTML;
         }
-
         return '';
     }
 
@@ -92,7 +91,8 @@ HTML;
         $select = $dom->getElementsByTagName('select')->item(0);
 
         foreach ($this->_groups as $groupName => $groupData) {
-            if (empty($groupData['items'])) {
+
+            if (count($groupData['items']) == 0) {
                 continue;
             }
 
@@ -111,15 +111,17 @@ HTML;
 
         // Moving remaining options in end of list
         foreach ($xpathObj->query('//select/option', $select) as $option) {
+
             if (empty($option->nodeValue)) {
                 continue;
             }
 
             try {
+
                 $option = $select->removeChild($option);
                 $select->appendChild($option);
-            } catch(DOMException $e) {
-            }
+
+            } catch(DOMException $e) {}
         }
 
         // Removing doctype, html, body

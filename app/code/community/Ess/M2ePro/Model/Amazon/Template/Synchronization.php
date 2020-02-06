@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 /**
  * @method Ess_M2ePro_Model_Template_Synchronization getParentObject()
- * @method Ess_M2ePro_Model_Resource_Amazon_Template_Synchronization getResource()
+ * @method Ess_M2ePro_Model_Mysql4_Amazon_Template_Synchronization getResource()
  */
 class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_Component_Child_Amazon_Abstract
 {
@@ -48,8 +48,17 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
     const REVISE_UPDATE_IMAGES_NONE = 0;
     const REVISE_UPDATE_IMAGES_YES  = 1;
 
+    const REVISE_CHANGE_DESCRIPTION_TEMPLATE_NONE = 0;
+    const REVISE_CHANGE_DESCRIPTION_TEMPLATE_YES  = 1;
+
+    const REVISE_CHANGE_SHIPPING_OVERRIDE_TEMPLATE_NONE = 0;
+    const REVISE_CHANGE_SHIPPING_OVERRIDE_TEMPLATE_YES  = 1;
+
     const RELIST_FILTER_USER_LOCK_NONE = 0;
     const RELIST_FILTER_USER_LOCK_YES  = 1;
+
+    const RELIST_SEND_DATA_NONE = 0;
+    const RELIST_SEND_DATA_YES  = 1;
 
     const RELIST_MODE_NONE = 0;
     const RELIST_MODE_YES  = 1;
@@ -64,9 +73,6 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
     const RELIST_QTY_LESS    = 1;
     const RELIST_QTY_BETWEEN = 2;
     const RELIST_QTY_MORE    = 3;
-
-    const STOP_MODE_NONE = 0;
-    const STOP_MODE_YES  = 1;
 
     const STOP_STATUS_DISABLED_NONE = 0;
     const STOP_STATUS_DISABLED_YES  = 1;
@@ -115,7 +121,7 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
      */
     public function getListings($asObjects = false, array $filters = array())
     {
-        return $this->getRelatedComponentItems('Listing', 'template_synchronization_id', $asObjects, $filters);
+        return $this->getRelatedComponentItems('Listing','template_synchronization_id',$asObjects,$filters);
     }
 
     //########################################
@@ -235,31 +241,10 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
 
     // ---------------------------------------
 
-    public function isPriceChangedOverAllowedDeviation($onlinePrice, $currentPrice)
-    {
-        if ((float)$onlinePrice == (float)$currentPrice) {
-            return false;
-        }
-
-        if ((float)$onlinePrice <= 0) {
-            return true;
-        }
-
-        if ($this->isReviseUpdatePriceMaxAllowedDeviationModeOff()) {
-            return true;
-        }
-
-        $deviation = round(abs($onlinePrice - $currentPrice) / $onlinePrice * 100, 2);
-
-        return $deviation > $this->getReviseUpdatePriceMaxAllowedDeviation();
-    }
-
-    // ---------------------------------------
-
     /**
      * @return bool
      */
-    public function isReviseUpdateQty()
+    public function isReviseWhenChangeQty()
     {
         return $this->getData('revise_update_qty') != self::REVISE_UPDATE_QTY_NONE;
     }
@@ -267,9 +252,46 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
     /**
      * @return bool
      */
-    public function isReviseUpdatePrice()
+    public function isReviseWhenChangePrice()
     {
         return $this->getData('revise_update_price') != self::REVISE_UPDATE_PRICE_NONE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReviseWhenChangeDetails()
+    {
+        return $this->getData('revise_update_details') != self::REVISE_UPDATE_DETAILS_NONE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReviseWhenChangeImages()
+    {
+        return $this->getData('revise_update_images') != self::REVISE_UPDATE_IMAGES_NONE;
+    }
+
+    // ---------------------------------------
+
+    /**
+     * @return bool
+     */
+    public function isReviseDescriptionTemplate()
+    {
+        return $this->getData('revise_change_description_template') != self::REVISE_CHANGE_DESCRIPTION_TEMPLATE_NONE;
+    }
+
+    // ---------------------------------------
+
+    /**
+     * @return bool
+     */
+    public function isReviseShippingOverrideTemplate()
+    {
+        return $this->getData('revise_change_shipping_override_template') !=
+            self::REVISE_CHANGE_SHIPPING_OVERRIDE_TEMPLATE_NONE;
     }
 
     // ---------------------------------------
@@ -288,6 +310,14 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
     public function isRelistFilterUserLock()
     {
         return $this->getData('relist_filter_user_lock') != self::RELIST_FILTER_USER_LOCK_NONE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRelistSendData()
+    {
+        return $this->getData('relist_send_data') != self::RELIST_SEND_DATA_NONE;
     }
 
     /**
@@ -323,14 +353,6 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
     }
 
     // ---------------------------------------
-
-    /**
-     * @return bool
-     */
-    public function isStopMode()
-    {
-        return $this->getData('stop_mode') != self::STOP_MODE_NONE;
-    }
 
     /**
      * @return bool
@@ -464,6 +486,48 @@ class Ess_M2ePro_Model_Amazon_Template_Synchronization extends Ess_M2ePro_Model_
     public function getStopWhenQtyCalculatedHasValueMax()
     {
         return $this->getData('stop_qty_calculated_value_max');
+    }
+
+    //########################################
+
+    /**
+     * @param bool $asArrays
+     * @param string|array $columns
+     * @param bool $onlyPhysicalUnits
+     * @return array
+     */
+    public function getAffectedListingsProducts($asArrays = true, $columns = '*', $onlyPhysicalUnits = false)
+    {
+        /** @var Ess_M2ePro_Model_Mysql4_Listing_Collection $listingCollection */
+        $listingCollection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing');
+        $listingCollection->addFieldToFilter('template_synchronization_id', $this->getId());
+        $listingCollection->getSelect()->reset(Zend_Db_Select::COLUMNS);
+        $listingCollection->getSelect()->columns('id');
+
+        /** @var Ess_M2ePro_Model_Mysql4_Listing_Product_Collection $listingProductCollection */
+        $listingProductCollection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Product');
+        $listingProductCollection->addFieldToFilter('listing_id',array('in' => $listingCollection->getSelect()));
+
+        if ($onlyPhysicalUnits) {
+            $listingProductCollection->addFieldToFilter('is_variation_parent', 0);
+        }
+
+        if (is_array($columns) && !empty($columns)) {
+            $listingProductCollection->getSelect()->reset(Zend_Db_Select::COLUMNS);
+            $listingProductCollection->getSelect()->columns($columns);
+        }
+
+        return $asArrays ? (array)$listingProductCollection->getData() : (array)$listingProductCollection->getItems();
+    }
+
+    public function setSynchStatusNeed($newData, $oldData)
+    {
+        $listingsProducts = $this->getAffectedListingsProducts(true, array('id', 'synch_status', 'synch_reasons'));
+        if (empty($listingsProducts)) {
+            return;
+        }
+
+        $this->getResource()->setSynchStatusNeed($newData,$oldData,$listingsProducts);
     }
 
     //########################################

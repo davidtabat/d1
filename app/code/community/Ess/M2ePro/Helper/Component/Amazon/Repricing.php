@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -40,20 +40,13 @@ class Ess_M2ePro_Helper_Component_Amazon_Repricing extends Mage_Core_Helper_Abst
         //set the url
         curl_setopt($curlObject, CURLOPT_URL, $url);
 
-        $sslVerifyPeer = true;
-        $sslVerifyHost = 2;
-
-        if (preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $url)) {
-            $sslVerifyPeer = false;
-            $sslVerifyHost = false;
-        }
-
-        curl_setopt($curlObject, CURLOPT_SSL_VERIFYPEER, $sslVerifyPeer);
-        curl_setopt($curlObject, CURLOPT_SSL_VERIFYHOST, $sslVerifyHost);
+        // stop CURL from verifying the peer's certificate
+        curl_setopt($curlObject, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlObject, CURLOPT_SSL_VERIFYHOST, false);
 
         // set the data body of the request
         curl_setopt($curlObject, CURLOPT_POST, true);
-        curl_setopt($curlObject, CURLOPT_POSTFIELDS, http_build_query($postData, '', '&'));
+        curl_setopt($curlObject, CURLOPT_POSTFIELDS, http_build_query($postData,'','&'));
 
         // set it to return the transfer as a string from curl_exec
         curl_setopt($curlObject, CURLOPT_RETURNTRANSFER, true);
@@ -68,6 +61,7 @@ class Ess_M2ePro_Helper_Component_Amazon_Repricing extends Mage_Core_Helper_Abst
         curl_close($curlObject);
 
         if ($response === false) {
+
             throw new Ess_M2ePro_Model_Exception_Connection(
                 'The Action was not completed because connection with M2E Pro Repricing Service was not set.
                  There are several possible reasons: temporary connection problem – please wait and try again later;
@@ -79,21 +73,10 @@ class Ess_M2ePro_Helper_Component_Amazon_Repricing extends Mage_Core_Helper_Abst
             );
         }
 
-        $responseDecoded = Mage::helper('M2ePro')->jsonDecode($response);
-        if (!$responseDecoded || !is_array($responseDecoded)) {
-            throw new Ess_M2ePro_Model_Exception_Connection(
-                'The Action was not completed because server responded with an incorrect response.',
-                array(
-                    'raw_response' => $response,
-                    'curl_info'    => $curlInfo
-                )
-            );
-        }
-
         return array(
             'curl_error_number' => $errorNumber,
             'curl_info'         => $curlInfo,
-            'response'          => $responseDecoded
+            'response'          => $response
         );
     }
 
@@ -118,11 +101,9 @@ class Ess_M2ePro_Helper_Component_Amazon_Repricing extends Mage_Core_Helper_Abst
             return false;
         }
 
-        return $this->getBaseUrl().self::COMMAND_GOTO_SERVICE.'?'.http_build_query(
-            array(
+        return $this->getBaseUrl().self::COMMAND_GOTO_SERVICE.'?'.http_build_query(array(
             'account_token' => $amazonAccount->getRepricing()->getToken()
-            )
-        );
+        ));
     }
 
     //########################################

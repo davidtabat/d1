@@ -102,18 +102,38 @@ SynchProgressHandler.prototype = Object.extend(new CommonHandler(), {
         }
 
         var self = this;
-
-        self.start(title, M2ePro.translator.translate('Preparing to start. Please wait ...'));
-
-        new Ajax.Request(url, {
-            parameters: {components: components},
+        new Ajax.Request(M2ePro.url.get('adminhtml_general/synchCheckState'), {
             method: 'get',
-            asynchronous: true
-        });
+            asynchronous: true,
+            onSuccess: function(transport) {
 
-        setTimeout(function() {
-            self.startGetExecutingInfo(callBackWhenEnd);
-        },2000);
+                if (transport.responseText == self.stateExecuting) {
+
+                    self.start(
+                        M2ePro.translator.translate('Another Synchronization Is Already Running.'),
+                        M2ePro.translator.translate('Getting information. Please wait ...')
+                    );
+
+                    setTimeout(function() {
+                        self.startGetExecutingInfo('self.runTask(\'' + title + '\',\'' + url + '\',\'' + components + '\',\'' + callBackWhenEnd + '\');');
+                    },2000);
+
+                } else {
+
+                    self.start(title, M2ePro.translator.translate('Preparing to start. Please wait ...'));
+
+                    new Ajax.Request(url, {
+                        parameters: {components: components},
+                        method: 'get',
+                        asynchronous: true
+                    });
+
+                    setTimeout(function() {
+                        self.startGetExecutingInfo(callBackWhenEnd);
+                    },2000);
+                }
+            }
+        });
     },
 
     // ---------------------------------------
@@ -129,12 +149,6 @@ SynchProgressHandler.prototype = Object.extend(new CommonHandler(), {
             onSuccess: function(transport) {
 
                 var data = transport.responseText.evalJSON(true);
-
-                if (data.ajaxExpired && response.ajaxRedirect) {
-
-                    alert(M2ePro.translator.translate('Unauthorized! Please login again.'));
-                    setLocation(response.ajaxRedirect);
-                }
 
                 if (data.mode == self.stateExecuting) {
 

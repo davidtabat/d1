@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Magento_Payment_Info extends Mage_Payment_Block_Info
 {
-    protected $_order = null;
+    private $order = NULL;
 
     //########################################
 
@@ -20,9 +20,9 @@ class Ess_M2ePro_Block_Adminhtml_Magento_Payment_Info extends Mage_Payment_Block
 
     //########################################
 
-    protected function getAdditionalData($key = '')
+    private function getAdditionalData($key = '')
     {
-        $additionalData = Mage::helper('M2ePro')->unserialize($this->getInfo()->getAdditionalData());
+        $additionalData = @unserialize($this->getInfo()->getAdditionalData());
 
         if ($key === '') {
             return $additionalData;
@@ -41,7 +41,6 @@ class Ess_M2ePro_Block_Adminhtml_Magento_Payment_Info extends Mage_Payment_Block
         if (isset($additionalData[$backwardCompatibleKey])) {
             return $additionalData[$backwardCompatibleKey];
         }
-
         // ---------------------------------------
 
         return isset($additionalData[$key]) ? $additionalData[$key] : NULL;
@@ -52,24 +51,24 @@ class Ess_M2ePro_Block_Adminhtml_Magento_Payment_Info extends Mage_Payment_Block
      */
     public function getOrder()
     {
-        if ($this->_order === null) {
+        if (is_null($this->order)) {
             // do not replace registry with our wrapper
             if ($this->hasOrder()) {
-                $this->_order = $this->getOrder();
+                $this->order = $this->getOrder();
             } elseif (Mage::registry('current_order')) {
-                $this->_order = Mage::registry('current_order');
+                $this->order = Mage::registry('current_order');
             } elseif (Mage::registry('order')) {
-                $this->_order = Mage::registry('order');
+                $this->order = Mage::registry('order');
             } elseif (Mage::registry('current_invoice')) {
-                $this->_order = Mage::registry('current_invoice')->getOrder();
+                $this->order = Mage::registry('current_invoice')->getOrder();
             } elseif (Mage::registry('current_shipment')) {
-                $this->_order = Mage::registry('current_shipment')->getOrder();
+                $this->order = Mage::registry('current_shipment')->getOrder();
             } elseif (Mage::registry('current_creditmemo')) {
-                $this->_order = Mage::registry('current_creditmemo')->getOrder();
+                $this->order = Mage::registry('current_creditmemo')->getOrder();
             }
         }
 
-        return $this->_order;
+        return $this->order;
     }
 
     public function getPaymentMethod()
@@ -93,15 +92,13 @@ class Ess_M2ePro_Block_Adminhtml_Magento_Payment_Info extends Mage_Payment_Block
 
         switch ($this->getAdditionalData('component_mode')) {
             case Ess_M2ePro_Helper_Component_Ebay::NICK:
-            case Ess_M2ePro_Helper_Component_Walmart::NICK:
+            case Ess_M2ePro_Helper_Component_Buy::NICK:
                 break;
             case Ess_M2ePro_Helper_Component_Amazon::NICK:
                 if ($this->getOrder()) {
-                    $url = Mage::helper('adminhtml')->getUrl(
-                        'M2ePro/adminhtml_amazon_order/goToAmazon', array(
+                    $url = Mage::helper('adminhtml')->getUrl('M2ePro/adminhtml_common_amazon_order/goToAmazon', array(
                         'magento_order_id' => $this->getOrder()->getId()
-                        )
-                    );
+                    ));
                 }
                 break;
         }
@@ -140,20 +137,26 @@ class Ess_M2ePro_Block_Adminhtml_Magento_Payment_Info extends Mage_Payment_Block
         return $this->toHtml();
     }
 
-    protected function _toHtml()
+    /**
+     * Render block
+     * @return string
+     */
+    public function renderView()
     {
-        // Start store emulation process
-        $appEmulation = Mage::getSingleton('core/app_emulation');
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation(
-            Mage_Core_Model_App::ADMIN_STORE_ID, Mage_Core_Model_App_Area::AREA_ADMINHTML
-        );
+        $design = Mage::getDesign();
 
-        $html = parent::_toHtml();
+        $oldArea = $design->getArea();
+        $oldPackageName = $design->getPackageName();
 
-        // Stop store emulation process
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+        $design->setArea('adminhtml');
+        $design->setPackageName(Mage::getStoreConfig('design/package/name', Mage::app()->getStore()->getId()));
 
-        return $html;
+        $result = parent::renderView();
+
+        $design->setArea($oldArea);
+        $design->setPackageName($oldPackageName);
+
+        return $result;
     }
 
     //########################################

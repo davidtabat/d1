@@ -2,12 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Ebay_Template_Manager
 {
+    private $ownerObject = NULL;
+    private $templateNick = NULL;
+    private $resultObject = NULL;
+
     const MODE_PARENT   = 0;
     const MODE_CUSTOM   = 1;
     const MODE_TEMPLATE = 2;
@@ -17,16 +21,12 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
     const OWNER_LISTING = 'listing';
     const OWNER_LISTING_PRODUCT = 'listing_product';
 
-    const TEMPLATE_RETURN          = 'return';
-    const TEMPLATE_PAYMENT         = 'payment';
-    const TEMPLATE_SHIPPING        = 'shipping';
-    const TEMPLATE_DESCRIPTION     = 'description';
-    const TEMPLATE_SELLING_FORMAT  = 'selling_format';
+    const TEMPLATE_RETURN = 'return';
+    const TEMPLATE_PAYMENT = 'payment';
+    const TEMPLATE_SHIPPING = 'shipping';
+    const TEMPLATE_DESCRIPTION = 'description';
+    const TEMPLATE_SELLING_FORMAT = 'selling_format';
     const TEMPLATE_SYNCHRONIZATION = 'synchronization';
-
-    protected $_ownerObject  = null;
-    protected $_templateNick = null;
-    protected $_resultObject = null;
 
     //########################################
 
@@ -35,7 +35,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
      */
     public function getOwnerObject()
     {
-        return $this->_ownerObject;
+        return $this->ownerObject;
     }
 
     /**
@@ -49,8 +49,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
             !($object instanceof Ess_M2ePro_Model_Ebay_Listing_Product)) {
             throw new Ess_M2ePro_Model_Exception('Owner object is out of knowledge range.');
         }
-
-        $this->_ownerObject = $object;
+        $this->ownerObject = $object;
         return $this;
     }
 
@@ -79,7 +78,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
      */
     public function getTemplate()
     {
-        return $this->_templateNick;
+        return $this->templateNick;
     }
 
     /**
@@ -89,11 +88,10 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
      */
     public function setTemplate($nick)
     {
-        if (!in_array(strtolower($nick), $this->getAllTemplates())) {
+        if (!in_array(strtolower($nick),$this->getAllTemplates())) {
             throw new Ess_M2ePro_Model_Exception('Policy nick is out of knowledge range.');
         }
-
-        $this->_templateNick = strtolower($nick);
+        $this->templateNick = strtolower($nick);
         return $this;
     }
 
@@ -121,7 +119,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
      */
     public function isFlatTemplate()
     {
-        return in_array($this->getTemplate(), $this->getFlatTemplates());
+        return in_array($this->getTemplate(),$this->getFlatTemplates());
     }
 
     /**
@@ -143,7 +141,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
      */
     public function isHorizontalTemplate()
     {
-        return in_array($this->getTemplate(), $this->getHorizontalTemplates());
+        return in_array($this->getTemplate(),$this->getHorizontalTemplates());
     }
 
     /**
@@ -177,6 +175,30 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
             self::TEMPLATE_PAYMENT,
             self::TEMPLATE_SHIPPING,
             self::TEMPLATE_RETURN,
+        );
+    }
+
+    // ---------------------------------------
+
+    /**
+     * @return bool
+     */
+    public function isTrackingAttributesTemplate()
+    {
+        return in_array($this->getTemplate(),$this->getTrackingAttributesTemplates());
+    }
+
+    /**
+     * @return array
+     */
+    public function getTrackingAttributesTemplates()
+    {
+        return array(
+            self::TEMPLATE_RETURN,
+            self::TEMPLATE_SHIPPING,
+            self::TEMPLATE_PAYMENT,
+            self::TEMPLATE_DESCRIPTION,
+            self::TEMPLATE_SELLING_FORMAT
         );
     }
 
@@ -232,7 +254,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
     {
         $idColumnName = $this->getIdColumnNameByMode($this->getModeValue());
 
-        if ($idColumnName === null) {
+        if (is_null($idColumnName)) {
             return NULL;
         }
 
@@ -276,7 +298,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
     {
         $id = $this->getCustomIdValue();
 
-        if ($id === null) {
+        if (is_null($id)) {
             return NULL;
         }
 
@@ -287,7 +309,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
     {
         $id = $this->getTemplateIdValue();
 
-        if ($id === null) {
+        if (is_null($id)) {
             return NULL;
         }
 
@@ -296,7 +318,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
 
     // ---------------------------------------
 
-    protected function makeResultObject($id)
+    private function makeResultObject($id)
     {
         $modelName = 'Template_';
         $modelName .= $this->getTemplate() == self::TEMPLATE_SELLING_FORMAT ?
@@ -346,27 +368,27 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
 
     public function getResultObject()
     {
-        if ($this->_resultObject !== null) {
-            return $this->_resultObject;
+        if (!is_null($this->resultObject)) {
+            return $this->resultObject;
         }
 
         if ($this->isModeParent()) {
-            $this->_resultObject = $this->getParentResultObject();
+            $this->resultObject = $this->getParentResultObject();
         }
 
         if ($this->isModeCustom()) {
-            $this->_resultObject = $this->getCustomResultObject();
+            $this->resultObject = $this->getCustomResultObject();
         }
 
         if ($this->isModeTemplate()) {
-            $this->_resultObject = $this->getTemplateResultObject();
+            $this->resultObject = $this->getTemplateResultObject();
         }
 
-        if ($this->_resultObject === null) {
+        if (is_null($this->resultObject)) {
             throw new Ess_M2ePro_Model_Exception('Unable to get result object.');
         }
 
-        return $this->_resultObject;
+        return $this->resultObject;
     }
 
     //########################################
@@ -400,7 +422,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
                 break;
         }
 
-        if ($name === null) {
+        if (is_null($name)) {
             throw new Ess_M2ePro_Model_Exception_Logic(sprintf('Template nick "%s" is unknown.', $this->getTemplate()));
         }
 
@@ -433,7 +455,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
                 break;
         }
 
-        if ($model === null) {
+        if (is_null($model)) {
             throw new Ess_M2ePro_Model_Exception_Logic(sprintf('Template nick "%s" is unknown.', $this->getTemplate()));
         }
 
@@ -461,7 +483,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
                 break;
         }
 
-        if ($collection === null) {
+        if (is_null($collection)) {
             throw new Ess_M2ePro_Model_Exception_Logic(sprintf('Template nick "%s" is unknown.', $this->getTemplate()));
         }
 
@@ -493,7 +515,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
                 break;
         }
 
-        if ($model === null) {
+        if (is_null($model)) {
             throw new Ess_M2ePro_Model_Exception_Logic(sprintf('Template nick "%s" is unknown.', $this->getTemplate()));
         }
 
@@ -511,7 +533,7 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
      */
     public function getAffectedOwnerObjects($ownerObjectModel, $templateId, $asArrays = true, $columns = '*')
     {
-        /* @var $collection Mage_Core_Model_Resource_Db_Collection_Abstract */
+        /* @var $collection Mage_Core_Model_Mysql4_Collection_Abstract */
         $collection = Mage::helper('M2ePro/Component_Ebay')->getCollection($ownerObjectModel);
 
         $where = "({$this->getModeColumnName()} = " . Ess_M2ePro_Model_Ebay_Template_Manager::MODE_CUSTOM;
@@ -537,12 +559,13 @@ class Ess_M2ePro_Model_Ebay_Template_Manager
         $resultTemplates = array();
 
         foreach ($this->getAllTemplates() as $template) {
+
             $this->setTemplate($template);
 
             $templateMode = $data[$this->getModeColumnName()];
 
             if ($templateMode == self::MODE_PARENT) {
-                $listing = Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing', $data['listing_id']);
+                $listing = Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing',$data['listing_id']);
                 $templateMode = $listing->getData($this->getModeColumnName());
                 $templateId   = $listing->getData($this->getIdColumnNameByMode($templateMode));
             } else {

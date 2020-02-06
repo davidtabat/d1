@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -34,11 +34,6 @@ class Ess_M2ePro_Block_Adminhtml_Development_Info_Actual extends Mage_Adminhtml_
         // ---------------------------------------
 
         // ---------------------------------------
-        $this->coreResourceVersion = Mage::getResourceSingleton('core/resource')->getDbVersion('M2ePro_setup');
-        $this->coreResourceDataVersion = Mage::getResourceSingleton('core/resource')->getDataVersion('M2ePro_setup');
-        // ---------------------------------------
-
-        // ---------------------------------------
         $this->phpVersion = Mage::helper('M2ePro/Client')->getPhpVersion();
         $this->phpApi = Mage::helper('M2ePro/Client')->getPhpApiName();
         // ---------------------------------------
@@ -60,11 +55,10 @@ class Ess_M2ePro_Block_Adminhtml_Development_Info_Actual extends Mage_Adminhtml_
 
         $cronLastRunTime = Mage::helper('M2ePro/Module_Cron')->getLastRun();
 
-        if ($cronLastRunTime !== null) {
+        if (!is_null($cronLastRunTime)) {
             $this->cronLastRunTime = $cronLastRunTime;
-            $this->cronIsNotWorking = Mage::helper('M2ePro/Module_Cron')->isLastRunMoreThan(12, true);
+            $this->cronIsNotWorking = Mage::helper('M2ePro/Module_Cron')->isLastRunMoreThan(12,true);
         }
-
         // ---------------------------------------
 
         return parent::_beforeToHtml();

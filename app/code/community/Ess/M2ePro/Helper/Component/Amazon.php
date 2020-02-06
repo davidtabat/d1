@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -10,17 +10,11 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
 {
     const NICK  = 'amazon';
 
-    const MARKETPLACE_SYNCHRONIZATION_LOCK_ITEM_NICK = 'amazon_marketplace_synchronization';
-
     const MARKETPLACE_CA = 24;
     const MARKETPLACE_DE = 25;
     const MARKETPLACE_US = 29;
     const MARKETPLACE_JP = 27;
     const MARKETPLACE_CN = 32;
-
-    const MAX_ALLOWED_FEED_REQUESTS_PER_HOUR = 30;
-
-    const SKU_MAX_LENGTH = 40;
 
     //########################################
 
@@ -73,14 +67,14 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
     public function isObject($modelName, $value, $field = NULL)
     {
         $mode = Mage::helper('M2ePro/Component')->getComponentMode($modelName, $value, $field);
-        return $mode !== null && $mode == self::NICK;
+        return !is_null($mode) && $mode == self::NICK;
     }
 
     // ---------------------------------------
 
     public function getModel($modelName)
     {
-        return Mage::helper('M2ePro/Component')->getComponentModel(self::NICK, $modelName);
+        return Mage::helper('M2ePro/Component')->getComponentModel(self::NICK,$modelName);
     }
 
     public function getObject($modelName, $value, $field = NULL)
@@ -107,14 +101,14 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
         $marketplaceId = (int)$marketplaceId;
         $marketplaceId <= 0 && $marketplaceId = self::MARKETPLACE_US;
 
-        $domain = $this->getCachedObject('Marketplace', $marketplaceId)->getUrl();
+        $domain = $this->getCachedObject('Marketplace',$marketplaceId)->getUrl();
         $applicationName = Mage::helper('M2ePro/Component_Amazon')->getApplicationName();
 
         return 'https://sellercentral.'.
                 $domain.
                 '/gp/mws/registration/register.html?ie=UTF8&*Version*=1&*entries*=0&applicationName='.
                 rawurlencode($applicationName).'&appDevMWSAccountId='.
-                $this->getCachedObject('Marketplace', $marketplaceId)->getDeveloperKey();
+                $this->getCachedObject('Marketplace',$marketplaceId)->getDeveloperKey();
     }
 
     public function getItemUrl($productId, $marketplaceId = NULL)
@@ -122,7 +116,7 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
         $marketplaceId = (int)$marketplaceId;
         $marketplaceId <= 0 && $marketplaceId = self::MARKETPLACE_US;
 
-        $domain = $this->getCachedObject('Marketplace', $marketplaceId)->getUrl();
+        $domain = $this->getCachedObject('Marketplace',$marketplaceId)->getUrl();
 
         return 'http://'.$domain.'/gp/product/'.$productId;
     }
@@ -132,7 +126,7 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
         $marketplaceId = (int)$marketplaceId;
         $marketplaceId <= 0 && $marketplaceId = self::MARKETPLACE_US;
 
-        $domain = $this->getCachedObject('Marketplace', $marketplaceId)->getUrl();
+        $domain = $this->getCachedObject('Marketplace',$marketplaceId)->getUrl();
 
         return 'https://sellercentral.'.$domain.'/gp/orders-v2/details/?orderID='.$orderId;
     }
@@ -159,6 +153,15 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
 
     // ----------------------------------------
 
+    public function getCurrencies()
+    {
+        return array (
+            'GBP' => 'British Pound',
+            'EUR' => 'Euro',
+            'USD' => 'US Dollar',
+        );
+    }
+
     public function getCarriers()
     {
         return array(
@@ -166,19 +169,19 @@ class Ess_M2ePro_Helper_Component_Amazon extends Mage_Core_Helper_Abstract
             'ups'   => 'UPS',
             'fedex' => 'FedEx',
             'dhl'   => 'DHL',
+            'Fastway',
+            'GLS',
+            'GO!',
+            'Hermes Logistik Gruppe',
+            'Royal Mail',
+            'Parcelforce',
+            'City Link',
+            'TNT',
+            'Target',
+            'SagawaExpress',
+            'NipponExpress',
+            'YamatoTransport'
         );
-    }
-
-    public function getCarrierTitle($carrierCode, $title)
-    {
-        $carriers = $this->getCarriers();
-        $carrierCode = strtolower($carrierCode);
-
-        if (isset($carriers[$carrierCode])) {
-            return $carriers[$carrierCode];
-        }
-
-        return $title;
     }
 
     // ----------------------------------------

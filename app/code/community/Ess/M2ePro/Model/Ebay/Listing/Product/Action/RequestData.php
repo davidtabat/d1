@@ -2,39 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
-class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
+class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData extends Ess_M2ePro_Model_Ebay_Listing_Action_RequestData
 {
-    /**
-     * @var array
-     */
-    protected $_data = array();
-
     /**
      * @var Ess_M2ePro_Model_Listing_Product
      */
-    protected $_listingProduct = null;
-
-    //########################################
-
-    /**
-     * @param array $data
-     */
-    public function setData(array $data)
-    {
-        $this->_data = $data;
-    }
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->_data;
-    }
+    private $listingProduct = NULL;
 
     //########################################
 
@@ -43,7 +20,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function setListingProduct(Ess_M2ePro_Model_Listing_Product $object)
     {
-        $this->_listingProduct = $object;
+        $this->listingProduct = $object;
     }
 
     /**
@@ -51,7 +28,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     protected function getListingProduct()
     {
-        return $this->_listingProduct;
+        return $this->listingProduct;
     }
 
     //########################################
@@ -59,12 +36,38 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
     /**
      * @return bool
      */
-    public function hasQty()
+    public function isVariationItem()
     {
-        return !$this->isVariationItem() && isset($this->_data['qty']);
+        return isset($this->data['is_variation_item']) && $this->data['is_variation_item'];
     }
 
     // ---------------------------------------
+
+    /**
+     * @return bool
+     */
+    public function hasVariations()
+    {
+        return $this->isVariationItem() && isset($this->data['variation']);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasVariationsImages()
+    {
+        return $this->isVariationItem() && isset($this->data['variation_image']);
+    }
+
+    // ---------------------------------------
+
+    /**
+     * @return bool
+     */
+    public function hasQty()
+    {
+        return !$this->isVariationItem() && isset($this->data['qty']);
+    }
 
     /**
      * @return bool
@@ -87,7 +90,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasPriceFixed()
     {
-        return !$this->isVariationItem() && isset($this->_data['price_fixed']);
+        return !$this->isVariationItem() && isset($this->data['price_fixed']);
     }
 
     /**
@@ -95,7 +98,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasPriceStart()
     {
-        return !$this->isVariationItem() && isset($this->_data['price_start']);
+        return !$this->isVariationItem() && isset($this->data['price_start']);
     }
 
     /**
@@ -103,7 +106,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasPriceReserve()
     {
-        return !$this->isVariationItem() && isset($this->_data['price_reserve']);
+        return !$this->isVariationItem() && isset($this->data['price_reserve']);
     }
 
     /**
@@ -111,7 +114,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasPriceBuyItNow()
     {
-        return !$this->isVariationItem() && isset($this->_data['price_buyitnow']);
+        return !$this->isVariationItem() && isset($this->data['price_buyitnow']);
     }
 
     // ---------------------------------------
@@ -121,12 +124,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasOutOfStockControl()
     {
-        return isset($this->_data['out_of_stock_control']);
-    }
-
-    public function hasOutOfStockControlResult()
-    {
-        return isset($this->_data['out_of_stock_control_result']);
+        return isset($this->data['out_of_stock_control']);
     }
 
     // ---------------------------------------
@@ -136,7 +134,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasSku()
     {
-        return isset($this->_data['sku']);
+        return isset($this->data['sku']);
     }
 
     /**
@@ -144,43 +142,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasPrimaryCategory()
     {
-        return isset($this->_data['category_main_id']);
-    }
-
-    // ---------------------------------------
-
-    /**
-     * @return bool
-     */
-    public function hasTitle()
-    {
-        return isset($this->_data['title']);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasSubtitle()
-    {
-        return isset($this->_data['subtitle']);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasDescription()
-    {
-        return isset($this->_data['description']);
-    }
-
-    // ---------------------------------------
-
-    /**
-     * @return bool
-     */
-    public function hasDuration()
-    {
-        return isset($this->_data['duration']);
+        return isset($this->data['category_main_id']);
     }
 
     // ---------------------------------------
@@ -190,159 +152,22 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
      */
     public function hasImages()
     {
-        return isset($this->_data['images']);
-    }
-
-    // ---------------------------------------
-
-    /**
-     * @return bool
-     */
-    public function isVariationItem()
-    {
-        return isset($this->_data['is_variation_item']) && $this->_data['is_variation_item'];
-    }
-
-    // ---------------------------------------
-
-    /**
-     * @return bool
-     */
-    public function hasVariations()
-    {
-        return $this->isVariationItem() && isset($this->_data['variation']);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasVariationsImages()
-    {
-        return $this->isVariationItem() && isset($this->_data['variation_image']);
+        return isset($this->data['images']);
     }
 
     //########################################
 
-    public function getQty()
-    {
-        return $this->hasQty() ? $this->_data['qty'] : NULL;
-    }
-
-    // ---------------------------------------
-
-    public function getPriceFixed()
-    {
-        return $this->hasPriceFixed() ? $this->_data['price_fixed'] : NULL;
-    }
-
-    public function getPriceStart()
-    {
-        return $this->hasPriceStart() ? $this->_data['price_start'] : NULL;
-    }
-
-    public function getPriceReserve()
-    {
-        return $this->hasPriceReserve() ? $this->_data['price_reserve'] : NULL;
-    }
-
-    public function getPriceBuyItNow()
-    {
-        return $this->hasPriceBuyItNow() ? $this->_data['price_buyitnow'] : NULL;
-    }
-
-    // ---------------------------------------
-
-    public function getOutOfStockControl()
-    {
-        return $this->hasOutOfStockControl() ? $this->_data['out_of_stock_control'] : NULL;
-    }
-
-    public function getOutOfStockControlResult()
-    {
-        return $this->hasOutOfStockControlResult() ? $this->_data['out_of_stock_control_result'] : NULL;
-    }
-
-    // ---------------------------------------
-
-    public function getSku()
-    {
-        return $this->hasSku() ? $this->_data['sku'] : NULL;
-    }
-
-    public function getPrimaryCategory()
-    {
-        return $this->hasPrimaryCategory() ? $this->_data['category_main_id'] : NULL;
-    }
-
-    // ---------------------------------------
-
-    public function getTitle()
-    {
-        return $this->hasTitle() ? $this->_data['title'] : NULL;
-    }
-
-    public function getSubtitle()
-    {
-        return $this->hasSubtitle() ? $this->_data['subtitle'] : NULL;
-    }
-
-    public function getDescription()
-    {
-        return $this->hasDescription() ? $this->_data['description'] : NULL;
-    }
-
-    // ---------------------------------------
-
-    public function getDuration()
-    {
-        return $this->hasDuration() ? $this->_data['duration'] : NULL;
-    }
-
-    // ---------------------------------------
-
-    public function getImages()
-    {
-        return $this->hasImages() ? $this->_data['images'] : NULL;
-    }
-
-    // ---------------------------------------
-
     public function getVariations()
     {
-        return $this->hasVariations() ? $this->_data['variation'] : NULL;
+        return $this->hasVariations() ? $this->data['variation'] : NULL;
     }
 
     public function getVariationsImages()
     {
-        return $this->hasVariationsImages() ? $this->_data['variation_image'] : NULL;
+        return $this->hasVariationsImages() ? $this->data['variation_image'] : NULL;
     }
 
-    //########################################
-
-    /**
-     * @return int
-     */
-    public function getImagesCount()
-    {
-        if (!$this->hasImages()) {
-            return 0;
-        }
-
-        $images = $this->getImages();
-        $images = isset($images['images']) ? $images['images'] : array();
-
-        return count($images);
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalImagesCount()
-    {
-        return $this->getImagesCount() + $this->getVariationsImagesCount();
-    }
-
-    //########################################
+    // ---------------------------------------
 
     /**
      * @return int|null
@@ -374,15 +199,12 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
         $price = NULL;
 
         foreach ($this->getVariations() as $variationData) {
-            if ($variationData['delete'] || !isset($variationData['price'])) {
-                continue;
-            }
 
             if (!$calculateWithEmptyQty && (int)$variationData['qty'] <= 0) {
                 continue;
             }
 
-            if ($price !== null && (float)$variationData['price'] >= $price) {
+            if (!is_null($price) && (float)$variationData['price'] >= $price) {
                 continue;
             }
 
@@ -390,6 +212,66 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
         }
 
         return (float)$price;
+    }
+
+    // ---------------------------------------
+
+    public function getPriceStart()
+    {
+        return $this->hasPriceStart() ? $this->data['price_start'] : NULL;
+    }
+
+    public function getPriceReserve()
+    {
+        return $this->hasPriceReserve() ? $this->data['price_reserve'] : NULL;
+    }
+
+    public function getPriceBuyItNow()
+    {
+        return $this->hasPriceBuyItNow() ? $this->data['price_buyitnow'] : NULL;
+    }
+
+    // ---------------------------------------
+
+    public function getOutOfStockControl()
+    {
+        return $this->hasOutOfStockControl() ? $this->data['out_of_stock_control'] : NULL;
+    }
+
+    // ---------------------------------------
+
+    public function getSku()
+    {
+        return $this->hasSku() ? $this->data['sku'] : NULL;
+    }
+
+    public function getPrimaryCategory()
+    {
+        return $this->hasPrimaryCategory() ? $this->data['category_main_id'] : NULL;
+    }
+
+    // ---------------------------------------
+
+    public function getImages()
+    {
+        return $this->hasImages() ? $this->data['images'] : NULL;
+    }
+
+    //########################################
+
+    /**
+     * @return int
+     */
+    public function getImagesCount()
+    {
+        if (!$this->hasImages()) {
+            return 0;
+        }
+
+        $images = $this->getImages();
+        $images = isset($images['images']) ? $images['images'] : array();
+
+        return count($images);
     }
 
     /**
@@ -405,6 +287,14 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_RequestData
         $images = isset($images['images']) ? $images['images'] : array();
 
         return count($images);
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalImagesCount()
+    {
+        return $this->getImagesCount() + $this->getVariationsImagesCount();
     }
 
     //########################################

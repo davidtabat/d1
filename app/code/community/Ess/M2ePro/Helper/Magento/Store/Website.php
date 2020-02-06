@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Helper_Magento_Store_Website
 {
-    protected $_defaultWebsite = null;
+    private $defaultWebsite = NULL;
 
     //########################################
 
@@ -31,21 +31,21 @@ class Ess_M2ePro_Helper_Magento_Store_Website
 
     public function getDefault()
     {
-        if ($this->_defaultWebsite !== null) {
-            return $this->_defaultWebsite;
+        if (!is_null($this->defaultWebsite)) {
+            return $this->defaultWebsite;
         }
 
-        $this->_defaultWebsite = Mage::getModel('core/website')->load(1, 'is_default');
+        $this->defaultWebsite = Mage::getModel('core/website')->load(1,'is_default');
 
-        if ($this->_defaultWebsite->getId() === null) {
-            $this->_defaultWebsite = Mage::getModel('core/website')->load(0);
+        if (is_null($this->defaultWebsite->getId())) {
+            $this->defaultWebsite = Mage::getModel('core/website')->load(0);
 
-            if ($this->_defaultWebsite->getId() === null) {
+            if (is_null($this->defaultWebsite->getId())) {
                 throw new Ess_M2ePro_Model_Exception('Getting default website is failed');
             }
         }
 
-        return $this->_defaultWebsite;
+        return $this->defaultWebsite;
     }
 
     public function getDefaultId()

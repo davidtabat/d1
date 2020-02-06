@@ -2,32 +2,32 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Tree
     extends Mage_Adminhtml_Block_Catalog_Category_Abstract
 {
-    protected $_selectedIds = array();
+    protected $selectedIds = array();
 
-    /** @var string */
-    protected $_gridId = null;
+    /* @var string */
+    protected $gridId = NULL;
 
-    /** @var Varien_Data_Tree_Node */
-    protected $_currentNode = null;
+    /* @var Varien_Data_Tree_Node */
+    protected $currentNode = NULL;
 
     //########################################
 
     public function setSelectedIds(array $ids)
     {
-        $this->_selectedIds = $ids;
+        $this->selectedIds = $ids;
         return $this;
     }
 
     public function getSelectedIds()
     {
-        return $this->_selectedIds;
+        return $this->selectedIds;
     }
 
     public function setCurrentNodeById($categoryId)
@@ -39,31 +39,31 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Tree
 
     public function setCurrentNode(Varien_Data_Tree_Node $currentNode)
     {
-        $this->_currentNode = $currentNode;
+        $this->currentNode = $currentNode;
         return $this;
     }
 
     public function getCurrentNode()
     {
-        return $this->_currentNode;
+        return $this->currentNode;
     }
 
     public function getCurrentNodeId()
     {
-        return $this->_currentNode ? $this->_currentNode->getId() : NULL;
+        return $this->currentNode ? $this->currentNode->getId() : NULL;
     }
 
     //########################################
 
     public function setGridId($gridId)
     {
-        $this->_gridId = $gridId;
+        $this->gridId = $gridId;
         return $this;
     }
 
     public function getGridId()
     {
-        return $this->_gridId;
+        return $this->gridId;
     }
 
     //########################################
@@ -142,6 +142,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceCategories_Tree
         }
 
         if ($node->hasChildren()) {
+
             $item['children'] = array();
 
             if (!($node->getLevel() > 1 && !$isParent)) {
@@ -193,18 +194,15 @@ HTML;
 
     public function getAffectedCategoriesCount()
     {
-        if ($this->getData('affected_categories_count') !== null) {
+        if (!is_null($this->getData('affected_categories_count'))) {
             return $this->getData('affected_categories_count');
         }
 
         $dbSelect = Mage::getResourceModel('core/config')->getReadConnection()
                              ->select()
-                            ->from(
-                                Mage::helper('M2ePro/Module_Database_Structure')
-                                     ->getTableNameWithPrefix('catalog/category_product'),
-                                'category_id'
-                            )
-                             ->where('`product_id` IN(?)', $this->getSelectedIds());
+                             ->from(Mage::getSingleton('core/resource')->getTableName('catalog/category_product'),
+                                    'category_id')
+                             ->where('`product_id` IN(?)',$this->getSelectedIds());
 
         $affectedCategoriesCount = Mage::getModel('catalog/category')->getCollection()
             ->getSelectCountSql()
@@ -221,18 +219,18 @@ HTML;
 
     public function getProductsForEachCategory()
     {
-        if ($this->getData('products_for_each_category') !== null) {
+        if (!is_null($this->getData('products_for_each_category'))) {
             return $this->getData('products_for_each_category');
         }
 
-        $ids = array_map('intval', $this->_selectedIds);
-        $ids = implode(',', $ids);
+        $ids = array_map('intval',$this->selectedIds);
+        $ids = implode(',',$ids);
         !$ids && $ids = 0;
 
-        /** @var $select Varien_Db_Select */
+        /* @var $select Varien_Db_Select */
         $select = Mage::getModel('catalog/category')->getCollection()->getSelect();
         $select->joinLeft(
-            Mage::helper('M2ePro/Module_Database_Structure')->getTableNameWithPrefix('catalog/category_product'),
+            Mage::getSingleton('core/resource')->getTableName('catalog/category_product'),
             "entity_id = category_id AND product_id IN ({$ids})",
             array('product_id')
         );
@@ -242,7 +240,6 @@ HTML;
             if (!isset($productsForEachCategory[$row['entity_id']])) {
                 $productsForEachCategory[$row['entity_id']] = array();
             }
-
             $row['product_id'] && $productsForEachCategory[$row['entity_id']][] = $row['product_id'];
         }
 
@@ -253,12 +250,12 @@ HTML;
 
     public function getProductsCountForEachCategory()
     {
-        if ($this->getData('products_count_for_each_category') !== null) {
+        if (!is_null($this->getData('products_count_for_each_category'))) {
             return $this->getData('products_count_for_each_category');
         }
 
         $productsCountForEachCategory = $this->getProductsForEachCategory();
-        $productsCountForEachCategory = array_map('count', $productsCountForEachCategory);
+        $productsCountForEachCategory = array_map('count',$productsCountForEachCategory);
 
         $this->setData('products_count_for_each_category', $productsCountForEachCategory);
 
@@ -269,13 +266,11 @@ HTML;
 
     public function getInfoJson()
     {
-        return Mage::helper('M2ePro')->jsonEncode(
-            array(
+        return json_encode(array(
             'category_products' => $this->getProductsCountForEachCategory(),
             'total_products_count' => count($this->getSelectedIds()),
             'total_categories_count' => $this->getAffectedCategoriesCount()
-            )
-        );
+        ));
     }
 
     //########################################
@@ -289,24 +284,24 @@ HTML;
         }
 
         $listing = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
-            'Listing', $this->getRequest()->getParam('listing_id')
+            'Listing',$this->getRequest()->getParam('listing_id')
         );
 
         $readConnection = Mage::getSingleton('core/resource')->getConnection('core_read');
 
         // ---------------------------------------
         $excludeProductsSelect = $readConnection->select()->from(
-            Mage::getResourceModel('M2ePro/Listing_Product')->getMainTable(),
-            new Zend_Db_Expr('DISTINCT `product_id`')
+                Mage::getResourceModel('M2ePro/Listing_Product')->getMainTable(),
+                new Zend_Db_Expr('DISTINCT `product_id`')
         );
 
-        $excludeProductsSelect->where('`listing_id` = ?', (int)$listing['id']);
+        $excludeProductsSelect->where('`listing_id` = ?',(int)$listing['id']);
 
         $select = $readConnection->select();
         $select->from(
-            array('main_table' => $collection->getTable('catalog/category_product')),
-            array('category_id', new Zend_Db_Expr('COUNT(main_table.product_id)'))
-        )
+                array('main_table' => $collection->getTable('catalog/category_product')),
+                array('category_id', new Zend_Db_Expr('COUNT(main_table.product_id)'))
+            )
             ->where($readConnection->quoteInto('main_table.category_id IN(?)', array_keys($items)))
             ->where('main_table.product_id NOT IN ('.$excludeProductsSelect.')')
             ->group('main_table.category_id');

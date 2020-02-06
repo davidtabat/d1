@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -79,9 +79,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_Template_Edit extends Mage
 
         // initiate template switcher url
         // ---------------------------------------
-        $html .= Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher::getSwitcherUrlHtml(
-            Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher::MODE_LISTING_PRODUCT
-        );
+        $html .= Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Template_Switcher::getSwitcherUrlHtml();
         // ---------------------------------------
 
         // ---------------------------------------
@@ -101,7 +99,6 @@ HTML;
 </script>
 HTML;
         }
-
         // ---------------------------------------
 
         return $html . $tabs->toHtml() . parent::getFormHtml();

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -16,8 +16,8 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
     // Product for Amazon Item "%id%" was Created in Magento Catalog.
     // Product for Amazon Item "%title%" was Created in Magento Catalog.
 
-    /** @var $_channelItem Ess_M2ePro_Model_Amazon_Item */
-    protected $_channelItem = null;
+    /** @var $channelItem Ess_M2ePro_Model_Amazon_Item */
+    private $channelItem = NULL;
 
     //########################################
 
@@ -59,16 +59,16 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
      */
     public function getChannelItem()
     {
-        if ($this->_channelItem === null) {
-            $this->_channelItem = Mage::getModel('M2ePro/Amazon_Item')->getCollection()
-                 ->addFieldToFilter('account_id', $this->getParentObject()->getOrder()->getAccountId())
-                 ->addFieldToFilter('marketplace_id', $this->getParentObject()->getOrder()->getMarketplaceId())
-                 ->addFieldToFilter('sku', $this->getSku())
-                 ->setOrder('create_date', Varien_Data_Collection::SORT_ORDER_DESC)
-                 ->getFirstItem();
+        if (is_null($this->channelItem)) {
+            $this->channelItem = Mage::getModel('M2ePro/Amazon_Item')->getCollection()
+                ->addFieldToFilter('account_id', $this->getParentObject()->getOrder()->getAccountId())
+                ->addFieldToFilter('marketplace_id', $this->getParentObject()->getOrder()->getMarketplaceId())
+                ->addFieldToFilter('sku', $this->getSku())
+                ->setOrder('create_date', Varien_Data_Collection::SORT_ORDER_DESC)
+                ->getFirstItem();
         }
 
-        return $this->_channelItem->getId() !== null ? $this->_channelItem : null;
+        return !is_null($this->channelItem->getId()) ? $this->channelItem : NULL;
     }
 
     //########################################
@@ -192,7 +192,7 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
     {
         $channelItem = $this->getChannelItem();
 
-        if ($channelItem === null) {
+        if (is_null($channelItem)) {
             return array();
         }
 
@@ -206,7 +206,7 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
     {
         $channelItem = $this->getChannelItem();
 
-        if ($channelItem === null) {
+        if (is_null($channelItem)) {
             return array();
         }
 
@@ -222,44 +222,14 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
     {
         // Item was listed by M2E
         // ---------------------------------------
-        if ($this->getChannelItem() !== null) {
+        if (!is_null($this->getChannelItem())) {
             return $this->getAmazonAccount()->isMagentoOrdersListingsStoreCustom()
                 ? $this->getAmazonAccount()->getMagentoOrdersListingsStoreId()
                 : $this->getChannelItem()->getStoreId();
         }
-
         // ---------------------------------------
 
         return $this->getAmazonAccount()->getMagentoOrdersListingsOtherStoreId();
-    }
-
-    //########################################
-
-    public function canCreateMagentoOrder()
-    {
-        return $this->isOrdersCreationEnabled();
-    }
-
-    public function isReservable()
-    {
-        return $this->isOrdersCreationEnabled();
-    }
-
-    // ---------------------------------------
-
-    protected function isOrdersCreationEnabled()
-    {
-        $channelItem = $this->getChannelItem();
-
-        if ($channelItem !== null && !$this->getAmazonAccount()->isMagentoOrdersListingsModeEnabled()) {
-            return false;
-        }
-
-        if ($channelItem === null && !$this->getAmazonAccount()->isMagentoOrdersListingsOtherModeEnabled()) {
-            return false;
-        }
-
-        return true;
     }
 
     //########################################
@@ -270,12 +240,13 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
      */
     public function getAssociatedProductId()
     {
+        $this->validate();
+
         // Item was listed by M2E
         // ---------------------------------------
-        if ($this->getChannelItem() !== null) {
+        if (!is_null($this->getChannelItem())) {
             return $this->getChannelItem()->getProductId();
         }
-
         // ---------------------------------------
 
         // 3rd party Item
@@ -290,36 +261,51 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
                     ->getFirstItem();
 
             if ($product->getId()) {
-                Mage::dispatchEvent(
-                    'm2epro_associate_amazon_order_item_to_product', array(
+                Mage::dispatchEvent('m2epro_associate_amazon_order_item_to_product', array(
                     'product'    => $product,
                     'order_item' => $this->getParentObject(),
-                    )
-                );
+                ));
 
                 return $product->getId();
             }
         }
-
         // ---------------------------------------
 
         $product = $this->createProduct();
 
-        Mage::dispatchEvent(
-            'm2epro_associate_amazon_order_item_to_product', array(
+        Mage::dispatchEvent('m2epro_associate_amazon_order_item_to_product', array(
             'product'    => $product,
             'order_item' => $this->getParentObject(),
-            )
-        );
+        ));
 
         return $product->getId();
+    }
+
+    /**
+     * @throws Ess_M2ePro_Model_Exception
+     */
+    private function validate()
+    {
+        $channelItem = $this->getChannelItem();
+
+        if (!is_null($channelItem) && !$this->getAmazonAccount()->isMagentoOrdersListingsModeEnabled()) {
+            throw new Ess_M2ePro_Model_Exception(
+                'Magento Order Creation for Items Listed by M2E Pro is disabled in Account Settings.'
+            );
+        }
+
+        if (is_null($channelItem) && !$this->getAmazonAccount()->isMagentoOrdersListingsOtherModeEnabled()) {
+            throw new Ess_M2ePro_Model_Exception(
+                'Magento Order Creation for Items Listed by 3rd party software is disabled in Account Settings.'
+            );
+        }
     }
 
     /**
      * @return Mage_Catalog_Model_Product
      * @throws Ess_M2ePro_Model_Exception
      */
-    protected function createProduct()
+    private function createProduct()
     {
         if (!$this->getAmazonAccount()->isMagentoOrdersListingsOtherProductImportEnabled()) {
             throw new Ess_M2ePro_Model_Exception('Product Import is disabled in Amazon Account Settings.');
@@ -372,7 +358,7 @@ class Ess_M2ePro_Model_Amazon_Order_Item extends Ess_M2ePro_Model_Component_Chil
         return $productBuilder->getProduct();
     }
 
-    protected function getQtyForNewProduct()
+    private function getQtyForNewProduct()
     {
         $otherListing = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Other')
             ->addFieldToFilter('account_id', $this->getParentObject()->getOrder()->getAccountId())

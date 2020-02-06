@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Listing_AutoAction_Mode_Global extends Mage_Adminhtml_Block_Widget_Form
 {
-    protected $_listing;
+    protected $listing;
 
     //########################################
 
@@ -28,14 +28,12 @@ class Ess_M2ePro_Block_Adminhtml_Listing_AutoAction_Mode_Global extends Mage_Adm
 
     protected function _prepareForm()
     {
-        $form = new Varien_Data_Form(
-            array(
+        $form = new Varien_Data_Form(array(
             'id'      => 'edit_form',
             'action'  => $this->getUrl('*/*/save'),
             'method'  => 'post',
             'enctype' => 'multipart/form-data'
-            )
-        );
+        ));
 
         $form->setUseContainer(true);
         $this->setForm($form);
@@ -72,12 +70,12 @@ class Ess_M2ePro_Block_Adminhtml_Listing_AutoAction_Mode_Global extends Mage_Adm
      */
     public function getListing()
     {
-        if ($this->_listing === null) {
-            $listingId      = $this->getRequest()->getParam('listing_id');
-            $this->_listing = Mage::helper('M2ePro/Component')->getCachedUnknownObject('Listing', $listingId);
+        if (is_null($this->listing)) {
+            $listingId = $this->getRequest()->getParam('listing_id');
+            $this->listing = Mage::helper('M2ePro/Component')->getCachedUnknownObject('Listing', $listingId);
         }
 
-        return $this->_listing;
+        return $this->listing;
     }
 
     //########################################

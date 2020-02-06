@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -18,7 +18,7 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
     public function getVersion($asArray = false)
     {
         $versionString = Mage::getVersion();
-        return $asArray ? explode('.', $versionString) : $versionString;
+        return $asArray ? explode('.',$versionString) : $versionString;
     }
 
     public function getRevision()
@@ -30,10 +30,12 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
 
     public function getEditionName()
     {
+        if ($this->isProfessionalEdition()) {
+            return 'professional';
+        }
         if ($this->isEnterpriseEdition()) {
             return 'enterprise';
         }
-
         if ($this->isCommunityEdition()) {
             return 'community';
         }
@@ -42,6 +44,14 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
     }
 
     // ---------------------------------------
+
+    public function isProfessionalEdition()
+    {
+        return Mage::getConfig()->getModuleConfig('Enterprise_Enterprise') &&
+               !Mage::getConfig()->getModuleConfig('Enterprise_AdminGws') &&
+               !Mage::getConfig()->getModuleConfig('Enterprise_Checkout') &&
+               !Mage::getConfig()->getModuleConfig('Enterprise_Customer');
+    }
 
     public function isEnterpriseEdition()
     {
@@ -53,7 +63,8 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
 
     public function isCommunityEdition()
     {
-        return !$this->isEnterpriseEdition();
+        return !$this->isProfessionalEdition() &&
+               !$this->isEnterpriseEdition();
     }
 
     //########################################
@@ -121,6 +132,7 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
 
         $result = array();
         foreach ($conflictedModules as $expression=>$description) {
+
             foreach ($modules as $module => $data) {
                 if (preg_match($expression, $module)) {
                     $result[$module] = array_merge($data, array('description'=>$description));
@@ -136,7 +148,6 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
         if ($this->isCommunityEdition()) {
             return version_compare($this->getVersion(false), '1.4.0.0', '>=');
         }
-
         return true;
     }
 
@@ -157,7 +168,6 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
         if (!$this->isSecretKeyToUrl()) {
             return '';
         }
-
         return Mage::getSingleton('adminhtml/url')->getSecretKey();
     }
 
@@ -175,19 +185,19 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
         $minDateTime = Mage::helper('M2ePro')->getDate($minDateTime->format('U'));
 
         $collection = Mage::getModel('cron/schedule')->getCollection();
-        $collection->addFieldToFilter('executed_at', array('gt'=>$minDateTime));
+        $collection->addFieldToFilter('executed_at',array('gt'=>$minDateTime));
 
         return $collection->getSize() > 0;
     }
 
     public function getBaseUrl()
     {
-        return str_replace('index.php/', '', Mage::getBaseUrl());
+        return str_replace('index.php/','',Mage::getBaseUrl());
     }
 
     public function getLocale()
     {
-        $localeComponents = explode('_', Mage::app()->getLocale()->getLocale());
+        $localeComponents = explode('_' , Mage::app()->getLocale()->getLocale());
         return strtolower($localeComponents[0]);
     }
 
@@ -226,50 +236,20 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
         return $sortedCountries;
     }
 
-    public function getRegionsByCountryCode($countryCode)
+    public function addGlobalNotification($title,
+                                          $description,
+                                          $type = Mage_AdminNotification_Model_Inbox::SEVERITY_CRITICAL,
+                                          $url = NULL)
     {
-        $result = array();
+        $dataForAdd = array(
+            'title' => $title,
+            'description' => $description,
+            'url' => !is_null($url) ? $url : 'http://m2epro.com/?'.sha1($title),
+            'severity' => $type,
+            'date_added' => now()
+        );
 
-        try {
-            $country = Mage::getModel('directory/country')->loadByCode($countryCode);
-        } catch (Mage_Core_Exception $e) {
-            return $result;
-        }
-
-        if (!$country->getId()) {
-            return $result;
-        }
-
-        $result = array();
-        foreach ($country->getRegions() as $region) {
-            $region->setName($region->getName());
-            $result[] = $region->toArray(array('region_id', 'code', 'name'));
-        }
-
-        if (empty($result) && $countryCode == 'AU') {
-            $result = array(
-                array('region_id' => '','code' => 'NSW','name' => 'New South Wales'),
-                array('region_id' => '','code' => 'QLD','name' => 'Queensland'),
-                array('region_id' => '','code' => 'SA','name' => 'South Australia'),
-                array('region_id' => '','code' => 'TAS','name' => 'Tasmania'),
-                array('region_id' => '','code' => 'VIC','name' => 'Victoria'),
-                array('region_id' => '','code' => 'WA','name' => 'Western Australia'),
-            );
-        } else if (empty($result) && $countryCode == 'GB') {
-            $result = array(
-                array('region_id' => '','code' => 'UKH','name' => 'East of England'),
-                array('region_id' => '','code' => 'UKF','name' => 'East Midlands'),
-                array('region_id' => '','code' => 'UKI','name' => 'London'),
-                array('region_id' => '','code' => 'UKC','name' => 'North East'),
-                array('region_id' => '','code' => 'UKD','name' => 'North West'),
-                array('region_id' => '','code' => 'UKJ','name' => 'South East'),
-                array('region_id' => '','code' => 'UKK','name' => 'South West'),
-                array('region_id' => '','code' => 'UKG','name' => 'West Midlands'),
-                array('region_id' => '','code' => 'UKE','name' => 'Yorkshire and the Humber'),
-            );
-        }
-
-        return $result;
+        Mage::getModel('adminnotification/inbox')->parse(array($dataForAdd));
     }
 
     //########################################
@@ -318,6 +298,7 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
 
         $overwrites = array();
         foreach ($paths as $path) {
+
             if (!is_dir($path)) {
                 continue;
             }
@@ -339,7 +320,7 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
         return $result;
     }
 
-    protected function isOriginalFileExists($overwritedFilename)
+    private function isOriginalFileExists($overwritedFilename)
     {
         $unixFormattedPath = str_replace('\\', '/', $overwritedFilename);
 
@@ -367,6 +348,7 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
     {
         $eventObservers = array();
         foreach ($this->getAreas() as $area) {
+
             $areaNode = Mage::getConfig()->getNode($area);
             if (empty($areaNode)) {
                 continue;
@@ -379,6 +361,7 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
 
             foreach ($areaEvents->asArray() as $eventName => $eventData) {
                 foreach ($eventData['observers'] as $observerConfig) {
+
                     $observerName = '#class#::#method#';
 
                     if (!empty($observerConfig['class'])) {
@@ -462,6 +445,20 @@ class Ess_M2ePro_Helper_Magento extends Mage_Core_Helper_Abstract
     public function clearCache()
     {
         Mage::app()->getCache()->clean(Zend_Cache::CLEANING_MODE_ALL);
+    }
+
+    //########################################
+
+    public function shouldBeSecure($store = NULL, $area = Mage_Core_Model_App_Area::AREA_FRONTEND)
+    {
+        if (($area == Mage_Core_Model_App_Area::AREA_FRONTEND && !Mage::app()->getStore($store)->isFrontUrlSecure()) ||
+            ($area == Mage_Core_Model_App_Area::AREA_ADMIN    && !Mage::app()->getStore($store)->isAdminUrlSecure()) ||
+            !Mage::getStoreConfigFlag(Mage_Core_Model_Store::XML_PATH_SECURE_BASE_URL, $store))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     //########################################

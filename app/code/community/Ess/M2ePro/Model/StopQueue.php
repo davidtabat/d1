@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -18,19 +18,39 @@ class Ess_M2ePro_Model_StopQueue extends Ess_M2ePro_Model_Abstract
 
     //########################################
 
+    public function getItemData()
+    {
+        return $this->getData('item_data');
+    }
+
+    public function getDecodedItemData()
+    {
+        return json_decode($this->getItemData(),true);
+    }
+
+    // ---------------------------------------
+
+    public function getAccountHash()
+    {
+        return $this->getData('account_hash');
+    }
+
+    public function getMarketplaceId()
+    {
+        return $this->getData('marketplace_id');
+    }
+
     public function getComponentMode()
     {
         return $this->getData('component_mode');
     }
 
+    /**
+     * @return bool
+     */
     public function isProcessed()
     {
         return (bool)$this->getData('is_processed');
-    }
-
-    public function getAdditionalData()
-    {
-        return $this->getSettings('additional_data');
     }
 
     //########################################
@@ -46,19 +66,21 @@ class Ess_M2ePro_Model_StopQueue extends Ess_M2ePro_Model_Abstract
             return false;
         }
 
-        $requestData = $this->getRequestData($listingProduct);
-        if (empty($requestData)) {
+        $itemData = $this->getItemDataByListingProduct($listingProduct);
+
+        if (is_null($itemData)) {
             return false;
         }
 
-        $additionalData = array(
-            'request_data' => $requestData,
-        );
+        $marketplaceNativeId = $listingProduct->isComponentModeEbay() ?
+                                        $listingProduct->getMarketplace()->getNativeId() : NULL;
 
         $addedData = array(
-            'component_mode'  => $listingProduct->getComponentMode(),
-            'is_processed'    => 0,
-            'additional_data' => Mage::helper('M2ePro')->jsonEncode($additionalData),
+            'item_data' => json_encode($itemData),
+            'account_hash' => $listingProduct->getAccount()->getChildObject()->getServerHash(),
+            'marketplace_id' => $marketplaceNativeId,
+            'component_mode' => $listingProduct->getComponentMode(),
+            'is_processed' => 0
         );
 
         Mage::getModel('M2ePro/StopQueue')->setData($addedData)->save();
@@ -66,36 +88,29 @@ class Ess_M2ePro_Model_StopQueue extends Ess_M2ePro_Model_Abstract
         return true;
     }
 
-    // ---------------------------------------
-
-    protected function getRequestData(Ess_M2ePro_Model_Listing_Product $listingProduct)
+    private function getItemDataByListingProduct(Ess_M2ePro_Model_Listing_Product $listingProduct)
     {
-        $data = array();
+        $connectorClassName = 'Ess_M2ePro_Model_Connector_'.ucfirst($listingProduct->getComponentMode()).'_';
+        $connectorClassName .= $listingProduct->isComponentModeEbay() ? 'Item' : 'Product';
+        $connectorClassName .= '_Stop_Multiple'.($listingProduct->isComponentModeEbay() ? '' : 'Requester');
 
-        if ($listingProduct->isComponentModeEbay()) {
-            /** @var Ess_M2ePro_Model_Ebay_Listing_Product $ebayListingProduct */
-            $ebayListingProduct = $listingProduct->getChildObject();
-            $ebayAccount        = $ebayListingProduct->getEbayAccount();
+        $connectorParams = array(
+            'logs_action_id' => 0,
+            'status_changer' => Ess_M2ePro_Model_Listing_Product::STATUS_CHANGER_UNKNOWN,
+        );
 
-            $data = array(
-                'account'     => $ebayAccount->getServerHash(),
-                'marketplace' => $ebayListingProduct->getMarketplace()->getNativeId(),
-                'item_id'     => $ebayListingProduct->getEbayItem()->getItemId(),
-            );
+        try {
+            $connector = new $connectorClassName($connectorParams, array($listingProduct));
+            $itemData = $connector->getRequestDataPackage();
+        } catch (Exception $exception) {
+            return NULL;
         }
 
-        if ($listingProduct->isComponentModeAmazon()) {
-            /** @var Ess_M2ePro_Model_Amazon_Listing_Product $amazonListingProduct */
-            $amazonListingProduct = $listingProduct->getChildObject();
-            $amazonAccount        = $amazonListingProduct->getAmazonAccount();
-
-            $data = array(
-                'account' => $amazonAccount->getServerHash(),
-                'sku'     => $amazonListingProduct->getSku(),
-            );
+        if (!isset($itemData['data']['items'])) {
+            return NULL;
         }
 
-        return $data;
+        return array_shift($itemData['data']['items']);
     }
 
     //########################################

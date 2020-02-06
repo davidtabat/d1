@@ -2,20 +2,20 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
 {
-    /** @var $_quote Mage_Sales_Model_Quote */
-    protected $_quote = null;
+    /** @var $quote Mage_Sales_Model_Quote */
+    private $quote = NULL;
 
     /** @var $proxy Ess_M2ePro_Model_Order_Proxy */
-    protected $_proxyOrder = null;
+    private $proxyOrder = NULL;
 
-    /** @var $_taxConfig Mage_Tax_Model_Config */
-    protected $_taxConfig = null;
+    /** @var $taxConfig Mage_Tax_Model_Config */
+    private $taxConfig = NULL;
 
     //########################################
 
@@ -26,9 +26,9 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
         Mage::unregister('_resource_singleton/tax/calculation');
         Mage::unregister('_singleton/sales/quote_address_total_collector');
 
-        $this->_quote      = $quote;
-        $this->_proxyOrder = $proxyOrder;
-        $this->_taxConfig  = Mage::getSingleton('tax/config');
+        $this->quote      = $quote;
+        $this->proxyOrder = $proxyOrder;
+        $this->taxConfig  = Mage::getSingleton('tax/config');
     }
 
     //########################################
@@ -66,31 +66,29 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
         // catalog prices
         // ---------------------------------------
         // reset flag, use store config instead
-        $this->_taxConfig->setNeedUsePriceExcludeTax(false);
+        $this->taxConfig->setNeedUsePriceExcludeTax(false);
         $this->setStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_PRICE_INCLUDES_TAX, $this->isPriceIncludesTax());
         // ---------------------------------------
 
         // shipping prices
         // ---------------------------------------
         $isShippingPriceIncludesTax = $this->isShippingPriceIncludesTax();
-        if (method_exists($this->_taxConfig, 'setShippingPriceIncludeTax')) {
-            $this->_taxConfig->setShippingPriceIncludeTax($isShippingPriceIncludesTax);
+        if (method_exists($this->taxConfig, 'setShippingPriceIncludeTax')) {
+            $this->taxConfig->setShippingPriceIncludeTax($isShippingPriceIncludesTax);
         } else {
             $this->setStoreConfig(
                 Mage_Tax_Model_Config::CONFIG_XML_PATH_SHIPPING_INCLUDES_TAX, $isShippingPriceIncludesTax
             );
         }
-
         // ---------------------------------------
 
         // Fixed Product Tax settings
         // ---------------------------------------
-        if ($this->_proxyOrder->isTaxModeChannel() ||
-            ($this->_proxyOrder->isTaxModeMixed() && $this->_proxyOrder->hasTax())
+        if ($this->proxyOrder->isTaxModeChannel() ||
+            ($this->proxyOrder->isTaxModeMixed() && $this->proxyOrder->hasTax())
         ) {
             $this->setStoreConfig(Mage_Weee_Helper_Data::XML_PATH_FPT_ENABLED, false);
         }
-
         // ---------------------------------------
 
         // store origin address
@@ -115,19 +113,19 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
 
     //########################################
 
-    public function isPriceIncludesTax()
+    private function isPriceIncludesTax()
     {
-        if ($this->_proxyOrder->isProductPriceIncludeTax() !== null) {
-            return $this->_proxyOrder->isProductPriceIncludeTax();
+        if (!is_null($this->proxyOrder->isProductPriceIncludeTax())) {
+            return $this->proxyOrder->isProductPriceIncludeTax();
         }
 
         return (bool)$this->getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_PRICE_INCLUDES_TAX);
     }
 
-    public function isShippingPriceIncludesTax()
+    private function isShippingPriceIncludesTax()
     {
-        if ($this->_proxyOrder->isShippingPriceIncludeTax() !== null) {
-            return $this->_proxyOrder->isShippingPriceIncludeTax();
+        if (!is_null($this->proxyOrder->isShippingPriceIncludeTax())) {
+            return $this->proxyOrder->isShippingPriceIncludeTax();
         }
 
         return (bool)$this->getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_SHIPPING_INCLUDES_TAX);
@@ -135,11 +133,11 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
 
     //########################################
 
-    public function getShippingTaxClassId()
+    private function getShippingTaxClassId()
     {
-        $proxyOrder = $this->_proxyOrder;
+        $proxyOrder = $this->proxyOrder;
         $hasRatesForCountry = Mage::getSingleton('M2ePro/Magento_Tax_Helper')
-            ->hasRatesForCountry($this->_quote->getShippingAddress()->getCountryId());
+            ->hasRatesForCountry($this->quote->getShippingAddress()->getCountryId());
         $storeShippingTaxRate = Mage::getSingleton('M2ePro/Magento_Tax_Helper')
             ->getStoreShippingTaxRate($this->getStore());
         $calculationBasedOnOrigin = Mage::getSingleton('M2ePro/Magento_Tax_Helper')
@@ -160,17 +158,17 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
             || $proxyOrder->getShippingPriceTaxRate() <= 0
             || $shippingPriceTaxRate == $storeShippingTaxRate
         ) {
-            return $this->_taxConfig->getShippingTaxClass($this->getStore());
+            return $this->taxConfig->getShippingTaxClass($this->getStore());
         }
 
         // Create tax rule according to channel tax rate
         // ---------------------------------------
         /** @var $taxRuleBuilder Ess_M2ePro_Model_Magento_Tax_Rule_Builder */
         $taxRuleBuilder = Mage::getModel('M2ePro/Magento_Tax_Rule_Builder');
-        $taxRuleBuilder->buildShippingTaxRule(
+        $taxRuleBuilder->buildTaxRule(
             $shippingPriceTaxRate,
-            $this->_quote->getShippingAddress()->getCountryId(),
-            $this->_quote->getCustomerTaxClassId()
+            $this->quote->getShippingAddress()->getCountryId(),
+            $this->quote->getCustomerTaxClassId()
         );
 
         $taxRule = $taxRuleBuilder->getRule();
@@ -182,81 +180,81 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
 
     //########################################
 
-    protected function getOriginCountryId()
+    private function getOriginCountryId()
     {
         $originCountryId = $this->getStoreConfig($this->getOriginCountryIdXmlPath());
 
-        if ($this->_proxyOrder->isTaxModeMagento()) {
+        if ($this->proxyOrder->isTaxModeMagento()) {
             return $originCountryId;
         }
 
-        if ($this->_proxyOrder->isTaxModeMixed() && !$this->_proxyOrder->hasTax()) {
+        if ($this->proxyOrder->isTaxModeMixed() && !$this->proxyOrder->hasTax()) {
             return $originCountryId;
         }
 
-        if ($this->_proxyOrder->isTaxModeNone()
-            || ($this->_proxyOrder->isTaxModeChannel() && !$this->_proxyOrder->hasTax())
+        if ($this->proxyOrder->isTaxModeNone()
+            || ($this->proxyOrder->isTaxModeChannel() && !$this->proxyOrder->hasTax())
         ) {
             return '';
         }
 
-        return $this->_quote->getShippingAddress()->getCountryId();
+        return $this->quote->getShippingAddress()->getCountryId();
     }
 
-    protected function getOriginRegionId()
+    private function getOriginRegionId()
     {
         $originRegionId = $this->getStoreConfig($this->getOriginRegionIdXmlPath());
 
-        if ($this->_proxyOrder->isTaxModeMagento()) {
+        if ($this->proxyOrder->isTaxModeMagento()) {
             return $originRegionId;
         }
 
-        if ($this->_proxyOrder->isTaxModeMixed() && !$this->_proxyOrder->hasTax()) {
+        if ($this->proxyOrder->isTaxModeMixed() && !$this->proxyOrder->hasTax()) {
             return $originRegionId;
         }
 
-        if ($this->_proxyOrder->isTaxModeNone()
-            || ($this->_proxyOrder->isTaxModeChannel() && !$this->_proxyOrder->hasTax())
+        if ($this->proxyOrder->isTaxModeNone()
+            || ($this->proxyOrder->isTaxModeChannel() && !$this->proxyOrder->hasTax())
         ) {
             return '';
         }
 
-        return $this->_quote->getShippingAddress()->getRegionId();
+        return $this->quote->getShippingAddress()->getRegionId();
     }
 
-    protected function getOriginPostcode()
+    private function getOriginPostcode()
     {
         $originPostcode = $this->getStoreConfig($this->getOriginPostcodeXmlPath());
 
-        if ($this->_proxyOrder->isTaxModeMagento()) {
+        if ($this->proxyOrder->isTaxModeMagento()) {
             return $originPostcode;
         }
 
-        if ($this->_proxyOrder->isTaxModeMixed() && !$this->_proxyOrder->hasTax()) {
+        if ($this->proxyOrder->isTaxModeMixed() && !$this->proxyOrder->hasTax()) {
             return $originPostcode;
         }
 
-        if ($this->_proxyOrder->isTaxModeNone()
-            || ($this->_proxyOrder->isTaxModeChannel() && !$this->_proxyOrder->hasTax())
+        if ($this->proxyOrder->isTaxModeNone()
+            || ($this->proxyOrder->isTaxModeChannel() && !$this->proxyOrder->hasTax())
         ) {
             return '';
         }
 
-        return $this->_quote->getShippingAddress()->getPostcode();
+        return $this->quote->getShippingAddress()->getPostcode();
     }
 
     //########################################
 
-    protected function getDefaultCustomerGroupId()
+    private function getDefaultCustomerGroupId()
     {
         $defaultCustomerGroupId = $this->getStoreConfig(Mage_Customer_Model_Group::XML_PATH_DEFAULT_ID);
 
-        if ($this->_proxyOrder->isTaxModeMagento()) {
+        if ($this->proxyOrder->isTaxModeMagento()) {
             return $defaultCustomerGroupId;
         }
 
         $currentCustomerTaxClass = Mage::getSingleton('tax/calculation')->getDefaultCustomerTaxClass($this->getStore());
-        $quoteCustomerTaxClass = $this->_quote->getCustomerTaxClassId();
+        $quoteCustomerTaxClass = $this->quote->getCustomerTaxClassId();
 
         if ($currentCustomerTaxClass == $quoteCustomerTaxClass) {
             return $defaultCustomerGroupId;
@@ -271,20 +269,20 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
         // default customer tax class depends on default customer group
         // so we override store setting for this with the customer group from the quote
         // this is done to make store & address tax requests equal
-        return $this->_quote->getCustomerGroupId();
+        return $this->quote->getCustomerGroupId();
     }
 
     //########################################
 
-    public function getTaxCalculationBasedOn()
+    private function getTaxCalculationBasedOn()
     {
         $basedOn = $this->getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_BASED_ON);
 
-        if ($this->_proxyOrder->isTaxModeMagento()) {
+        if ($this->proxyOrder->isTaxModeMagento()) {
             return $basedOn;
         }
 
-        if ($this->_proxyOrder->isTaxModeMixed() && !$this->_proxyOrder->hasTax()) {
+        if ($this->proxyOrder->isTaxModeMixed() && !$this->proxyOrder->hasTax()) {
             return $basedOn;
         }
 
@@ -293,7 +291,7 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
 
     //########################################
 
-    protected function getOriginCountryIdXmlPath()
+    private function getOriginCountryIdXmlPath()
     {
         // Magento 1.4.x backward compatibility
         return @defined('Mage_Shipping_Model_Config::XML_PATH_ORIGIN_COUNTRY_ID')
@@ -301,7 +299,7 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
             : 'shipping/origin/country_id';
     }
 
-    protected function getOriginRegionIdXmlPath()
+    private function getOriginRegionIdXmlPath()
     {
         // Magento 1.4.x backward compatibility
         return @defined('Mage_Shipping_Model_Config::XML_PATH_ORIGIN_REGION_ID')
@@ -309,7 +307,7 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
             : 'shipping/origin/region_id';
     }
 
-    protected function getOriginPostcodeXmlPath()
+    private function getOriginPostcodeXmlPath()
     {
         // Magento 1.4.x backward compatibility
         return @defined('Mage_Shipping_Model_Config::XML_PATH_ORIGIN_POSTCODE')
@@ -319,19 +317,19 @@ class Ess_M2ePro_Model_Magento_Quote_Store_Configurator
 
     //########################################
 
-    protected function getStore()
+    private function getStore()
     {
-        return $this->_quote->getStore();
+        return $this->quote->getStore();
     }
 
     // ---------------------------------------
 
-    protected function setStoreConfig($key, $value)
+    private function setStoreConfig($key, $value)
     {
         $this->getStore()->setConfig($key, $value);
     }
 
-    protected function getStoreConfig($key)
+    private function getStoreConfig($key)
     {
         return $this->getStore()->getConfig($key);
     }

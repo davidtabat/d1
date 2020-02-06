@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -12,6 +12,8 @@ class Ess_M2ePro_Model_Order_Change extends Ess_M2ePro_Model_Abstract
     const ACTION_UPDATE_SHIPPING = 'update_shipping';
     const ACTION_CANCEL          = 'cancel';
     const ACTION_REFUND          = 'refund';
+
+    const CREATOR_TYPE_OBSERVER = 1;
 
     const MAX_ALLOWED_PROCESSING_ATTEMPTS = 3;
 
@@ -56,7 +58,7 @@ class Ess_M2ePro_Model_Order_Change extends Ess_M2ePro_Model_Abstract
      */
     public function getParams()
     {
-        $params = Mage::helper('M2ePro')->jsonDecode($this->getData('params'));
+        $params = json_decode($this->getData('params'), true);
 
         return is_array($params) ? $params : array();
     }
@@ -127,6 +129,10 @@ class Ess_M2ePro_Model_Order_Change extends Ess_M2ePro_Model_Abstract
             throw new InvalidArgumentException('Action is invalid.');
         }
 
+        if (!in_array($creatorType, array(self::CREATOR_TYPE_OBSERVER))) {
+            throw new InvalidArgumentException('Creator is invalid.');
+        }
+
         $hash = self::generateHash($orderId, $action, $params);
 
         /** @var Ess_M2ePro_Model_Order_Change $change */
@@ -142,16 +148,14 @@ class Ess_M2ePro_Model_Order_Change extends Ess_M2ePro_Model_Abstract
             return;
         }
 
-        $change->addData(
-            array(
+        $change->addData(array(
             'order_id'     => $orderId,
             'action'       => $action,
-            'params'       => Mage::helper('M2ePro')->jsonEncode($params),
+            'params'       => json_encode($params),
             'creator_type' => $creatorType,
             'component'    => $component,
             'hash'         => $hash
-            )
-        );
+        ));
         $change->save();
     }
 
@@ -159,7 +163,7 @@ class Ess_M2ePro_Model_Order_Change extends Ess_M2ePro_Model_Abstract
 
     public static function generateHash($orderId, $action, array $params)
     {
-        return sha1($orderId .'-'. $action .'-'. Mage::helper('M2ePro')->serialize($params));
+        return sha1($orderId.'-'.$action.'-'.serialize($params));
     }
 
     //########################################

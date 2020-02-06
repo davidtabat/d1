@@ -59,6 +59,7 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
             closeCallback: function() {
                 EbayListingTransferringHandlerObj.actionHandler.clear();
                 EbayListingTransferringHandlerObj.marketplaceProgressHandlerObj = null;
+                EbayListingTransferringHandlerObj.failedProductsPopUp = null;
 
                 $('excludeListPopup') && Windows.getWindow('excludeListPopup').destroy();
 
@@ -87,7 +88,7 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
         initializationMagentoBlocks();
 
         var itemStep = this.actionHandler.getItemStep();
-        ['tutorial', 'destination', 'policy', 'translation'].forEach(function(el) {
+        ['tutorial', 'destination', 'policy', 'translation', 'categories'].forEach(function(el) {
             if ($('data_container_step_' + el)) {
                 if (el == itemStep) {
                     $('data_container_step_' + el).show();
@@ -302,6 +303,14 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
 
     // ---------------------------------------
 
+    renderStepCategories: function()
+    {
+        this.actionHandler.pushStep('categories');
+        this.showStep(true, true);
+    },
+
+    // ---------------------------------------
+
     refreshBreadcrumb: function()
     {
         if ($('transferring_use_custom_settings')) {
@@ -320,6 +329,8 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
                 breadcrumbs.push('translation');
             (itemStep == 'policy' || this.actionHandler.isNeedManagePolicy()) &&
                 breadcrumbs.push('policy');
+            (itemStep == 'categories' || this.actionHandler.isNeedManageCategories()) &&
+                breadcrumbs.push('categories');
 
             if (breadcrumbs.length > 1) {
                 this.breadcrumbHandler.showSteps(breadcrumbs);
@@ -356,23 +367,24 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
                 $('continue_button_destination')
                     .stopObserving('click')
                     .observe('click', function() {
-                        self.validate() && self.synchronizeMarketplace('EbayListingTransferringHandlerObj.renderStepPolicy();');
+                        self.validate() &&
+                            self.synchronizeMarketplace('EbayListingTransferringHandlerObj.renderStepPolicy();');
                     });
             } else if (this.actionHandler.isMigrationServiceAllowed()) {
                 nextStepAllowed = true;
                 $('continue_button_destination')
                     .stopObserving('click')
                     .observe('click', function() {
-                        self.validate() && self.synchronizeMarketplace('EbayListingTransferringHandlerObj.renderStepTranslation();');
+                        self.validate() &&
+                            self.synchronizeMarketplace('EbayListingTransferringHandlerObj.renderStepTranslation();');
                     });
-            } else if (this.actionHandler.isNeedManageCategories() &&
-                !$('transferring_existing_listing').hasChildNodes()) {
-
+            } else if (this.actionHandler.isNeedManageCategories()) {
                 nextStepAllowed = true;
                 $('continue_button_destination')
                     .stopObserving('click')
                     .observe('click', function() {
-                        self.validate() && self.synchronizeMarketplace(self.confirm.bind(self, true));
+                        self.validate() &&
+                            self.synchronizeMarketplace('EbayListingTransferringHandlerObj.renderStepCategories();');
                     });
             }
 
@@ -389,11 +401,10 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
                 nextStepAllowed = true;
                 $('continue_button_policy')
                     .stopObserving('click')
-                    .observe('click', function () {
-                        self.validate() && self.actionHandler.createTemplates(self.confirm.bind(self, true))
+                    .observe('click', function() {
+                        self.validate() && self.actionHandler.createTemplates(self.renderStepCategories.bind(self));
                     });
             }
-
         } else if (itemStep == 'translation' &&
                    $('continue_button_translation') &&
                    this.actionHandler.isNeedManageCategories()) {
@@ -401,7 +412,7 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
             nextStepAllowed = true;
             $('continue_button_translation')
                 .stopObserving('click')
-                .observe('click', self.confirm.bind(self, true));
+                .observe('click', self.renderStepCategories.bind(self));
         }
 
         if (nextStepAllowed) {
@@ -454,7 +465,7 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
         if (!this.marketplaceProgressHandlerObj) {
             var ProgressBarObj = new ProgressBar('data_container_progress');
             var WrapperObj = new AreaWrapper('data_container');
-            this.marketplaceProgressHandlerObj = new EbayMarketplaceSynchProgressHandler(ProgressBarObj, WrapperObj);
+            this.marketplaceProgressHandlerObj = new SynchProgressHandler(ProgressBarObj, WrapperObj);
         }
 
         var selectedIndex = marketplaceSelect.selectedIndex;
@@ -577,25 +588,20 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
         this.actionHandler.setNeedToSetCatalogPolicy(needToSetCategoryPolicies);
         var callback = function() {
 
-            if (EbayListingTransferringHandlerObj.actionHandler.hasSuccessProducts()) {
-                if (EbayListingTransferringHandlerObj.actionHandler.isNeedToSetCatalogPolicy()) {
-                    EbayListingTransferringHandlerObj.actionHandler.redirectToCategorySettings();
-                } else if (EbayListingTransferringHandlerObj.actionHandler.hasTargetListing()) {
-
-                    if (!EbayListingTransferringHandlerObj.actionHandler.hasAllFailedTranslationProducts() &&
-                        EbayListingTransferringHandlerObj.actionHandler.isUseMigrationService()) {
-                        var view_mode = 'translation';
-                    } else {
-                        var view_mode = 'ebay';
-                    }
-
-                    window.open(M2ePro.url.get('adminhtml_ebay_listing/getTransferringUrl',
-                        {id: EbayListingTransferringHandlerObj.actionHandler.getTargetListing(), view_mode: view_mode}));
-                    EbayListingTransferringHandlerObj.popUp.close();
-                }
+            if (this.actionHandler.isMigrationSuccess()) {
+                MagentoMessageObj.addSuccess(M2ePro.translator.translate('Migration success.'));
             } else {
-                EbayListingTransferringHandlerObj.popUp.close();
+                MagentoMessageObj.addError(M2ePro.translator.translate('Migration error.'));
             }
+
+            setTimeout(function() {
+                if (EbayListingTransferringHandlerObj.actionHandler.hasFailedProducts() &&
+                    EbayListingTransferringHandlerObj.actionHandler.hasSuccessProducts()) {
+                    EbayListingTransferringHandlerObj.showFailedProducts();
+                } else {
+                    EbayListingTransferringHandlerObj.confirmFailedProducts();
+                }
+            }, 2000);
 
             $('loading-mask').setStyle({visibility: 'visible'});
 
@@ -608,6 +614,95 @@ EbayListingTransferringHandler = Class.create(CommonHandler, {
         }.bind(this);
 
         this.actionHandler.confirm(callback, progressBarObj, wrapperObj, true);
+    },
+
+    showFailedProducts: function()
+    {
+        new Ajax.Request(M2ePro.url.get('adminhtml_ebay_listing_transferring/getFailedProductsGrid'), {
+            method: 'get',
+            parameters: {
+                componentMode: M2ePro.customData.componentMode,
+                failed_products: Object.toJSON(this.actionHandler.getFailedProducts())
+            },
+            onSuccess: (function(transport) {
+
+                var config = {
+                    draggable: true,
+                    resizable: true,
+                    closable: true,
+                    className: "magento",
+                    windowClassName: "popup-window",
+                    title: M2ePro.translator.translate('Products failed to add'),
+                    top: 50,
+                    minWidth: 820,
+                    maxHeight: 550,
+                    width: 820,
+                    zIndex: 100,
+                    recenterAuto: true,
+                    hideEffect: Element.hide,
+                    showEffect: Element.show,
+                    closeCallback: function() {
+                        if (EbayListingTransferringHandlerObj.actionHandler.isNeedToSetCatalogPolicy()) {
+                            EbayListingTransferringHandlerObj.actionHandler.redirectToCategorySettings();
+                        } else if (EbayListingTransferringHandlerObj.actionHandler.hasTargetListing()) {
+                            if (!EbayListingTransferringHandlerObj.actionHandler.hasAllFailedTranslationProducts() &&
+                                EbayListingTransferringHandlerObj.actionHandler.isUseMigrationService()) {
+                                var view_mode = 'translation';
+                            } else {
+                                var view_mode = 'ebay';
+                            }
+                            window.open(M2ePro.url.get('adminhtml_ebay_listing/getTransferringUrl',
+                                {id: EbayListingTransferringHandlerObj.actionHandler.getTargetListing(), view_mode: view_mode}));
+                            EbayListingTransferringHandlerObj.popUp.close();
+                        }
+
+                        return true;
+                    }
+                };
+
+                try {
+                    this.failedProductsPopUp = Dialog.info(null, config);
+                    $('modal_dialog_message').innerHTML = transport.responseText;
+                    $('modal_dialog_message').innerHTML.evalScripts();
+                } catch (ignored) {}
+
+                setTimeout(function() {
+                    Windows.getFocusedWindow().content.style.height = '';
+                    Windows.getFocusedWindow().content.style.maxHeight = '500px';
+                }, 50);
+
+                $('modal_dialog_message').down('div[class=grid]').setStyle({
+                    maxHeight: '300px',
+                    overflow: 'auto'
+                });
+
+            }).bind(this)
+        });
+    },
+
+    confirmFailedProducts: function()
+    {
+        if (EbayListingTransferringHandlerObj.failedProductsPopUp) {
+            EbayListingTransferringHandlerObj.failedProductsPopUp.close();
+        } else if (EbayListingTransferringHandlerObj.actionHandler.hasSuccessProducts()) {
+            if (EbayListingTransferringHandlerObj.actionHandler.isNeedToSetCatalogPolicy()) {
+                EbayListingTransferringHandlerObj.actionHandler.redirectToCategorySettings();
+            } else if (EbayListingTransferringHandlerObj.actionHandler.hasTargetListing()) {
+
+                if (!EbayListingTransferringHandlerObj.actionHandler.hasAllFailedTranslationProducts() &&
+                    EbayListingTransferringHandlerObj.actionHandler.isUseMigrationService()) {
+                    var view_mode = 'translation';
+                } else {
+                    var view_mode = 'ebay';
+                }
+
+                window.open(M2ePro.url.get('adminhtml_ebay_listing/getTransferringUrl',
+                    {id: EbayListingTransferringHandlerObj.actionHandler.getTargetListing(), view_mode: view_mode}));
+                EbayListingTransferringHandlerObj.popUp.close();
+            }
+        } else {
+            EbayListingTransferringHandlerObj.popUp.close();
+        }
     },
 
     // ---------------------------------------

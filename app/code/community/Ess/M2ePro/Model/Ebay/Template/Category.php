@@ -2,12 +2,12 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 /**
- * @method Ess_M2ePro_Model_Resource_Ebay_Template_Category getResource()
+ * @method Ess_M2ePro_Model_Mysql4_Ebay_Template_Category getResource()
  */
 class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component_Abstract
 {
@@ -18,12 +18,12 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
     /**
      * @var Ess_M2ePro_Model_Marketplace
      */
-    protected $_marketplaceModel = null;
+    private $marketplaceModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Category_Source[]
      */
-    protected $_categorySourceModels = array();
+    private $categorySourceModels = array();
 
     //########################################
 
@@ -46,8 +46,8 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
             $specific->deleteInstance();
         }
 
-        $this->_marketplaceModel     = null;
-        $this->_categorySourceModels = array();
+        $this->marketplaceModel = NULL;
+        $this->categorySourceModels = array();
 
         $this->delete();
         return true;
@@ -60,13 +60,13 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
      */
     public function getMarketplace()
     {
-        if ($this->_marketplaceModel === null) {
-            $this->_marketplaceModel = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
+        if (is_null($this->marketplaceModel)) {
+            $this->marketplaceModel = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
                 'Marketplace', $this->getMarketplaceId()
             );
         }
 
-        return $this->_marketplaceModel;
+        return $this->marketplaceModel;
     }
 
     /**
@@ -74,7 +74,7 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
      */
     public function setMarketplace(Ess_M2ePro_Model_Marketplace $instance)
     {
-         $this->_marketplaceModel = $instance;
+         $this->marketplaceModel = $instance;
     }
 
     // ---------------------------------------
@@ -87,15 +87,15 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
     {
         $productId = $magentoProduct->getProductId();
 
-        if (!empty($this->_categorySourceModels[$productId])) {
-            return $this->_categorySourceModels[$productId];
+        if (!empty($this->categorySourceModels[$productId])) {
+            return $this->categorySourceModels[$productId];
         }
 
-        $this->_categorySourceModels[$productId] = Mage::getModel('M2ePro/Ebay_Template_Category_Source');
-        $this->_categorySourceModels[$productId]->setMagentoProduct($magentoProduct);
-        $this->_categorySourceModels[$productId]->setCategoryTemplate($this);
+        $this->categorySourceModels[$productId] = Mage::getModel('M2ePro/Ebay_Template_Category_Source');
+        $this->categorySourceModels[$productId]->setMagentoProduct($magentoProduct);
+        $this->categorySourceModels[$productId]->setCategoryTemplate($this);
 
-        return $this->_categorySourceModels[$productId];
+        return $this->categorySourceModels[$productId];
     }
 
     //########################################
@@ -107,10 +107,8 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
      */
     public function getSpecifics($asObjects = false, array $filters = array())
     {
-        $specifics = $this->getRelatedSimpleItems(
-            'Ebay_Template_Category_Specific', 'template_category_id',
-            $asObjects, $filters
-        );
+        $specifics = $this->getRelatedSimpleItems('Ebay_Template_Category_Specific','template_category_id',
+                                                  $asObjects, $filters);
 
         if ($asObjects) {
             /** @var Ess_M2ePro_Model_Ebay_Template_Category_Specific $specific */
@@ -183,7 +181,7 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
             'category_main_attribute' => $src['attribute'],
         );
 
-        Mage::helper('M2ePro/Component_Ebay_Category')->fillCategoriesPaths($data, $listing);
+        Mage::helper('M2ePro/Component_Ebay_Category')->fillCategoriesPaths($data,$listing);
 
         $path = $data['category_main_path'];
         if ($withId && $src['mode'] == self::CATEGORY_MODE_EBAY) {
@@ -198,7 +196,7 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
     /**
      * @return array
      */
-    public function getMainCategoryAttributes()
+    public function getUsedAttributes()
     {
         $usedAttributes = array();
 
@@ -209,13 +207,27 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
         }
 
         foreach ($this->getSpecifics(true) as $specificModel) {
-            $usedAttributes = array_merge($usedAttributes, $specificModel->getValueAttributes());
+            $usedAttributes = array_merge($usedAttributes, $specificModel->getUsedAttributes());
         }
 
         return array_values(array_unique($usedAttributes));
     }
 
     //########################################
+
+    public function getDataSnapshot()
+    {
+        $data = parent::getDataSnapshot();
+        $data['specifics'] = $this->getSpecifics();
+
+        foreach ($data['specifics'] as &$specificData) {
+            foreach ($specificData as &$value) {
+                !is_null($value) && !is_array($value) && $value = (string)$value;
+            }
+        }
+
+        return $data;
+    }
 
     /**
      * @return array
@@ -228,6 +240,37 @@ class Ess_M2ePro_Model_Ebay_Template_Category extends Ess_M2ePro_Model_Component
             'category_main_mode' => self::CATEGORY_MODE_EBAY,
             'category_main_attribute' => ''
         );
+    }
+
+    //########################################
+
+    /**
+     * @param bool $asArrays
+     * @param string|array $columns
+     * @return array
+     */
+    public function getAffectedListingsProducts($asArrays = true, $columns = '*')
+    {
+        /** @var Ess_M2ePro_Model_Mysql4_Listing_Product_Collection $collection */
+        $collection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Listing_Product');
+        $collection->addFieldToFilter('template_category_id', $this->getId());
+
+        if (is_array($columns) && !empty($columns)) {
+            $collection->getSelect()->reset(Zend_Db_Select::COLUMNS);
+            $collection->getSelect()->columns($columns);
+        }
+
+        return $asArrays ? (array)$collection->getData() : (array)$collection->getItems();
+    }
+
+    public function setSynchStatusNeed($newData, $oldData)
+    {
+        $listingsProducts = $this->getAffectedListingsProducts(true, array('id'));
+        if (empty($listingsProducts)) {
+            return;
+        }
+
+        $this->getResource()->setSynchStatusNeed($newData,$oldData,$listingsProducts);
     }
 
     //########################################

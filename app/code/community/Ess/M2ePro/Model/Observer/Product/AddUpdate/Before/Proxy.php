@@ -2,20 +2,20 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
 {
-    protected $_productId = null;
-    protected $_storeId   = null;
+    private $productId = NULL;
+    private $storeId = NULL;
 
-    protected $_data       = array();
-    protected $_attributes = array();
+    private $data = array();
+    private $attributes = array();
 
-    protected $_websiteIds    = array();
-    protected $_categoriesIds = array();
+    private $websiteIds = array();
+    private $categoriesIds = array();
 
     //########################################
 
@@ -24,7 +24,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function setProductId($value)
     {
-        $this->_productId = (int)$value;
+        $this->productId = (int)$value;
     }
 
     /**
@@ -32,7 +32,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function getProductId()
     {
-        return $this->_productId;
+        return $this->productId;
     }
 
     // ---------------------------------------
@@ -42,7 +42,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function setStoreId($value)
     {
-        $this->_storeId = (int)$value;
+        $this->storeId = (int)$value;
     }
 
     /**
@@ -50,19 +50,19 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function getStoreId()
     {
-        return $this->_storeId;
+        return $this->storeId;
     }
 
     //########################################
 
     public function setData($key, $value)
     {
-        $this->_data[$key] = $value;
+        $this->data[$key] = $value;
     }
 
     public function getData($key)
     {
-        return isset($this->_data[$key]) ? $this->_data[$key] : NULL;
+        return isset($this->data[$key]) ? $this->data[$key] : NULL;
     }
 
     // ---------------------------------------
@@ -72,7 +72,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function setAttributes(array $attributes = array())
     {
-        $this->_attributes = $attributes;
+        $this->attributes = $attributes;
     }
 
     /**
@@ -80,7 +80,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function getAttributes()
     {
-        return $this->_attributes;
+        return $this->attributes;
     }
 
     //########################################
@@ -90,7 +90,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function setWebsiteIds(array $ids = array())
     {
-        $this->_websiteIds = $ids;
+        $this->websiteIds = $ids;
     }
 
     /**
@@ -98,7 +98,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function getWebsiteIds()
     {
-        return $this->_websiteIds;
+        return $this->websiteIds;
     }
 
     // ---------------------------------------
@@ -108,7 +108,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function setCategoriesIds(array $ids = array())
     {
-        $this->_categoriesIds = $ids;
+        $this->categoriesIds = $ids;
     }
 
     /**
@@ -116,7 +116,7 @@ class Ess_M2ePro_Model_Observer_Product_AddUpdate_Before_Proxy
      */
     public function getCategoriesIds()
     {
-        return $this->_categoriesIds;
+        return $this->categoriesIds;
     }
 
     //########################################

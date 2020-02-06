@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Helper_Magento_Store_View
 {
-    protected $_defaultStore = null;
+    private $defaultStore = NULL;
 
     //########################################
 
@@ -50,21 +50,21 @@ class Ess_M2ePro_Helper_Magento_Store_View
 
     public function getDefault()
     {
-        if ($this->_defaultStore === null) {
+        if (is_null($this->defaultStore)) {
             $defaultStoreGroup = Mage::helper('M2ePro/Magento_Store_Group')->getDefault();
             $defaultStoreId = $defaultStoreGroup->getDefaultStoreId();
 
-            $this->_defaultStore = Mage::getModel('core/store')->load($defaultStoreId);
-            if ($this->_defaultStore->getId() === null) {
-                $this->_defaultStore = Mage::getModel('core/store')->load(0);
+            $this->defaultStore = Mage::getModel('core/store')->load($defaultStoreId);
+            if (is_null($this->defaultStore->getId())) {
+                $this->defaultStore = Mage::getModel('core/store')->load(0);
 
-                if ($this->_defaultStore->getId() === null) {
+                if (is_null($this->defaultStore->getId())) {
                     throw new Ess_M2ePro_Model_Exception('Getting default store is failed.');
                 }
             }
         }
 
-        return $this->_defaultStore;
+        return $this->defaultStore;
     }
 
     public function getDefaultStoreId()
@@ -99,10 +99,8 @@ class Ess_M2ePro_Helper_Magento_Store_View
     public function addStore($name, $code, $websiteId, $groupId = null)
     {
         if (!Mage::helper('M2ePro/Magento_Store_Website')->isExists($websiteId)) {
-            $error = Mage::helper('M2ePro')->__(
-                'Website with id %value% does not exists.',
-                $websiteId
-            );
+            $error = Mage::helper('M2ePro')->__('Website with id %value% does not exists.',
+                $websiteId);
             throw new Ess_M2ePro_Model_Exception($error);
         }
 
@@ -110,15 +108,15 @@ class Ess_M2ePro_Helper_Magento_Store_View
             $store = Mage::app()->getStore($code, 'code');
             $error = Mage::helper('M2ePro')->__('Store with %code% already exists.', $code);
             throw new Ess_M2ePro_Model_Exception($error);
+
         } catch (Exception $e) {
             // M2ePro_TRANSLATIONS
             // Group with id %group_id% doesn't belongs to website with %site_id%.
             if ($groupId) {
+
                 if (!Mage::helper('M2ePro/Magento_Store_Group')->isChildOfWebsite($groupId, $websiteId)) {
-                    $error = Mage::helper('M2ePro')->__(
-                        'Group with id %group_id% doesn\'t belong to'.
-                        'website with %site_id%.', $groupId, $websiteId
-                    );
+                    $error = Mage::helper('M2ePro')->__('Group with id %group_id% doesn\'t belong to'.
+                        'website with %site_id%.',$groupId, $websiteId);
                     throw new Ess_M2ePro_Model_Exception($error);
                 }
             } else {

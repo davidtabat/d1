@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -12,13 +12,13 @@
 abstract class Ess_M2ePro_Model_Order_ShippingAddress extends Varien_Object
 {
     /** @var Ess_M2ePro_Model_Order */
-    protected $_order;
+    protected $order;
 
     /** @var Mage_Directory_Model_Country */
-    protected $_country;
+    protected $country;
 
     /** @var Mage_Directory_Model_Region */
-    protected $_region;
+    protected $region;
 
     //########################################
 
@@ -26,21 +26,20 @@ abstract class Ess_M2ePro_Model_Order_ShippingAddress extends Varien_Object
 
     public function __construct(Ess_M2ePro_Model_Order $order)
     {
-        $this->_order = $order;
+        $this->order = $order;
     }
 
     public function getCountry()
     {
-        if ($this->_country === null) {
-            $this->_country = Mage::getModel('directory/country');
+        if (is_null($this->country)) {
+            $this->country = Mage::getModel('directory/country');
 
             try {
-                $this->_country->loadByCode($this->getData('country_code'));
-            } catch (Exception $e) {
-            }
+                $this->country->loadByCode($this->getData('country_code'));
+            } catch (Exception $e) {}
         }
 
-        return $this->_country;
+        return $this->country;
     }
 
     public function getRegion()
@@ -49,20 +48,20 @@ abstract class Ess_M2ePro_Model_Order_ShippingAddress extends Varien_Object
             return NULL;
         }
 
-        if ($this->_region === null) {
+        if (is_null($this->region)) {
             $countryRegions = $this->getCountry()->getRegionCollection();
             $countryRegions->getSelect()->where('code = ? OR default_name = ?', $this->getState());
 
-            $this->_region = $countryRegions->getFirstItem();
+            $this->region = $countryRegions->getFirstItem();
 
-            if ($this->isRegionValidationRequired() && !$this->_region->getId()) {
+            if ($this->isRegionValidationRequired() && !$this->region->getId()) {
                 throw new Ess_M2ePro_Model_Exception(
                     sprintf('State/Region "%s" in the shipping address is invalid.', $this->getState())
                 );
             }
         }
 
-        return $this->_region;
+        return $this->region;
     }
 
     /**
@@ -86,7 +85,7 @@ abstract class Ess_M2ePro_Model_Order_ShippingAddress extends Varien_Object
     {
         $region = $this->getRegion();
 
-        if ($region === null || $region->getId() === null) {
+        if (is_null($region) || is_null($region->getId())) {
             return 1;
         }
 
@@ -97,7 +96,7 @@ abstract class Ess_M2ePro_Model_Order_ShippingAddress extends Varien_Object
     {
         $region = $this->getRegion();
 
-        if ($region === null || $region->getId() === null) {
+        if (is_null($region) || is_null($region->getId())) {
             return '';
         }
 

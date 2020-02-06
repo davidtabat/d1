@@ -2,21 +2,21 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Ebay_Template_OtherCategory_Source
 {
     /**
-     * @var $_magentoProduct Ess_M2ePro_Model_Magento_Product
+     * @var $magentoProduct Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProduct = null;
+    private $magentoProduct = null;
 
     /**
-     * @var $_otherCategoryTemplateModel Ess_M2ePro_Model_Ebay_Template_OtherCategory
+     * @var $otherCategoryTemplateModel Ess_M2ePro_Model_Ebay_Template_OtherCategory
      */
-    protected $_otherCategoryTemplateModel = null;
+    private $otherCategoryTemplateModel = null;
 
     //########################################
 
@@ -26,7 +26,7 @@ class Ess_M2ePro_Model_Ebay_Template_OtherCategory_Source
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $magentoProduct)
     {
-        $this->_magentoProduct = $magentoProduct;
+        $this->magentoProduct = $magentoProduct;
         return $this;
     }
 
@@ -35,7 +35,7 @@ class Ess_M2ePro_Model_Ebay_Template_OtherCategory_Source
      */
     public function getMagentoProduct()
     {
-        return $this->_magentoProduct;
+        return $this->magentoProduct;
     }
 
     // ---------------------------------------
@@ -46,7 +46,7 @@ class Ess_M2ePro_Model_Ebay_Template_OtherCategory_Source
      */
     public function setOtherCategoryTemplate(Ess_M2ePro_Model_Ebay_Template_OtherCategory $instance)
     {
-        $this->_otherCategoryTemplateModel = $instance;
+        $this->otherCategoryTemplateModel = $instance;
         return $this;
     }
 
@@ -55,7 +55,7 @@ class Ess_M2ePro_Model_Ebay_Template_OtherCategory_Source
      */
     public function getOtherCategoryTemplate()
     {
-        return $this->_otherCategoryTemplateModel;
+        return $this->otherCategoryTemplateModel;
     }
 
     //########################################

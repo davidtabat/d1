@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -23,11 +23,16 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
         // ---------------------------------------
         $this->setDefaultSort('component');
         $this->setDefaultDir('ASC');
-        $this->setDefaultLimit(50);
-
         $this->setSaveParametersInSession(true);
         $this->setUseAjax(true);
         // ---------------------------------------
+    }
+
+    protected function _prepareLayout()
+    {
+        $this->setPagerVisibility(false);
+
+        return parent::_prepareLayout();
     }
 
    //########################################
@@ -39,13 +44,14 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
 
         $tablesList = $magentoHelper->getMySqlTables();
         foreach ($tablesList as &$tableName) {
-            $tableName = $structureHelper->getTableNameWithoutPrefix($tableName);
+            $tableName = str_replace($magentoHelper->getDatabaseTablesPrefix(), '', $tableName);
         }
 
         $tablesList = array_unique(array_merge($tablesList, $structureHelper->getMySqlTables()));
 
-        $collection = new Ess_M2ePro_Model_Collection_Custom();
+        $collection = new Varien_Data_Collection();
         foreach ($tablesList as $tableName) {
+
             if (!$structureHelper->isModuleTable($tableName)) {
                 continue;
             }
@@ -62,6 +68,7 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
             );
 
             if ($tableRow['is_exist'] && !$tableRow['is_crashed']) {
+
                 $tableRow['component'] = $structureHelper->getTableComponent($tableName);
                 $tableRow['group']     = $structureHelper->getTableGroup($tableName);
                 $tableRow['size']      = $structureHelper->getDataLength($tableName);
@@ -77,23 +84,20 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
 
     protected function _prepareColumns()
     {
-        $this->addColumn(
-            'table_name', array(
+        $this->addColumn('table_name', array(
             'header'    => Mage::helper('M2ePro')->__('Table Name'),
             'align'     => 'left',
             'index'     => 'table_name',
             'filter_index' => 'table_name',
             'frame_callback' => array($this, 'callbackColumnTableName'),
-            'filter_condition_callback' => array($this, 'callbackFilterTitle'),
-            )
-        );
+            'filter_condition_callback' => array($this, '_customColumnFilter'),
+        ));
 
         // ---------------------------------------
         $options['general'] = 'General';
-        $options = array_merge($options, Mage::helper('M2ePro/Component')->getComponentsTitles());
+        $options = array_merge($options,Mage::helper('M2ePro/Component')->getComponentsTitles());
 
-        $this->addColumn(
-            'component', array(
+        $this->addColumn('component', array(
             'header'    => Mage::helper('M2ePro')->__('Component'),
             'align'     => 'right',
             'width'     => '120px',
@@ -101,32 +105,26 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
             'type'      => 'options',
             'options'   => $options,
             'filter_index' => 'component',
-            'filter_condition_callback' => array($this, 'callbackFilterMatch'),
-            )
-        );
+            'filter_condition_callback' => array($this, '_customColumnFilter'),
+        ));
         // ---------------------------------------
 
         // ---------------------------------------
         $options = array(
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_CONFIGS           => 'Configs',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_ACCOUNTS          => 'Accounts',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_MARKETPLACES      => 'Marketplaces',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LISTINGS          => 'Listings',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LISTINGS          => 'Listings',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LISTINGS_PRODUCTS => 'Listings Products',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LISTINGS_OTHER    => 'Listings Other',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LOGS              => 'Logs',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_ITEMS             => 'Items',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_PROCESSING        => 'Processing',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_CONNECTORS        => 'Connectors',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_DICTIONARY        => 'Dictionary',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_ORDERS            => 'Orders',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_TEMPLATES         => 'Templates',
-            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_OTHER             => 'Other'
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_CONFIGS        => 'Configs',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_ACCOUNTS       => 'Accounts',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_MARKETPLACES   => 'Marketplaces',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LISTINGS       => 'Listings',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LISTINGS_OTHER => 'Listings Other',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_LOGS           => 'Logs',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_ITEMS          => 'Items',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_DICTIONARY     => 'Dictionary',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_ORDERS         => 'Orders',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_TEMPLATES      => 'Templates',
+            Ess_M2ePro_Helper_Module_Database_Structure::TABLE_GROUP_OTHER          => 'Other'
         );
 
-        $this->addColumn(
-            'group', array(
+        $this->addColumn('group', array(
             'header'    => Mage::helper('M2ePro')->__('Group'),
             'align'     => 'right',
             'width'     => '100px',
@@ -134,31 +132,26 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
             'type'      => 'options',
             'options'   => $options,
             'filter_index' => 'group',
-            'filter_condition_callback' => array($this, 'callbackFilterMatch'),
-            )
-        );
+            'filter_condition_callback' => array($this, '_customColumnFilter'),
+        ));
         // ---------------------------------------
 
-        $this->addColumn(
-            'records', array(
+        $this->addColumn('records', array(
             'header'    => Mage::helper('M2ePro')->__('Records'),
             'align'     => 'right',
             'width'     => '100px',
             'index'     => 'records',
             'type'      => 'number',
             'filter'    => false,
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'size', array(
+        $this->addColumn('size', array(
             'header'    => Mage::helper('M2ePro')->__('Size (Mb)'),
             'align'     => 'right',
             'width'     => '100px',
             'index'     => 'size',
             'filter'    => false,
-            )
-        );
+        ));
 
         return parent::_prepareColumns();
     }
@@ -200,34 +193,19 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Grid extends Mage_Adm
 
         // Set edit action
         // ---------------------------------------
-        $this->getMassactionBlock()->addItem(
-            'edit', array(
+        $this->getMassactionBlock()->addItem('edit', array(
             'label'    => Mage::helper('M2ePro')->__('Edit Table(s)'),
             'url'      => $this->getUrl('*/adminhtml_development_database/manageTables')
-            )
-        );
-        // ---------------------------------------
-
-        // Set delete action
-        // ---------------------------------------
-        $this->getMassactionBlock()->addItem(
-            'delete', array(
-            'label'    => Mage::helper('M2ePro')->__('Delete Table(s) Rows'),
-            'url'      => $this->getUrl('*/adminhtml_development_database/deleteTablesRows'),
-            'confirm'  => Mage::helper('M2ePro')->__('Are you sure?')
-            )
-        );
+        ));
         // ---------------------------------------
 
         // Set truncate action
         // ---------------------------------------
-        $this->getMassactionBlock()->addItem(
-            'truncate', array(
+        $this->getMassactionBlock()->addItem('truncate', array(
             'label'    => Mage::helper('M2ePro')->__('Truncate Table(s)'),
             'url'      => $this->getUrl('*/adminhtml_development_database/truncateTables'),
             'confirm'  => Mage::helper('M2ePro')->__('Are you sure?')
-            )
-        );
+        ));
         // ---------------------------------------
 
         return parent::_prepareMassaction();
@@ -268,39 +246,97 @@ HTML;
             return false;
         }
 
-        return $this->getUrl(
-            '*/adminhtml_development_database/manageTable',
-            array('table' => $row->getData('table_name'))
-        );
+        return $this->getUrl('*/adminhtml_development_database/manageTable',
+                             array('table' => $row->getData('table_name')));
     }
 
     //########################################
 
-    protected function callbackFilterTitle($collection, $column)
+    protected function _addColumnFilterToCollection($column)
     {
-        $value = $column->getFilter()->getValue();
-        if ($value == null) {
-            return;
+        if ($this->getCollection() && $column->getFilterConditionCallback()) {
+            call_user_func($column->getFilterConditionCallback(), $this->getCollection(), $column);
         }
-
-        $this->getCollection()->addFilter(
-            'table_name', $value, Ess_M2ePro_Model_Collection_Custom::CONDITION_LIKE
-        );
+        return $this;
     }
 
-    protected function callbackFilterMatch($collection, $column)
-    {
-        $field = $column->getFilterIndex() ? $column->getFilterIndex()
-                                           : $column->getIndex();
+    //########################################
 
-        $value = $column->getFilter()->getValue();
-        if ($value == null || empty($field)) {
-            return;
+    protected function _customColumnFilter($collection, $column)
+    {
+        $field = ($column->getFilterIndex()) ? $column->getFilterIndex() : $column->getIndex();
+        $condition = $column->getFilter()->getCondition();
+        $value = array_pop($condition);
+
+        if ($field && isset($condition)) {
+            $field == 'table_name' && $this->_filterByTableNameField($field, $value);
+            ($field == 'component' || $field == 'group') && $this->_filterByField($field, $value);
         }
 
-        $this->getCollection()->addFilter(
-            $field, $value, Ess_M2ePro_Model_Collection_Custom::CONDITION_MATCH
-        );
+        return $this;
+    }
+
+    // ---------------------------------------
+
+    protected function _filterByTableNameField($field, $value)
+    {
+        $filteredCollection = new Varien_Data_Collection();
+        $value = str_replace(array(' ','%','\\','\''),'',$value);
+
+        foreach ($this->getCollection()->getItems() as $item) {
+            if (strpos($item->getData($field),$value) !== false) {
+                $filteredCollection->addItem($item);
+            }
+        }
+        $this->setCollection($filteredCollection);
+    }
+
+    protected function _filterByField($field, $value)
+    {
+        $filteredCollection = new Varien_Data_Collection();
+        $filteredItems = $this->getCollection()->getItemsByColumnValue($field,$value);
+
+        foreach ($filteredItems as $item) {
+            $filteredCollection->addItem($item);
+        }
+        $this->setCollection($filteredCollection);
+    }
+
+    //########################################
+
+    protected function _setCollectionOrder($column)
+    {
+        $field = $column->getFilterIndex() ? $column->getFilterIndex() : $column->getIndex();
+        $direction = $column->getDir();
+
+        if ($field && isset($direction)) {
+            $this->_orderByColumn($field, $direction);
+        }
+
+        return $this;
+    }
+
+    // ---------------------------------------
+
+    protected function _orderByColumn($column, $direction)
+    {
+        $sortedCollection = new Varien_Data_Collection();
+
+        $collection = $this->getCollection()->toArray();
+        $collection = $collection['items'];
+
+        $sortByColumn = array();
+        foreach ($collection as $item) {
+            $sortByColumn[] = $item[$column];
+        }
+
+        strtolower($direction) == 'asc' && array_multisort($sortByColumn, SORT_ASC, $collection);
+        strtolower($direction) == 'desc' && array_multisort($sortByColumn, SORT_DESC, $collection);
+
+        foreach ($collection as $item) {
+            $sortedCollection->addItem(new Varien_Object($item));
+        }
+        $this->setCollection($sortedCollection);
     }
 
     //########################################

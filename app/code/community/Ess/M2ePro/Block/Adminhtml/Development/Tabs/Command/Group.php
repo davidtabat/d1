@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -21,17 +21,21 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Command_Group extends Mage_Adm
 
     protected function _beforeToHtml()
     {
-        $this->commands = Mage::helper('M2ePro/View_Development_Command')->parseGeneralCommandsData(
-            $this->getControllerName()
-        );
+        $this->enabledComponents = Mage::helper('M2ePro/Component')->getEnabledComponents();
+
+        $this->commands = Mage::helper('M2ePro/View_Development_Command')
+                            ->parseGeneralCommandsData($this->getControllerName());
 
         return parent::_beforeToHtml();
     }
 
     //########################################
 
-    public function getCommandLauncherHtml(array $commandRow)
+    public function getCommandLauncherHtml(array $commandRow, $component = null)
     {
+        $href = $commandRow['url'];
+        $component && $href = rtrim($commandRow['url'], '/')."/component/{$component}/";
+
         $target = '';
         $commandRow['new_window'] && $target = 'target="_blank"';
 
@@ -45,12 +49,11 @@ return false;
 JS;
         }
 
+        $title = $commandRow['title'];
+        $component && $title = $component;
+
         return <<<HTML
-<a href="{$commandRow['url']}" {$target}
-   onclick="{$onClick}"
-   title="{$commandRow['description']}">
-{$commandRow['title']}
-</a>
+<a href="{$href}" {$target} onclick="{$onClick}" title="{$commandRow['description']}">{$title}</a>
 HTML;
     }
 

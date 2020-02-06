@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -27,10 +27,7 @@ class Ess_M2ePro_Model_Lock_Transactional extends Ess_M2ePro_Model_Abstract
         return false;
     }
 
-    public function deleteProcessingLocks($tag = false, $processingId = false)
-    {
-        return null;
-    }
+    public function deleteProcessingLocks($tag = false, $processingId = false) {}
 
     //########################################
 

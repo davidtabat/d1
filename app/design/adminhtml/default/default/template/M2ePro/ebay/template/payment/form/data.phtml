@@ -1,19 +1,11 @@
 <?php
-/*
- * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
- * @license    Commercial use is forbidden
- */
+    /** @var Ess_M2ePro_Block_Adminhtml_Ebay_Template_Payment_Edit_Form_Data $this */
 
-// @codingStandardsIgnoreFile
+    $formData = $this->getFormData();
+    $default = $this->getDefault();
 
-/** @var Ess_M2ePro_Block_Adminhtml_Ebay_Template_Payment_Edit_Form_Data $this */
-
-$formData = $this->getFormData();
-$default = $this->getDefault();
-
-$formData = array_merge($default, $formData);
-$marketplaceData = $this->getMarketplaceData();
+    $formData = array_merge($default, $formData);
+    $marketplaceData = $this->getMarketplaceData();
 
 ?>
 

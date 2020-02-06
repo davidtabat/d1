@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -27,7 +27,7 @@ class Ess_M2ePro_Model_Amazon_Repricing_Action_Account extends Ess_M2ePro_Model_
 
     public function sendUnlinkActionData($backUrl)
     {
-        $skus = Mage::getResourceModel('M2ePro/Amazon_Listing_Product_Repricing')->getSkus($this->getAccount());
+        $skus = Mage::getResourceModel('M2ePro/Amazon_Listing_Product_Repricing')->getAllSkus($this->getAccount());
 
         $offers  = array();
         foreach ($skus as $sku) {
@@ -43,7 +43,7 @@ class Ess_M2ePro_Model_Amazon_Repricing_Action_Account extends Ess_M2ePro_Model_
 
     //########################################
 
-    protected function sendData($command, array $data, $backUrl)
+    private function sendData($command, array $data, $backUrl)
     {
         $requestData = array(
             'request' => array(
@@ -52,7 +52,7 @@ class Ess_M2ePro_Model_Amazon_Repricing_Action_Account extends Ess_M2ePro_Model_
                     'params' => array()
                 )
             ),
-            'data' => Mage::helper('M2ePro')->jsonEncode($data),
+            'data' => json_encode($data),
         );
 
         if ($this->getAmazonAccount()->isRepricing()) {
@@ -64,18 +64,11 @@ class Ess_M2ePro_Model_Amazon_Repricing_Action_Account extends Ess_M2ePro_Model_
         try {
             $result = $this->getHelper()->sendRequest($command, $requestData);
         } catch (Exception $exception) {
-            $this->getSynchronizationLog()->addMessage(
-                Mage::helper('M2ePro')->__($exception->getMessage()),
-                Ess_M2ePro_Model_Log_Abstract::TYPE_ERROR,
-                Ess_M2ePro_Model_Log_Abstract::PRIORITY_HIGH
-            );
-
-            Mage::helper('M2ePro/Module_Exception')->process($exception, false);
+            Mage::helper('M2ePro/Module_Exception')->process($exception);
             return false;
         }
 
-        $response = $result['response'];
-        $this->processErrorMessages($response);
+        $response = json_decode($result['response'], true);
 
         return !empty($response['request_token']) ? $response['request_token'] : false;
     }

@@ -2,11 +2,9 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
-
-use Ess_M2ePro_Adminhtml_Ebay_Listing_Variation_Product_ManageController as ManageController;
 
 class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     extends Mage_Adminhtml_Block_Widget_Grid
@@ -14,20 +12,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     const VARIATION_STATUS_ADD     = 1;
     const VARIATION_STATUS_DELETE  = 2;
 
-    protected $_variationAttributes;
+    protected $variationAttributes;
 
-    protected $_listingProductId;
-
-    /** @var Ess_M2ePro_Model_Listing_Product $_listingProduct */
-    protected $_listingProduct;
-
-    protected $_identifiers = array(
-        'upc'  => 'UPC',
-        'ean'  => 'EAN',
-        'isbn' => 'ISBN',
-        'mpn'  => 'MPN',
-        'epid' => 'ePID'
-    );
+    protected $listingProductId;
 
     //########################################
 
@@ -36,26 +23,29 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
      */
     public function setListingProductId($listingProductId)
     {
-        $this->_listingProductId = $listingProductId;
+        $this->listingProductId = $listingProductId;
     }
     /**
      * @return mixed
      */
     public function getListingProductId()
     {
-        return $this->_listingProductId;
+        return $this->listingProductId;
     }
 
     // ---------------------------------------
 
+    /** @var Ess_M2ePro_Model_Listing_Product $listingProduct */
+    protected $listingProduct;
+
     protected function getListingProduct()
     {
-        if (empty($this->_listingProduct)) {
-            $this->_listingProduct = Mage::helper('M2ePro/Component_Ebay')
-                                         ->getObject('Listing_Product', $this->getListingProductId());
+        if (empty($this->listingProduct)) {
+            $this->listingProduct = Mage::helper('M2ePro/Component_Ebay')
+                ->getObject('Listing_Product', $this->getListingProductId());
         }
 
-        return $this->_listingProduct;
+        return $this->listingProduct;
     }
 
     //########################################
@@ -79,9 +69,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     {
         // Get collection
         // ---------------------------------------
-        /** @var Ess_M2ePro_Model_Resource_Ebay_Listing_Product_Collection $collection */
+        /** @var Ess_M2ePro_Model_Mysql4_Ebay_Listing_Product_Collection $collection */
         $collection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Listing_Product_Variation');
-        $collection->getSelect()->where('main_table.listing_product_id = ?', (int)$this->getListingProductId());
+        $collection->getSelect()->where('main_table.listing_product_id = ?',(int)$this->getListingProductId());
         $collection->getSelect()->group('main_table.id');
         // ---------------------------------------
 
@@ -138,8 +128,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
 
     protected function _prepareColumns()
     {
-        $this->addColumn(
-            'variation', array(
+        $this->addColumn('variation', array(
             'header' => Mage::helper('M2ePro')->__('Magento Variation'),
             'align' => 'left',
             'width' => '210px',
@@ -150,22 +139,18 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
             'filter' => 'M2ePro/adminhtml_grid_column_filter_attributesOptions',
             'options' => $this->getVariationsAttributes(),
             'filter_condition_callback' => array($this, 'callbackFilterVariations')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'online_sku', array(
+        $this->addColumn('online_sku', array(
             'header'    => Mage::helper('M2ePro')->__('SKU'),
             'align'     => 'left',
             'width'     => '150px',
             'index'     => 'online_sku',
             'filter_index' => 'online_sku',
             'frame_callback' => array($this, 'callbackColumnOnlineSku')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'available_qty', array(
+        $this->addColumn('available_qty', array(
             'header'    => Mage::helper('M2ePro')->__('Available QTY'),
             'align'     => 'right',
             'width'     => '40px',
@@ -174,22 +159,18 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
             'sortable'  => (bool)version_compare(Mage::helper('M2ePro/Magento')->getVersion(), '1.4.2', '>='),
             'filter'    => false,
             'frame_callback' => array($this, 'callbackColumnAvailableQty')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'online_qty_sold', array(
+        $this->addColumn('online_qty_sold', array(
             'header' => Mage::helper('M2ePro')->__('Sold QTY'),
             'align' => 'right',
             'width' => '40px',
             'type' => 'number',
             'index' => 'online_qty_sold',
             'frame_callback' => array($this, 'callbackColumnOnlineQtySold')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'price', array(
+        $this->addColumn('price', array(
             'header' => Mage::helper('M2ePro')->__('Price'),
             'align' => 'right',
             'width' => '40px',
@@ -197,26 +178,27 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
             'index' => 'online_price',
             'filter_index' => 'online_price',
             'frame_callback' => array($this, 'callbackColumnPrice'),
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'identifiers', array(
-                'header' => Mage::helper('M2ePro')->__('eBay Catalog Identifiers'),
-                'align' => 'left',
-                'width' => '150px',
-                'sortable' => false,
-                'index' => 'additional_data',
-                'filter_index' => 'additional_data',
-                'filter' => 'M2ePro/adminhtml_grid_column_filter_attributesOptions',
-                'options' => $this->_identifiers,
-                'frame_callback' => array($this, 'callbackColumnIdentifiers'),
-                'filter_condition_callback' => array($this, 'callbackFilterIdentifiers')
-            )
-        );
+        $this->addColumn('identifiers', array(
+            'header' => Mage::helper('M2ePro')->__('eBay Catalog Identifiers'),
+            'align' => 'left',
+            'width' => '150px',
+            'sortable' => false,
+            'index' => 'additional_data',
+            'filter_index' => 'additional_data',
+            'filter' => 'M2ePro/adminhtml_grid_column_filter_attributesOptions',
+            'options' => array(
+                'upc'  => 'UPC',
+                'ean'  => 'EAN',
+                'isbn' => 'ISBN',
+                'mpn'  => 'MPN'
+            ),
+            'frame_callback' => array($this, 'callbackColumnIdentifiers'),
+            'filter_condition_callback' => array($this, 'callbackFilterIdentifiers')
+        ));
 
-        $this->addColumn(
-            'status', array(
+        $this->addColumn('status', array(
             'header'=> Mage::helper('M2ePro')->__('Status'),
             'width' => '60px',
             'index' => 'status',
@@ -233,8 +215,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
                 Ess_M2ePro_Model_Listing_Product::STATUS_BLOCKED    => Mage::helper('M2ePro')->__('Pending')
             ),
             'frame_callback' => array($this, 'callbackColumnStatus')
-            )
-        );
+        ));
 
         return parent::_prepareColumns();
     }
@@ -252,7 +233,6 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
             $url = $this->getUrl('adminhtml/catalog_product/edit', array('id' => reset($productsIds)));
             $html .= '<a href="' . $url . '" target="_blank">';
         }
-
         foreach ($attributes as $attribute => $option) {
             $optionHtml = '<b>' . Mage::helper('M2ePro')->escapeHtml($attribute) .
                 '</b>:&nbsp;' . Mage::helper('M2ePro')->escapeHtml($option);
@@ -264,11 +244,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
                 $html .= $optionHtml . '<br/>';
             }
         }
-
         if (!$uniqueProductsIds) {
             $html .= '</a>';
         }
-
         $html .= '</div>';
 
         return $html;
@@ -277,11 +255,11 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     public function callbackColumnOnlineSku($value, $row, $column, $isExport)
     {
         if ($row->getData('status') == Ess_M2ePro_Model_Listing_Product::STATUS_NOT_LISTED &&
-            ($value === null || $value === '')) {
+            (is_null($value) || $value === '')) {
             return '<span style="color: gray;">' . Mage::helper('M2ePro')->__('Not Listed') . '</span>';
         }
 
-        if ($value === null || $value === '') {
+        if (is_null($value) || $value === '') {
             return Mage::helper('M2ePro')->__('N/A');
         }
 
@@ -291,11 +269,11 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     public function callbackColumnAvailableQty($value, $row, $column, $isExport)
     {
         if ($row->getData('status') == Ess_M2ePro_Model_Listing_Product::STATUS_NOT_LISTED &&
-            ($value === null || $value === '')) {
+            (is_null($value) || $value === '')) {
             return '<span style="color: gray;">' . Mage::helper('M2ePro')->__('Not Listed') . '</span>';
         }
 
-        if ($value === null || $value === '') {
+        if (is_null($value) || $value === '') {
             return Mage::helper('M2ePro')->__('N/A');
         }
 
@@ -313,11 +291,11 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     public function callbackColumnOnlineQtySold($value, $row, $column, $isExport)
     {
         if ($row->getData('status') == Ess_M2ePro_Model_Listing_Product::STATUS_NOT_LISTED &&
-            ($value === null || $value === '')) {
+            (is_null($value) || $value === '')) {
             return '<span style="color: gray;">' . Mage::helper('M2ePro')->__('Not Listed') . '</span>';
         }
 
-        if ($value === null || $value === '') {
+        if (is_null($value) || $value === '') {
             return Mage::helper('M2ePro')->__('N/A');
         }
 
@@ -331,11 +309,11 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
     public function callbackColumnPrice($value, $row, $column, $isExport)
     {
         if ($row->getData('status') == Ess_M2ePro_Model_Listing_Product::STATUS_NOT_LISTED &&
-            ($value === null || $value === '')) {
+            (is_null($value) || $value === '')) {
             return '<span style="color: gray;">' . Mage::helper('M2ePro')->__('Not Listed') . '</span>';
         }
 
-        if ($value === null || $value === '') {
+        if (is_null($value) || $value === '') {
             return Mage::helper('M2ePro')->__('N/A');
         }
 
@@ -345,48 +323,34 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Variation_Product_Manage_View_Grid
 
         $currency = $this->getListingProduct()->getMarketplace()->getChildObject()->getCurrency();
 
-        return Mage::app()->getLocale()->currency($currency)->toCurrency($value);
+        $priceStr = Mage::app()->getLocale()->currency($currency)->toCurrency($value);
+
+        return $priceStr;
     }
 
     public function callbackColumnIdentifiers($value, $row, $column, $isExport)
     {
         $html = '';
         $formHtml = '';
-
         $variationId = $row->getData('id');
-        $additionalData = Mage::helper('M2ePro')->jsonDecode($row->getData('additional_data'));
-
-        $linkTitle   = Mage::helper('M2ePro')->__('Change');
+        $additionalData = json_decode($row->getData('additional_data'), true);
+        $linkTitle = Mage::helper('M2ePro')->__('Change');
         $linkContent = Mage::helper('M2ePro')->__('Change');
 
         $html .= '<div id="variation_identifiers_' . $variationId .
-            '" style="font-size: 11px; color: grey; margin-left: 7px; width: 165px;">';
-
+            '" style="font-size: 11px; color: grey; margin-left: 7px">';
         if (!empty($additionalData['product_details'])) {
             foreach ($additionalData['product_details'] as $identifier => $identifierValue) {
-                $identifier = isset($this->_identifiers[$identifier])
-                    ? Mage::helper('M2ePro')->escapeHtml($this->_identifiers[$identifier])
-                    : Mage::helper('M2ePro')->escapeHtml($identifier);
-
-                $identifierValue = $identifierValue ? Mage::helper('M2ePro')->escapeHtml($identifierValue)
-                                                    : '--';
-                $html .= <<<HTML
-<span>
-    <span>
-        <strong>{$identifier}</strong>
-    </span>:&nbsp;
-    <span class="value">
-        {$identifierValue}
-    </span>
-</span>
-<br/>
-HTML;
+                !$identifierValue && $identifierValue = '--';
+                $html .= '<span><span><strong>' .
+                    Mage::helper('M2ePro')->escapeHtml(strtoupper($identifier)) .
+                    '</strong></span>:&nbsp;<span class="value">' .
+                    Mage::helper('M2ePro')->escapeHtml($identifierValue) . '</span></span><br/>';
             }
         } else {
             $linkTitle = Mage::helper('M2ePro')->__('Set');
             $linkContent = Mage::helper('M2ePro')->__('Set');
         }
-
         $html .= '</div>';
 
         $options = $column->getOptions();
@@ -395,44 +359,30 @@ HTML;
                 '' : $additionalData['product_details'][$optionKey];
 
             $formHtml .= <<<HTML
-<div style="display: table-row;">
-    <div style="display: table-cell; vertical-align: middle;">
-        <div style="width: 40px;">
-        {$optionVal}:&nbsp;
-        </div>
-    </div>
-    <div style="display: table-cell;">
-        <input type="text" name="product_details[{$optionKey}]" class="M2ePro-{$optionKey}" value="{$identifierValue}"
-            style="width: 125px; margin: 5px 0px;">
-    </div>
+<div style="padding: 2px 0;">
+    <span style="width: 30px;">{$optionVal}: </span>
+    <input type="text" name="product_details[{$optionKey}]" class="M2ePro-{$optionKey}" value="{$identifierValue}"
+        style="float: right; width: 122px; ">
 </div>
 HTML;
         }
 
-        $manageMode = ManageController::MANAGE_VARIATION_MODE;
         $html .= <<<HTML
-<div style="margin: 0px 7px; width: 150px;">
+<div style="margin: 0px 7px;">
 <form action="javascript:void(0);" id="variation_identifiers_edit_{$variationId}" style="font-size:11px;display: none">
     {$formHtml}
-    <div style="display: table-row;">
-        <div style="display: table-cell;"></div>
-        <div style="display: table-cell;">
-            <input type="hidden" name="variation_id" value="{$variationId}">
-            <input type="hidden" name="listing_product_id" value="{$this->getListingProduct()->getId()}">
-            <input type="hidden" name="manage_mode" value="{$manageMode}">
-            <button class="scalable confirm-btn"
-                    onclick="VariationsGridHandlerObj.confirmVariationIdentifiers(this, '{$variationId}')"
-                    style="margin-top: 8px; float: right;">Confirm</button>
-            <a href="javascript:void(0);" class="scalable"
-                onclick="VariationsGridHandlerObj.cancelVariationIdentifiers('{$variationId}')"
-                style="margin: 7px 8px; float: right;">Cancel</a>
-        </div>
-    </div>
+    <input type="hidden" name="variation_id" value="{$variationId}">
+    <button class="scalable confirm-btn"
+            onclick="VariationsGridHandlerObj.confirmVariationIdentifiers(this, {$variationId})"
+            style="margin-top: 8px; float: right;">Confirm</button>
+    <a href="javascript:void(0);" class="scalable"
+        onclick="VariationsGridHandlerObj.cancelVariationIdentifiers({$variationId})"
+        style="margin: 7px 8px; float: right;">Cancel</a>
 </form>
 <div style="text-align: left;">
 <a href="javascript:"
     id="edit_variations_{$variationId}"
-    onclick="VariationsGridHandlerObj.editVariationIdentifiers(this, '{$variationId}')"
+    onclick="VariationsGridHandlerObj.editVariationIdentifiers(this, {$variationId})"
     title="{$linkTitle}">{$linkContent}</a>
 </div>
 </div>
@@ -446,6 +396,7 @@ HTML;
         $html = '';
 
         switch ($row->getData('status')) {
+
             case Ess_M2ePro_Model_Listing_Product::STATUS_NOT_LISTED:
                 $html = '<span style="color: gray;">'.$value.'</span>';
                 break;
@@ -501,12 +452,7 @@ HTML;
 
         foreach ($values as $value) {
             if (is_array($value) && !empty($value['value'])) {
-                $collection->addFieldToFilter(
-                    'attributes',
-                    array('regexp'=>
-                          '[[:space:]]*'.$value['attr'].'[[:space:]]*==[[:space:]]*'.$value['value'].'[[:space:]]*'
-                    )
-                );
+                $collection->getSelect()->where('attributes REGEXP "'.$value['attr'].'=='.$value['value'].'"');
             }
         }
     }
@@ -523,9 +469,9 @@ HTML;
             if (is_array($value) && !empty($value['value'])) {
                 $collection->addFieldToFilter(
                     'additional_data',
-                    array('regexp'=> '"product_details":[^}]*'.$value['attr'].'[[:space:]]*":"[[:space:]]*' .
+                    array('regexp'=> '"product_details":[^}]*'.$value['attr'].'":"' .
                         // trying to screen slashes that in json
-                        addslashes(addslashes($value['value']).'[[:space:]]*'))
+                        addslashes(addslashes($value['value'])))
                 );
             }
         }
@@ -535,11 +481,9 @@ HTML;
 
     public function getGridUrl()
     {
-        return $this->getUrl(
-            '*/adminhtml_ebay_listing_variation_product_manage/viewVariationsGridAjax', array(
+        return $this->getUrl('*/adminhtml_ebay_listing_variation_product_manage/viewVariationsGridAjax', array(
             '_current' => true
-            )
-        );
+        ));
     }
 
     public function getRowUrl($row)
@@ -551,13 +495,13 @@ HTML;
 
     protected function _toHtml()
     {
-        $urls = Mage::helper('M2ePro')->jsonEncode(
-            array(
+        $urls = array(
             'adminhtml_ebay_listing_variation_product_manage/setIdentifiers' => $this->getUrl(
                 '*/adminhtml_ebay_listing_variation_product_manage/setIdentifiers'
             )
-            )
         );
+
+        $urls = json_encode($urls);
 
         $javascriptMain = <<<HTML
 <script type="text/javascript">
@@ -566,7 +510,6 @@ HTML;
 
     Event.observe(window, 'load', function() {
 
-        FrameHandlerObj = new FrameHandler();
         CommonHandler.prototype.scroll_page_to_top = function() { return; }
 
         VariationsGridHandlerObj = new EbayListingVariationProductManageVariationsGridHandler(
@@ -585,19 +528,48 @@ HTML;
 </script>
 HTML;
 
-        return $javascriptMain . parent::_toHtml();
+        $additionalCss = <<<HTML
+<style>
+    body {
+        background: none;
+    }
+
+    .wrapper {
+        min-width: inherit;
+    }
+
+    .footer {
+        display: none;
+    }
+
+    .middle {
+        padding: 0px;
+        background: none;
+    }
+
+    td.help_line .hl_close {
+        margin-top: -6px;
+    }
+
+    td.help_line .hl_header {
+        padding: 0 0 10px !important;
+    }
+
+</style>
+HTML;
+        return  $additionalCss .
+            parent::_toHtml() .
+            $javascriptMain;
     }
 
     //########################################
 
-    protected function getVariationsAttributes()
+    private function getVariationsAttributes()
     {
-        if ($this->_variationAttributes === null) {
+        if (is_null($this->variationAttributes)) {
             $connRead = Mage::getSingleton('core/resource')->getConnection('core_read');
-            $tableVariation = Mage::helper('M2ePro/Module_Database_Structure')
-                ->getTableNameWithPrefix('m2epro_listing_product_variation');
-            $tableOption = Mage::helper('M2ePro/Module_Database_Structure')
-                ->getTableNameWithPrefix('m2epro_listing_product_variation_option');
+            $tableVariation = Mage::getSingleton('core/resource')->getTableName('m2epro_listing_product_variation');
+            $tableOption = Mage::getSingleton('core/resource')->getTableName('m2epro_listing_product_variation_option');
 
             $select = $connRead->select();
             $select->from(array('mlpv' => $tableVariation), array())
@@ -610,13 +582,13 @@ HTML;
 
             $attributes = Mage::getResourceModel('core/config')->getReadConnection()->fetchCol($select);
 
-            $this->_variationAttributes = array_unique($attributes);
+            $this->variationAttributes = array_unique($attributes);
         }
 
-        return $this->_variationAttributes;
+        return $this->variationAttributes;
     }
 
-    protected function parseGroupedData($data)
+    private function parseGroupedData($data)
     {
         $result = array();
 

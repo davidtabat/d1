@@ -2,14 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
 {
     /** @var Ess_M2ePro_Model_Upgrade_MySqlSetup */
-    protected $_installer = null;
+    private $installer = NULL;
 
     //########################################
 
@@ -18,7 +18,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
      */
     public function getInstaller()
     {
-        return $this->_installer;
+        return $this->installer;
     }
 
     /**
@@ -26,12 +26,12 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
      */
     public function setInstaller(Ess_M2ePro_Model_Upgrade_MySqlSetup $installer)
     {
-        $this->_installer = $installer;
+        $this->installer = $installer;
     }
 
     //########################################
 
-     /**
+     /*
         ALTER TABLE `m2epro_synchronization_log`
         CHANGE COLUMN `synchronization_run_id` `operation_history_id` INT(11) UNSIGNED DEFAULT NULL,
         CHANGE COLUMN `synch_task` `task` TINYINT(2) UNSIGNED NOT NULL DEFAULT 0,
@@ -73,11 +73,11 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
 
     //########################################
 
-    protected function isNeedToSkip()
+    private function isNeedToSkip()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $synchronizationLogTable = $this->_installer->getTable('m2epro_synchronization_log');
+        $synchronizationLogTable = $this->installer->getTable('m2epro_synchronization_log');
         if ($connection->tableColumnExists($synchronizationLogTable, 'operation_history_id') !== false) {
             return true;
         }
@@ -87,11 +87,11 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
 
     //########################################
 
-    protected function processSynchronizationLogTable()
+    private function processSynchronizationLogTable()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $tempTable = $this->_installer->getTable('m2epro_synchronization_log');
+        $tempTable = $this->installer->getTable('m2epro_synchronization_log');
         $tempTableIndexList = $connection->getIndexList($tempTable);
 
         if ($connection->tableColumnExists($tempTable, 'synchronization_run_id') !== false &&
@@ -129,10 +129,10 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
         }
     }
 
-    protected function processListingLogTable()
+    private function processListingLogTable()
     {
-        $connection = $this->_installer->getConnection();
-        $tempTable = $this->_installer->getTable('m2epro_listing_log');
+        $connection = $this->installer->getConnection();
+        $tempTable = $this->installer->getTable('m2epro_listing_log');
 
         if ($connection->tableColumnExists($tempTable, 'listing_id') !== false) {
             $connection->changeColumn(
@@ -149,11 +149,11 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
         }
     }
 
-    protected function processListingOtherLogTable()
+    private function processListingOtherLogTable()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $tempTable = $this->_installer->getTable('m2epro_listing_other_log');
+        $tempTable = $this->installer->getTable('m2epro_listing_other_log');
         $tempTableIndexList = $connection->getIndexList($tempTable);
 
         if (!isset($tempTableIndexList[strtoupper('identifier')])) {
@@ -161,11 +161,11 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs
         }
     }
 
-    protected function processOrderLogTable()
+    private function processOrderLogTable()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $tempTable = $this->_installer->getTable('m2epro_order_log');
+        $tempTable = $this->installer->getTable('m2epro_order_log');
         $tempTableIndexList = $connection->getIndexList($tempTable);
 
         if ($connection->tableColumnExists($tempTable, 'type') !== false) {

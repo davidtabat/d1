@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -14,10 +14,7 @@ abstract class Ess_M2ePro_Controller_Adminhtml_Development_CommandController
     /**
      * Allows fill response by echo(), etc.
      */
-    protected function _postDispatch()
-    {
-        return null;
-    }
+    protected function __postDispatch() {}
 
     //########################################
 

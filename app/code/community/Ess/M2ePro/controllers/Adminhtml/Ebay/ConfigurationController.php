@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -20,16 +20,14 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
 
         $this->_initPopUp();
 
-        $this->setPageHelpLink(NULL, NULL, "x/MQAJAQ");
+        $this->setComponentPageHelpLink('General');
 
         return $this;
     }
 
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed(
-            Ess_M2ePro_Helper_View_Ebay::MENU_ROOT_NODE_NICK . '/configuration'
-        );
+        return Mage::getSingleton('admin/session')->isAllowed('m2epro_ebay/configuration');
     }
 
     //########################################
@@ -37,10 +35,9 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
     public function indexAction()
     {
         $this->_initAction()
-            ->_addContent(
-                $this->getLayout()->createBlock(
-                    'M2ePro/adminhtml_ebay_configuration', '',
-                    array('active_tab' => Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Tabs::TAB_ID_GENERAL)
+            ->_addContent($this->getLayout()->createBlock(
+                'M2ePro/adminhtml_ebay_configuration', '',
+                array('active_tab' => Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Tabs::TAB_ID_GENERAL)
                 )
             )->renderLayout();
     }
@@ -49,19 +46,17 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
     {
         $this->_initAction();
 
-        $this->setPageHelpLink(NULL, NULL, "x/MQAJAQ");
+        $this->setComponentPageHelpLink('Global+Settings');
 
-        $this->_addContent(
-            $this->getLayout()->createBlock(
-                'M2ePro/adminhtml_ebay_configuration', '',
-                array('active_tab' => Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Tabs::TAB_ID_GLOBAL)
-            )
-        )->renderLayout();
+        $this->_addContent($this->getLayout()->createBlock(
+                    'M2ePro/adminhtml_ebay_configuration', '',
+                    array('active_tab' => Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Tabs::TAB_ID_GLOBAL)
+                )
+            )->renderLayout();
     }
 
     public function saveAction()
     {
-        // ---------------------------------------
         Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
             '/view/ebay/', 'mode',
             $this->getRequest()->getParam('view_ebay_mode')
@@ -79,58 +74,42 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
             '/ebay/connector/listing/', 'check_the_same_product_already_listed',
             (int)$this->getRequest()->getParam('check_the_same_product_already_listed_mode')
         );
-
         Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
             '/ebay/description/', 'upload_images_mode',
             (int)$this->getRequest()->getParam('upload_images_mode')
         );
-        Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
-            '/ebay/description/', 'should_be_ulrs_secure',
-            (int)$this->getRequest()->getParam('should_be_ulrs_secure')
-        );
 
-        // ---------------------------------------
-
-        // ---------------------------------------
-        $motorsAttributes = array();
-
-        if ($motorsEpidsMotorAttribute = $this->getRequest()->getParam('motors_epids_motor_attribute')) {
-            $motorsAttributes[] = $motorsEpidsMotorAttribute;
+        $sellingCurrency = $this->getRequest()->getParam('selling_currency');
+        if (!empty($sellingCurrency)) {
+            foreach ($sellingCurrency as $code => $value) {
+                Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
+                    '/ebay/selling/currency/', $code, (string)$value
+                );
+            }
         }
 
-        if ($motorsEpidsUkAttribute = $this->getRequest()->getParam('motors_epids_uk_attribute')) {
-            $motorsAttributes[] = $motorsEpidsUkAttribute;
-        }
+        $motorsEpidsAttribute = $this->getRequest()->getParam('motors_epids_attribute');
+        $motorsKtypesAttribute = $this->getRequest()->getParam('motors_ktypes_attribute');
 
-        if ($motorsEpidsDeAttribute = $this->getRequest()->getParam('motors_epids_de_attribute')) {
-            $motorsAttributes[] = $motorsEpidsDeAttribute;
-        }
-
-        if ($motorsKtypesAttribute = $this->getRequest()->getParam('motors_ktypes_attribute')) {
-            $motorsAttributes[] = $motorsKtypesAttribute;
-        }
-
-        if (count($motorsAttributes) != count(array_unique($motorsAttributes))) {
+        if (!empty($motorsKtypesAttribute) && !empty($motorsEpidsAttribute) &&
+            $motorsEpidsAttribute == $motorsKtypesAttribute
+        ) {
             $this->_getSession()->addError(
-                Mage::helper('M2ePro')->__('Motors Attributes can not be the same.')
+                Mage::helper('M2ePro')->__('ePIDs and kTypes Attributes can not be the same.')
             );
             $this->_redirectUrl($this->_getRefererUrl());
             return;
         }
 
         Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
-            '/ebay/motors/', 'epids_motor_attribute', $motorsEpidsMotorAttribute
+            '/ebay/motors/', 'epids_attribute',
+            $motorsEpidsAttribute
         );
+
         Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
-            '/ebay/motors/', 'epids_uk_attribute', $motorsEpidsUkAttribute
+            '/ebay/motors/', 'ktypes_attribute',
+            $motorsKtypesAttribute
         );
-        Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
-            '/ebay/motors/', 'epids_de_attribute', $motorsEpidsDeAttribute
-        );
-        Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
-            '/ebay/motors/', 'ktypes_attribute', $motorsKtypesAttribute
-        );
-        // ---------------------------------------
 
         $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Settings was successfully saved.'));
         $this->_redirectUrl($this->_getRefererUrl());
@@ -168,6 +147,7 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
         $tableName = $helper->getDictionaryTable($motorsType);
 
         foreach ($csvData as $csvRow) {
+
             if (!$insertsData = $this->getPreparedInsertData($csvRow, $existedItems)) {
                 continue;
             }
@@ -190,15 +170,8 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
             return $this->_redirect('*/*/index');
         }
 
-        $conditions = array('is_custom = ?' => 1);
-        if ($helper->isTypeBasedOnEpids($motorsType)) {
-            $conditions['scope = ?'] = $helper->getEpidsScopeByType($motorsType);
-        }
-
         $connWrite = Mage::getSingleton('core/resource')->getConnection('core/write');
-        $connWrite->delete(
-            $helper->getDictionaryTable($motorsType), $conditions
-        );
+        $connWrite->delete($helper->getDictionaryTable($motorsType), '`is_custom` = 1');
 
         $this->_getSession()->addSuccess(Mage::helper('M2ePro')->__('Added compatibility data has been cleared.'));
         return $this->_redirect('*/*/index');
@@ -206,23 +179,18 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
 
     //########################################
 
-    protected function getExistedMotorsItems()
+    private function getExistedMotorsItems()
     {
         $helper = Mage::helper('M2ePro/Component_Ebay_Motors');
         $motorsType = $this->getRequest()->getParam('motors_type');
 
-        $selectStmt = Mage::getSingleton('core/resource')->getConnection('core/read')
+        $queryStmt = Mage::getSingleton('core/resource')->getConnection('core/read')
             ->select()
-            ->from(
-                $helper->getDictionaryTable($motorsType), array($helper->getIdentifierKey($motorsType))
-            );
-
-        if ($helper->isTypeBasedOnEpids($motorsType)) {
-            $selectStmt->where('scope = ?', $helper->getEpidsScopeByType($motorsType));
-        }
+            ->from($helper->getDictionaryTable($motorsType),
+                   array($helper->getIdentifierKey($motorsType)))
+            ->query();
 
         $result = array();
-        $queryStmt = $selectStmt->query();
 
         while ($id = $queryStmt->fetchColumn()) {
             $result[] = $id;
@@ -231,18 +199,19 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
         return $result;
     }
 
-    protected function getPreparedInsertData($csvRow, $existedItems)
+    private function getPreparedInsertData($csvRow, $existedItems)
     {
         $helper = Mage::helper('M2ePro/Component_Ebay_Motors');
-
         $motorsType = $this->getRequest()->getParam('motors_type');
-        $idCol      = $helper->getIdentifierKey($motorsType);
+
+        $idCol = $helper->getIdentifierKey($motorsType);
 
         if (!isset($csvRow[$idCol]) || in_array($csvRow[$idCol], $existedItems)) {
             return false;
         }
 
         if ($motorsType == Ess_M2ePro_Helper_Component_Ebay_Motors::TYPE_KTYPE) {
+
             if (strlen($csvRow['ktype']) > 10) {
                 return false;
             }
@@ -267,6 +236,7 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
 
         $requiredColumns = array('epid','product_type','make','model','year');
         foreach ($requiredColumns as $columnName) {
+
             if (!isset($csvRow[$columnName])) {
                 return false;
             }
@@ -281,8 +251,7 @@ class Ess_M2ePro_Adminhtml_Ebay_ConfigurationController extends Ess_M2ePro_Contr
             'trim'         => (isset($csvRow['trim']) ? $csvRow['trim'] : null),
             'engine'       => (isset($csvRow['engine']) ? $csvRow['engine'] : null),
             'submodel'     => (isset($csvRow['submodel']) ? $csvRow['submodel'] : null),
-            'is_custom'    => 1,
-            'scope'        => $helper->getEpidsScopeByType($motorsType)
+            'is_custom'    => 1
         );
     }
 

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -12,8 +12,8 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
 
     protected $_template = 'M2ePro/template/messages.phtml';
 
-    protected $_templateNick  = null;
-    protected $_componentMode = null;
+    protected $templateNick = NULL;
+    protected $componentMode = NULL;
 
     //########################################
 
@@ -22,17 +22,6 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
         $block = $this;
 
         switch ($templateNick) {
-            case Ess_M2ePro_Model_Ebay_Template_Manager::TEMPLATE_SHIPPING:
-
-                $isPriceConvertEnabled = (int)Mage::helper('M2ePro/Module')->getConfig()->getGroupValue(
-                    '/magento/attribute/', 'price_type_converting'
-                );
-
-                if ($isPriceConvertEnabled && $componentMode == Ess_M2ePro_Helper_Component_Ebay::NICK) {
-                    $block = $this->getLayout()
-                        ->createBlock('M2ePro/adminhtml_ebay_template_shipping_messages');
-                }
-                break;
             case Ess_M2ePro_Model_Ebay_Template_Manager::TEMPLATE_SELLING_FORMAT:
                 if ($componentMode == Ess_M2ePro_Helper_Component_Ebay::NICK) {
                     $block = $this->getLayout()
@@ -57,11 +46,9 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
         $messages = array();
 
         // ---------------------------------------
-        $message = $this->getAttributesAvailabilityMessage();
-        if ($message !== null) {
+        if (!is_null($message = $this->getAttributesAvailabilityMessage())) {
             $messages[self::TYPE_ATTRIBUTES_AVAILABILITY] = $message;
         }
-
         // ---------------------------------------
 
         return $messages;
@@ -97,23 +84,22 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
         $attributeSets = Mage::helper('M2ePro/Magento_Attribute')
             ->getSetsFromProductsWhichLacksAttributes($this->getUsedAttributes(), $productIds);
 
-        if (empty($attributeSets)) {
+        if (count($attributeSets) == 0) {
             return NULL;
         }
 
         $attributeSetsNames = Mage::helper('M2ePro/Magento_AttributeSet')->getNames($attributeSets);
 
         // M2ePro_TRANSLATIONS
-        // Some attributes which are used in this Policy were not found in Products Settings.
-        // Please, check if all of them are in [%set_name%] Attribute Set(s) as it can cause List,
-        // Revise or Relist issues.
+        // Some attributes which are used in this Policy were not found in Products Settings. Please, check if all of them are in [%set_name%] Attribute Set(s) as it can cause List, Revise or Relist issues.
         return
             Mage::helper('M2ePro')->__(
                 'Some Attributes which are used in this Policy were not found in Products Settings.'
                 . ' Please, check if all of them are in [%set_name%] Attribute Set(s)'
-                . ' as it can cause List, Revise or Relist issues.',
-                implode('", "', $attributeSetsNames)
-            );
+                . ' as it can cause List, Revise or Relist issues.'
+            ,
+            implode('", "', $attributeSetsNames)
+        );
     }
 
     //########################################
@@ -128,7 +114,7 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
         }
 
         return Mage::helper('M2ePro/Component')->getCachedComponentObject(
-            $this->getComponentMode(), 'Marketplace', (int)$this->_data['marketplace_id']
+            $this->getComponentMode(),'Marketplace',(int)$this->_data['marketplace_id']
         );
     }
 
@@ -150,34 +136,34 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
 
     public function setTemplateNick($templateNick)
     {
-        $this->_templateNick = $templateNick;
+        $this->templateNick = $templateNick;
         return $this;
     }
 
     public function getTemplateNick()
     {
-        if ($this->_templateNick === null) {
+        if (is_null($this->templateNick)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Policy nick is not set.');
         }
 
-        return $this->_templateNick;
+        return $this->templateNick;
     }
 
     //########################################
 
     public function setComponentMode($componentMode)
     {
-        $this->_componentMode = $componentMode;
+        $this->componentMode = $componentMode;
         return $this;
     }
 
     public function getComponentMode()
     {
-        if ($this->_componentMode === null) {
+        if (is_null($this->componentMode)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Component Mode is not set.');
         }
 
-        return $this->_componentMode;
+        return $this->componentMode;
     }
 
     //########################################
@@ -216,7 +202,7 @@ class Ess_M2ePro_Block_Adminhtml_Template_Messages extends Mage_Adminhtml_Block_
             return false;
         }
 
-        if ($this->_componentMode === null || $this->_componentMode != Ess_M2ePro_Helper_Component_Ebay::NICK) {
+        if (is_null($this->componentMode) || $this->componentMode != Ess_M2ePro_Helper_Component_Ebay::NICK) {
             return false;
         }
 

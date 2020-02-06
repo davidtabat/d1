@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -38,15 +38,13 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
 
     protected function _prepareCollection()
     {
-        /** @var $collection Mage_Catalog_Model_Resource_Category_Collection */
+        /* @var $collection Mage_Catalog_Model_Resource_Category_Collection */
         $collection = Mage::getModel('catalog/category')->getCollection();
         $collection->addAttributeToSelect('name');
 
-        $collection->addFieldToFilter(
-            array(
+        $collection->addFieldToFilter(array(
             array('attribute' => 'entity_id', 'in' => array_keys($this->getCategoriesData()))
-            )
-        );
+        ));
 
         $this->setCollection($collection);
 
@@ -57,8 +55,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
 
     protected function _prepareColumns()
     {
-        $this->addColumn(
-            'magento_category', array(
+        $this->addColumn('magento_category', array(
             'header'    => Mage::helper('M2ePro')->__('Magento Category'),
             'align'     => 'left',
             'width'     => '500px',
@@ -67,11 +64,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
             'filter'    => false,
             'sortable'  => false,
             'frame_callback' => array($this, 'callbackColumnMagentoCategory')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'ebay_categories', array(
+        $this->addColumn('ebay_categories', array(
             'header'    => Mage::helper('M2ePro')->__('eBay Categories'),
             'align'     => 'left',
             'width'     => '*',
@@ -83,11 +78,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
             'sortable'  => false,
             'frame_callback' => array($this, 'callbackColumnEbayCategories'),
             'filter_condition_callback' => array($this, 'callbackFilterEbayCategories')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'actions', array(
+        $this->addColumn('actions', array(
             'header'    => Mage::helper('M2ePro')->__('Actions'),
             'align'     => 'center',
             'width'     => '100px',
@@ -96,8 +89,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
             'filter'    => false,
             'renderer'  => 'M2ePro/adminhtml_grid_column_renderer_action',
             'actions'   => $this->getColumnActionsItems()
-            )
-        );
+        ));
 
         return parent::_prepareColumns();
     }
@@ -110,28 +102,21 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
 
         // Set mass-action
         // ---------------------------------------
-        $this->getMassactionBlock()->addItem(
-            'editCategories', array(
+        $this->getMassactionBlock()->addItem('editCategories', array(
             'label'    => Mage::helper('M2ePro')->__('Edit All Categories'),
-            )
-        );
+        ));
 
-        $this->getMassactionBlock()->addItem(
-            'editPrimaryCategories', array(
+        $this->getMassactionBlock()->addItem('editPrimaryCategories', array(
             'label' => Mage::helper('M2ePro')->__('Edit Primary Categories'),
             'url'   => '',
-            )
-        );
+        ));
 
         if ($this->listing->getAccount()->getChildObject()->getEbayStoreCategories()) {
-            $this->getMassactionBlock()->addItem(
-                'editStorePrimaryCategories', array(
+            $this->getMassactionBlock()->addItem('editStorePrimaryCategories', array(
                 'label' => Mage::helper('M2ePro')->__('Edit Store Primary Categories'),
                 'url'   => '',
-                )
-            );
+            ));
         }
-
         // ---------------------------------------
 
         return parent::_prepareMassaction();
@@ -176,12 +161,14 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Category_Grid extends Ess
         );
 
         if (empty($html)) {
+
             $helper = Mage::helper('M2ePro');
 
             $iconSrc = $this->getSkinUrl('M2ePro/images/warning.png');
             $html .= <<<HTML
 <img src="{$iconSrc}" alt="">&nbsp;<span style="font-style: italic; color: gray">{$helper->__('Not Selected')}</span>
 HTML;
+
         }
 
         return $html;
@@ -234,7 +221,7 @@ HTML;
             );
         }
 
-        return $this->renderCategoryInfo($title, $info);
+        return $this->renderCategoryInfo($title,$info);
     }
 
     protected function renderStoreCategoryInfo($title, $data, $key)
@@ -254,7 +241,7 @@ HTML;
             );
         }
 
-        return $this->renderCategoryInfo($title, $info);
+        return $this->renderCategoryInfo($title,$info);
     }
 
     protected function renderCategoryInfo($title, $info)
@@ -320,14 +307,12 @@ HTML;
             );
 
         $path = 'adminhtml_ebay_listing_categorySettings';
-        $urls[$path] = $this->getUrl(
-            '*/' . $path, array(
+        $urls[$path] = $this->getUrl('*/' . $path, array(
             'step' => 3,
             '_current' => true
-            )
-        );
+        ));
 
-        $urls = Mage::helper('M2ePro')->jsonEncode($urls);
+        $urls = json_encode($urls);
         // ---------------------------------------
 
         // ---------------------------------------
@@ -345,79 +330,47 @@ HTML;
         // Set eBay Categories
         $text = 'Set eBay Categories';
         $translations[$text] = Mage::helper('M2ePro')->__($text);
-        // M2ePro_TRANSLATIONS
-        // Set eBay Category
-        $text = 'Set eBay Category';
-        $translations[$text] = Mage::helper('M2ePro')->__($text);
 
-        $translations = Mage::helper('M2ePro')->jsonEncode($translations);
+        $translations = json_encode($translations);
         // ---------------------------------------
 
         // ---------------------------------------
         $constants = Mage::helper('M2ePro')->getClassConstantAsJson('Ess_M2ePro_Helper_Component_Ebay_Category');
         // ---------------------------------------
 
-        $errorMessage = Mage::helper('M2ePro')
-            ->__(
-                "To proceed, the category data must be specified.
-                  Please select a relevant Primary eBay Category for at least one Magento Category."
-            );
-
-        $categoriesData = $this->getCategoriesData();
-        $isAlLeasOneCategorySelected = (int)!$this->isAlLeasOneCategorySelected($categoriesData);
-        $showErrorMessage = (int)!empty($categoriesData);
-
         $commonJs = <<<HTML
 <script type="text/javascript">
     EbayListingCategoryCategoryGridHandlerObj.afterInitPage();
-
-    var button = $('ebay_listing_category_continue_btn');
-    if ({$isAlLeasOneCategorySelected}) {
-        button.addClassName('disabled');
-        button.disable();
-        if ({$showErrorMessage}) {
-            MagentoMessageObj.removeError('category-data-must-be-specified');
-            MagentoMessageObj.addError(`{$errorMessage}`, 'category-data-must-be-specified');
-        }
-    } else {
-        button.removeClassName('disabled');
-        button.enable();
-        MagentoMessageObj.clear('error');
-    }
 </script>
 HTML;
+
+        $disableContinue = '';
+        if ($this->getCollection()->getSize() === 0) {
+            $disableContinue = <<<JS
+$('ebay_listing_category_continue_btn').addClassName('disabled').onclick = function() {
+    return null;
+};
+JS;
+        }
 
         $additionalJs = '';
         if (!$this->getRequest()->isXmlHttpRequest()) {
             $additionalJs = <<<HTML
 <script type="text/javascript">
+
+    {$disableContinue}
+
     M2ePro.url.add({$urls});
     M2ePro.translator.add({$translations});
     M2ePro.php.setConstants({$constants},'Ess_M2ePro_Helper_Component_Ebay_Category');
 
     EbayListingCategoryCategoryGridHandlerObj = new EbayListingCategoryCategoryGridHandler('{$this->getId()}');
+
 </script>
 HTML;
         }
 
         return parent::_toHtml() . $additionalJs . $commonJs;
-    }
-
-    //########################################
-
-    protected function isAlLeasOneCategorySelected($categoriesData)
-    {
-        if (empty($categoriesData)) {
-            return false;
-        }
-
-        foreach ($categoriesData as $productId => $categoryData) {
-            if ($categoryData['category_main_mode'] != Ess_M2ePro_Model_Ebay_Template_Category::CATEGORY_MODE_NONE) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     //########################################

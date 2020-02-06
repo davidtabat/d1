@@ -2,14 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Order_Item_Product_Options_Mapping extends Ess_M2ePro_Block_Adminhtml_Widget_Container
 {
-    /** @var $_magentoProduct Ess_M2ePro_Model_Magento_Product */
-    protected $_magentoProduct = null;
+    /** @var $magentoProduct Ess_M2ePro_Model_Magento_Product */
+    private $magentoProduct = null;
 
     //########################################
 
@@ -30,7 +30,7 @@ class Ess_M2ePro_Block_Adminhtml_Order_Item_Product_Options_Mapping extends Ess_
 
     public function getProductTypeHeader()
     {
-        switch ($this->_magentoProduct->getTypeId()) {
+        switch ($this->magentoProduct->getTypeId()) {
             case Ess_M2ePro_Model_Magento_Product::TYPE_BUNDLE:
                 $title = Mage::helper('M2ePro')->__('Bundle Items');
                 break;
@@ -52,11 +52,11 @@ class Ess_M2ePro_Block_Adminhtml_Order_Item_Product_Options_Mapping extends Ess_
 
     public function isMagentoOptionSelected(array $magentoOption, array $magentoOptionValue)
     {
-        if ($this->_magentoProduct->isGroupedType()) {
+        if ($this->magentoProduct->isGroupedType()) {
             $associatedProducts = $this->getOrderItem()->getAssociatedProducts();
 
             if (count($associatedProducts) == 1
-                && empty(array_diff($associatedProducts, $magentoOptionValue['product_ids']))
+                && count(array_diff($associatedProducts, $magentoOptionValue['product_ids'])) == 0
             ) {
                 return true;
             }
@@ -88,12 +88,13 @@ class Ess_M2ePro_Block_Adminhtml_Order_Item_Product_Options_Mapping extends Ess_
         // ---------------------------------------
 
         // ---------------------------------------
-        $this->_magentoProduct = $this->getOrderItem()->getMagentoProduct();
+        $this->magentoProduct = $this->getOrderItem()->getMagentoProduct();
 
         $magentoOptions = array();
-        $magentoVariations = $this->_magentoProduct->getVariationInstance()->getVariationsTypeRaw();
+        $magentoVariations = $this->magentoProduct->getVariationInstance()->getVariationsTypeRaw();
 
-        if ($this->_magentoProduct->isGroupedType()) {
+        if ($this->magentoProduct->isGroupedType()) {
+
             $magentoOptionLabel = Mage::helper('M2ePro')
                 ->__(Ess_M2ePro_Model_Magento_Product_Variation::GROUPED_PRODUCT_ATTRIBUTE_LABEL);
 
@@ -112,6 +113,7 @@ class Ess_M2ePro_Block_Adminhtml_Order_Item_Product_Options_Mapping extends Ess_
             }
 
             $magentoOptions[] = $magentoOption;
+
         } else {
             foreach ($magentoVariations as $magentoVariation) {
                 $magentoOptionLabel = array_shift($magentoVariation['labels']);
@@ -153,7 +155,7 @@ class Ess_M2ePro_Block_Adminhtml_Order_Item_Product_Options_Mapping extends Ess_
             'onclick' => 'OrderEditItemHandlerObj.assignProductDetails();'
         );
         $buttonBlock = $this->getLayout()->createBlock('adminhtml/widget_button')->setData($data);
-        $this->setChild('product_options_mapping_submit_button', $buttonBlock);
+        $this->setChild('product_options_mapping_submit_button',$buttonBlock);
         // ---------------------------------------
 
         parent::_beforeToHtml();

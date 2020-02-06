@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -58,6 +58,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
             empty($data['country_custom_value']) ||
             $data['country_mode'] == Ess_M2ePro_Model_Ebay_Template_Shipping::COUNTRY_MODE_CUSTOM_ATTRIBUTE &&
             empty($data['country_custom_attribute'])) {
+
             throw new Ess_M2ePro_Model_Exception_Logic('Country is empty.');
         }
 
@@ -82,14 +83,14 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
             'address_mode',
             'address_custom_attribute',
             'address_custom_value',
-            'dispatch_time_mode',
-            'dispatch_time_value',
-            'dispatch_time_attribute',
+            'dispatch_time',
             'global_shipping_program',
+            'local_shipping_rate_table_mode',
+            'international_shipping_rate_table_mode',
             'local_shipping_mode',
-            'local_shipping_discount_promotional_mode',
+            'local_shipping_discount_mode',
             'international_shipping_mode',
-            'international_shipping_discount_promotional_mode',
+            'international_shipping_discount_mode',
             'cross_border_trade',
         );
 
@@ -97,37 +98,18 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
             $prepared[$key] = isset($data[$key]) ? $data[$key] : '';
         }
 
-        if (isset($data['local_shipping_rate_table'])) {
-            $prepared['local_shipping_rate_table'] = Mage::helper('M2ePro')->jsonEncode(
-                $data['local_shipping_rate_table']
-            );
+        if (isset($data['local_shipping_discount_profile_id'])) {
+            $prepared['local_shipping_discount_profile_id'] =
+                json_encode(array_diff($data['local_shipping_discount_profile_id'], array('')));
         } else {
-            $prepared['local_shipping_rate_table'] = Mage::helper('M2ePro')->jsonEncode(array());
+            $prepared['local_shipping_discount_profile_id'] = json_encode(array());
         }
 
-        if (isset($data['international_shipping_rate_table'])) {
-            $prepared['international_shipping_rate_table'] = Mage::helper('M2ePro')->jsonEncode(
-                $data['international_shipping_rate_table']
-            );
+        if (isset($data['international_shipping_discount_profile_id'])) {
+            $prepared['international_shipping_discount_profile_id'] =
+                json_encode(array_diff($data['international_shipping_discount_profile_id'], array('')));
         } else {
-            $prepared['international_shipping_rate_table'] = Mage::helper('M2ePro')->jsonEncode(array());
-        }
-
-        if (isset($data['local_shipping_discount_combined_profile_id'])) {
-            $prepared['local_shipping_discount_combined_profile_id'] = Mage::helper('M2ePro')->jsonEncode(
-                array_diff($data['local_shipping_discount_combined_profile_id'], array(''))
-            );
-        } else {
-            $prepared['local_shipping_discount_combined_profile_id'] = Mage::helper('M2ePro')->jsonEncode(array());
-        }
-
-        if (isset($data['international_shipping_discount_combined_profile_id'])) {
-            $prepared['international_shipping_discount_combined_profile_id'] = Mage::helper('M2ePro')->jsonEncode(
-                array_diff($data['international_shipping_discount_combined_profile_id'], array(''))
-            );
-        } else {
-            $prepared['international_shipping_discount_combined_profile_id']
-                = Mage::helper('M2ePro')->jsonEncode(array());
+            $prepared['international_shipping_discount_profile_id'] = json_encode(array());
         }
 
         if (isset($data['excluded_locations'])) {
@@ -142,10 +124,12 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
         $prepared[$key] = (isset($data[$key]) && $data[$key] != '') ? $data[$key] : NULL;
 
         $modes = array(
+            'local_shipping_rate_table_mode',
+            'international_shipping_rate_table_mode',
             'local_shipping_mode',
-            'local_shipping_discount_promotional_mode',
+            'local_shipping_discount_mode',
             'international_shipping_mode',
-            'international_shipping_discount_promotional_mode',
+            'international_shipping_discount_mode',
             'cross_border_trade',
         );
 
@@ -158,7 +142,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
 
     //########################################
 
-    protected function prepareCalculatedData($templateShippingId, array $data)
+    private function prepareCalculatedData($templateShippingId, array $data)
     {
         $prepared = array('template_shipping_id' => $templateShippingId);
 
@@ -199,7 +183,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
         return $prepared;
     }
 
-    protected function canSaveCalculatedData(array $data)
+    private function canSaveCalculatedData(array $data)
     {
         if ($data['local_shipping_mode'] == Ess_M2ePro_Model_Ebay_Template_Shipping::SHIPPING_TYPE_CALCULATED) {
             return true;
@@ -216,16 +200,14 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
 
         if ($isLocalRateTableEnabled
             && $data['local_shipping_mode'] == Ess_M2ePro_Model_Ebay_Template_Shipping::SHIPPING_TYPE_FLAT
-            && isset($data['local_shipping_rate_table'])
-            && $this->isRateTableEnabled($data['local_shipping_rate_table'])
+            && !empty($data['local_shipping_rate_table_mode'])
         ) {
             return true;
         }
 
         if ($isInternationalRateTableEnabled
             && $data['international_shipping_mode'] == Ess_M2ePro_Model_Ebay_Template_Shipping::SHIPPING_TYPE_FLAT
-            && isset($data['international_shipping_rate_table'])
-            && $this->isRateTableEnabled($data['international_shipping_rate_table'])
+            && !empty($data['international_shipping_rate_table_mode'])
         ) {
             return true;
         }
@@ -238,7 +220,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
         return false;
     }
 
-    protected function createCalculated($templateShippingId, array $data)
+    private function createCalculated($templateShippingId, array $data)
     {
         $coreRes = Mage::getSingleton('core/resource');
         $connWrite = $coreRes->getConnection('core_write');
@@ -259,7 +241,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
 
     //########################################
 
-    protected function prepareServicesData($templateShippingId, array $data)
+    private function prepareServicesData($templateShippingId, array $data)
     {
         if (isset($data['shipping_type']['%i%'])) {
             unset($data['shipping_type']['%i%']);
@@ -289,6 +271,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
 
         $services = array();
         foreach ($data['cost_mode'] as $i => $costMode) {
+
             $locations = array();
             if (isset($data['shippingLocation'][$i])) {
                 foreach ($data['shippingLocation'][$i] as $location) {
@@ -301,6 +284,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
                 : Ess_M2ePro_Model_Ebay_Template_Shipping_Service::SHIPPING_TYPE_INTERNATIONAL;
 
             if ($costMode == Ess_M2ePro_Model_Ebay_Template_Shipping_Service::COST_MODE_CUSTOM_ATTRIBUTE) {
+
                 $cost = isset($data['shipping_cost_attribute'][$i])
                     ? $data['shipping_cost_attribute'][$i]
                     : '';
@@ -308,7 +292,9 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
                 $costAdditional = isset($data['shipping_cost_additional_attribute'][$i])
                     ? $data['shipping_cost_additional_attribute'][$i]
                     : '';
+
             } else {
+
                 $cost = isset($data['shipping_cost_value'][$i])
                     ? $data['shipping_cost_value'][$i]
                     : '';
@@ -319,13 +305,17 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
             }
 
             if ($costMode == Ess_M2ePro_Model_Ebay_Template_Shipping_Service::COST_MODE_CUSTOM_ATTRIBUTE) {
+
                 $costSurcharge = isset($data['shipping_cost_surcharge_attribute'][$i])
                     ? $data['shipping_cost_surcharge_attribute'][$i]
                     : '';
+
             } else if ($costMode == Ess_M2ePro_Model_Ebay_Template_Shipping_Service::COST_MODE_CUSTOM_VALUE) {
+
                 $costSurcharge = isset($data['shipping_cost_surcharge_value'][$i])
                     ? $data['shipping_cost_surcharge_value'][$i]
                     : '';
+
             } else {
                 $costSurcharge = '';
             }
@@ -339,14 +329,14 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
                 'cost_additional_value' => $costAdditional,
                 'cost_surcharge_value'  => $costSurcharge,
                 'priority'              => $data['shipping_priority'][$i],
-                'locations'             => Mage::helper('M2ePro')->jsonEncode($locations)
+                'locations'             => json_encode($locations)
             );
         }
 
         return $services;
     }
 
-    protected function createServices($templateShippingId, array $data)
+    private function createServices($templateShippingId, array $data)
     {
         $coreRes = Mage::getSingleton('core/resource');
         $connWrite = $coreRes->getConnection('core_write');
@@ -363,27 +353,8 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Builder
         }
 
         $connWrite->insertMultiple(
-            Mage::helper('M2ePro/Module_Database_Structure')
-                ->getTableNameWithPrefix('M2ePro/Ebay_Template_Shipping_Service'),
-            $data
+            $coreRes->getTableName('M2ePro/Ebay_Template_Shipping_Service'), $data
         );
-    }
-
-    //########################################
-
-    protected function isRateTableEnabled(array $rateTableData)
-    {
-        if (empty($rateTableData)) {
-            return false;
-        }
-
-        foreach ($rateTableData as $data) {
-            if (!empty($data['value'])) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     //########################################

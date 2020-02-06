@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -12,29 +12,29 @@
 class Ess_M2ePro_Model_Magento_Quote
 {
     /** @var Ess_M2ePro_Model_Order_Proxy */
-    protected $_proxyOrder = null;
+    private $proxyOrder = NULL;
 
     /** @var Mage_Sales_Model_Quote */
-    protected $_quote = null;
+    private $quote = NULL;
 
-    protected $_originalStoreConfig = array();
+    private $originalStoreConfig = array();
 
     //########################################
 
     public function __construct(Ess_M2ePro_Model_Order_Proxy $proxyOrder)
     {
-        $this->_proxyOrder = $proxyOrder;
+        $this->proxyOrder = $proxyOrder;
     }
 
     public function __destruct()
     {
-        if ($this->_quote === null) {
+        if (is_null($this->quote)) {
             return;
         }
 
-        $store = $this->_quote->getStore();
+        $store = $this->quote->getStore();
 
-        foreach ($this->_originalStoreConfig as $key => $value) {
+        foreach ($this->originalStoreConfig as $key => $value) {
             $store->setConfig($key, $value);
         }
     }
@@ -43,7 +43,7 @@ class Ess_M2ePro_Model_Magento_Quote
 
     public function getQuote()
     {
-        return $this->_quote;
+        return $this->quote;
     }
 
     //########################################
@@ -65,72 +65,72 @@ class Ess_M2ePro_Model_Magento_Quote
             $this->initializeQuoteItems();
             $this->initializePaymentMethodData();
 
-            $this->_quote->collectTotals()->save();
+            $this->quote->collectTotals()->save();
 
             $this->prepareOrderNumber();
             // ---------------------------------------
         } catch (Exception $e) {
-            $this->_quote->setIsActive(false)->save();
+            $this->quote->setIsActive(false)->save();
             throw $e;
         }
     }
 
     //########################################
 
-    protected function initializeQuote()
+    private function initializeQuote()
     {
-        $this->_quote = Mage::getModel('sales/quote');
+        $this->quote = Mage::getModel('sales/quote');
 
-        $this->_quote->setCheckoutMethod($this->_proxyOrder->getCheckoutMethod());
-        $this->_quote->setStore($this->_proxyOrder->getStore());
-        $this->_quote->getStore()->setData('current_currency', $this->_quote->getStore()->getBaseCurrency());
-        $this->_quote->save();
+        $this->quote->setCheckoutMethod($this->proxyOrder->getCheckoutMethod());
+        $this->quote->setStore($this->proxyOrder->getStore());
+        $this->quote->getStore()->setData('current_currency', $this->quote->getStore()->getBaseCurrency());
+        $this->quote->save();
 
-        $this->_quote->setIsM2eProQuote(true);
-        $this->_quote->setNeedProcessChannelTaxes(
-            $this->_proxyOrder->isTaxModeChannel() ||
-            ($this->_proxyOrder->isTaxModeMixed() &&
-             ($this->_proxyOrder->hasTax() || $this->_proxyOrder->getWasteRecyclingFee()))
+        $this->quote->setIsM2eProQuote(true);
+        $this->quote->setNeedProcessChannelTaxes(
+            $this->proxyOrder->isTaxModeChannel() ||
+            ($this->proxyOrder->isTaxModeMixed() &&
+                ($this->proxyOrder->hasTax() || $this->proxyOrder->getWasteRecyclingFee()))
         );
 
-        Mage::getSingleton('checkout/session')->replaceQuote($this->_quote);
+        Mage::getSingleton('checkout/session')->replaceQuote($this->quote);
     }
 
     //########################################
 
-    protected function initializeCustomer()
+    private function initializeCustomer()
     {
-        if ($this->_proxyOrder->isCheckoutMethodGuest()) {
-            $this->_quote
+        if ($this->proxyOrder->isCheckoutMethodGuest()) {
+            $this->quote
                 ->setCustomerId(null)
-                ->setCustomerEmail($this->_proxyOrder->getBuyerEmail())
-                ->setCustomerFirstname($this->_proxyOrder->getCustomerFirstName())
-                ->setCustomerLastname($this->_proxyOrder->getCustomerLastName())
+                ->setCustomerEmail($this->proxyOrder->getBuyerEmail())
+                ->setCustomerFirstname($this->proxyOrder->getCustomerFirstName())
+                ->setCustomerLastname($this->proxyOrder->getCustomerLastName())
                 ->setCustomerIsGuest(true)
                 ->setCustomerGroupId(Mage_Customer_Model_Group::NOT_LOGGED_IN_ID);
         }
 
-        $this->_quote->assignCustomer($this->_proxyOrder->getCustomer());
+        $this->quote->assignCustomer($this->proxyOrder->getCustomer());
     }
 
     //########################################
 
-    protected function initializeAddresses()
+    private function initializeAddresses()
     {
-        $billingAddress = $this->_quote->getBillingAddress();
-        $billingAddress->addData($this->_proxyOrder->getBillingAddressData());
+        $billingAddress = $this->quote->getBillingAddress();
+        $billingAddress->addData($this->proxyOrder->getBillingAddressData());
         $billingAddress->implodeStreetAddress();
 
         $billingAddress->setLimitCarrier('m2eproshipping');
         $billingAddress->setShippingMethod('m2eproshipping_m2eproshipping');
         $billingAddress->setCollectShippingRates(true);
-        $billingAddress->setShouldIgnoreValidation($this->_proxyOrder->shouldIgnoreBillingAddressValidation());
+        $billingAddress->setShouldIgnoreValidation($this->proxyOrder->shouldIgnoreBillingAddressValidation());
 
         // ---------------------------------------
 
-        $shippingAddress = $this->_quote->getShippingAddress();
+        $shippingAddress = $this->quote->getShippingAddress();
         $shippingAddress->setSameAsBilling(0); // maybe just set same as billing?
-        $shippingAddress->addData($this->_proxyOrder->getAddressData());
+        $shippingAddress->addData($this->proxyOrder->getAddressData());
         $shippingAddress->implodeStreetAddress();
 
         $shippingAddress->setLimitCarrier('m2eproshipping');
@@ -142,18 +142,18 @@ class Ess_M2ePro_Model_Magento_Quote
 
     //########################################
 
-    protected function initializeCurrency()
+    private function initializeCurrency()
     {
         /** @var $currencyHelper Ess_M2ePro_Model_Currency */
         $currencyHelper = Mage::getSingleton('M2ePro/Currency');
 
-        if ($currencyHelper->isConvertible($this->_proxyOrder->getCurrency(), $this->_quote->getStore())) {
-            $currentCurrency = Mage::getModel('directory/currency')->load($this->_proxyOrder->getCurrency());
+        if ($currencyHelper->isConvertible($this->proxyOrder->getCurrency(), $this->quote->getStore())) {
+            $currentCurrency = Mage::getModel('directory/currency')->load($this->proxyOrder->getCurrency());
         } else {
-            $currentCurrency = $this->_quote->getStore()->getBaseCurrency();
+            $currentCurrency = $this->quote->getStore()->getBaseCurrency();
         }
 
-        $this->_quote->getStore()->setData('current_currency', $currentCurrency);
+        $this->quote->getStore()->setData('current_currency', $currentCurrency);
     }
 
     //########################################
@@ -161,36 +161,37 @@ class Ess_M2ePro_Model_Magento_Quote
     /**
      * Configure store (invoked only after address, customer and store initialization and before price calculations)
      */
-    protected function configureStore()
+    private function configureStore()
     {
         /** @var $storeConfigurator Ess_M2ePro_Model_Magento_Quote_Store_Configurator */
         $storeConfigurator = Mage::getModel('M2ePro/Magento_Quote_Store_Configurator');
-        $storeConfigurator->init($this->_quote, $this->_proxyOrder);
+        $storeConfigurator->init($this->quote, $this->proxyOrder);
 
-        $this->_originalStoreConfig = $storeConfigurator->getOriginalStoreConfig();
+        $this->originalStoreConfig = $storeConfigurator->getOriginalStoreConfig();
 
         $storeConfigurator->prepareStoreConfigForOrder();
     }
 
     //########################################
 
-    protected function configureTaxCalculation()
+    private function configureTaxCalculation()
     {
         // this prevents customer session initialization (which affects cookies)
         // see Mage_Tax_Model_Calculation::getCustomer()
-        Mage::getSingleton('tax/calculation')->setCustomer($this->_quote->getCustomer());
+        Mage::getSingleton('tax/calculation')->setCustomer($this->quote->getCustomer());
     }
 
     //########################################
 
-    protected function initializeQuoteItems()
+    private function initializeQuoteItems()
     {
-        foreach ($this->_proxyOrder->getItems() as $item) {
+        foreach ($this->proxyOrder->getItems() as $item) {
+
             $this->clearQuoteItemsCache();
 
             /** @var $quoteItemBuilder Ess_M2ePro_Model_Magento_Quote_Item */
             $quoteItemBuilder = Mage::getModel('M2ePro/Magento_Quote_Item');
-            $quoteItemBuilder->init($this->_quote, $item);
+            $quoteItemBuilder->init($this->quote, $item);
 
             $product = $quoteItemBuilder->getProduct();
             $request = $quoteItemBuilder->getRequest();
@@ -204,15 +205,15 @@ class Ess_M2ePro_Model_Magento_Quote
             // ---------------------------------------
 
             // see Mage_Sales_Model_Observer::substractQtyFromQuotes
-            $this->_quote->setItemsCount($this->_quote->getItemsCount() + 1);
-            $this->_quote->setItemsQty((float)$this->_quote->getItemsQty() + $request->getQty());
+            $this->quote->setItemsCount($this->quote->getItemsCount() + 1);
+            $this->quote->setItemsQty((float)$this->quote->getItemsQty() + $request->getQty());
 
-            $result = $this->_quote->addProduct($product, $request);
+            $result = $this->quote->addProduct($product, $request);
             if (is_string($result)) {
                 throw new Ess_M2ePro_Model_Exception($result);
             }
 
-            $quoteItem = $this->_quote->getItemByProduct($product);
+            $quoteItem = $this->quote->getItemByProduct($product);
 
             if ($quoteItem !== false) {
                 $weight = $product->getTypeInstance()->getWeight();
@@ -224,7 +225,7 @@ class Ess_M2ePro_Model_Magento_Quote
                     );
                 }
 
-                $quoteItem->setStoreId($this->_quote->getStoreId());
+                $quoteItem->setStoreId($this->quote->getStoreId());
                 $quoteItem->setOriginalCustomPrice($item->getPrice());
                 $quoteItem->setOriginalPrice($productOriginalPrice);
                 $quoteItem->setBaseOriginalPrice($productOriginalPrice);
@@ -248,9 +249,9 @@ class Ess_M2ePro_Model_Magento_Quote
      * Mage_Sales_Model_Quote_Address caches items after each collectTotals call. Some extensions calls collectTotals
      * after adding new item to quote in observers. So we need clear this cache before adding new item to quote.
      */
-    protected function clearQuoteItemsCache()
+    private function clearQuoteItemsCache()
     {
-        foreach ($this->_quote->getAllAddresses() as $address) {
+        foreach ($this->quote->getAllAddresses() as $address) {
 
             /** @var $address Mage_Sales_Model_Quote_Address */
 
@@ -262,51 +263,51 @@ class Ess_M2ePro_Model_Magento_Quote
 
     //########################################
 
-    protected function initializeShippingMethodData()
+    private function initializeShippingMethodData()
     {
         Mage::helper('M2ePro/Data_Global')->unsetValue('shipping_data');
-        Mage::helper('M2ePro/Data_Global')->setValue('shipping_data', $this->_proxyOrder->getShippingData());
+        Mage::helper('M2ePro/Data_Global')->setValue('shipping_data', $this->proxyOrder->getShippingData());
     }
 
     //########################################
 
-    protected function initializePaymentMethodData()
+    private function initializePaymentMethodData()
     {
-        $quotePayment = $this->_quote->getPayment();
-        $quotePayment->importData($this->_proxyOrder->getPaymentData());
+        $quotePayment = $this->quote->getPayment();
+        $quotePayment->importData($this->proxyOrder->getPaymentData());
     }
 
     //########################################
 
-    protected function prepareOrderNumber()
+    private function prepareOrderNumber()
     {
-        if ($this->_proxyOrder->isOrderNumberPrefixSourceChannel()) {
-            $orderNumber = $this->addPrefixToOrderNumberIfNeed($this->_proxyOrder->getChannelOrderNumber());
+        if ($this->proxyOrder->isOrderNumberPrefixSourceChannel()) {
+            $orderNumber = $this->addPrefixToOrderNumberIfNeed($this->proxyOrder->getChannelOrderNumber());
             if (Mage::helper('M2ePro/Magento')->isMagentoOrderIdUsed($orderNumber)) {
                 $orderNumber .= '(1)';
             }
 
-            $this->_quote->setReservedOrderId($orderNumber);
+            $this->quote->setReservedOrderId($orderNumber);
             return;
         }
 
-        $orderNumber = $this->_quote->getReservedOrderId();
+        $orderNumber = $this->quote->getReservedOrderId();
         if (empty($orderNumber)) {
-            $orderNumber = $this->_quote->getResource()->getReservedOrderId($this->_quote);
+            $orderNumber = $this->quote->getResource()->getReservedOrderId($this->quote);
         }
 
         $orderNumber = $this->addPrefixToOrderNumberIfNeed($orderNumber);
 
-        if ($this->_quote->getResource()->isOrderIncrementIdUsed($orderNumber)) {
-            $orderNumber = $this->_quote->getResource()->getReservedOrderId($this->_quote);
+        if ($this->quote->getResource()->isOrderIncrementIdUsed($orderNumber)) {
+            $orderNumber = $this->quote->getResource()->getReservedOrderId($this->quote);
         }
 
-        $this->_quote->setReservedOrderId($orderNumber);
+        $this->quote->setReservedOrderId($orderNumber);
     }
 
-    protected function addPrefixToOrderNumberIfNeed($orderNumber)
+    private function addPrefixToOrderNumberIfNeed($orderNumber)
     {
-        $prefix = $this->_proxyOrder->getOrderNumberPrefix();
+        $prefix = $this->proxyOrder->getOrderNumberPrefix();
         if (empty($prefix)) {
             return $orderNumber;
         }

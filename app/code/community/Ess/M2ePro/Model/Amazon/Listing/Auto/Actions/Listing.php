@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -21,9 +21,9 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
             return;
         }
 
-        $listingsProducts = $this->getListing()->getProducts(true, array('product_id'=>(int)$product->getId()));
+        $listingsProducts = $this->getListing()->getProducts(true,array('product_id'=>(int)$product->getId()));
 
-        if (empty($listingsProducts)) {
+        if (count($listingsProducts) <= 0) {
             return;
         }
 
@@ -31,6 +31,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
         $parentsForRemove = array();
 
         foreach ($listingsProducts as $listingProduct) {
+
             if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
                 return;
             }
@@ -46,25 +47,18 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
             }
 
             try {
-                $instructionType = self::INSTRUCTION_TYPE_STOP;
 
-                if ($deletingMode == Ess_M2ePro_Model_Listing::DELETING_MODE_STOP_REMOVE) {
-                    $instructionType = self::INSTRUCTION_TYPE_STOP_AND_REMOVE;
+                if ($deletingMode == Ess_M2ePro_Model_Listing::DELETING_MODE_STOP) {
+                    $listingProduct->isStoppable() && Mage::getModel('M2ePro/StopQueue')->add($listingProduct);
                 }
 
-                $instruction = Mage::getModel('M2ePro/Listing_Product_Instruction');
-                $instruction->setData(
-                    array(
-                    'listing_product_id' => $listingProduct->getId(),
-                    'component'          => $listingProduct->getComponentMode(),
-                    'type'               => $instructionType,
-                    'initiator'          => self::INSTRUCTION_INITIATOR,
-                    'priority'           => $listingProduct->isStoppable() ? 60 : 0,
-                    )
-                );
-                $instruction->save();
-            } catch (Exception $exception) {
-            }
+                if ($deletingMode == Ess_M2ePro_Model_Listing::DELETING_MODE_STOP_REMOVE) {
+                    $listingProduct->isStoppable() && Mage::getModel('M2ePro/StopQueue')->add($listingProduct);
+                    $listingProduct->addData(array('status'=>Ess_M2ePro_Model_Listing_Product::STATUS_STOPPED))->save();
+                    $listingProduct->deleteInstance();
+                }
+
+            } catch (Exception $exception) {}
         }
 
         if (empty($parentsForRemove)) {
@@ -84,19 +78,10 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
      * @param Ess_M2ePro_Model_Listing_Auto_Category_Group $categoryGroup
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    public function addProductByCategoryGroup(
-        Mage_Catalog_Model_Product $product,
-        Ess_M2ePro_Model_Listing_Auto_Category_Group $categoryGroup
-    ) {
-        $logData = array(
-            'reason'     => __METHOD__,
-            'rule_id'    => $categoryGroup->getId(),
-            'rule_title' => $categoryGroup->getTitle(),
-        );
-        $listingProduct = $this->getListing()->addProduct(
-            $product, Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION,
-            false, true, $logData
-        );
+    public function addProductByCategoryGroup(Mage_Catalog_Model_Product $product,
+                                              Ess_M2ePro_Model_Listing_Auto_Category_Group $categoryGroup)
+    {
+        $listingProduct = $this->getListing()->addProduct($product);
 
         if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
             return;
@@ -119,19 +104,11 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
      */
     public function addProductByGlobalListing(Mage_Catalog_Model_Product $product, Ess_M2ePro_Model_Listing $listing)
     {
-        $logData = array(
-            'reason' => __METHOD__,
-        );
-        $listingProduct = $this->getListing()->addProduct(
-            $product, Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION,
-            false, true, $logData
-        );
+        $listingProduct = $this->getListing()->addProduct($product);
 
         if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
             return;
         }
-
-        $this->logAddedToMagentoProduct($listingProduct);
 
         /** @var Ess_M2ePro_Model_Amazon_Listing $amazonListing */
         $amazonListing = $listing->getChildObject();
@@ -150,13 +127,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
      */
     public function addProductByWebsiteListing(Mage_Catalog_Model_Product $product, Ess_M2ePro_Model_Listing $listing)
     {
-        $logData = array(
-            'reason' => __METHOD__,
-        );
-        $listingProduct = $this->getListing()->addProduct(
-            $product, Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION,
-            false, true, $logData
-        );
+        $listingProduct = $this->getListing()->addProduct($product);
 
         if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
             return;
@@ -184,6 +155,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
         $amazonListingProduct = $listingProduct->getChildObject();
 
         if (!$amazonListingProduct->getVariationManager()->isRelationParentType()) {
+
             $listingProduct->setData('template_description_id', $params['template_description_id']);
             $listingProduct->setData(
                 'is_general_id_owner',
@@ -198,8 +170,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mo
         $processor = $amazonListingProduct->getVariationManager()->getTypeModel()->getProcessor();
 
         if ($listingProduct->getMagentoProduct()->isBundleType() ||
-            $listingProduct->getMagentoProduct()->isSimpleTypeWithCustomOptions() ||
-            $listingProduct->getMagentoProduct()->isDownloadableTypeWithSeparatedLinks()
+            $listingProduct->getMagentoProduct()->isSimpleTypeWithCustomOptions()
         ) {
             $processor->process();
             return;

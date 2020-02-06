@@ -239,20 +239,15 @@ EbayListingVariationProductManageVariationsGridHandler = Class.create(GridHandle
 
     editVariationIdentifiers: function(editBtn, variationId)
     {
-        var self = this;
-
         $('variation_identifiers_edit_'+variationId).show();
         $('variation_identifiers_'+variationId).hide();
-
         editBtn.hide();
-
-        self.autoHeightFrame();
     },
 
     confirmVariationIdentifiers: function(editBtn, variationId)
     {
         var self = this,
-            form = $('variation_identifiers_edit_'+variationId);
+            form = $('variation_identifiers_edit_'+variationId)
 
         if (!self.isValid(form)) {
             return;
@@ -268,7 +263,6 @@ EbayListingVariationProductManageVariationsGridHandler = Class.create(GridHandle
                 var response = self.parseResponse(transport);
                 if(response.success) {
                     VariationsGridHandlerObj.getGridObj().reload();
-                    self.autoHeightFrame();
                 }
             }
         });
@@ -276,16 +270,12 @@ EbayListingVariationProductManageVariationsGridHandler = Class.create(GridHandle
 
     cancelVariationIdentifiers: function(variationId)
     {
-        var self = this,
-            form = $('variation_identifiers_edit_'+variationId);
-
+        var form = $('variation_identifiers_edit_'+variationId);
         form.reset();
         this.isValid(form);
         form.hide();
         $('variation_identifiers_'+variationId).show();
         $('edit_variations_'+variationId).show();
-
-        self.autoHeightFrame();
     },
 
     isValid: function (form)
@@ -306,16 +296,6 @@ EbayListingVariationProductManageVariationsGridHandler = Class.create(GridHandle
         result = Validation.test('M2ePro-isbn', isbn) ? result : false;
 
         return result;
-    },
-
-    autoHeightFrame: function()
-    {
-        var containerId = window.frameElement.getAttribute('parent-container');
-        FrameHandlerObj.autoHeightFrameByContent(
-            $(window.frameElement.ownerDocument.getElementById(containerId)),
-            $(window.frameElement.ownerDocument.getElementById(window.frameElement.id))
-        );
     }
 
-    // ---------------------------------------
 });

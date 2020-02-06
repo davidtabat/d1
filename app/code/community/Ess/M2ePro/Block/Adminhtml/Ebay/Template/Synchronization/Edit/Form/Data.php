@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -24,26 +24,21 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Data ex
 
     protected function _beforeToHtml()
     {
-        $this->setChild(
-            'ebay_template_synchronization_edit_form_tabs_list', $this->getLayout()->createBlock(
-                'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_list'
-            )
-        );
-        $this->setChild(
-            'ebay_template_synchronization_edit_form_tabs_relist', $this->getLayout()->createBlock(
-                'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_relist'
-            )
-        );
-        $this->setChild(
-            'ebay_template_synchronization_edit_form_tabs_revise', $this->getLayout()->createBlock(
-                'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_revise'
-            )
-        );
-        $this->setChild(
-            'ebay_template_synchronization_edit_form_tabs_stop', $this->getLayout()->createBlock(
-                'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_stop'
-            )
-        );
+        $this->setChild('ebay_template_synchronization_edit_form_tabs_list', $this->getLayout()->createBlock(
+            'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_list'
+        ));
+        $this->setChild('ebay_template_synchronization_edit_form_tabs_relist', $this->getLayout()->createBlock(
+            'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_relist'
+        ));
+        $this->setChild('ebay_template_synchronization_edit_form_tabs_revise', $this->getLayout()->createBlock(
+            'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_revise'
+        ));
+        $this->setChild('ebay_template_synchronization_edit_form_tabs_stop', $this->getLayout()->createBlock(
+            'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_stop'
+        ));
+        $this->setChild('ebay_template_synchronization_edit_form_tabs_schedule', $this->getLayout()->createBlock(
+            'M2ePro/adminhtml_ebay_template_synchronization_edit_form_tabs_schedule'
+        ));
 
         return parent::_beforeToHtml();
     }
@@ -67,7 +62,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Data ex
 
         $template = Mage::helper('M2ePro/Data_Global')->getValue('ebay_template_synchronization');
 
-        if ($template === null) {
+        if (is_null($template)) {
             return '';
         }
 
@@ -80,11 +75,13 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Data ex
     {
         $template = Mage::helper('M2ePro/Data_Global')->getValue('ebay_template_synchronization');
 
-        if ($template === null || $template->getId() === null) {
+        if (is_null($template) || is_null($template->getId())) {
             return array();
         }
 
-        return $template->getData();
+        $data = $template->getData();
+
+        return $data;
     }
 
     //########################################

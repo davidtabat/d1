@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Model_Component_Child_Abstract extends Ess_M2ePro_Model_Component_Abstract
 {
-    protected $_parentObject;
+    protected $parentObject = NULL;
 
     //########################################
 
@@ -17,11 +17,11 @@ abstract class Ess_M2ePro_Model_Component_Child_Abstract extends Ess_M2ePro_Mode
      */
     public function setParentObject(Ess_M2ePro_Model_Component_Parent_Abstract $object)
     {
-        if ($object->getId() === null) {
+        if (is_null($object->getId())) {
             return;
         }
 
-        $this->_parentObject = $object;
+        $this->parentObject = $object;
     }
 
     /**
@@ -30,28 +30,28 @@ abstract class Ess_M2ePro_Model_Component_Child_Abstract extends Ess_M2ePro_Mode
      */
     public function getParentObject()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
              throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        if ($this->_parentObject !== null) {
-            return $this->_parentObject;
+        if (!is_null($this->parentObject)) {
+            return $this->parentObject;
         }
 
         $tempMode = $this->getComponentMode();
 
-        if ($tempMode === null) {
+        if (is_null($tempMode)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Set Component Mode first');
         }
 
-        $modelName           = str_replace('M2ePro/'.ucwords($tempMode).'_', '', $this->_resourceName);
-        $this->_parentObject = Mage::helper('M2ePro')->getModel($modelName);
+        $modelName = str_replace('M2ePro/'.ucwords($tempMode).'_','',$this->_resourceName);
+        $this->parentObject = Mage::helper('M2ePro')->getModel($modelName);
 
-        $this->_parentObject->setChildMode($tempMode);
-        $this->_parentObject->loadInstance($this->getId());
-        $this->_parentObject->setChildObject($this);
+        $this->parentObject->setChildMode($tempMode);
+        $this->parentObject->loadInstance($this->getId());
+        $this->parentObject->setChildObject($this);
 
-        return $this->_parentObject;
+        return $this->parentObject;
     }
 
     //########################################
@@ -65,37 +65,33 @@ abstract class Ess_M2ePro_Model_Component_Child_Abstract extends Ess_M2ePro_Mode
      * @return array
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    protected function getRelatedComponentItems(
-        $modelName,
-        $fieldName,
-        $asObjects = false,
-        array $filters = array(),
-        array $sort = array()
-    ) {
-        if ($this->getId() === null) {
+    protected function getRelatedComponentItems($modelName, $fieldName, $asObjects = false,
+                                                array $filters = array(), array $sort = array())
+    {
+        if (is_null($this->getId())) {
              throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
         $tempMode = $this->getComponentMode();
 
-        if ($tempMode === null) {
+        if (is_null($tempMode)) {
              throw new Ess_M2ePro_Model_Exception_Logic('Set Component Mode first');
         }
 
-        $tempModel = Mage::helper('M2ePro/Component')->getComponentModel($tempMode, $modelName);
+        $tempModel = Mage::helper('M2ePro/Component')->getComponentModel($tempMode,$modelName);
 
-        if ($tempModel === null || !($tempModel instanceof Ess_M2ePro_Model_Abstract)) {
+        if (is_null($tempModel) || !($tempModel instanceof Ess_M2ePro_Model_Abstract)) {
             return array();
         }
 
-        return $this->getRelatedItems($tempModel, $fieldName, $asObjects, $filters, $sort);
+        return $this->getRelatedItems($tempModel,$fieldName,$asObjects,$filters,$sort);
     }
 
     //########################################
 
     protected function getComponentMode()
     {
-        return null;
+        return NULL;
     }
 
     //########################################

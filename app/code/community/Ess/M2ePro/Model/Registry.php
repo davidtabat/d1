@@ -2,13 +2,10 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
-/**
- * @method Ess_M2ePro_Model_Resource_Registry _getResource()
- */
 class Ess_M2ePro_Model_Registry extends Ess_M2ePro_Model_Abstract
 {
     //########################################
@@ -31,27 +28,11 @@ class Ess_M2ePro_Model_Registry extends Ess_M2ePro_Model_Abstract
         return $this->getData('value');
     }
 
-    // ---------------------------------------
-
-    public function setValue($value)
-    {
-        is_array($value) && $value = Mage::helper('M2ePro')->jsonEncode($value);
-        return $this->setData('value', $value);
-    }
-
     //########################################
 
     public function getValueFromJson()
     {
-        return $this->getId() === null ?  array() : Mage::helper('M2ePro')->jsonDecode($this->getValue());
-    }
-
-    //########################################
-
-    public function loadByKey($key)
-    {
-        $this->_getResource()->loadByKey($this, $key);
-        return $this;
+        return is_null($this->getId()) ?  array() : json_decode($this->getValue(), true);
     }
 
     //########################################

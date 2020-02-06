@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -24,22 +24,15 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
 
         $data = $this->appendStatusChangerValue($data);
         $data = $this->appendIdentifiersData($data, $generalId);
-        $data = $this->appendDetailsValues($data);
-        $data = $this->appendImagesValues($data);
 
         $variationManager = $this->getAmazonListingProduct()->getVariationManager();
 
         if (!$variationManager->isRelationParentType()) {
+
             $data['is_afn_channel'] = Ess_M2ePro_Model_Amazon_Listing_Product::IS_AFN_CHANNEL_NO;
 
             $data = $this->appendQtyValues($data);
-            $data = $this->appendRegularPriceValues($data);
-            $data = $this->appendBusinessPriceValues($data);
-            $data = $this->appendGiftSettingsStatus($data);
-        }
-
-        if (isset($data['additional_data'])) {
-            $data['additional_data'] = Mage::helper('M2ePro')->jsonEncode($data['additional_data']);
+            $data = $this->appendPriceValues($data);
         }
 
         $this->getListingProduct()->addData($data);
@@ -57,12 +50,12 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
 
     //########################################
 
-    protected function appendIdentifiersData($data, $generalId)
+    private function appendIdentifiersData($data, $generalId)
     {
         $data['sku'] = $this->getRequestData()->getSku();
 
         $isGeneralIdOwner = $this->getIsGeneralIdOwner();
-        if ($isGeneralIdOwner !== null) {
+        if (!is_null($isGeneralIdOwner)) {
             $data['is_general_id_owner'] = $isGeneralIdOwner;
         }
 
@@ -76,7 +69,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
 
     //########################################
 
-    protected function setVariationData($generalId)
+    private function setVariationData($generalId)
     {
         if (empty($generalId)) {
             return;
@@ -90,6 +83,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
         $typeModel = $variationManager->getTypeModel();
 
         if ($variationManager->isRelationParentType()) {
+
             $detailsModel = Mage::getModel('M2ePro/Amazon_Marketplace_Details');
             $detailsModel->setMarketplaceId($this->getMarketplace()->getId());
 
@@ -143,7 +137,6 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
 
             $channelAttributesSets[$attribute][] = $value;
         }
-
         $parentTypeModel->setChannelAttributesSets($channelAttributesSets, false);
         // ---------------------------------------
 
@@ -152,7 +145,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
 
     //########################################
 
-    protected function getGeneralId(array $params)
+    private function getGeneralId(array $params)
     {
         if (!empty($params['general_id'])) {
             return $params['general_id'];
@@ -165,7 +158,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
         return $this->getRequestData()->getProductId();
     }
 
-    protected function getIsGeneralIdOwner()
+    private function getIsGeneralIdOwner()
     {
         $variationManager = $this->getAmazonListingProduct()->getVariationManager();
 
@@ -186,7 +179,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Response
 
     //########################################
 
-    protected function createAmazonItem()
+    private function createAmazonItem()
     {
         /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Action_Type_List_Linking $linkingObject */
         $linkingObject = Mage::getModel('M2ePro/Amazon_Listing_Product_Action_Type_List_Linking');

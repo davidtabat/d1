@@ -2,16 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Search_Custom
 {
-    /** @var Ess_M2ePro_Model_Listing_Product $_listingProduct */
-    protected $_listingProduct = null;
+    /** @var Ess_M2ePro_Model_Listing_Product $listingProduct */
+    private $listingProduct = null;
 
-    protected $_query = null;
+    private $query = null;
 
     //########################################
 
@@ -21,7 +21,7 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
      */
     public function setListingProduct(Ess_M2ePro_Model_Listing_Product $listingProduct)
     {
-        $this->_listingProduct = $listingProduct;
+        $this->listingProduct = $listingProduct;
         return $this;
     }
 
@@ -31,7 +31,7 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
      */
     public function setQuery($query)
     {
-        $this->_query = (string)$query;
+        $this->query = (string)$query;
         return $this;
     }
 
@@ -39,24 +39,24 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
 
     public function process()
     {
-        $dispatcherObject = Mage::getModel('M2ePro/Amazon_Connector_Dispatcher');
-        $connectorObj = $dispatcherObject->getCustomConnector(
-            'Amazon_Search_Custom_'.ucfirst($this->getSearchMethod()).'_Requester',
-            $this->getConnectorParams(), $this->_listingProduct->getAccount()
-        );
+        $dispatcherObject = Mage::getModel('M2ePro/Connector_Amazon_Dispatcher');
+        $connectorObj = $dispatcherObject->getConnector('custom', $this->getSearchMethod(), 'requester',
+                                                        $this->getConnectorParams(),
+                                                        $this->listingProduct->getAccount(),
+                                                        'Ess_M2ePro_Model_Amazon_Search');
 
-        $dispatcherObject->process($connectorObj);
-        return $this->prepareResult($connectorObj->getPreparedResponseData());
+        $searchData = $dispatcherObject->process($connectorObj);
+        return $this->prepareResult($searchData);
     }
 
     //########################################
 
-    protected function getConnectorParams()
+    private function getConnectorParams()
     {
         $searchMethod = $this->getSearchMethod();
 
         /** @var Ess_M2ePro_Model_Amazon_Listing_Product $amazonListingProduct */
-        $amazonListingProduct = $this->_listingProduct->getChildObject();
+        $amazonListingProduct = $this->listingProduct->getChildObject();
         $isModifyChildToSimple = !$amazonListingProduct->getVariationManager()->isRelationParentType();
 
         $params = array(
@@ -64,7 +64,7 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
         );
 
         if ($searchMethod == 'byQuery') {
-            $params['query'] = $this->_query;
+            $params['query'] = $this->query;
         } else {
             $params['query'] = $this->getStrippedQuery();
         }
@@ -76,7 +76,7 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
         return $params;
     }
 
-    protected function getSearchMethod()
+    private function getSearchMethod()
     {
         $validationHelper = Mage::helper('M2ePro');
         $amazonHelper     = Mage::helper('M2ePro/Component_Amazon');
@@ -96,7 +96,7 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
         return 'byQuery';
     }
 
-    protected function getIdentifierType()
+    private function getIdentifierType()
     {
         $query = $this->getStrippedQuery();
 
@@ -108,7 +108,7 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
                ($validationHelper->isEAN($query)                        ? 'EAN'  : false))));
     }
 
-    protected function prepareResult($searchData)
+    private function prepareResult($searchData)
     {
         $connectorParams = $this->getConnectorParams();
 
@@ -119,10 +119,10 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
         }
 
         if ($searchData !== false && $this->getSearchMethod() == 'byAsin') {
-            if (is_array($searchData) && !empty($searchData)) {
-                $searchData = array($searchData);
-            } else if ($searchData === null) {
+            if (is_null($searchData)) {
                 $searchData = array();
+            } else {
+                $searchData = array($searchData);
             }
         }
 
@@ -133,9 +133,9 @@ class Ess_M2ePro_Model_Amazon_Search_Custom
         );
     }
 
-    protected function getStrippedQuery()
+    private function getStrippedQuery()
     {
-        return str_replace('-', '', $this->_query);
+        return str_replace('-', '', $this->query);
     }
 
     //########################################

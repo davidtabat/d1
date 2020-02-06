@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -36,7 +36,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
     public function loadFromSerialized($serialized)
     {
         $prefix = $this->getPrefix();
-        if ($prefix === null) {
+        if (is_null($prefix)) {
             throw new Ess_M2ePro_Model_Exception('Prefix must be specified before.');
         }
 
@@ -46,7 +46,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
             return;
         }
 
-        $conditions = Mage::helper('M2ePro')->unserialize($serialized);
+        $conditions = unserialize($serialized);
         $this->_conditions->loadArray($conditions, $prefix);
     }
 
@@ -60,7 +60,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
     public function loadFromPost(array $post)
     {
         $prefix = $this->getPrefix();
-        if ($prefix === null) {
+        if (is_null($prefix)) {
             throw new Ess_M2ePro_Model_Exception('Prefix must be specified before.');
         }
 
@@ -80,13 +80,13 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
     public function getSerializedFromPost(array $post)
     {
         $prefix = $this->getPrefix();
-        if ($prefix === null) {
+        if (is_null($prefix)) {
             throw new Ess_M2ePro_Model_Exception('Prefix must be specified before.');
         }
 
         $conditionsArray = $this->_convertFlatToRecursive($post['rule'][$prefix], $prefix);
 
-        return Mage::helper('M2ePro')->serialize($conditionsArray[$prefix][1]);
+        return serialize($conditionsArray[$prefix][1]);
     }
 
     //########################################
@@ -103,7 +103,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
 
     public function getStoreId()
     {
-        if ($this->getData('store_id') === null) {
+        if (is_null($this->getData('store_id'))) {
             return 0;
         }
 
@@ -154,7 +154,6 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
         if (!$this->_form) {
             $this->_form = new Varien_Data_Form();
         }
-
         return $this->_form;
     }
 
@@ -170,15 +169,15 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
     public function getConditions()
     {
         $prefix = $this->getPrefix();
-        if ($prefix === null) {
+        if (is_null($prefix)) {
             throw new Ess_M2ePro_Model_Exception('Prefix must be specified before.');
         }
 
-        if ($this->_conditions !== null) {
+        if (!is_null($this->_conditions)) {
             return $this->_conditions->setJsFormObject($prefix)->setStoreId($this->getStoreId());
         }
 
-        if ($this->getConditionsSerialized() !== null) {
+        if (!is_null($this->getConditionsSerialized())) {
             $this->loadFromSerialized($this->getConditionsSerialized());
         } else {
             $this->_conditions = $this->getConditionInstance($prefix);
@@ -194,7 +193,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
      */
     public function isEmpty()
     {
-        if ($this->_conditions === null) {
+        if (is_null($this->_conditions)) {
             return true;
         }
 
@@ -227,7 +226,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
      */
     public function setAttributesFilterToCollection(Varien_Data_Collection_Db $collection)
     {
-        if (empty($this->getConditions()->getData($this->getPrefix()))) {
+        if (count($this->getConditions()->getData($this->getPrefix())) <= 0) {
             return;
         }
 
@@ -283,7 +282,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
             ->setId(1)
             ->setData($prefix, array());
 
-        if ($this->getCustomOptionsFlag() !== null) {
+        if (!is_null($this->getCustomOptionsFlag())) {
             $conditionInstance->setCustomOptionsFlag($this->getCustomOptionsFlag());
         }
 
@@ -300,10 +299,8 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
                 if (!isset($node[$prefix][$path[$i]])) {
                     $node[$prefix][$path[$i]] = array();
                 }
-
                 $node =& $node[$prefix][$path[$i]];
             }
-
             foreach ($value as $k => $v) {
                 $node[$k] = $v;
             }
@@ -316,7 +313,7 @@ Class Ess_M2ePro_Model_Magento_Product_Rule extends Ess_M2ePro_Model_Abstract
 
     protected function _beforeSave()
     {
-        $serialized = Mage::helper('M2ePro')->serialize($this->getConditions()->asArray());
+        $serialized = serialize($this->getConditions()->asArray());
         $this->setData('conditions_serialized', $serialized);
 
         return parent::_beforeSave();

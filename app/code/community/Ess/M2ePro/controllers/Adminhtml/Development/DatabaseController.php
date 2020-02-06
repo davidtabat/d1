@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -30,7 +30,7 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
 
         $table = $this->getRequest()->getParam('table');
 
-        if ($table === null) {
+        if (is_null($table)) {
             $this->_redirectUrl(Mage::helper('M2ePro/View_Development')->getPageDatabaseTabUrl());
             return;
         }
@@ -45,14 +45,13 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
 
         $response = '';
         foreach ($tables as $table) {
-            if (Mage::helper('M2ePro/Module_Database_Structure')->getTableModel($table) === null) {
+
+            if (is_null(Mage::helper('M2ePro/Module_Database_Structure')->getTableModel($table))) {
                 continue;
             }
 
-            $url = Mage::helper('adminhtml')->getUrl(
-                '*/adminhtml_development_database/manageTable',
-                array('table' => $table)
-            );
+            $url = Mage::helper('adminhtml')->getUrl('*/adminhtml_development_database/manageTable',
+                                                     array('table' => $table));
 
             $response .= "window.open('{$url}');";
         }
@@ -67,29 +66,6 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
         $this->getResponse()->setBody($response);
     }
 
-    public function deleteTablesRowsAction()
-    {
-        $tables = $this->getRequest()->getParam('tables', array());
-        !is_array($tables) && $tables = array($tables);
-
-        $writeConnection = Mage::getSingleton('core/resource')->getConnection('core_write');
-
-        foreach ($tables as $table) {
-            $tableName = Mage::helper('M2ePro/Module_Database_Structure')->getTableNameWithPrefix($table);
-            $writeConnection->delete($tableName);
-
-            $this->afterTableAction($table);
-        }
-
-        $this->_getSession()->addSuccess('Deleting Tables Rows was successfully completed.');
-
-        if (count($tables) == 1) {
-            $this->redirectToTablePage($tables[0]);
-        }
-
-        $this->_redirectUrl(Mage::helper('M2ePro/View_Development')->getPageDatabaseTabUrl());
-    }
-
     public function truncateTablesAction()
     {
         $tables = $this->getRequest()->getParam('tables', array());
@@ -98,8 +74,9 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
         $writeConnection = Mage::getSingleton('core/resource')->getConnection('core_write');
 
         foreach ($tables as $table) {
-            $tableName = Mage::helper('M2ePro/Module_Database_Structure')->getTableNameWithPrefix($table);
-            $writeConnection->truncateTable($tableName);
+
+            $tableName = Mage::getSingleton('core/resource')->getTableName($table);
+            $writeConnection->delete($tableName);
 
             $this->afterTableAction($table);
         }
@@ -109,7 +86,6 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
         if (count($tables) == 1) {
             $this->redirectToTablePage($tables[0]);
         }
-
         $this->_redirectUrl(Mage::helper('M2ePro/View_Development')->getPageDatabaseTabUrl());
     }
 
@@ -138,7 +114,6 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
         if (!$modelInstance || empty($ids)) {
             $this->_getSession()->addError("Failed to get model or any of Table Rows are not selected.");
             $this->redirectToTablePage($table);
-            return;
         }
 
         $collection = $modelInstance->getCollection();
@@ -146,10 +121,10 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
 
         if ($collection->getSize() == 0) {
             $this->redirectToTablePage($table);
-            return;
         }
 
         foreach ($collection as $item) {
+
             $item->delete();
             $this->isMergeModeEnabled($table) && $item->getChildObject()->delete();
         }
@@ -175,7 +150,6 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
 
         if ($collection->getSize() == 0) {
             $this->redirectToTablePage($table);
-            return;
         }
 
         $idFieldName = $modelInstance->getIdFieldName();
@@ -183,13 +157,15 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
 
         foreach ($collection->getItems() as $item) {
             foreach ($cellsValues as $field => $value) {
+
                 if ($field == $idFieldName && $isAutoIncrement) {
                     continue;
                 }
 
                 if ($field == $idFieldName && !$isAutoIncrement) {
+
                     Mage::getSingleton('core/resource')->getConnection('core_write')->update(
-                        Mage::helper('M2ePro/Module_Database_Structure')->getTableNameWithPrefix($table),
+                        Mage::getSingleton('core/resource')->getTableName($table),
                         array($idFieldName => $value),
                         "`{$idFieldName}` = {$item->getId()}"
                     );
@@ -204,7 +180,7 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
         $this->afterTableAction($table);
     }
 
-    protected function afterTableAction($tableName)
+    private function afterTableAction($tableName)
     {
         if (strpos($tableName, 'config') !== false || strpos($tableName, 'wizard') !== false) {
             Mage::helper('M2ePro/Module')->clearCache();
@@ -213,7 +189,7 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
 
     //########################################
 
-    protected function getModel()
+    private function getModel()
     {
         $table     = $this->getRequest()->getParam('table');
         $modelName = $this->getRequest()->getParam('model');
@@ -226,20 +202,21 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
         return Mage::helper('M2ePro/Component')->getComponentModel($component, $modelName);
     }
 
-    protected function isMergeModeEnabled($table)
+    private function isMergeModeEnabled($table)
     {
         return (bool)$this->getRequest()->getParam('merge') &&
                 Mage::helper('M2ePro/Module_Database_Structure')->isTableHorizontal($table);
     }
 
-    protected function prepareCellsValuesArray()
+    private function prepareCellsValuesArray()
     {
         $cells = $this->getRequest()->getParam('cells', array());
         is_string($cells) && $cells = array($cells);
 
         $bindArray = array();
         foreach ($cells as $columnName) {
-            if (($columnValue = $this->getRequest()->getParam('value_' . $columnName)) === null) {
+
+            if (is_null($columnValue = $this->getRequest()->getParam('value_'.$columnName))) {
                 continue;
             }
 
@@ -277,43 +254,6 @@ class Ess_M2ePro_Adminhtml_Development_DatabaseController
             ->createBlock('M2ePro/adminhtml_development_tabs_database_table_tableCellsPopup')->toHtml();
 
         $this->getResponse()->setBody($response);
-    }
-
-    public function showOperationHistoryExecutionTreeUpAction()
-    {
-        $operationHistoryId = $this->getRequest()->getParam('operation_history_id');
-        if (empty($operationHistoryId)) {
-            $this->_getSession()->addError("Operation history ID is not presented.");
-            return $this->redirectToTablePage('m2epro_operation_history');
-        }
-
-        $operationHistory = Mage::getModel('M2ePro/OperationHistory');
-        $operationHistory->setObject($operationHistoryId);
-
-        $this->getResponse()->setBody(
-            '<pre>'.$operationHistory->getExecutionTreeUpInfo().'</pre>'
-        );
-    }
-
-    public function showOperationHistoryExecutionTreeDownAction()
-    {
-        $operationHistoryId = $this->getRequest()->getParam('operation_history_id');
-        if (empty($operationHistoryId)) {
-            $this->_getSession()->addError("Operation history ID is not presented.");
-            return $this->redirectToTablePage('m2epro_operation_history');
-        }
-
-        $operationHistory = Mage::getModel('M2ePro/OperationHistory');
-        $operationHistory->setObject($operationHistoryId);
-
-        while ($parentId = $operationHistory->getObject()->getData('parent_id')) {
-            $object = $operationHistory->load($parentId);
-            $operationHistory->setObject($object);
-        }
-
-        $this->getResponse()->setBody(
-            '<pre>'.$operationHistory->getExecutionTreeDownInfo().'</pre>'
-        );
     }
 
     //########################################

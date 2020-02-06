@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -10,9 +10,9 @@ class Ess_M2ePro_Model_VariablesDir
 {
     const BASE_NAME = 'M2ePro';
 
-    protected $_childFolder = NULL;
-    protected $_pathVariablesDirBase = NULL;
-    protected $_pathVariablesDirChildFolder = NULL;
+    private $_childFolder = NULL;
+    private $_pathVariablesDirBase = NULL;
+    private $_pathVariablesDirChildFolder = NULL;
 
     //########################################
 
@@ -26,11 +26,11 @@ class Ess_M2ePro_Model_VariablesDir
         $params['child_folder'] === '' && $params['child_folder'] = NULL;
         $this->_pathVariablesDirBase = Mage::getBaseDir('var').DS.self::BASE_NAME;
 
-        if ($params['child_folder'] !== null) {
+        if (!is_null($params['child_folder'])) {
+
             if ($params['child_folder']{0} != DS) {
                 $params['child_folder'] = DS.$params['child_folder'];
             }
-
             if ($params['child_folder']{strlen($params['child_folder'])-1} != DS) {
                 $params['child_folder'] .= DS;
             }
@@ -38,15 +38,17 @@ class Ess_M2ePro_Model_VariablesDir
             $this->_pathVariablesDirChildFolder = $this->_pathVariablesDirBase.$params['child_folder'];
             $this->_pathVariablesDirBase .= DS;
             $this->_childFolder = $params['child_folder'];
+
         } else {
+
             $this->_pathVariablesDirBase .= DS;
             $this->_pathVariablesDirChildFolder = $this->_pathVariablesDirBase;
             $this->_childFolder = '';
         }
 
-        $this->_pathVariablesDirBase = str_replace(array('/','\\'), DS, $this->_pathVariablesDirBase);
-        $this->_pathVariablesDirChildFolder = str_replace(array('/','\\'), DS, $this->_pathVariablesDirChildFolder);
-        $this->_childFolder = str_replace(array('/','\\'), DS, $this->_childFolder);
+        $this->_pathVariablesDirBase = str_replace(array('/','\\'),DS,$this->_pathVariablesDirBase);
+        $this->_pathVariablesDirChildFolder = str_replace(array('/','\\'),DS,$this->_pathVariablesDirChildFolder);
+        $this->_childFolder = str_replace(array('/','\\'),DS,$this->_childFolder);
     }
 
     //########################################
@@ -101,8 +103,9 @@ class Ess_M2ePro_Model_VariablesDir
         $this->createBase();
 
         if ($this->_childFolder != '') {
+
             $tempPath = $this->getBasePath();
-            $tempChildFolders = explode(DS, substr($this->_childFolder, 1, strlen($this->_childFolder)-2));
+            $tempChildFolders = explode(DS,substr($this->_childFolder,1,strlen($this->_childFolder)-2));
 
             foreach ($tempChildFolders as $key=>$value) {
                 if (!is_dir($tempPath.$value.DS)) {
@@ -110,7 +113,6 @@ class Ess_M2ePro_Model_VariablesDir
                         throw new Ess_M2ePro_Model_Exception('Custom var dir creation is failed.');
                     }
                 }
-
                 $tempPath = $tempPath.$value.DS;
             }
         } else {

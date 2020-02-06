@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -25,13 +25,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings extends Ess_M2ePro_Block_Ad
 
         // Set header text
         // ---------------------------------------
-        if (!Mage::helper('M2ePro/Component')->isSingleActiveComponent()) {
-            $componentName = Mage::helper('M2ePro/Component_Ebay')->getTitle();
-            $this->_headerText = Mage::helper('M2ePro')->__('%component_name% / Listings', $componentName);
-        } else {
-            $this->_headerText = Mage::helper('M2ePro')->__('Listings');
-        }
-
+        $this->_headerText = Mage::helper('M2ePro')->__('Listings');
         // ---------------------------------------
 
         // Set buttons actions
@@ -52,7 +46,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings extends Ess_M2ePro_Block_Ad
 
     protected function _toHtml()
     {
-        /** @var $tabsContainer Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings_Tabs */
+        /* @var $tabsContainer Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings_Tabs */
         $tabsContainer = $this->getLayout()->createBlock('M2ePro/adminhtml_ebay_manageListings_tabs');
         $tabsContainer->setDestElementId('tabs_container');
 
@@ -60,6 +54,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings extends Ess_M2ePro_Block_Ad
 
         if (Mage::helper('M2ePro/View_Ebay')->isAdvancedMode() &&
             Mage::helper('M2ePro/View_Ebay')->is3rdPartyShouldBeShown()) {
+
             $tabsContainer->addTab(self::TAB_ID_LISTING_OTHER, $this->prepareListingOtherTab());
         }
 
@@ -81,7 +76,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings extends Ess_M2ePro_Block_Ad
 
     //########################################
 
-    protected function prepareListingTab()
+    private function prepareListingTab()
     {
         $tab = array(
             'label' => Mage::helper('M2ePro')->__('M2E Pro'),
@@ -98,7 +93,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings extends Ess_M2ePro_Block_Ad
         return $tab;
     }
 
-    protected function prepareListingOtherTab()
+    private function prepareListingOtherTab()
     {
         $tab = array(
             'label' => Mage::helper('M2ePro')->__('3rd Party'),
@@ -115,7 +110,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_ManageListings extends Ess_M2ePro_Block_Ad
         return $tab;
     }
 
-    protected function prepareSearchTab()
+    private function prepareSearchTab()
     {
         $tab = array(
             'label' => Mage::helper('M2ePro')->__('Search'),

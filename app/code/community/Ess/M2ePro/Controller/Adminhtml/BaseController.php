@@ -2,18 +2,18 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
     extends Mage_Adminhtml_Controller_Action
 {
-    protected $_generalBlockWasAppended = false;
+    protected $generalBlockWasAppended = false;
 
-    protected $_pageHelpLink = null;
+    protected $pageHelpLink = NULL;
 
-    protected $_isUnAuthorized = false;
+    protected $isUnAuthorized = false;
 
     //########################################
 
@@ -29,20 +29,18 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
 
     //########################################
 
-    protected function setPageHelpLink($component = null, $article = null, $tinyLink = null)
+    protected function setPageHelpLink($component = NULL, $article = NULL)
     {
-        $this->_pageHelpLink = Mage::helper('M2ePro/Module_Support')->getDocumentationUrl(
-            $component, $article, $tinyLink
-        );
+        $this->pageHelpLink = Mage::helper('M2ePro/Module_Support')->getDocumentationUrl($component, $article);
     }
 
     protected function getPageHelpLink()
     {
-        if ($this->_pageHelpLink === null) {
+        if (is_null($this->pageHelpLink)) {
             return Mage::helper('M2ePro/Module_Support')->getDocumentationUrl();
         }
 
-        return $this->_pageHelpLink;
+        return $this->pageHelpLink;
     }
 
     //########################################
@@ -62,50 +60,34 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
          */
         // -----------------------------------------------------------------
         if (!Mage::getSingleton('admin/session')->isLoggedIn()) {
-            $this->_isUnAuthorized = true;
+
+            $this->isUnAuthorized = true;
 
             $this->setFlag('', self::FLAG_NO_DISPATCH, true);
             $this->setFlag('', self::FLAG_NO_POST_DISPATCH, true);
             $this->setFlag('', self::FLAG_NO_PRE_DISPATCH, true);
 
             if ($this->getRequest()->isXmlHttpRequest()) {
-                return $this->getResponse()->setBody(
-                    json_encode(
-                        array(
-                        'ajaxExpired'  => 1,
-                        'ajaxRedirect' => Mage::getBaseUrl()
-                        )
-                    )
-                );
+                return $this->getResponse()->setBody(json_encode(array(
+                    'ajaxExpired'  => 1,
+                    'ajaxRedirect' => Mage::getBaseUrl()
+                )));
             }
 
             if (Mage::helper('M2ePro/Module')->isProductionEnvironment()) {
                 return $this->getResponse()->setRedirect(Mage::getBaseUrl());
             }
         }
-
         // -----------------------------------------------------------------
-
-        if (Mage::helper('M2ePro/Module_Maintenance')->isEnabled()) {
-            return $this->_redirect('*/adminhtml_maintenance');
-        }
-
-        if (Mage::helper('M2ePro/Module')->isDisabled()) {
-            return $this->_redirect('adminhtml/dashboard');
-        }
-
-        if (Mage::helper('M2ePro/Component')->getEnabledComponents() === array()) {
-            return $this->_redirect('adminhtml/dashboard');
-        }
 
         Mage::helper('M2ePro/Module_Exception')->setFatalErrorHandler();
 
         // flag that controller is loaded
-        if (Mage::helper('M2ePro/Data_Global')->getValue('is_base_controller_loaded') === null) {
-            Mage::helper('M2ePro/Data_Global')->setValue('is_base_controller_loaded', true);
+        if (is_null(Mage::helper('M2ePro/Data_Global')->getValue('is_base_controller_loaded'))) {
+            Mage::helper('M2ePro/Data_Global')->setValue('is_base_controller_loaded',true);
         }
 
-        $this->_preDispatch();
+        $this->__preDispatch();
 
         return $this;
     }
@@ -113,9 +95,12 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
     final public function dispatch($action)
     {
         try {
+
             parent::dispatch($action);
+
         } catch (Exception $exception) {
-            if ($this->_isUnAuthorized) {
+
+            if ($this->isUnAuthorized) {
                 throw $exception;
             }
 
@@ -123,13 +108,16 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
                 Mage::helper('M2ePro/Module_Support')->getPageControllerName()) {
                 return $this->getResponse()->setBody($exception->getMessage());
             } else {
+
                 if (Mage::helper('M2ePro/Module')->isDevelopmentEnvironment()) {
                     throw $exception;
                 } else {
+
                     Mage::helper('M2ePro/Module_Exception')->process($exception);
 
                     if (($this->getRequest()->isGet() || $this->getRequest()->isPost()) &&
                         !$this->getRequest()->isXmlHttpRequest()) {
+
                         $this->_getSession()->addError(
                             Mage::helper('M2ePro/Module_Exception')->getUserMessage($exception)
                         );
@@ -138,7 +126,7 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
                             'error' => 'true'
                         );
 
-                        if (Mage::helper('M2ePro/View')->getCurrentView() !== null) {
+                        if (!is_null(Mage::helper('M2ePro/View')->getCurrentView())) {
                             $params['referrer'] = Mage::helper('M2ePro/View')->getCurrentView();
                         }
 
@@ -155,21 +143,18 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
     {
         parent::postDispatch();
 
-        if ($this->_isUnAuthorized) {
+        if ($this->isUnAuthorized) {
             return;
         }
 
-        $this->_postDispatch();
+        $this->__postDispatch();
     }
 
     //########################################
 
-    protected function _preDispatch()
-    {
-        return null;
-    }
+    protected function __preDispatch() {}
 
-    protected function _postDispatch()
+    protected function __postDispatch()
     {
         // Removes garbage from the response's body
         ob_get_clean();
@@ -181,31 +166,7 @@ abstract class Ess_M2ePro_Controller_Adminhtml_BaseController
     {
         $customLayout = Ess_M2ePro_Helper_View::LAYOUT_NICK;
         is_array($ids) ? $ids[] = $customLayout : $ids = array('default',$customLayout);
-
-        $layout = parent::loadLayout($ids, $generateBlocks, $generateXml);
-
-        /** Messages must be added after layout was initialized */
-        if (Mage::helper('M2ePro/Module')->isDisabled()) {
-            $message = Mage::helper('M2ePro')->__(
-                <<<HTML
-                M2E Pro is disabled. Inventory and Order synchronization is not running at this moment.
-                At any time, you can enable the Module under <b>System > Configuration > M2E Pro > Advanced.</b>
-HTML
-            );
-            $this->_getSession()->addError($message);
-        }
-
-        if (Mage::helper('M2ePro/Component')->getEnabledComponents() === array()) {
-            $message = Mage::helper('M2ePro')->__(
-                <<<HTML
-                Channel Integrations are disabled. To start working with M2E Pro, please go to 
-                <b>System > Configuration > M2E Pro > Channels</b> and enable at least one Channel Integration.
-HTML
-            );
-            $this->_getSession()->addError($message);
-        }
-
-        return $layout;
+        return parent::loadLayout($ids, $generateBlocks, $generateXml);
     }
 
     // ---------------------------------------
@@ -226,15 +187,9 @@ HTML
 
     // ---------------------------------------
 
-    protected function beforeAddLeftEvent()
-    {
-        return null;
-    }
+    protected function beforeAddLeftEvent() {}
 
-    protected function beforeAddContentEvent()
-    {
-        return null;
-    }
+    protected function beforeAddContentEvent() {}
 
     //########################################
 
@@ -248,21 +203,20 @@ HTML
         $id = $this->getRequest()->getParam('id');
         $ids = $this->getRequest()->getParam('ids');
 
-        if ($id === null && $ids === null) {
+        if (is_null($id) && is_null($ids)) {
             return array();
         }
 
         $requestIds = array();
 
-        if ($ids !== null) {
+        if (!is_null($ids)) {
             if (is_string($ids)) {
                 $ids = explode(',', $ids);
             }
-
             $requestIds = (array)$ids;
         }
 
-        if ($id !== null) {
+        if (!is_null($id)) {
             $requestIds[] = $id;
         }
 
@@ -309,7 +263,7 @@ HTML
 
     protected function appendGeneralBlock(Mage_Core_Block_Abstract $block)
     {
-        if ($this->_generalBlockWasAppended) {
+        if ($this->generalBlockWasAppended) {
             return;
         }
 
@@ -318,7 +272,7 @@ HTML
         $blockGeneral->setData('page_help_link', $this->getPageHelpLink());
 
         $block->append($blockGeneral);
-        $this->_generalBlockWasAppended = true;
+        $this->generalBlockWasAppended = true;
     }
 
     protected function addLeft(Mage_Core_Block_Abstract $block)

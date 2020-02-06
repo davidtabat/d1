@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -13,11 +13,14 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
 
     public function processSuccess(array $response, array $responseParams = array())
     {
-        $this->prepareMetadata();
-
         $data = array(
             'status' => Ess_M2ePro_Model_Listing_Product::STATUS_LISTED
         );
+
+        if ($this->getConfigurator()->isAllAllowed()) {
+            $data['synch_status'] = Ess_M2ePro_Model_Listing_Product::SYNCH_STATUS_OK;
+            $data['synch_reasons'] = NULL;
+        }
 
         $data = $this->appendStatusHiddenValue($data);
         $data = $this->appendStatusChangerValue($data, $responseParams);
@@ -30,33 +33,19 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
         $data = $this->appendOutOfStockValues($data);
         $data = $this->appendItemFeesValues($data, $response);
         $data = $this->appendStartDateEndDateValues($data, $response);
-        $data = $this->appendGalleryImagesValues($data, $response);
+        $data = $this->appendGalleryImagesValues($data, $response, $responseParams);
 
         $data = $this->appendIsVariationMpnFilledValue($data);
         $data = $this->appendVariationsThatCanNotBeDeleted($data, $response);
 
-        $data = $this->appendIsVariationValue($data);
-        $data = $this->appendIsAuctionType($data);
-
-        $data = $this->appendImagesValues($data);
-        $data = $this->appendCategoriesValues($data);
-        $data = $this->appendPaymentValues($data);
-        $data = $this->appendShippingValues($data);
-        $data = $this->appendReturnValues($data);
-        $data = $this->appendOtherValues($data);
-
         if (isset($data['additional_data'])) {
-            $data['additional_data'] = Mage::helper('M2ePro')->jsonEncode($data['additional_data']);
+            $data['additional_data'] = json_encode($data['additional_data']);
         }
 
         $this->getListingProduct()->addData($data)->save();
 
         $this->updateVariationsValues(true);
         $this->updateEbayItem();
-
-        if ($this->getEbayAccount()->isPickupStoreEnabled() && $this->getConfigurator()->isVariationsAllowed()) {
-            $this->runAccountPickupStoreStateUpdater();
-        }
     }
 
     public function processAlreadyStopped(array $response, array $responseParams = array())
@@ -75,7 +64,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
         }
 
         $data['additional_data']['ebay_item_fees'] = array();
-        $data['additional_data'] = Mage::helper('M2ePro')->jsonEncode($data['additional_data']);
+        $data['additional_data'] = json_encode($data['additional_data']);
 
         $this->getListingProduct()->addData($data)->save();
     }
@@ -87,121 +76,74 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
      */
     public function getSuccessfulMessage()
     {
-        if ($this->getConfigurator()->isExcludingMode()) {
+        if ($this->getConfigurator()->isAllAllowed()) {
             // M2ePro_TRANSLATIONS
             // Item was successfully Revised
             return 'Item was successfully Revised';
         }
 
-        $sequenceStrings = array();
-        $isPlural = false;
+        $sequenceString = '';
 
         if ($this->getConfigurator()->isVariationsAllowed() && $this->getRequestData()->isVariationItem()) {
             // M2ePro_TRANSLATIONS
             // Variations
-            $sequenceStrings[] = 'Variations';
-            $isPlural = true;
+            $sequenceString .= 'Variations,';
         } else {
             if ($this->getConfigurator()->isQtyAllowed()) {
                 // M2ePro_TRANSLATIONS
                 // QTY
-                $sequenceStrings[] = 'QTY';
+                $sequenceString .= 'QTY,';
             }
 
             if ($this->getConfigurator()->isPriceAllowed()) {
                 // M2ePro_TRANSLATIONS
                 // Price
-                $sequenceStrings[] = 'Price';
+                $sequenceString .= 'Price,';
             }
         }
 
         if ($this->getConfigurator()->isTitleAllowed()) {
             // M2ePro_TRANSLATIONS
             // Title
-            $sequenceStrings[] = 'Title';
+            $sequenceString .= 'Title,';
         }
 
         if ($this->getConfigurator()->isSubtitleAllowed()) {
             // M2ePro_TRANSLATIONS
             // Subtitle
-            $sequenceStrings[] = 'Subtitle';
+            $sequenceString .= 'Subtitle,';
         }
 
         if ($this->getConfigurator()->isDescriptionAllowed()) {
             // M2ePro_TRANSLATIONS
             // Description
-            $sequenceStrings[] = 'Description';
+            $sequenceString .= 'Description,';
         }
 
         if ($this->getConfigurator()->isImagesAllowed()) {
             // M2ePro_TRANSLATIONS
             // Images
-            $sequenceStrings[] = 'Images';
-            $isPlural = true;
+            $sequenceString .= 'Images,';
         }
 
-        if ($this->getConfigurator()->isCategoriesAllowed()) {
-            // M2ePro_TRANSLATIONS
-            // Categories / Specifics
-            $sequenceStrings[] = 'Categories / Specifics';
-            $isPlural = true;
-        }
-
-        if ($this->getConfigurator()->isPaymentAllowed()) {
-            // M2ePro_TRANSLATIONS
-            // Payment
-            $sequenceStrings[] = 'Payment';
-        }
-
-        if ($this->getConfigurator()->isShippingAllowed()) {
-            // M2ePro_TRANSLATIONS
-            // Shipping
-            $sequenceStrings[] = 'Shipping';
-        }
-
-        if ($this->getConfigurator()->isReturnAllowed()) {
-            // M2ePro_TRANSLATIONS
-            // Return
-            $sequenceStrings[] = 'Return';
-        }
-
-        if ($this->getConfigurator()->isOtherAllowed()) {
-            // M2ePro_TRANSLATIONS
-            // Other
-            $sequenceStrings[] = 'Condition, Condition Note, Tax, Best Offer, Donation';
-            $isPlural = true;
-        }
-
-        if (empty($sequenceStrings)) {
+        if (empty($sequenceString)) {
             // M2ePro_TRANSLATIONS
             // Item was successfully Revised
             return 'Item was successfully Revised';
         }
 
-        if (count($sequenceStrings) == 1) {
-            $verb = 'was';
-            if ($isPlural) {
-                $verb = 'were';
-            }
-
-            return ucfirst($sequenceStrings[0]).' '.$verb.' successfully Revised';
-        }
-
         // M2ePro_TRANSLATIONS
         // was successfully Revised
-        return ucfirst(implode(', ', $sequenceStrings)).' were successfully Revised';
+        return ucfirst(trim($sequenceString,',')).' was successfully Revised';
     }
 
     //########################################
 
     protected function appendOnlineBidsValue($data)
     {
-        $metadata = $this->getRequestMetaData();
-
-        if ($metadata["is_listing_type_fixed"]) {
-            $data['online_bids'] = NULL;
+        if ($this->getEbayListingProduct()->isListingTypeFixed()) {
+            return parent::appendOnlineBidsValue($data);
         }
-
         return $data;
     }
 
@@ -219,12 +161,26 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
     {
         $data = parent::appendOnlinePriceValues($data);
 
-        // if auction item has bids, we do not know correct online_current_price after revise action
         if ($this->getRequestData()->hasPriceStart() &&
             $this->getEbayListingProduct()->isListingTypeAuction() &&
             $this->getEbayListingProduct()->getOnlineBids()) {
             unset($data['online_current_price']);
         }
+
+        $params = $this->getConfigurator()->getParams();
+
+        if (!isset($params['replaced_action']) ||
+            $params['replaced_action'] != Ess_M2ePro_Model_Listing_Product::ACTION_STOP) {
+            return $data;
+        }
+
+        if (!$this->getEbayListingProduct()->isListingTypeFixed() ||
+            !$this->getRequestData()->hasVariations() ||
+            !isset($data['online_current_price'])) {
+            return $data;
+        }
+
+        $data['online_current_price'] = $this->getRequestData()->getVariationPrice(true);
 
         return $data;
     }
@@ -238,7 +194,9 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
         }
 
         if (isset($response['ebay_item_fees'])) {
+
             foreach ($response['ebay_item_fees'] as $feeCode => $feeData) {
+
                 if ($feeData['fee'] == 0) {
                     continue;
                 }
@@ -256,7 +214,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
 
     // ---------------------------------------
 
-    protected function updateEbayItem()
+    private function updateEbayItem()
     {
         $data = array(
             'account_id'     => $this->getAccount()->getId(),
@@ -266,14 +224,17 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
         );
 
         if ($this->getRequestData()->isVariationItem() && $this->getRequestData()->getVariations()) {
+
             $variations = array();
-            $requestMetadata = $this->getRequestMetaData();
+            $requestData = $this->getRequestData()->getData();
 
             foreach ($this->getRequestData()->getVariations() as $variation) {
+
                 $channelOptions = $variation['specifics'];
                 $productOptions = $variation['specifics'];
 
-                if (empty($requestMetadata['variations_specifics_replacements'])) {
+                if (empty($requestData['variations_specifics_replacements'])) {
+
                     $variations[] = array(
                         'product_options' => $productOptions,
                         'channel_options' => $channelOptions,
@@ -281,7 +242,8 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
                     continue;
                 }
 
-                foreach ($requestMetadata['variations_specifics_replacements'] as $productValue => $channelValue) {
+                foreach ($requestData['variations_specifics_replacements'] as $productValue => $channelValue) {
+
                     if (!isset($productOptions[$channelValue])) {
                         continue;
                     }
@@ -296,13 +258,32 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Revise_Response
                 );
             }
 
-            $data['variations'] = Mage::helper('M2ePro')->jsonEncode($variations);
+            $data['variations'] = json_encode($variations);
         }
 
         $object = $this->getEbayListingProduct()->getEbayItem();
         $object->addData($data)->save();
 
         return $object;
+    }
+
+    //########################################
+
+    public function tryToReviseItemWithFullDataAction()
+    {
+        /** @var Ess_M2ePro_Model_Ebay_Listing_Product_Action_Configurator $configurator */
+        $configurator = Mage::getModel('M2ePro/Ebay_Listing_Product_Action_Configurator');
+        $configurator->setFullMode();
+        $this->getListingProduct()->setActionConfigurator($configurator);
+
+        $dispatcher = Mage::getModel('M2ePro/Connector_Ebay_Item_Dispatcher');
+        $dispatcher->process(
+            Ess_M2ePro_Model_Listing_Product::ACTION_REVISE,
+            array($this->getListingProduct()),
+            array(
+                'status_changer' => Ess_M2ePro_Model_Listing_Product::STATUS_CHANGER_SYNCH,
+            )
+        );
     }
 
     //########################################

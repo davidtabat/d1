@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -56,7 +56,7 @@ class Ess_M2ePro_Model_Upgrade_Modifier_Config extends Ess_M2ePro_Model_Upgrade_
                       ->from($this->getTableName())
                       ->where('`group` = ?', $this->prepareGroup($group));
 
-        if ($key !== null) {
+        if (!is_null($key)) {
             $query->where('`key` = ?', $this->prepareKey($key));
         }
 
@@ -86,8 +86,8 @@ class Ess_M2ePro_Model_Upgrade_Modifier_Config extends Ess_M2ePro_Model_Upgrade_
             'key'   => $this->prepareKey($key),
         );
 
-        $value !== null && $preparedData['value'] = $value;
-        $notice !== null && $preparedData['notice'] = $notice;
+        !is_null($value) && $preparedData['value'] = $value;
+        !is_null($notice) && $preparedData['notice'] = $notice;
 
         $preparedData['update_date'] = $this->getCurrentDateTime();
         $preparedData['create_date'] = $this->getCurrentDateTime();
@@ -132,7 +132,7 @@ class Ess_M2ePro_Model_Upgrade_Modifier_Config extends Ess_M2ePro_Model_Upgrade_
             '`group` = ?' => $this->prepareGroup($group)
         );
 
-        if ($key !== null) {
+        if (!is_null($key)) {
             $where['`key` = ?'] = $this->prepareKey($key);
         }
 
@@ -183,14 +183,13 @@ class Ess_M2ePro_Model_Upgrade_Modifier_Config extends Ess_M2ePro_Model_Upgrade_
         $deleteData = array();
 
         $configRows = $this->getConnection()
-                        ->query(
-                            "SELECT `id`, `group`, `key`
+                           ->query("SELECT `id`, `group`, `key`
                                     FROM `{$this->getTableName()}`
-                                    ORDER BY `id` ASC"
-                        )
+                                    ORDER BY `id` ASC")
                            ->fetchAll();
 
         foreach ($configRows as $configRow) {
+
             $tempName = strtolower($configRow['group'] .'|'. $configRow['key']);
 
             if (in_array($tempName, $tempData)) {
@@ -202,32 +201,26 @@ class Ess_M2ePro_Model_Upgrade_Modifier_Config extends Ess_M2ePro_Model_Upgrade_
 
         if (!empty($deleteData)) {
             $this->getConnection()
-                ->query(
-                    "DELETE FROM `{$this->getTableName()}`
-                          WHERE `id` IN (".implode(',', $deleteData).')'
-                );
+                 ->query("DELETE FROM `{$this->getTableName()}`
+                          WHERE `id` IN (".implode(',', $deleteData).')');
         }
     }
 
     //########################################
 
-    protected function prepareGroup($group)
+    private function prepareGroup($group)
     {
-        if ($group === null) {
-            return $group;
-        }
-
         return '/' . trim($group, '/ ') . '/';
     }
 
-    protected function prepareKey($key)
+    private function prepareKey($key)
     {
         return trim($key, '/ ');
     }
 
     //########################################
 
-    protected function getCurrentDateTime()
+    private function getCurrentDateTime()
     {
         return date('Y-m-d H:i:s', gmdate('U'));
     }

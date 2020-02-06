@@ -2,16 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
-class Ess_M2ePro_Model_Ebay_Order_ExternalTransaction extends Ess_M2ePro_Model_Component_Abstract
+class Ess_M2ePro_Model_Ebay_Order_ExternalTransaction extends Mage_Core_Model_Abstract
 {
     const NOT_PAYPAL_TRANSACTION = 'SIS';
 
-    /** @var $_order Ess_M2ePro_Model_Order */
-    protected $_order = null;
+    /** @var $order Ess_M2ePro_Model_Order */
+    private $order = NULL;
 
     //########################################
 
@@ -29,7 +29,7 @@ class Ess_M2ePro_Model_Ebay_Order_ExternalTransaction extends Ess_M2ePro_Model_C
      */
     public function setOrder(Ess_M2ePro_Model_Order $order)
     {
-        $this->_order = $order;
+        $this->order = $order;
         return $this;
     }
 
@@ -38,11 +38,10 @@ class Ess_M2ePro_Model_Ebay_Order_ExternalTransaction extends Ess_M2ePro_Model_C
      */
     public function getOrder()
     {
-        if ($this->_order === null) {
-            $this->_order = Mage::helper('M2ePro/Component_Ebay')->getObject('Order', $this->getData('order_id'));
+        if (is_null($this->order)) {
+            $this->order = Mage::helper('M2ePro/Component_Ebay')->getObject('Order', $this->getData('order_id'));
         }
-
-        return $this->_order;
+        return $this->order;
     }
 
     //########################################

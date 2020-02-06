@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -21,7 +21,7 @@ class Ess_M2ePro_Model_Observer_Category extends Ess_M2ePro_Model_Observer_Abstr
         $changedProductsIds = $this->getEventObserver()->getData('product_ids');
         $postedProductsIds = array_keys($this->getEventObserver()->getData('category')->getData('posted_products'));
 
-        if (!is_array($changedProductsIds) || empty($changedProductsIds)) {
+        if (!is_array($changedProductsIds) || count($changedProductsIds) <= 0) {
             return;
         }
 
@@ -31,12 +31,14 @@ class Ess_M2ePro_Model_Observer_Category extends Ess_M2ePro_Model_Observer_Abstr
         );
 
         if ($websiteId == 0) {
+
             foreach ($changedProductsIds as $productId) {
                 $productModel = Mage::getModel('M2ePro/Magento_Product')->setProductId($productId);
                 foreach ($productModel->getWebsiteIds() as $websiteId) {
                     $websitesProductsIds[$websiteId][] = $productId;
                 }
             }
+
         } else {
             $websitesProductsIds[$websiteId] = $changedProductsIds;
         }
@@ -51,10 +53,10 @@ class Ess_M2ePro_Model_Observer_Category extends Ess_M2ePro_Model_Observer_Abstr
                 $object = Mage::getModel('M2ePro/Listing_Auto_Actions_Mode_Category');
                 $object->setProduct($product);
 
-                if (in_array($productId, $postedProductsIds)) {
-                    $object->synchWithAddedCategoryId($categoryId, $websiteId);
+                if (in_array($productId,$postedProductsIds)) {
+                    $object->synchWithAddedCategoryId($categoryId,$websiteId);
                 } else {
-                    $object->synchWithDeletedCategoryId($categoryId, $websiteId);
+                    $object->synchWithDeletedCategoryId($categoryId,$websiteId);
                 }
             }
         }

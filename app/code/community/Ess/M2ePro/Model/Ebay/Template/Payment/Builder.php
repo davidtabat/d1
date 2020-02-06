@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -59,7 +59,6 @@ class Ess_M2ePro_Model_Ebay_Template_Payment_Builder
         if (empty($data['marketplace_id'])) {
             throw new Ess_M2ePro_Model_Exception_Logic('Marketplace ID is empty.');
         }
-
         // ---------------------------------------
 
         parent::validate($data);
@@ -92,7 +91,6 @@ class Ess_M2ePro_Model_Ebay_Template_Payment_Builder
         if (isset($data['services']) && is_array($data['services'])) {
             $prepared['services'] = $data['services'];
         }
-
         // ---------------------------------------
 
         return $prepared;
@@ -100,7 +98,7 @@ class Ess_M2ePro_Model_Ebay_Template_Payment_Builder
 
     //########################################
 
-    protected function createService($templatePaymentId, $codeName)
+    private function createService($templatePaymentId, $codeName)
     {
         $data = array(
             'template_payment_id' => $templatePaymentId,

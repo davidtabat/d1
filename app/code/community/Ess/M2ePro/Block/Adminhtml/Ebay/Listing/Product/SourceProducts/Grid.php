@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -13,8 +13,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceProducts_Grid
 
     protected function _prepareColumns()
     {
-        $this->addColumnAfter(
-            'visibility', array(
+        $this->addColumnAfter('visibility', array(
             'header'    => Mage::helper('M2ePro')->__('Visibility'),
             'align'     => 'left',
             'width'     => '90px',
@@ -23,11 +22,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceProducts_Grid
             'index'     => 'visibility',
             'filter_index' => 'visibility',
             'options' => Mage::getModel('catalog/product_visibility')->getOptionArray()
-            ), 'qty'
-        );
+        ),'qty');
 
-        $this->addColumnAfter(
-            'status', array(
+        $this->addColumnAfter('status', array(
             'header'    => Mage::helper('M2ePro')->__('Status'),
             'align'     => 'left',
             'width'     => '90px',
@@ -37,12 +34,11 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceProducts_Grid
             'filter_index' => 'status',
             'options' => Mage::getSingleton('catalog/product_status')->getOptionArray(),
             'frame_callback' => array($this, 'callbackColumnStatus')
-            ), 'visibility'
-        );
+        ),'visibility');
 
         if (!Mage::app()->isSingleStoreMode()) {
-            $this->addColumnAfter(
-                'websites', array(
+
+            $this->addColumnAfter('websites', array(
                 'header'    => Mage::helper('M2ePro')->__('Websites'),
                 'align'     => 'left',
                 'width'     => '90px',
@@ -51,8 +47,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product_SourceProducts_Grid
                 'index'     => 'websites',
                 'filter_index' => 'websites',
                 'options'   => Mage::getModel('core/website')->getCollection()->toOptionHash()
-                ), 'status'
-            );
+            ),'status');
         }
 
         return parent::_prepareColumns();

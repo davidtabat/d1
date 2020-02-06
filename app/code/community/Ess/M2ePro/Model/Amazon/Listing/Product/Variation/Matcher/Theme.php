@@ -2,20 +2,20 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Theme
 {
-    /** @var Ess_M2ePro_Model_Magento_Product $_magentoProduct */
-    protected $_magentoProduct = null;
+    /** @var Ess_M2ePro_Model_Magento_Product $magentoProduct */
+    private $magentoProduct = null;
 
-    protected $_sourceAttributes = array();
+    private $sourceAttributes = array();
 
-    protected $_themes = array();
+    private $themes = array();
 
-    protected $_matchedTheme = null;
+    private $matchedTheme = null;
 
     //########################################
 
@@ -25,8 +25,8 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Theme
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $product)
     {
-        $this->_magentoProduct   = $product;
-        $this->_sourceAttributes = array();
+        $this->magentoProduct   = $product;
+        $this->sourceAttributes = array();
 
         return $this;
     }
@@ -39,8 +39,8 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Theme
      */
     public function setSourceAttributes(array $attributes)
     {
-        $this->_sourceAttributes = $attributes;
-        $this->_magentoProduct   = null;
+        $this->sourceAttributes = $attributes;
+        $this->magentoProduct   = null;
 
         return $this;
     }
@@ -53,7 +53,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Theme
      */
     public function setThemes(array $themes)
     {
-        $this->_themes = $themes;
+        $this->themes = $themes;
         return $this;
     }
 
@@ -64,41 +64,41 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Theme
      */
     public function getMatchedTheme()
     {
-        if ($this->_matchedTheme === null) {
+        if (is_null($this->matchedTheme)) {
             $this->match();
         }
 
-        return $this->_matchedTheme;
+        return $this->matchedTheme;
     }
 
     //########################################
 
-    protected function match()
+    private function match()
     {
         $this->validate();
 
         /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Attribute $attributeMatcher */
         $attributeMatcher = Mage::getModel('M2ePro/Amazon_Listing_Product_Variation_Matcher_Attribute');
 
-        if ($this->_magentoProduct !== null) {
-            if ($this->_magentoProduct->isGroupedType()) {
-                $this->_matchedTheme = null;
+        if (!is_null($this->magentoProduct)) {
+            if ($this->magentoProduct->isGroupedType()) {
+                $this->matchedTheme = null;
                 return $this;
             }
 
-            $attributeMatcher->setMagentoProduct($this->_magentoProduct);
+            $attributeMatcher->setMagentoProduct($this->magentoProduct);
         }
 
-        if (!empty($this->_sourceAttributes)) {
-            $attributeMatcher->setSourceAttributes($this->_sourceAttributes);
+        if (!empty($this->sourceAttributes)) {
+            $attributeMatcher->setSourceAttributes($this->sourceAttributes);
             $attributeMatcher->canUseDictionary(false);
         }
 
-        foreach ($this->_themes as $themeName => $themeAttributes) {
+        foreach ($this->themes as $themeName => $themeAttributes) {
             $attributeMatcher->setDestinationAttributes($themeAttributes['attributes']);
 
             if ($attributeMatcher->isAmountEqual() && $attributeMatcher->isFullyMatched()) {
-                $this->_matchedTheme = $themeName;
+                $this->matchedTheme = $themeName;
                 break;
             }
         }
@@ -106,9 +106,9 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Matcher_Theme
         return $this;
     }
 
-    protected function validate()
+    private function validate()
     {
-        if ($this->_magentoProduct === null && empty($this->_sourceAttributes)) {
+        if (is_null($this->magentoProduct) && empty($this->sourceAttributes)) {
             throw new Ess_M2ePro_Model_Exception('Magento Product and Channel Attributes were not set.');
         }
     }

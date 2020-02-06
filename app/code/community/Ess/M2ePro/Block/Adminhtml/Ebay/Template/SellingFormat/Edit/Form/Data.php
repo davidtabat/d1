@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -54,7 +54,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
 
         $template = Mage::helper('M2ePro/Data_Global')->getValue('ebay_template_selling_format');
 
-        if ($template === null) {
+        if (is_null($template)) {
             return '';
         }
 
@@ -67,7 +67,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
     {
         $template = Mage::helper('M2ePro/Data_Global')->getValue('ebay_template_selling_format');
 
-        if ($template === null || $template->getId() === null) {
+        if (is_null($template) || is_null($template->getId())) {
             return array();
         }
 
@@ -91,7 +91,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
     {
         $marketplace = Mage::helper('M2ePro/Data_Global')->getValue('ebay_marketplace');
 
-        if ($marketplace === null) {
+        if (is_null($marketplace)) {
             return NULL;
         }
 
@@ -104,7 +104,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
         $store = Mage::helper('M2ePro/Data_Global')->getValue('ebay_store');
         $template = Mage::helper('M2ePro/Data_Global')->getValue('ebay_template_selling_format');
 
-        if ($template === null || $template->getId() === null) {
+        if (is_null($template) || is_null($template->getId())) {
             $templateData = $this->getDefault();
             $templateData['component_mode'] = Ess_M2ePro_Helper_Component_Ebay::NICK;
             $usedAttributes = array();
@@ -141,7 +141,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
     {
         $marketplace = Mage::helper('M2ePro/Data_Global')->getValue('ebay_marketplace');
 
-        if ($marketplace === null) {
+        if (is_null($marketplace)) {
             return NULL;
         }
 
@@ -152,33 +152,32 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
     {
         $marketplace = $this->getMarketplace();
 
-        if ($marketplace === null) {
+        if (is_null($marketplace)) {
             return NULL;
         }
 
         return $marketplace->getId();
     }
 
-    protected function getCharityDictionary()
+    private function getCharityDictionary()
     {
         $marketplaceId = $this->getMarketplaceId();
 
-        if ($marketplaceId === null) {
+        if (is_null($marketplaceId)) {
             return false;
         }
 
         /** @var Varien_Db_Adapter_Pdo_Mysql $connRead*/
         $connRead = Mage::getSingleton('core/resource')->getConnection('core_read');
-        $tableDictMarketplace = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_marketplace');
+        $tableDictMarketplace = Mage::getSingleton('core/resource')->getTableName('m2epro_ebay_dictionary_marketplace');
 
         $dbSelect = $connRead->select()
             ->from($tableDictMarketplace, 'charities')
             ->where('`marketplace_id` = ?', (int)$marketplaceId);
 
-        $src = Mage::helper('M2ePro')->jsonDecode($connRead->fetchOne($dbSelect));
+        $src = json_decode($connRead->fetchOne($dbSelect),true);
 
-        if ($src !== null) {
+        if (!is_null($src)) {
             $charities = array();
 
             foreach ($src as $charity) {
@@ -202,7 +201,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
     {
         $marketplace = $this->getMarketplace();
 
-        if ($marketplace !== null && $marketplace->getChildObject()->isCharityEnabled()) {
+        if (!is_null($marketplace) && $marketplace->getChildObject()->isCharityEnabled()) {
            return true;
         }
 
@@ -211,8 +210,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
 
     public function isStpAvailable()
     {
-        $marketplace = $this->getMarketplace();
-        if ($marketplace === null) {
+        if (is_null($marketplace = $this->getMarketplace())) {
             return true;
         }
 
@@ -225,8 +223,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
 
     public function isStpAdvancedAvailable()
     {
-        $marketplace = $this->getMarketplace();
-        if ($marketplace === null) {
+        if (is_null($marketplace = $this->getMarketplace())) {
             return true;
         }
 
@@ -239,8 +236,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
 
     public function isMapAvailable()
     {
-        $marketplace = $this->getMarketplace();
-        if ($marketplace === null) {
+        if (is_null($marketplace = $this->getMarketplace())) {
             return true;
         }
 
@@ -253,18 +249,49 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Template_SellingFormat_Edit_Form_Data exte
 
     //########################################
 
+    public function isShowMultiCurrencyNotification()
+    {
+        $marketplace = $this->getMarketplace();
+
+        if (is_null($marketplace)) {
+           return false;
+        }
+
+        if (!$marketplace->getChildObject()->isMultiCurrencyEnabled()) {
+            return false;
+        }
+
+        $marketplaceId = $marketplace->getId();
+
+        $configValue = Mage::helper('M2ePro/Module')->getConfig()->getGroupValue(
+            "/view/ebay/multi_currency_marketplace_{$marketplaceId}/", 'notification_shown'
+        );
+
+        if ($configValue) {
+            return false;
+        }
+
+        Mage::helper('M2ePro/Module')->getConfig()->setGroupValue(
+            "/view/ebay/multi_currency_marketplace_{$marketplaceId}/", 'notification_shown', 1
+        );
+
+        return true;
+    }
+
+    //########################################
+
     public function getTaxCategoriesInfo()
     {
         $marketplacesCollection = Mage::helper('M2ePro/Component_Ebay')->getModel('Marketplace')
             ->getCollection()
-            ->addFieldToFilter('status', Ess_M2ePro_Model_Marketplace::STATUS_ENABLE)
-            ->setOrder('sorder', 'ASC');
+            ->addFieldToFilter('status',Ess_M2ePro_Model_Marketplace::STATUS_ENABLE)
+            ->setOrder('sorder','ASC');
 
         $marketplacesCollection->getSelect()->limit(1);
 
         $marketplaces = $marketplacesCollection->getItems();
 
-        if (empty($marketplaces)) {
+        if (count($marketplaces) == 0) {
             return array();
         }
 

@@ -2,21 +2,21 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
 {
     /**
-     * @var $_magentoProduct Ess_M2ePro_Model_Magento_Product
+     * @var $magentoProduct Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProduct = null;
+    private $magentoProduct = null;
 
     /**
-     * @var $_shippingCalculatedTemplateModel Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated
+     * @var $shippingCalculatedTemplateModel Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated
      */
-    protected $_shippingCalculatedTemplateModel = null;
+    private $shippingCalculatedTemplateModel = null;
 
     //########################################
 
@@ -26,7 +26,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $magentoProduct)
     {
-        $this->_magentoProduct = $magentoProduct;
+        $this->magentoProduct = $magentoProduct;
         return $this;
     }
 
@@ -35,7 +35,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
      */
     public function getMagentoProduct()
     {
-        return $this->_magentoProduct;
+        return $this->magentoProduct;
     }
 
     // ---------------------------------------
@@ -46,7 +46,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
      */
     public function setShippingCalculatedTemplate(Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated $instance)
     {
-        $this->_shippingCalculatedTemplateModel = $instance;
+        $this->shippingCalculatedTemplateModel = $instance;
         return $this;
     }
 
@@ -55,7 +55,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
      */
     public function getShippingCalculatedTemplate()
     {
-        return $this->_shippingCalculatedTemplateModel;
+        return $this->shippingCalculatedTemplateModel;
     }
 
     //########################################
@@ -86,11 +86,10 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
         }
 
         if ($src['mode'] == Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated::DIMENSION_CUSTOM_ATTRIBUTE) {
-            $widthValue = str_replace(',', '.', $this->getMagentoProduct()->getAttributeValue($src['width_attribute']));
-            $lengthValue = str_replace(
-                ',', '.', $this->getMagentoProduct()->getAttributeValue($src['length_attribute'])
-            );
-            $depthValue = str_replace(',', '.', $this->getMagentoProduct()->getAttributeValue($src['depth_attribute']));
+
+            $widthValue = str_replace(',','.',$this->getMagentoProduct()->getAttributeValue($src['width_attribute']));
+            $lengthValue = str_replace(',','.',$this->getMagentoProduct()->getAttributeValue($src['length_attribute']));
+            $depthValue = str_replace(',','.',$this->getMagentoProduct()->getAttributeValue($src['depth_attribute']));
 
             return array(
                 'width' => $widthValue,
@@ -114,6 +113,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated_Source
         $src = $this->getShippingCalculatedTemplate()->getWeightSource();
 
         if ($src['mode'] == Ess_M2ePro_Model_Ebay_Template_Shipping_Calculated::WEIGHT_CUSTOM_ATTRIBUTE) {
+
             $weightValue = $this->getMagentoProduct()->getAttributeValue($src['attribute']);
             $weightValue = str_replace(',', '.', $weightValue);
             $weightArray = explode('.', $weightValue);

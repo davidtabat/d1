@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -30,14 +30,10 @@ class Ess_M2ePro_Adminhtml_Listing_Other_MappingController
             return;
         }
 
-        /** @var $collection Ess_M2ePro_Model_Resource_Magento_Product_Collection */
-        $collection = Mage::getConfig()->getModelInstance(
-            'Ess_M2ePro_Model_Resource_Magento_Product_Collection',
-            Mage::getModel('catalog/product')->getResource()
-        );
+        $collection = Mage::getModel('catalog/product')->getCollection();
 
         $productId && $collection->addFieldToFilter('entity_id', $productId);
-        $sku       && $collection->addFieldToFilter('sku', $sku);
+        $sku && $collection->addFieldToFilter('sku', $sku);
 
         $tempData = $collection->getSelect()->query()->fetch();
         if (!$tempData) {
@@ -47,7 +43,7 @@ class Ess_M2ePro_Adminhtml_Listing_Other_MappingController
         $productId || $productId = $tempData['entity_id'];
 
         $productOtherInstance = Mage::helper('M2ePro/Component')->getComponentObject(
-            $componentMode, 'Listing_Other', $productOtherId
+            $componentMode,'Listing_Other',$productOtherId
         );
 
         $productOtherInstance->mapProduct($productId, Ess_M2ePro_Helper_Data::INITIATOR_USER);
@@ -75,7 +71,7 @@ class Ess_M2ePro_Adminhtml_Listing_Other_MappingController
 
             /** @var $listingOther Ess_M2ePro_Model_Listing_Other */
             $listingOther = Mage::helper('M2ePro/Component')
-                ->getComponentObject($componentMode, 'Listing_Other', $productId);
+                ->getComponentObject($componentMode,'Listing_Other',$productId);
 
             if ($listingOther->getProductId()) {
                 continue;
@@ -112,7 +108,7 @@ class Ess_M2ePro_Adminhtml_Listing_Other_MappingController
             $listingOtherProductInstance = Mage::getModel('M2ePro/Listing_Other')->load($productId);
 
             if (!$listingOtherProductInstance->getId() ||
-                $listingOtherProductInstance->getData('product_id') === null) {
+                is_null($listingOtherProductInstance->getData('product_id'))) {
                 continue;
             }
 

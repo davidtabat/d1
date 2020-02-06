@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -14,29 +14,18 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product extends Mage_Adminhtml_Blo
     {
         parent::__construct();
 
-        /** @var Ess_M2ePro_Model_Listing $listing */
-        $listing = Mage::helper('M2ePro/Component_Ebay')
-            ->getCachedObject('Listing', $this->getRequest()->getParam('listing_id'));
-
         // Initialization block
         // ---------------------------------------
         $this->setId('ebayListingProduct');
         $this->_blockGroup = 'M2ePro';
         $this->_controller = 'adminhtml_ebay_listing_product_source';
-        $this->_controller .= ucfirst($listing->getSetting('additional_data', 'source'));
+        $this->_controller .= ucfirst($this->getRequest()->getParam('source'));
         // ---------------------------------------
 
         // Set header text
         // ---------------------------------------
-        if (!Mage::helper('M2ePro/Component')->isSingleActiveComponent()) {
-            $this->_headerText = Mage::helper('M2ePro')->__(
-                "%component_name% / Select Products",
-                Mage::helper('M2ePro/Component_Ebay')->getTitle()
-            );
-        } else {
-            $this->_headerText = Mage::helper('M2ePro')->__("Select Products");
-        }
 
+        $this->_headerText = Mage::helper('M2ePro')->__('Select Products');
         // ---------------------------------------
 
         // Set buttons actions
@@ -50,41 +39,46 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product extends Mage_Adminhtml_Blo
         // ---------------------------------------
 
         // ---------------------------------------
-        $url = $this->getUrl('*/*/index', array('_current' => true, 'clear' => true));
 
-        if ($backParam = $this->getRequest()->getParam('back')) {
-            $url = Mage::helper('M2ePro')->getBackUrl();
+        if ((bool)$this->getRequest()->getParam('listing_creation',false)) {
+            $url = $this->getUrl('*/*/sourceMode', array('_current' => true));
+        } else {
+            $url = $this->getUrl('*/adminhtml_ebay_listing/view',array(
+                'id' => $this->getRequest()->getParam('listing_id'),
+            ));
+
+            if ($backParam = $this->getRequest()->getParam('back')) {
+                $url = Mage::helper('M2ePro')->getBackUrl();
+            }
         }
 
-        $this->_addButton(
-            'back', array(
+        $this->_addButton('back', array(
             'label'     => Mage::helper('M2ePro')->__('Back'),
             'class'     => 'back',
             'onclick'   => 'setLocation(\''.$url.'\')'
-            )
-        );
+        ));
         // ---------------------------------------
+        $this->_addButton('video_tutorial', array(
+            'label'     => Mage::helper('M2ePro')->__('Show Video Tutorial'),
+            'class'     => 'button_link',
+            'onclick'   => 'VideoTutorialHandlerObj.openPopUp();'
+        ));
 
         // ---------------------------------------
         if (Mage::helper('M2ePro/View_Ebay')->isAdvancedMode()) {
-            $this->_addButton(
-                'auto_action', array(
+            $this->_addButton('auto_action', array(
                 'label'     => Mage::helper('M2ePro')->__('Auto Add/Remove Rules'),
                 'onclick'   => 'ListingAutoActionHandlerObj.loadAutoActionHtml();'
-                )
-            );
+            ));
         }
-
         // ---------------------------------------
 
         // ---------------------------------------
-        $this->_addButton(
-            'continue', array(
+        $this->_addButton('continue', array(
             'label'     => Mage::helper('M2ePro')->__('Continue'),
             'class'     => 'scalable next',
             'onclick'   => 'ListingProductAddHandlerObj.continue();'
-            )
-        );
+        ));
         // ---------------------------------------
     }
 
@@ -93,8 +87,8 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product extends Mage_Adminhtml_Blo
         $listingId = (int)$this->getRequest()->getParam('listing_id');
 
         $viewHeaderBlock = $this->getLayout()->createBlock(
-            'M2ePro/adminhtml_listing_view_header', '',
-            array('listing' => Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing', $listingId))
+            'M2ePro/adminhtml_listing_view_header','',
+            array('listing' => Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing',$listingId))
         );
 
         return $viewHeaderBlock->toHtml() .
@@ -114,7 +108,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Product extends Mage_Adminhtml_Blo
 
     //########################################
 
-    protected function getVideoTutorialHtml()
+    private function getVideoTutorialHtml()
     {
         $videoId = 'iBEiQ8Ilya8';
         if (Mage::helper('M2ePro/View_Ebay')->isSimpleMode()) {
@@ -141,7 +135,7 @@ HTML;
 
     //########################################
 
-    protected function getAutoactionPopupHtml()
+    private function getAutoactionPopupHtml()
     {
         $helper = Mage::helper('M2ePro');
 
@@ -161,7 +155,7 @@ JS;
         {$helper->__(
 '<b>
  Do you want to set up a Rule by which Products will be automatically Added or Deleted from the current M2E Pro Listing?
-</b>
+</b>.
 <br/><br/>
 Click Start Configure to create a Rule<br/> or Cancel if you do not want to do it now.
 <br/><br/>
@@ -181,7 +175,7 @@ HTML;
 
     //########################################
 
-    protected function getSettingsPopupHtml()
+    private function getSettingsPopupHtml()
     {
         $helper = Mage::helper('M2ePro');
 
@@ -208,8 +202,7 @@ JS;
         // ---------------------------------------
 
         // M2ePro_TRANSLATIONS
-        // Choose <b>Yes</b> if you want to override the Default Settings for this M2E Pro Listing
-        // and to choose Different Settings for certain Products.
+        // Choose <b>Yes</b> if you want to override the Default Settings for this M2E Pro Listing and to choose Different Settings for certain Products.
         return <<<HTML
 <div id="settings_popup_content" style="display: none">
     <div style="margin: 10px; height: 150px">

@@ -1,12 +1,4 @@
 <?php
-/*
- * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
- * @license    Commercial use is forbidden
- */
-
-// @codingStandardsIgnoreFile
-
 /** @var Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Preview $this */
 
 $images = $this->getImages();
@@ -460,7 +452,7 @@ $variations = $this->getVariations();
         <?php
 
         $previousProduct = $this->getProductShortInfo(Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Preview::PREVIOUS);
-        if ($previousProduct !== null):
+        if (!is_null($previousProduct)):
             ?>
             <div>
                 <?php echo "<a href='{$previousProduct['url']}'>&leftarrow; {$previousProduct['title']} (ID: {$previousProduct['id']})</a>"; ?>
@@ -482,7 +474,7 @@ $variations = $this->getVariations();
     <div class="pagination_right">
         <?php
         $nextProduct = $this->getProductShortInfo(Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Preview::NEXT);
-        if ($nextProduct !== null): ?>
+        if (!is_null($nextProduct)): ?>
             <div>
                 <?php echo "<a href='{$nextProduct['url']}'>{$nextProduct['title']} (ID: {$nextProduct['id']}) &rightarrow;</a>"; ?>
             </div>
@@ -604,7 +596,7 @@ $variations = $this->getVariations();
     $currency = "{$this->getCurrency()} {$this->getCurrencySymbol()}";
     $price = $this->getPrice($variations);
 
-    if($price['price'] !== null && $qty):
+    if(!is_null($price['price']) && $qty):
 
     ?>
 
@@ -777,7 +769,7 @@ $variations = $this->getVariations();
         <?php
         $dispatchTime = $this->getShippingDispatchTime();
 
-        if ($dispatchTime !== null):
+        if (!is_null($dispatchTime)):
             ?>
             <div>
                 <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Dispatch Time'); ?>:</span>
@@ -801,7 +793,7 @@ $variations = $this->getVariations();
 
         $shippingInternationalType = $this->getShippingInternationalType();
 
-        if ($shippingInternationalType !== null):
+        if (!is_null($shippingInternationalType)):
             ?>
 
             <div class="field_group"><?php echo Mage::helper('M2ePro')->__('International Shipping'); ?></div>
@@ -937,97 +929,52 @@ $variations = $this->getVariations();
             </table>
         <?php endif; ?>
     </div>
-
     <div class="return_container tab_container">
         <?php if (!empty($return)): ?>
-
-            <div class="field_group"><?php echo Mage::helper('M2ePro')->__('Domestic Returns'); ?></div>
-
-            <?php if (!empty($return['returns_accepted'])): ?>
+            <?php if ($return['returns_accepted']): ?>
+            <div>
+                <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Return Policy'); ?>:</span>
+                <?php echo $return['returns_accepted']; ?>
+            </div>
+            <?php endif; ?>
+            <?php if ($return['refund']): ?>
+            <div>
+                <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Refund Will Be Given As'); ?>:</span>
+                <?php echo $return['refund']; ?>
+            </div>
+            <?php endif; ?>
+            <?php if ($return['returns_within']): ?>
+            <div>
+                <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Item Must Be Returned Within'); ?>:</span>
+                <?php echo $return['returns_within']; ?>
+            </div>
+            <?php endif; ?>
+            <?php if($return['is_holiday_enabled']): ?>
+            <div>
+                <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Extended Holiday Returns'); ?>:</span>
+                <?php echo Mage::helper('M2ePro')->__('Yes'); ?>
+            </div>
+            <?php endif; ?>
+            <?php if ($return['shipping_cost_paid_by']): ?>
+            <div>
+                <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Return Shipping Will Be Paid By'); ?>:</span>
+                <?php echo $return['shipping_cost_paid_by']; ?>
+            </div>
+            <?php endif; ?>
+            <?php if ($return['restocking_fee_value']): ?>
+            <div>
+                <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Restocking Fee Value'); ?>:</span>
+                <?php echo $return['restocking_fee_value']; ?>
+            </div>
+            <?php endif; ?>
+            <?php if($return['description']): ?>
                 <div>
-                    <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Return Policy'); ?>:</span>
-                    <?php echo $return['returns_accepted']; ?>
+                    <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Refund Description'); ?>:</span>
+                    <?php echo $return['description']; ?>
                 </div>
             <?php endif; ?>
-
-            <?php if ($this->isDomesticReturnsAccepted()) : ?>
-
-                <?php if (!empty($return['refund'])): ?>
-                    <div>
-                        <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Refund Will Be Given As'); ?>:</span>
-                        <?php echo $return['refund']; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($return['returns_within'])): ?>
-                    <div>
-                        <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Item Must Be Returned Within'); ?>:</span>
-                        <?php echo $return['returns_within']; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($return['shipping_cost_paid_by'])): ?>
-                    <div>
-                        <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Return Shipping Will Be Paid By'); ?>:</span>
-                        <?php echo $return['shipping_cost_paid_by']; ?>
-                    </div>
-                <?php endif; ?>
-
-            <?php endif; ?>
-
-            <?php if ($this->isDomesticReturnsAccepted()) : ?>
-
-                <div class="field_group"><?php echo Mage::helper('M2ePro')->__('International Returns'); ?></div>
-
-                <?php if (!empty($return['international_returns_accepted'])): ?>
-                    <div>
-                        <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Return  Policy'); ?>:</span>
-                        <?php echo $return['international_returns_accepted']; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($this->isInternationalReturnsAccepted()) : ?>
-
-                    <?php if (!empty($return['international_refund'])): ?>
-                        <div>
-                            <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Refund Will Be Given As'); ?>:</span>
-                            <?php echo $return['international_refund']; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($return['international_returns_within'])): ?>
-                        <div>
-                            <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Item Must Be Returned Within'); ?>:</span>
-                            <?php echo $return['international_returns_within']; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($return['international_shipping_cost_paid_by'])): ?>
-                        <div>
-                            <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Return Shipping Will Be Paid By'); ?>:</span>
-                            <?php echo $return['international_shipping_cost_paid_by']; ?>
-                        </div>
-                    <?php endif; ?>
-
-                <?php endif; ?>
-
-                <?php if(!empty($return['description'])): ?>
-
-                    <div class="field_group"><?php echo Mage::helper('M2ePro')->__('Additional'); ?></div>
-
-                    <div>
-                        <span class="field_title"><?php echo Mage::helper('M2ePro')->__('Description'); ?>:</span>
-                        <?php echo $return['description']; ?>
-                    </div>
-
-                <?php endif; ?>
-
-            <?php endif; ?>
-
         <?php endif; ?>
-
     </div>
-
     <div class="other_container tab_container">
         <?php if (isset($otherCategories['secondary'])): ?>
             <div class="field_group"><?php echo Mage::helper('M2ePro')->__('eBay Catalog Categories'); ?></div>

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -13,15 +13,15 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Chooser extends Mage_Admi
 
     //########################################
 
-    protected $_marketplaceId;
+    protected $_marketplaceId = null;
 
-    protected $_accountId;
+    protected $_accountId = null;
 
     protected $_attributes = array();
 
     protected $_internalData = array();
 
-    protected $_divId;
+    protected $_divId = null;
 
     protected $_selectCallback = '';
 
@@ -161,6 +161,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Chooser extends Mage_Admi
                             'message' => $data[$prefix.'message']
                         );
                     }
+
                     break;
             }
         }
@@ -190,7 +191,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Chooser extends Mage_Admi
 
     public function getDivId()
     {
-        if ($this->_divId === null) {
+        if (is_null($this->_divId)) {
             $this->_divId = Mage::helper('core/data')->uniqHash('category_chooser_');
         }
 
@@ -295,7 +296,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Category_Chooser extends Mage_Admi
 
     public function isShowStoreCatalog()
     {
-        if ($this->getAccountId() === null) {
+        if (is_null($this->getAccountId())) {
             return false;
         }
 

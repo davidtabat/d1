@@ -2,17 +2,17 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_Order_PaymentTransaction extends Mage_Core_Model_Abstract
 {
-    /** @var $_magentoOrder Mage_Sales_Model_Order */
-    protected $_magentoOrder = null;
+    /** @var $magentoOrder Mage_Sales_Model_Order */
+    private $magentoOrder = NULL;
 
-    /** @var $_transaction Mage_Sales_Model_Order_Payment_Transaction */
-    protected $_transaction = null;
+    /** @var $transaction Mage_Sales_Model_Order_Payment_Transaction */
+    private $transaction = NULL;
 
     //########################################
 
@@ -22,7 +22,7 @@ class Ess_M2ePro_Model_Magento_Order_PaymentTransaction extends Mage_Core_Model_
      */
     public function setMagentoOrder(Mage_Sales_Model_Order $magentoOrder)
     {
-        $this->_magentoOrder = $magentoOrder;
+        $this->magentoOrder = $magentoOrder;
         return $this;
     }
 
@@ -30,7 +30,7 @@ class Ess_M2ePro_Model_Magento_Order_PaymentTransaction extends Mage_Core_Model_
 
     public function getPaymentTransaction()
     {
-        return $this->_transaction;
+        return $this->transaction;
     }
 
     //########################################
@@ -41,7 +41,7 @@ class Ess_M2ePro_Model_Magento_Order_PaymentTransaction extends Mage_Core_Model_
             return;
         }
 
-        $payment = $this->_magentoOrder->getPayment();
+        $payment = $this->magentoOrder->getPayment();
 
         if ($payment === false) {
             return;
@@ -59,16 +59,16 @@ class Ess_M2ePro_Model_Magento_Order_PaymentTransaction extends Mage_Core_Model_
         }
 
         $payment->setTransactionId($this->getData('transaction_id'));
-        $this->_transaction = $payment->addTransaction($transactionType);
+        $this->transaction = $payment->addTransaction($transactionType);
 
         if (@defined('Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS')) {
             $this->unsetData('transaction_id');
-            $this->_transaction->setAdditionalInformation(
+            $this->transaction->setAdditionalInformation(
                 Mage_Sales_Model_Order_Payment_Transaction::RAW_DETAILS, $this->getData()
             );
         }
 
-        $this->_transaction->save();
+        $this->transaction->save();
     }
 
     //########################################

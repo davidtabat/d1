@@ -1,16 +1,7 @@
 <?php
-/*
- * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
- * @license    Commercial use is forbidden
- */
+    /** @var Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Data $this */
 
-// @codingStandardsIgnoreFile
-
-/** @var Ess_M2ePro_Block_Adminhtml_Ebay_Template_Synchronization_Edit_Form_Data $this */
-
-$formData = $this->getFormData();
-
+    $formData = $this->getFormData();
 ?>
 
 <script type="text/javascript">
@@ -23,6 +14,9 @@ $formData = $this->getFormData();
 
         'Must be greater than "Min".' => Mage::helper('M2ePro')->__('Must be greater than "Min".'),
         'Inconsistent Settings in Relist and Stop Rules.' => Mage::helper('M2ePro')->__('Inconsistent Settings in Relist and Stop Rules.'),
+
+        'You need to choose at set at least one time for the schedule to run.' => Mage::helper('M2ePro')->__('You need to choose at set at least one time for the schedule to run.'),
+        'You should specify time.' => Mage::helper('M2ePro')->__('You should specify time.'),
 
         'Wrong value.' => Mage::helper('M2ePro')->__('Wrong value.'),
         'Must be greater than "Active From" Date.' => Mage::helper('M2ePro')->__('Must be greater than "Active From" Date.'),
@@ -101,6 +95,15 @@ $formData = $this->getFormData();
                     </span>
                 </a>
             </li>
+            <li>
+                <a href="javascript:void(0);" id="ebay_template_synchronization_edit_form_navigation_bar_schedule" class="navigation_bar tab-item-link">
+                    <span>
+                        <span class="changed" title="The information in this Tab has been changed."></span>
+                        <span class="error" title="This Tab contains invalid data. Please solve the problem before saving."></span>
+                        <?php echo Mage::helper('M2ePro')->__('Schedule'); ?>
+                    </span>
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -117,6 +120,9 @@ $formData = $this->getFormData();
             </div>
             <div id="ebay_template_synchronization_edit_form_content_stop" class="form_content" style="display: none;">
                 <?php echo $this->getChildHtml('ebay_template_synchronization_edit_form_tabs_stop'); ?>
+            </div>
+            <div id="ebay_template_synchronization_edit_form_content_schedule" class="form_content" style="display: none;">
+                <?php echo $this->getChildHtml('ebay_template_synchronization_edit_form_tabs_schedule'); ?>
             </div>
         </div>
     </div>

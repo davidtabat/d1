@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,7 +11,7 @@ abstract class Ess_M2ePro_Model_Listing_Auto_Actions_Mode_Abstract
     /**
      * @var null|Mage_Catalog_Model_Product
      */
-    protected $_product = null;
+    private $product = NULL;
 
     //########################################
 
@@ -20,7 +20,7 @@ abstract class Ess_M2ePro_Model_Listing_Auto_Actions_Mode_Abstract
      */
     public function setProduct(Mage_Catalog_Model_Product $product)
     {
-        $this->_product = $product;
+        $this->product = $product;
     }
 
     /**
@@ -29,11 +29,11 @@ abstract class Ess_M2ePro_Model_Listing_Auto_Actions_Mode_Abstract
      */
     protected function getProduct()
     {
-        if (!($this->_product instanceof Mage_Catalog_Model_Product)) {
+        if (!($this->product instanceof Mage_Catalog_Model_Product)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Property "Product" should be set first.');
         }
 
-        return $this->_product;
+        return $this->product;
     }
 
     //########################################

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -16,7 +16,6 @@ class Ess_M2ePro_Block_Adminhtml_Development_Tabs_Database_Table_Grid_Column_Ren
         if ($data = $this->_getValue($row)) {
             return $data;
         }
-
         return $this->getColumn()->getDefault();
     }
 

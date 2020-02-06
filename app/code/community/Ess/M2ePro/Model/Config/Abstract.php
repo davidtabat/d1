@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -20,7 +20,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
     //########################################
 
-    protected $_ormConfig = '';
+    private $_ormConfig = '';
 
     //########################################
 
@@ -88,7 +88,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
     public function getAllGroupValues($group, $sort = self::SORT_NONE)
     {
-        return $this->getAllValues($this->prepareGroup($group), $sort);
+        return $this->getAllValues($this->prepareGroup($group),$sort);
     }
 
     public function deleteAllGroupValues($group)
@@ -109,7 +109,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
     //########################################
 
-    protected function getValue($group, $key)
+    private function getValue($group, $key)
     {
         if (empty($group) || empty($key)) {
             return NULL;
@@ -125,6 +125,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
         $cacheData = array();
         foreach ($dbData['items'] as $item) {
+
             $item['group'] = $this->prepareGroup($item['group']);
             $item['key']   = $this->prepareKey($item['key']);
 
@@ -140,7 +141,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
         return isset($cacheData[$group][$key]) ? $cacheData[$group][$key] : NULL;
     }
 
-    protected function setValue($group, $key, $value)
+    private function setValue($group, $key, $value)
     {
         if (empty($key) || empty($group)) {
             return false;
@@ -157,7 +158,8 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
         $collection->addFieldToFilter(new Zend_Db_Expr('`key`'), $key);
         $dbData = $collection->toArray();
 
-        if (!empty($dbData['items'])) {
+        if (count($dbData['items']) > 0) {
+
             $existItem = reset($dbData['items']);
 
             Mage::getModel($this->_ormConfig)
@@ -165,7 +167,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
                          ->addData(array('value' => $value))
                          ->save();
         } else {
-            $group == self::GLOBAL_GROUP && $group = NULL;
+
             Mage::getModel($this->_ormConfig)
                          ->setData(array('group' => $group,'key' => $key,'value' => $value))
                          ->save();
@@ -176,7 +178,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
         return true;
     }
 
-    protected function deleteValue($group, $key)
+    private function deleteValue($group, $key)
     {
         if (empty($key) || empty($group)) {
             return false;
@@ -207,7 +209,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
     // ---------------------------------------
 
-    protected function getAllValues($group = NULL, $sort = self::SORT_NONE)
+    private function getAllValues($group = NULL, $sort = self::SORT_NONE)
     {
         if (empty($group)) {
             return array();
@@ -234,7 +236,7 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
         return $result;
     }
 
-    protected function deleteAllValues($group = NULL)
+    private function deleteAllValues($group = NULL)
     {
         if (empty($group)) {
             return false;
@@ -261,9 +263,9 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
     //########################################
 
-    protected function prepareGroup($group)
+    private function prepareGroup($group)
     {
-        if ($group === null || $group == self::GLOBAL_GROUP) {
+        if (is_null($group) || $group == self::GLOBAL_GROUP) {
             return self::GLOBAL_GROUP;
         }
 
@@ -271,17 +273,17 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
             return false;
         }
 
-        return '/'.strtolower(trim($group, '/')).'/';
+        return '/'.strtolower(trim($group,'/')).'/';
     }
 
-    protected function prepareKey($key)
+    private function prepareKey($key)
     {
         return strtolower($key);
     }
 
     //########################################
 
-    protected function sortResult(&$array, $sort)
+    private function sortResult(&$array, $sort)
     {
         switch ($sort)
         {
@@ -305,19 +307,19 @@ class Ess_M2ePro_Model_Config_Abstract extends Ess_M2ePro_Model_Abstract
 
     //########################################
 
-    protected function getCacheData()
+    private function getCacheData()
     {
         $key = $this->_ormConfig.'_data';
         return Mage::helper('M2ePro/Data_Cache_Permanent')->getValue($key);
     }
 
-    protected function setCacheData(array $data)
+    private function setCacheData(array $data)
     {
         $key = $this->_ormConfig.'_data';
         Mage::helper('M2ePro/Data_Cache_Permanent')->setValue($key, $data, array(), self::CACHE_LIFETIME);
     }
 
-    protected function removeCacheData()
+    private function removeCacheData()
     {
         $key = $this->_ormConfig.'_data';
         Mage::helper('M2ePro/Data_Cache_Permanent')->removeValue($key);

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -27,29 +27,29 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Synchronization_Edit_Form extends Mage_Adm
     protected function _beforeToHtml()
     {
         // ---------------------------------------
-        $this->instructionsMode = Mage::helper('M2ePro/Module')->getConfig()
-            ->getGroupValue('/cron/task/ebay/listing/product/process_instructions/', 'mode');
+        $this->templates = Mage::helper('M2ePro/Module')->getSynchronizationConfig()
+            ->getAllGroupValues('/ebay/templates/');
         // ---------------------------------------
 
         // ---------------------------------------
         $format = Mage::app()->getLocale()->getDateTimeFormat(Mage_Core_Model_Locale::FORMAT_TYPE_MEDIUM);
 
-        $lastListingProductId = Mage::getModel('M2ePro/Registry')
-            ->load('/listing/product/revise/total/ebay/last_listing_product_id/', 'key')
-            ->getValue();
+        $this->reviseAllInProcessingState = !is_null(
+            Mage::helper('M2ePro/Module')->getSynchronizationConfig()->getGroupValue(
+                '/ebay/templates/revise/total/', 'last_listing_product_id'
+            )
+        );
 
-        $this->reviseAllInProcessingState = !empty($lastListingProductId);
-
-        $this->reviseAllStartDate = Mage::getModel('M2ePro/Registry')
-            ->load('/listing/product/revise/total/ebay/start_date/', 'key')
-            ->getValue();
+        $this->reviseAllStartDate = Mage::helper('M2ePro/Module')->getSynchronizationConfig()->getGroupValue(
+            '/ebay/templates/revise/total/', 'start_date'
+        );
         $this->reviseAllStartDate && $this->reviseAllStartDate = Mage::app()->getLocale()
             ->date(strtotime($this->reviseAllStartDate))
             ->toString($format);
 
-        $this->reviseAllEndDate = Mage::getModel('M2ePro/Registry')
-            ->load('/listing/product/revise/total/ebay/end_date/', 'key')
-            ->getValue();
+        $this->reviseAllEndDate = Mage::helper('M2ePro/Module')->getSynchronizationConfig()->getGroupValue(
+            '/ebay/templates/revise/total/', 'end_date'
+        );
         $this->reviseAllEndDate && $this->reviseAllEndDate = Mage::app()->getLocale()
             ->date(strtotime($this->reviseAllEndDate))
             ->toString($format);
@@ -67,8 +67,8 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Synchronization_Edit_Form extends Mage_Adm
         // ---------------------------------------
 
         // ---------------------------------------
-        $this->inspectorMode = (bool)Mage::helper('M2ePro/Module')->getConfig()->getGroupValue(
-            '/listing/product/inspector/', 'mode'
+        $this->inspectorMode = (int)Mage::helper('M2ePro/Module')->getSynchronizationConfig()->getGroupValue(
+            '/defaults/inspector/','mode'
         );
         // ---------------------------------------
 
@@ -80,7 +80,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Synchronization_Edit_Form extends Mage_Adm
     public function isShowReviseAll()
     {
         $showSetting = Mage::helper('M2ePro/Module')->getConfig()->getGroupValue(
-            '/view/synchronization/revise_total/', 'show'
+            '/view/synchronization/revise_total/','show'
         );
 
         return $showSetting && Mage::helper('M2ePro/View_Ebay')->isAdvancedMode();

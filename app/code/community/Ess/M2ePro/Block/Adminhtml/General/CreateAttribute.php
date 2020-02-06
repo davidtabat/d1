@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -10,10 +10,10 @@ use Ess_M2ePro_Model_Magento_Attribute_Builder as AttributeBuilder;
 
 class Ess_M2ePro_Block_Adminhtml_General_CreateAttribute extends Mage_Adminhtml_Block_Widget
 {
-    protected $_handlerId;
+    protected $handlerId;
 
-    protected $_allowedTypes            = array();
-    protected $_applyToAllAttributeSets = true;
+    protected $allowedTypes = array();
+    protected $applyToAllAttributeSets = true;
 
     //########################################
 
@@ -33,32 +33,32 @@ class Ess_M2ePro_Block_Adminhtml_General_CreateAttribute extends Mage_Adminhtml_
 
     public function handlerId($value = null)
     {
-        if ($value === null) {
-            return $this->_handlerId;
+        if (is_null($value)) {
+            return $this->handlerId;
         }
 
-        $this->_handlerId = $value;
-        return $this->_handlerId;
+        $this->handlerId = $value;
+        return $this->handlerId;
     }
 
     public function applyToAll($value = null)
     {
-        if ($value === null) {
-            return $this->_applyToAllAttributeSets;
+        if (is_null($value)) {
+            return $this->applyToAllAttributeSets;
         }
 
-        $this->_applyToAllAttributeSets = $value;
-        return $this->_applyToAllAttributeSets;
+        $this->applyToAllAttributeSets = $value;
+        return $this->applyToAllAttributeSets;
     }
 
     public function allowedTypes($value = null)
     {
-        if ($value === null) {
-            return count($this->_allowedTypes) ? $this->_allowedTypes : $this->getAllAvailableTypes();
+        if (is_null($value)) {
+            return count($this->allowedTypes) ? $this->allowedTypes : $this->getAllAvailableTypes();
         }
 
-        $this->_allowedTypes = $value;
-        return $this->_allowedTypes;
+        $this->allowedTypes = $value;
+        return $this->allowedTypes;
     }
 
     // ---------------------------------------

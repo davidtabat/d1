@@ -2,26 +2,28 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Helper_Data_Cache_Session extends Ess_M2ePro_Helper_Data_Cache_Abstract
 {
-    protected $_cacheStorage = array();
+    //########################################
+
+    private $cacheStorage = array();
 
     //########################################
 
     public function getValue($key)
     {
-        return !empty($this->_cacheStorage[$key]['data']) ? $this->_cacheStorage[$key]['data'] : null;
+        return !empty($this->cacheStorage[$key]['data']) ? $this->cacheStorage[$key]['data'] : null;
     }
 
     public function setValue($key, $value, array $tags = array(), $lifetime = null)
     {
-        $this->_cacheStorage[$key] = array(
+        $this->cacheStorage[$key] = array(
             'data' => $value,
-            'tags' => $tags,
+            'tags'   => $tags,
         );
 
         return $value;
@@ -31,23 +33,23 @@ class Ess_M2ePro_Helper_Data_Cache_Session extends Ess_M2ePro_Helper_Data_Cache_
 
     public function removeValue($key)
     {
-        if (!isset($this->_cacheStorage[$key])) {
+        if (!isset($this->cacheStorage[$key])) {
             return false;
         }
 
-        unset($this->_cacheStorage[$key]);
+        unset($this->cacheStorage[$key]);
         return true;
     }
 
     public function removeTagValues($tag)
     {
         $isDelete = false;
-        foreach ($this->_cacheStorage as $key => $data) {
+        foreach ($this->cacheStorage as $key => $data) {
             if (!in_array($tag, $data['tags'])) {
                 continue;
             }
 
-            unset($this->_cacheStorage[$key]);
+            unset($this->cacheStorage[$key]);
             $isDelete = true;
         }
 
@@ -56,11 +58,11 @@ class Ess_M2ePro_Helper_Data_Cache_Session extends Ess_M2ePro_Helper_Data_Cache_
 
     public function removeAllValues()
     {
-        if (empty($this->_cacheStorage)) {
+        if (empty($this->cacheStorage)) {
             return false;
         }
 
-        $this->_cacheStorage = array();
+        $this->cacheStorage = array();
         return true;
     }
 

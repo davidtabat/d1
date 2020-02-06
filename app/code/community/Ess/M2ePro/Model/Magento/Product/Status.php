@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -18,7 +18,6 @@ class Ess_M2ePro_Model_Magento_Product_Status
             $this->_productAttributes[$attribute] = Mage::getSingleton('catalog/product')
                                                         ->getResource()->getAttribute($attribute);
         }
-
         return $this->_productAttributes[$attribute];
     }
 
@@ -53,8 +52,7 @@ class Ess_M2ePro_Model_Magento_Product_Status
             $select = $adapter->select()
                 ->from(
                     array('t1' => $attributeTable),
-                    array('entity_id', 'IF(t2.value_id>0, t2.value, t1.value) as value')
-                )
+                    array('entity_id', 'IF(t2.value_id>0, t2.value, t1.value) as value'))
                 ->joinLeft(
                     array('t2' => $attributeTable),
                     't1.entity_id = t2.entity_id AND t1.attribute_id = t2.attribute_id AND t2.store_id = '.

@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -19,12 +19,12 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Shipping
      */
-    protected $_shippingTemplateModel = null;
+    private $shippingTemplateModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Shipping_Service_Source[]
      */
-    protected $_shippingServiceSourceModels = null;
+    private $shippingServiceSourceModels = NULL;
 
     //########################################
 
@@ -39,8 +39,8 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
     public function deleteInstance()
     {
         $temp = parent::deleteInstance();
-        $temp && $this->_shippingTemplateModel = null;
-        $temp && $this->_shippingServiceSourceModels = array();
+        $temp && $this->shippingTemplateModel = NULL;
+        $temp && $this->shippingServiceSourceModels = array();
         return $temp;
     }
 
@@ -51,13 +51,13 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
      */
     public function getShippingTemplate()
     {
-        if ($this->_shippingTemplateModel === null) {
-            $this->_shippingTemplateModel = Mage::helper('M2ePro')->getCachedObject(
+        if (is_null($this->shippingTemplateModel)) {
+            $this->shippingTemplateModel = Mage::helper('M2ePro')->getCachedObject(
                 'Ebay_Template_Shipping', $this->getTemplateShippingId(), NULL, array('template')
             );
         }
 
-        return $this->_shippingTemplateModel;
+        return $this->shippingTemplateModel;
     }
 
     /**
@@ -65,7 +65,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
      */
     public function setShippingTemplate(Ess_M2ePro_Model_Ebay_Template_Shipping $instance)
     {
-         $this->_shippingTemplateModel = $instance;
+         $this->shippingTemplateModel = $instance;
     }
 
     // ---------------------------------------
@@ -78,17 +78,15 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
     {
         $productId = $magentoProduct->getProductId();
 
-        if (!empty($this->_shippingServiceSourceModels[$productId])) {
-            return $this->_shippingServiceSourceModels[$productId];
+        if (!empty($this->shippingServiceSourceModels[$productId])) {
+            return $this->shippingServiceSourceModels[$productId];
         }
 
-        $this->_shippingServiceSourceModels[$productId] = Mage::getModel(
-            'M2ePro/Ebay_Template_Shipping_Service_Source'
-        );
-        $this->_shippingServiceSourceModels[$productId]->setMagentoProduct($magentoProduct);
-        $this->_shippingServiceSourceModels[$productId]->setShippingServiceTemplate($this);
+        $this->shippingServiceSourceModels[$productId] = Mage::getModel('M2ePro/Ebay_Template_Shipping_Service_Source');
+        $this->shippingServiceSourceModels[$productId]->setMagentoProduct($magentoProduct);
+        $this->shippingServiceSourceModels[$productId]->setShippingServiceTemplate($this);
 
-        return $this->_shippingServiceSourceModels[$productId];
+        return $this->shippingServiceSourceModels[$productId];
     }
 
     //########################################
@@ -106,7 +104,7 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
      */
     public function getLocations()
     {
-        return Mage::helper('M2ePro')->jsonDecode($this->getData('locations'));
+        return json_decode($this->getData('locations'),true);
     }
 
     /**
@@ -245,6 +243,28 @@ class Ess_M2ePro_Model_Ebay_Template_Shipping_Service extends Ess_M2ePro_Model_C
         }
 
         return $attributes;
+    }
+
+    //########################################
+
+    /**
+     * @return array
+     */
+    public function getTrackingAttributes()
+    {
+        return array();
+    }
+
+    /**
+     * @return array
+     */
+    public function getUsedAttributes()
+    {
+        return array_unique(array_merge(
+            $this->getCostAttributes(),
+            $this->getCostAdditionalAttributes(),
+            $this->getCostSurchargeAttributes()
+        ));
     }
 
     //########################################

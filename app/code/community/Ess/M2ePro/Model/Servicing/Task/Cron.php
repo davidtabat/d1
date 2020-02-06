@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -27,11 +27,7 @@ class Ess_M2ePro_Model_Servicing_Task_Cron extends Ess_M2ePro_Model_Servicing_Ta
     {
         $helper = Mage::helper('M2ePro/Module_Cron');
 
-        if ($this->getInitiator() === Ess_M2ePro_Helper_Data::INITIATOR_DEVELOPER) {
-            return true;
-        }
-
-        if ($helper->getLastRun() === null) {
+        if (is_null($helper->getLastRun())) {
             return true;
         }
 
@@ -40,13 +36,15 @@ class Ess_M2ePro_Model_Servicing_Task_Cron extends Ess_M2ePro_Model_Servicing_Ta
         }
 
         if ($helper->isRunnerMagento()) {
+
             $currentTimeStamp = Mage::helper('M2ePro')->getCurrentGmtDate(true);
             $lastTypeChange = $helper->getLastRunnerChange();
             $lastRun = Mage::helper('M2ePro/Module')->getCacheConfig()
                            ->getGroupValue('/servicing/cron/', 'last_run');
 
-            if (($lastTypeChange === null || $currentTimeStamp > strtotime($lastTypeChange) + 86400) &&
-                ($lastRun === null || $currentTimeStamp > strtotime($lastRun) + 86400)) {
+            if ((is_null($lastTypeChange) || $currentTimeStamp > strtotime($lastTypeChange) + 86400) &&
+                (is_null($lastRun) || $currentTimeStamp > strtotime($lastRun) + 86400)) {
+
                 Mage::helper('M2ePro/Module')->getCacheConfig()
                     ->setGroupValue('/servicing/cron/', 'last_run', Mage::helper('M2ePro')->getCurrentGmtDate());
 

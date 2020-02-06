@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -15,19 +15,10 @@ class Ess_M2ePro_Model_Ebay_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mode
      * @param Ess_M2ePro_Model_Listing_Auto_Category_Group $categoryGroup
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    public function addProductByCategoryGroup(
-        Mage_Catalog_Model_Product $product,
-        Ess_M2ePro_Model_Listing_Auto_Category_Group $categoryGroup
-    ) {
-        $logData = array(
-            'reason'     => __METHOD__,
-            'rule_id'    => $categoryGroup->getId(),
-            'rule_title' => $categoryGroup->getTitle(),
-        );
-        $listingProduct = $this->getListing()->addProduct(
-            $product, Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION,
-            false, true, $logData
-        );
+    public function addProductByCategoryGroup(Mage_Catalog_Model_Product $product,
+                                              Ess_M2ePro_Model_Listing_Auto_Category_Group $categoryGroup)
+    {
+        $listingProduct = $this->getListing()->addProduct($product);
 
         if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
             return;
@@ -51,19 +42,11 @@ class Ess_M2ePro_Model_Ebay_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mode
      */
     public function addProductByGlobalListing(Mage_Catalog_Model_Product $product, Ess_M2ePro_Model_Listing $listing)
     {
-        $logData = array(
-            'reason' => __METHOD__,
-        );
-        $listingProduct = $this->getListing()->addProduct(
-            $product, Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION,
-            false, true, $logData
-        );
+        $listingProduct = $this->getListing()->addProduct($product);
 
         if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
             return;
         }
-
-        $this->logAddedToMagentoProduct($listingProduct);
 
         /** @var Ess_M2ePro_Model_Ebay_Listing $ebayListing */
         $ebayListing = $listing->getChildObject();
@@ -83,13 +66,7 @@ class Ess_M2ePro_Model_Ebay_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mode
      */
     public function addProductByWebsiteListing(Mage_Catalog_Model_Product $product, Ess_M2ePro_Model_Listing $listing)
     {
-        $logData = array(
-            'reason' => __METHOD__,
-        );
-        $listingProduct = $this->getListing()->addProduct(
-            $product, Ess_M2ePro_Helper_Data::INITIATOR_EXTENSION,
-            false, true, $logData
-        );
+        $listingProduct = $this->getListing()->addProduct($product);
 
         if (!($listingProduct instanceof Ess_M2ePro_Model_Listing_Product)) {
             return;
@@ -111,11 +88,11 @@ class Ess_M2ePro_Model_Ebay_Listing_Auto_Actions_Listing extends Ess_M2ePro_Mode
     protected function processAddedListingProduct(Ess_M2ePro_Model_Listing_Product $listingProduct, array $params)
     {
         if (!empty($params['template_category_id'])) {
-            $listingProduct->setData('template_category_id', $params['template_category_id']);
+            $listingProduct->setData('template_category_id',$params['template_category_id']);
         }
 
         if (!empty($params['template_other_category_id'])) {
-            $listingProduct->setData('template_other_category_id', $params['template_other_category_id']);
+            $listingProduct->setData('template_other_category_id',$params['template_other_category_id']);
         }
 
         $listingProduct->save();

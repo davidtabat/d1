@@ -2,21 +2,21 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
 {
     /**
-     * @var $_magentoProduct Ess_M2ePro_Model_Magento_Product
+     * @var $magentoProduct Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProduct = null;
+    private $magentoProduct = null;
 
     /**
-     * @var $_sellingTemplateModel Ess_M2ePro_Model_Template_SellingFormat
+     * @var $sellingTemplateModel Ess_M2ePro_Model_Template_SellingFormat
      */
-    protected $_sellingTemplateModel = null;
+    private $sellingTemplateModel = null;
 
     //########################################
 
@@ -26,7 +26,7 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $magentoProduct)
     {
-        $this->_magentoProduct = $magentoProduct;
+        $this->magentoProduct = $magentoProduct;
         return $this;
     }
 
@@ -35,7 +35,7 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
      */
     public function getMagentoProduct()
     {
-        return $this->_magentoProduct;
+        return $this->magentoProduct;
     }
 
     // ---------------------------------------
@@ -46,7 +46,7 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
      */
     public function setSellingFormatTemplate(Ess_M2ePro_Model_Template_SellingFormat $instance)
     {
-        $this->_sellingTemplateModel = $instance;
+        $this->sellingTemplateModel = $instance;
         return $this;
     }
 
@@ -55,7 +55,7 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
      */
     public function getSellingFormatTemplate()
     {
-        return $this->_sellingTemplateModel;
+        return $this->sellingTemplateModel;
     }
 
     /**
@@ -101,20 +101,6 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
     }
 
     /**
-     * @return string
-     */
-    public function getLotSize()
-    {
-        $src = $this->getEbaySellingFormatTemplate()->getLotSizeSource();
-
-        if ($src['mode'] == Ess_M2ePro_Model_Ebay_Template_SellingFormat::LOT_SIZE_MODE_ATTRIBUTE) {
-            return $this->getMagentoProduct()->getAttributeValue($src['attribute']);
-        }
-
-        return $src['value'];
-    }
-
-    /**
      * @return int
      */
     public function getListingType()
@@ -122,12 +108,13 @@ class Ess_M2ePro_Model_Ebay_Template_SellingFormat_Source
         $src = $this->getEbaySellingFormatTemplate()->getListingTypeSource();
 
         if ($src['mode'] == Ess_M2ePro_Model_Ebay_Template_SellingFormat::LISTING_TYPE_ATTRIBUTE) {
+
             $ebayStringType = $this->getMagentoProduct()->getAttributeValue($src['attribute']);
 
             switch ($ebayStringType) {
-                case Ess_M2ePro_Model_Ebay_Listing_Product_Action_DataBuilder_General::LISTING_TYPE_FIXED:
+                case Ess_M2ePro_Model_Ebay_Listing_Product_Action_Request_Selling::LISTING_TYPE_FIXED:
                     return Ess_M2ePro_Model_Ebay_Template_SellingFormat::LISTING_TYPE_FIXED;
-                case Ess_M2ePro_Model_Ebay_Listing_Product_Action_DataBuilder_General::LISTING_TYPE_AUCTION:
+                case Ess_M2ePro_Model_Ebay_Listing_Product_Action_Request_Selling::LISTING_TYPE_AUCTION:
                     return Ess_M2ePro_Model_Ebay_Template_SellingFormat::LISTING_TYPE_AUCTION;
             }
 

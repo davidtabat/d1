@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,17 +11,17 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
     /**
      * @var null|array
      */
-    protected $_source = null;
+    private $source = NULL;
 
     /**
      * @var null|Ess_M2ePro_Model_Listing_Product
      */
-    protected $_product = null;
+    private $product = NULL;
 
     /**
      * @var null|int
      */
-    protected $_productValueCache = null;
+    private $productValueCache = NULL;
 
     //########################################
 
@@ -31,7 +31,7 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
      */
     public function setProduct(Ess_M2ePro_Model_Listing_Product $product)
     {
-        $this->_product = $product;
+        $this->product = $product;
         return $this;
     }
 
@@ -41,11 +41,11 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
      */
     protected function getProduct()
     {
-        if ($this->_product === null) {
+        if (is_null($this->product)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Initialize all parameters first.');
         }
 
-        return $this->_product;
+        return $this->product;
     }
 
     //########################################
@@ -92,12 +92,12 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
      */
     protected function getSource($key = NULL)
     {
-        if ($this->_source === null) {
-            $this->_source = $this->getComponentSellingFormatTemplate()->getQtySource();
+        if (is_null($this->source)) {
+            $this->source = $this->getComponentSellingFormatTemplate()->getQtySource();
         }
 
-        return ($key !== null && isset($this->_source[$key])) ?
-            $this->_source[$key] : $this->_source;
+        return (!is_null($key) && isset($this->source[$key])) ?
+                $this->source[$key] : $this->source;
     }
 
     /**
@@ -120,33 +120,12 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
 
     public function getProductValue()
     {
-        if ($this->_productValueCache !== null) {
-            return $this->_productValueCache;
+        if (!is_null($this->productValueCache)) {
+            return $this->productValueCache;
         }
 
-        $value = $this->getClearProductValue();
-
-        $value = $this->applySellingFormatTemplateModifications($value);
-        $value < 0 && $value = 0;
-
-        return $this->_productValueCache = (int)floor($value);
-    }
-
-    public function getVariationValue(Ess_M2ePro_Model_Listing_Product_Variation $variation)
-    {
-        $value = $this->getClearVariationValue($variation);
-
-        $value = $this->applySellingFormatTemplateModifications($value);
-        $value < 0 && $value = 0;
-
-        return (int)floor($value);
-    }
-
-    //########################################
-
-    protected function getClearProductValue()
-    {
         switch ($this->getSource('mode')) {
+
             case Ess_M2ePro_Model_Template_SellingFormat::QTY_MODE_SINGLE:
                 $value = 1;
                 break;
@@ -171,28 +150,30 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
                 throw new Ess_M2ePro_Model_Exception_Logic('Unknown Mode in Database.');
         }
 
-        return $value;
+        $value = $this->applySellingFormatTemplateModifications($value);
+        $value < 0 && $value = 0;
+
+        return $this->productValueCache = (int)floor($value);
     }
 
-    protected function getClearVariationValue(Ess_M2ePro_Model_Listing_Product_Variation $variation)
+    public function getVariationValue(Ess_M2ePro_Model_Listing_Product_Variation $variation)
     {
-        $value = 0;
-
         if ($this->getMagentoProduct()->isConfigurableType() ||
             $this->getMagentoProduct()->isSimpleTypeWithCustomOptions() ||
-            $this->getMagentoProduct()->isGroupedType() ||
-            $this->getMagentoProduct()->isDownloadableTypeWithSeparatedLinks()
-        ) {
+            $this->getMagentoProduct()->isGroupedType()) {
+
             $options = $variation->getOptions(true);
             $value = $this->getOptionBaseValue(reset($options));
+
         } else if ($this->getMagentoProduct()->isBundleType()) {
+
             $optionsQtyList = array();
             $optionsQtyArray = array();
 
             // grouping qty by product id
             foreach ($variation->getOptions(true) as $option) {
                 if (!$option->getProductId()) {
-                    continue;
+                   continue;
                 }
 
                 $optionsQtyArray[$option->getProductId()][] = $this->getOptionBaseValue($option);
@@ -202,19 +183,16 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
                 $optionsQtyList[] = floor($optionQty[0]/count($optionQty));
             }
 
-            !empty($optionsQtyArray) && $value = min($optionsQtyList);
+            $value = min($optionsQtyList);
+
         } else {
-            throw new Ess_M2ePro_Model_Exception_Logic(
-                'Unknown Product type.',
-                array(
-                                                           'listing_product_id' => $this->getProduct()->getId(),
-                                                           'product_id' => $this->getMagentoProduct()->getProductId(),
-                                                           'type'       => $this->getMagentoProduct()->getTypeId()
-                )
-            );
+            throw new Ess_M2ePro_Model_Exception_Logic('Unknown Product type.');
         }
 
-        return $value;
+        $value = $this->applySellingFormatTemplateModifications($value);
+        $value < 0 && $value = 0;
+
+        return (int)floor($value);
     }
 
     //########################################
@@ -278,7 +256,7 @@ abstract class Ess_M2ePro_Model_Listing_Product_QtyCalculator
         }
 
         $roundingFunction = (bool)(int)Mage::helper('M2ePro/Module')->getConfig()
-                ->getGroupValue('/qty/percentage/', 'rounding_greater') ? 'ceil' : 'floor';
+                ->getGroupValue('/qty/percentage/','rounding_greater') ? 'ceil' : 'floor';
 
         return (int)$roundingFunction(($value/100) * $percents);
     }

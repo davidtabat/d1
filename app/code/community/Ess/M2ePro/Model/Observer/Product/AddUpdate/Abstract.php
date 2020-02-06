@@ -2,13 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Model_Observer_Product_AddUpdate_Abstract extends Ess_M2ePro_Model_Observer_Product_Abstract
 {
-    protected $_affectedListingsProducts = array();
+    private $affectedListingsProducts = array();
+    private $affectedOtherListings = array();
 
     //########################################
 
@@ -28,22 +29,31 @@ abstract class Ess_M2ePro_Model_Observer_Product_AddUpdate_Abstract extends Ess_
 
     protected function areThereAffectedItems()
     {
-        return !empty($this->getAffectedListingsProducts());
+        return count($this->getAffectedListingsProducts()) > 0 ||
+               count($this->getAffectedOtherListings()) > 0;
     }
 
     // ---------------------------------------
 
-    /**
-     * @return Ess_M2ePro_Model_Listing_Product[]
-     */
     protected function getAffectedListingsProducts()
     {
-        if (!empty($this->_affectedListingsProducts)) {
-            return $this->_affectedListingsProducts;
+        if (!empty($this->affectedListingsProducts)) {
+            return $this->affectedListingsProducts;
         }
 
-        return $this->_affectedListingsProducts = Mage::getResourceModel('M2ePro/Listing_Product')
-                                                      ->getItemsByProductId($this->getProductId());
+        return $this->affectedListingsProducts = Mage::getResourceModel('M2ePro/Listing_Product')
+                                                            ->getItemsByProductId($this->getProductId());
+    }
+
+    protected function getAffectedOtherListings()
+    {
+        if (!empty($this->affectedOtherListings)) {
+            return $this->affectedOtherListings;
+        }
+
+        return $this->affectedOtherListings = Mage::getResourceModel('M2ePro/Listing_Other')->getItemsByProductId(
+            $this->getProductId(), array('component_mode' => Ess_M2ePro_Helper_Component_Ebay::NICK)
+        );
     }
 
     //########################################

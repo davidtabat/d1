@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,21 +11,21 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
     /**
      * @var null|Mage_Catalog_Model_Product
      */
-    protected $_product = null;
+    private $product = NULL;
 
     /**
      * @var null|int
      */
-    protected $_productId = null;
+    private $productId = NULL;
     /**
      * @var null|int
      */
-    protected $_storeId = null;
+    private $storeId = NULL;
 
     /**
      * @var null|Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProduct = null;
+    private $magentoProduct = NULL;
 
     //########################################
 
@@ -37,10 +37,10 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
             throw new Ess_M2ePro_Model_Exception('Product event doesn\'t have correct Product instance.');
         }
 
-        $this->_product = $product;
+        $this->product = $product;
 
-        $this->_productId = (int)$this->_product->getId();
-        $this->_storeId   = (int)$this->_product->getData('store_id');
+        $this->productId = (int)$this->product->getId();
+        $this->storeId = (int)$this->product->getData('store_id');
     }
 
     //########################################
@@ -51,11 +51,11 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
      */
     protected function getProduct()
     {
-        if (!($this->_product instanceof Mage_Catalog_Model_Product)) {
+        if (!($this->product instanceof Mage_Catalog_Model_Product)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Property "Product" should be set first.');
         }
 
-        return $this->_product;
+        return $this->product;
     }
 
     /**
@@ -65,14 +65,12 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
     protected function reloadProduct()
     {
         if ($this->getProductId() <= 0) {
-            throw new Ess_M2ePro_Model_Exception_Logic(
-                'To reload Product instance product_id should be
-                greater than 0.'
-            );
+            throw new Ess_M2ePro_Model_Exception_Logic('To reload Product instance product_id should be
+                greater than 0.');
         }
 
-        $this->_product = Mage::getModel('catalog/product')->setStoreId($this->getStoreId())
-                              ->load($this->getProductId());
+        $this->product = Mage::getModel('catalog/product')->setStoreId($this->getStoreId())
+                                                          ->load($this->getProductId());
 
         return $this->getProduct();
     }
@@ -84,7 +82,7 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
      */
     protected function getProductId()
     {
-        return (int)$this->_productId;
+        return (int)$this->productId;
     }
 
     /**
@@ -92,7 +90,7 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
      */
     protected function getStoreId()
     {
-        return (int)$this->_storeId;
+        return (int)$this->storeId;
     }
 
     //########################################
@@ -111,18 +109,16 @@ abstract class Ess_M2ePro_Model_Observer_Product_Abstract extends Ess_M2ePro_Mod
      */
     protected function getMagentoProduct()
     {
-        if (!empty($this->_magentoProduct)) {
-            return $this->_magentoProduct;
+        if (!empty($this->magentoProduct)) {
+            return $this->magentoProduct;
         }
 
         if ($this->getProductId() <= 0) {
-            throw new Ess_M2ePro_Model_Exception_Logic(
-                'To load Magento Product instance product_id should be
-                greater than 0.'
-            );
+            throw new Ess_M2ePro_Model_Exception_Logic('To load Magento Product instance product_id should be
+                greater than 0.');
         }
 
-        return $this->_magentoProduct = Mage::getModel('M2ePro/Magento_Product')->setProduct($this->getProduct());
+        return $this->magentoProduct = Mage::getModel('M2ePro/Magento_Product')->setProduct($this->getProduct());
     }
 
     //########################################

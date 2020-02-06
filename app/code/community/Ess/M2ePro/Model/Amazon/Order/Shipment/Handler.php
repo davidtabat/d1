@@ -2,11 +2,9 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
-
-use Ess_M2ePro_Helper_Data as Helper;
 
 class Ess_M2ePro_Model_Amazon_Order_Shipment_Handler extends Ess_M2ePro_Model_Order_Shipment_Handler
 {
@@ -23,18 +21,19 @@ class Ess_M2ePro_Model_Amazon_Order_Shipment_Handler extends Ess_M2ePro_Model_Or
             throw new InvalidArgumentException('Invalid component mode.');
         }
 
-        $trackingDetails = $this->getTrackingDetails($order, $shipment);
+        $trackingDetails = $this->getTrackingDetails($shipment);
 
         if (!$order->getChildObject()->canUpdateShippingStatus($trackingDetails)) {
             return self::HANDLE_RESULT_SKIPPED;
         }
 
         $items = $this->getItemsToShip($order, $shipment);
+
         $trackingDetails['fulfillment_date'] = $shipment->getCreatedAt();
 
-        return $order->getChildObject()->updateShippingStatus($trackingDetails, $items)
-            ? self::HANDLE_RESULT_SUCCEEDED
-            : self::HANDLE_RESULT_FAILED;
+        $order->getChildObject()->updateShippingStatus($trackingDetails, $items);
+
+        return self::HANDLE_RESULT_SUCCEEDED;
     }
 
     /**
@@ -45,82 +44,59 @@ class Ess_M2ePro_Model_Amazon_Order_Shipment_Handler extends Ess_M2ePro_Model_Or
      *
      * @return array
      */
-    protected function getItemsToShip(Ess_M2ePro_Model_Order $order, Mage_Sales_Model_Order_Shipment $shipment)
+    private function getItemsToShip(Ess_M2ePro_Model_Order $order, Mage_Sales_Model_Order_Shipment $shipment)
     {
-        $itemsToShip = array();
+        $shipmentItems = $shipment->getAllItems();
+        $orderItemDataIdentifier = Ess_M2ePro_Helper_Data::CUSTOM_IDENTIFIER;
 
-        foreach ($shipment->getAllItems() as $shipmentItem) {
-            /** @var Mage_Sales_Model_Order_Shipment_Item $shipmentItem */
+        $items = array();
 
-            $additionalData = Mage::helper('M2ePro')->unserialize(
-                $shipmentItem->getOrderItem()->getAdditionalData()
-            );
+        foreach ($shipmentItems as $shipmentItem) {
+            $additionalData = $shipmentItem->getOrderItem()->getAdditionalData();
+            $additionalData = is_string($additionalData) ? @unserialize($additionalData) : array();
 
-            //--
-            if (isset($additionalData[Helper::CUSTOM_IDENTIFIER]['shipments'][$shipmentItem->getId()])) {
-                $itemsToShip = array_merge(
-                    $itemsToShip, $additionalData[Helper::CUSTOM_IDENTIFIER]['shipments'][$shipmentItem->getId()]
-                );
+            if (!isset($additionalData[$orderItemDataIdentifier]['items'])) {
                 continue;
             }
 
-            //--
-
-            if (!isset($additionalData[Helper::CUSTOM_IDENTIFIER]['items']) ||
-                !is_array($additionalData[Helper::CUSTOM_IDENTIFIER]['items'])) {
+            if (!is_array($additionalData[$orderItemDataIdentifier]['items'])) {
                 continue;
             }
 
-            $shipmentItems = array();
             $qtyAvailable = (int)$shipmentItem->getQty();
 
-            foreach ($additionalData[Helper::CUSTOM_IDENTIFIER]['items'] as &$data) {
-                if ($qtyAvailable <= 0 || !isset($data['order_item_id'])) {
+            foreach ($additionalData[$orderItemDataIdentifier]['items'] as $data) {
+                if ($qtyAvailable <= 0) {
                     continue;
                 }
 
-                /** @var Ess_M2ePro_Model_Order_Item $item */
-                $orderItemId = $data['order_item_id'];
-                $item = $order->getItemsCollection()->getItemByColumnValue('amazon_order_item_id', $orderItemId);
-                if ($item === null) {
+                if (!isset($data['order_item_id'])) {
                     continue;
                 }
 
-                /*
-                 * Extension stores Shipped QTY for each item starting from v6.5.4
-                */
-                $itemQtyShipped = isset($data['shipped_qty'][$orderItemId]) ? $data['shipped_qty'][$orderItemId] : 0;
-                $itemQty = $item->getChildObject()->getQty();
+                $item = $order->getItemsCollection()
+                    ->getItemByColumnValue('amazon_order_item_id', $data['order_item_id']);
 
-                if ($itemQtyShipped >= $itemQty) {
+                if (is_null($item)) {
                     continue;
                 }
 
-                if ($itemQty > $qtyAvailable) {
-                    $itemQty = $qtyAvailable;
+                $qty = $item->getChildObject()->getQtyPurchased();
+
+                if ($qty > $qtyAvailable) {
+                    $qty = $qtyAvailable;
                 }
 
                 $items[] = array(
-                    'amazon_order_item_id' => $orderItemId,
-                    'qty'                  => $itemQty
+                    'qty' => $qty,
+                    'amazon_order_item_id' => $data['order_item_id']
                 );
 
-                $qtyAvailable -= $itemQty;
-                $data['shipped_qty'][$orderItemId] = $itemQty;
+                $qtyAvailable -= $qty;
             }
-
-            unset($data);
-
-            $itemsToShip = array_merge($itemsToShip, $shipmentItems);
-            $additionalData[Helper::CUSTOM_IDENTIFIER]['shipments'][$shipmentItem->getId()] = $shipmentItems;
-
-            $shipmentItem->getOrderItem()->setAdditionalData(
-                Mage::helper('M2ePro')->serialize($additionalData)
-            );
-            $shipmentItem->getOrderItem()->save();
         }
 
-        return $itemsToShip;
+        return $items;
     }
 
     //########################################

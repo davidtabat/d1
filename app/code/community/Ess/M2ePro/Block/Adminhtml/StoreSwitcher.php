@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -71,7 +71,7 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         $collection = Mage::getModel('core/website')->getResourceCollection();
 
         $websiteIds = $this->getWebsiteIds();
-        if ($websiteIds !== null) {
+        if (!is_null($websiteIds)) {
             $collection->addIdFilter($this->getWebsiteIds());
         }
 
@@ -88,7 +88,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
                 }
             }
         }
-
         return $websites;
     }
 
@@ -99,7 +98,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         if (!$website instanceof Mage_Core_Model_Website) {
             $website = Mage::getModel('core/website')->load($website);
         }
-
         return $website->getGroupCollection();
     }
 
@@ -108,7 +106,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         if (!$website instanceof Mage_Core_Model_Website) {
             $website = Mage::app()->getWebsite($website);
         }
-
         return $website->getGroups();
     }
 
@@ -117,13 +114,11 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         if (!$group instanceof Mage_Core_Model_Store_Group) {
             $group = Mage::getModel('core/store_group')->load($group);
         }
-
         $stores = $group->getStoreCollection();
         $_storeIds = $this->getStoreIds();
         if (!empty($_storeIds)) {
             $stores->addIdFilter($_storeIds);
         }
-
         return $stores;
     }
 
@@ -132,7 +127,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         if (!$group instanceof Mage_Core_Model_Store_Group) {
             $group = Mage::app()->getGroup($group);
         }
-
         $stores = $group->getStores();
         if ($storeIds = $this->getStoreIds()) {
             foreach ($stores as $storeId => $store) {
@@ -141,7 +135,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
                 }
             }
         }
-
         return $stores;
     }
 
@@ -150,7 +143,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         if ($url = $this->getData('switch_url')) {
             return $url;
         }
-
         return $this->getUrl('*/*/new', array('_current' => true, 'store' => null));
     }
 
@@ -188,7 +180,6 @@ class Ess_M2ePro_Block_Adminhtml_StoreSwitcher extends Mage_Adminhtml_Block_Temp
         if (null !== $hasDefaultOption) {
             $this->_hasDefaultOption = $hasDefaultOption;
         }
-
         return $this->_hasDefaultOption;
     }
 

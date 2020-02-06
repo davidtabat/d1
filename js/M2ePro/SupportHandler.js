@@ -7,7 +7,7 @@ SupportHandler.prototype = Object.extend(new CommonHandler(), {
 
     // ---------------------------------------
 
-    searchData: function()
+    searchUserVoiceData: function()
     {
         var self = SupportHandlerObj;
         var query = $('query').value;
@@ -46,7 +46,7 @@ SupportHandler.prototype = Object.extend(new CommonHandler(), {
         var self = SupportHandlerObj;
 
         if (event.keyCode == 13) {
-            self.searchData();
+            self.searchUserVoiceData();
         }
     },
 

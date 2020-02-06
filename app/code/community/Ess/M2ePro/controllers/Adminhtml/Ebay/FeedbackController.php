@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -25,16 +25,14 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
 
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed(
-            Ess_M2ePro_Helper_View_Ebay::MENU_ROOT_NODE_NICK . '/configuration'
-        );
+        return Mage::getSingleton('admin/session')->isAllowed('m2epro_ebay/configuration');
     }
 
     //########################################
 
     public function indexAction()
     {
-        if ($this->getRequest()->getParam('account') === null) {
+        if (is_null($this->getRequest()->getParam('account'))) {
             $this->_redirect('*/adminhtml_ebay_account/index');
         }
 
@@ -62,11 +60,7 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
         $feedback = Mage::getModel('M2ePro/Ebay_Feedback')->loadInstance($feedbackId);
         $result = $feedback->sendResponse($feedbackText, Ess_M2ePro_Model_Ebay_Feedback::TYPE_POSITIVE);
 
-        $this->getResponse()->setBody(
-            Mage::helper('M2ePro')->jsonEncode(
-                array('result' => ($result ? 'success' : 'failure'))
-            )
-        );
+        $this->getResponse()->setBody(json_encode(array('result' => ($result ? 'success' : 'failure'))));
     }
 
     //########################################
@@ -78,13 +72,9 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
         $account = Mage::getModel('M2ePro/Ebay_Feedback')->loadInstance($feedbackId)->getAccount();
         $feedbacksTemplates = $account->getChildObject()->getFeedbackTemplates(false);
 
-        return $this->getResponse()->setBody(
-            Mage::helper('M2ePro')->jsonEncode(
-                array(
-                'feedbacks_templates' => $feedbacksTemplates
-                )
-            )
-        );
+        return $this->getResponse()->setBody(json_encode(array(
+            'feedbacks_templates' => $feedbacksTemplates
+        )));
     }
 
     //########################################
@@ -93,7 +83,7 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
     {
         $feedbackId = $this->getRequest()->getParam('feedback_id');
 
-        if ($feedbackId === null) {
+        if (is_null($feedbackId)) {
             $this->_getSession()->addError(Mage::helper('M2ePro')->__('Feedback is not defined.'));
             return $this->_redirect('*/adminhtml_ebay_order/index');
         }
@@ -102,7 +92,7 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
         $feedback = Mage::getModel('M2ePro/Ebay_Feedback')->loadInstance((int)$feedbackId);
         $order = $feedback->getOrder();
 
-        if ($order === null) {
+        if (is_null($order)) {
             $this->_getSession()->addError(Mage::helper('M2ePro')->__('Requested Order was not found.'));
             return $this->_redirect('*/adminhtml_ebay_order/index');
         }
@@ -116,7 +106,7 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
     {
         $feedbackId = $this->getRequest()->getParam('feedback_id');
 
-        if ($feedbackId === null) {
+        if (is_null($feedbackId)) {
             $this->_getSession()->addError(Mage::helper('M2ePro')->__('Feedback is not defined.'));
             return $this->_redirect('*/*/index');
         }
@@ -129,7 +119,7 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
             $feedback->getData('ebay_item_id'), $feedback->getData('account_id')
         );
 
-        if ($listingProduct !== null) {
+        if (!is_null($listingProduct)) {
             $itemUrl = Mage::helper('M2ePro/Component_Ebay')->getItemUrl(
                 $itemId,
                 $listingProduct->getListing()->getAccount()->getChildObject()->getMode(),
@@ -141,7 +131,7 @@ class Ess_M2ePro_Adminhtml_Ebay_FeedbackController extends Ess_M2ePro_Controller
 
         $order = $feedback->getOrder();
 
-        if ($order !== null && $order->getMarketplaceId() !== null) {
+        if (!is_null($order) && !is_null($order->getMarketplaceId())) {
             $itemUrl = Mage::helper('M2ePro/Component_Ebay')->getItemUrl(
                 $itemId,
                 $order->getAccount()->getChildObject()->getMode(),

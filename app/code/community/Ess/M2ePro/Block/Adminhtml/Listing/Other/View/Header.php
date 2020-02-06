@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -39,7 +39,7 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_View_Header extends Ess_M2ePro_Bl
 
     //########################################
 
-    protected function cutLongLines($line)
+    private function cutLongLines($line)
     {
         if (strlen($line) < 50) {
             return $line;
@@ -53,15 +53,17 @@ class Ess_M2ePro_Block_Adminhtml_Listing_Other_View_Header extends Ess_M2ePro_Bl
     /**
      * @return Ess_M2ePro_Model_Account
      */
-    protected function getAccount()
+    private function getAccount()
     {
         return $this->getData('account');
     }
 
+    //########################################
+
     /**
      * @return Ess_M2ePro_Model_Marketplace
      */
-    protected function getMarketplace()
+    private function getMarketplace()
     {
         return $this->getData('marketplace');
     }

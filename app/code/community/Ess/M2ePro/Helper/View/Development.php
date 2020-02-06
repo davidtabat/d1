@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,8 +11,7 @@ class Ess_M2ePro_Helper_View_Development extends Mage_Core_Helper_Abstract
     // M2ePro_TRANSLATIONS
     // Control Panel (M2E Pro)
 
-    const NICK = 'development';
-    const MENU_ROOT_NODE_NICK = 'm2epro/help';
+    const NICK            = 'development';
 
     const TAB_SUMMARY     = 'summary';
     const TAB_ABOUT       = 'about';
@@ -20,8 +19,8 @@ class Ess_M2ePro_Helper_View_Development extends Mage_Core_Helper_Abstract
     const TAB_DATABASE    = 'database';
     const TAB_TOOLS       = 'tools';
     const TAB_MODULE      = 'module';
-    const TAB_CRON        = 'cron';
     const TAB_DEBUG       = 'debug';
+    const TAB_BUILD       = 'build';
 
     //########################################
 
@@ -46,37 +45,37 @@ class Ess_M2ePro_Helper_View_Development extends Mage_Core_Helper_Abstract
 
     public function getPageAboutTabUrl(array $params = array())
     {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_ABOUT)));
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_ABOUT)));
     }
 
     public function getPageInspectionTabUrl(array $params = array())
     {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_INSPECTION)));
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_INSPECTION)));
     }
 
     public function getPageDatabaseTabUrl(array $params = array())
     {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_DATABASE)));
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_DATABASE)));
     }
 
     public function getPageToolsTabUrl(array $params = array())
     {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_TOOLS)));
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_TOOLS)));
     }
 
     public function getPageModuleTabUrl(array $params = array())
     {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_MODULE)));
-    }
-
-    public function getPageCronTabUrl(array $params = array())
-    {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_CRON)));
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_MODULE)));
     }
 
     public function getPageDebugTabUrl(array $params = array())
     {
-        return $this->getPageUrl(array_merge($params, array('tab' => self::TAB_DEBUG)));
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_DEBUG)));
+    }
+
+    public function getPageBuildTabUrl(array $params = array())
+    {
+        return $this->getPageUrl(array_merge($params,array('tab' => self::TAB_BUILD)));
     }
 
     //########################################

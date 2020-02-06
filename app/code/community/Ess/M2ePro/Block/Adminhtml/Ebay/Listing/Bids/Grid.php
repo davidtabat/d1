@@ -2,17 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
-    protected $_bidsData;
-    protected $_listingProductId;
-
-    /** @var Ess_M2ePro_Model_Listing_Product $_listingProduct */
-    protected $_listingProduct;
+    protected $bidsData;
+    protected $listingProductId;
 
     //########################################
 
@@ -41,26 +38,29 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
      */
     public function setListingProductId($listingProductId)
     {
-        $this->_listingProductId = $listingProductId;
+        $this->listingProductId = $listingProductId;
     }
     /**
      * @return mixed
      */
     public function getListingProductId()
     {
-        return $this->_listingProductId;
+        return $this->listingProductId;
     }
 
     // ---------------------------------------
 
+    /** @var Ess_M2ePro_Model_Listing_Product $listingProduct */
+    protected $listingProduct;
+
     protected function getListingProduct()
     {
-        if (empty($this->_listingProduct)) {
-            $this->_listingProduct = Mage::helper('M2ePro/Component_Ebay')
-                                         ->getObject('Listing_Product', $this->getListingProductId());
+        if (empty($this->listingProduct)) {
+            $this->listingProduct = Mage::helper('M2ePro/Component_Ebay')
+                ->getObject('Listing_Product', $this->getListingProductId());
         }
 
-        return $this->_listingProduct;
+        return $this->listingProduct;
     }
 
     // ---------------------------------------
@@ -70,7 +70,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
      */
     public function getBidsData()
     {
-        return $this->_bidsData;
+        return $this->bidsData;
     }
 
     /**
@@ -78,7 +78,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
      */
     public function setBidsData($bidsData)
     {
-        $this->_bidsData = $bidsData;
+        $this->bidsData = $bidsData;
     }
 
     //########################################
@@ -104,19 +104,16 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
 
     protected function _prepareColumns()
     {
-        $this->addColumn(
-            'user_id', array(
+        $this->addColumn('user_id', array(
             'header'       => Mage::helper('M2ePro')->__('eBay User ID'),
             'width'        => '180px',
             'align'        => 'center',
             'type'         => 'text',
             'index'        => 'user_id',
             'sortable'     => false
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'email', array(
+        $this->addColumn('email', array(
             'header'       => Mage::helper('M2ePro')->__('eBay User Email'),
             'width'        => '180px',
             'align'        => 'center',
@@ -124,11 +121,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
             'index'        => 'email',
             'sortable'     => false,
             'frame_callback' => array($this, 'callbackColumnEmail')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'price', array(
+        $this->addColumn('price',array(
             'header'       => Mage::helper('catalog')->__('Price'),
             'width'        => '90px',
             'align'        => 'right',
@@ -136,11 +131,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
             'sortable'     => false,
             'type'         => 'number',
             'frame_callback' => array($this, 'callbackColumnPrice')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'time', array(
+        $this->addColumn('time', array(
             'header'       => Mage::helper('M2ePro')->__('Date'),
             'width'        => '180px',
             'align'        => 'right',
@@ -148,8 +141,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Bids_Grid extends Mage_Adminhtml_B
             'index'        => 'time',
             'sortable'     => false,
             'format'    => Mage::app()->getLocale()->getDateTimeFormat(Mage_Core_Model_Locale::FORMAT_TYPE_MEDIUM)
-            )
-        );
+        ));
     }
 
     //########################################

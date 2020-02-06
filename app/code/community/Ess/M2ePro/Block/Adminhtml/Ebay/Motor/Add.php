@@ -2,15 +2,15 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_Add extends Ess_M2ePro_Block_Adminhtml_Widget_Container
 {
-    protected $_motorsType = null;
+    private $motorsType = null;
 
-    protected $_productGridId = null;
+    private $productGridId = null;
 
     //########################################
 
@@ -22,7 +22,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_Add extends Ess_M2ePro_Block_Adminht
 
     protected function _beforeToHtml()
     {
-        if ($this->_motorsType === null) {
+        if (is_null($this->motorsType)) {
             throw new Ess_M2ePro_Model_Exception_Logic('Compatibility type was not set.');
         }
 
@@ -80,45 +80,45 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_Add extends Ess_M2ePro_Block_Adminht
     public function wasInstructionShown()
     {
         return Mage::helper('M2ePro/Module')->getCacheConfig()
-                    ->getGroupValue('/ebay/motors/', 'was_instruction_shown') != false;
+                    ->getGroupValue('/ebay/motors/','was_instruction_shown') != false;
     }
 
     //########################################
 
     public function setMotorsType($type)
     {
-        $this->_motorsType = $type;
+        $this->motorsType = $type;
         return $this;
     }
 
     public function getMotorsType()
     {
-        return $this->_motorsType;
+        return $this->motorsType;
     }
 
     // ---------------------------------------
 
     public function setProductGridId($gridId)
     {
-        $this->_productGridId = $gridId;
+        $this->productGridId = $gridId;
         return $this;
     }
 
     public function getProductGridId()
     {
-        return $this->_productGridId;
+        return $this->productGridId;
     }
 
     // ---------------------------------------
 
     public function isMotorsTypeKtype()
     {
-        return Mage::helper('M2ePro/Component_Ebay_Motors')->isTypeBasedOnKtypes($this->getMotorsType());
+        return $this->getMotorsType() == Ess_M2ePro_Helper_Component_Ebay_Motors::TYPE_KTYPE;
     }
 
     public function isMotorsTypeEpid()
     {
-        return Mage::helper('M2ePro/Component_Ebay_Motors')->isTypeBasedOnEpids($this->getMotorsType());
+        return $this->getMotorsType() == Ess_M2ePro_Helper_Component_Ebay_Motors::TYPE_EPID;
     }
 
     // Add Custom Compatible Vehicle
@@ -130,7 +130,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_Add extends Ess_M2ePro_Block_Adminht
                                                  : $this->getEpidRecordColumns();
     }
 
-    protected function getEpidRecordColumns()
+    private function getEpidRecordColumns()
     {
        return array(
            array(
@@ -185,7 +185,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_Add extends Ess_M2ePro_Block_Adminht
        );
     }
 
-    protected function getKtypeRecordColumns()
+    private function getKtypeRecordColumns()
     {
         return array(
             array(

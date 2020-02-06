@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,7 +11,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611
     const BACKUP_TABLE_PREFIX = '__backup_v611';
 
     /** @var Ess_M2ePro_Model_Upgrade_MySqlSetup */
-    protected $_installer = null;
+    private $installer = NULL;
 
     //########################################
 
@@ -20,7 +20,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611
      */
     public function getInstaller()
     {
-        return $this->_installer;
+        return $this->installer;
     }
 
     /**
@@ -28,12 +28,12 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611
      */
     public function setInstaller(Ess_M2ePro_Model_Upgrade_MySqlSetup $installer)
     {
-        $this->_installer = $installer;
+        $this->installer = $installer;
     }
 
     //########################################
 
-    /**
+    /*
         DELETE FROM `m2epro_wizard` WHERE (`nick` = 'amazonNewAsin' OR `nick` = 'buyNewSku');
         UPDATE `m2epro_wizard` SET `priority` = 5 WHERE (`priority` = 7);
     */
@@ -55,10 +55,10 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611
 
     //########################################
 
-    protected function prepareWizardsTable()
+    private function prepareWizardsTable()
     {
-        $connection = $this->_installer->getConnection();
-        $tempTable = $this->_installer->getTable('m2epro_wizard');
+        $connection = $this->installer->getConnection();
+        $tempTable = $this->installer->getTable('m2epro_wizard');
 
         $connection->delete($tempTable, "`nick` = 'amazonNewAsin' OR `nick` = 'buyNewSku'");
         $connection->update($tempTable, array('priority' => 5), '`priority` = 7');
@@ -66,52 +66,51 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion611
 
     // ---------------------------------------
 
-    protected function processProcessing()
+    private function processProcessing()
     {
         /** @var Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Processing $model */
         $model = Mage::getModel('M2ePro/Upgrade_Migration_ToVersion611_Processing');
-        $model->setInstaller($this->_installer);
+        $model->setInstaller($this->installer);
         $model->process();
     }
 
-    protected function processLogs()
+    private function processLogs()
     {
         /** @var Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_Logs $model */
         $model = Mage::getModel('M2ePro/Upgrade_Migration_ToVersion611_Logs');
-        $model->setInstaller($this->_installer);
+        $model->setInstaller($this->installer);
         $model->process();
     }
 
-    protected function processConfigData()
+    private function processConfigData()
     {
         /** @var Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_ConfigData $model */
         $model = Mage::getModel('M2ePro/Upgrade_Migration_ToVersion611_ConfigData');
-        $model->setInstaller($this->_installer);
+        $model->setInstaller($this->installer);
         $model->process();
     }
 
     // ---------------------------------------
 
-    protected function prepareOrdersTables()
+    private function prepareOrdersTables()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $orderTable = $this->_installer->getTable('m2epro_ebay_order');
-        $orderBackupOTable = $this->_installer->getTable('m2epro' . self::BACKUP_TABLE_PREFIX . '_ebay_order');
+        $orderTable = $this->installer->getTable('m2epro_ebay_order');
+        $orderBackupOTable = $this->installer->getTable('m2epro'.self::BACKUP_TABLE_PREFIX.'_ebay_order');
 
-        if ($this->_installer->tableExists($orderTable) && !$this->_installer->tableExists($orderBackupOTable)) {
+        if ($this->installer->tableExists($orderTable) && !$this->installer->tableExists($orderBackupOTable)) {
             $connection->query("RENAME TABLE `{$orderTable}` TO `{$orderBackupOTable}`");
         }
 
-        $orderItemTable = $this->_installer->getTable('m2epro_ebay_order_item');
-        $orderItemBackupTable = $this->_installer->getTable('m2epro' . self::BACKUP_TABLE_PREFIX . '_ebay_order_item');
+        $orderItemTable = $this->installer->getTable('m2epro_ebay_order_item');
+        $orderItemBackupTable = $this->installer->getTable('m2epro'.self::BACKUP_TABLE_PREFIX.'_ebay_order_item');
 
-        if ($this->_installer->tableExists($orderItemTable) && !$this->_installer->tableExists($orderItemBackupTable)) {
+        if ($this->installer->tableExists($orderItemTable) && !$this->installer->tableExists($orderItemBackupTable)) {
             $connection->query("RENAME TABLE `{$orderItemTable}` TO `{$orderItemBackupTable}`");
         }
 
-        $this->_installer->run(
-            <<<SQL
+        $this->installer->run(<<<SQL
 CREATE TABLE IF NOT EXISTS m2epro_ebay_order (
   order_id INT(11) UNSIGNED NOT NULL,
   ebay_order_id VARCHAR(255) NOT NULL,
@@ -175,10 +174,10 @@ SQL
 );
     }
 
-    protected function prepareOrdersConfigTable()
+    private function prepareOrdersConfigTable()
     {
-        $connection = $this->_installer->getConnection();
-        $tempTable = $this->_installer->getTable('m2epro_config');
+        $connection = $this->installer->getConnection();
+        $tempTable = $this->installer->getTable('m2epro_config');
 
         $tempQuery = <<<SQL
     SELECT * FROM `{$tempTable}`
@@ -188,8 +187,7 @@ SQL;
         $tempRow = $connection->query($tempQuery)->fetch();
 
         if ($tempRow === false) {
-            $this->_installer->run(
-                <<<SQL
+            $this->installer->run(<<<SQL
 
 INSERT INTO `m2epro_config` (`group`,`key`,`value`,`notice`,`update_date`,`create_date`) VALUES
 ('/ebay/order/migration_to_v611/', 'is_need_migrate', '1', null, '2013-09-18 00:00:00', '2013-09-18 00:00:00');
@@ -199,7 +197,7 @@ SQL
         }
     }
 
-    protected function processOrdersData()
+    private function processOrdersData()
     {
         /** @var Ess_M2ePro_Model_Upgrade_Migration_ToVersion611_OrdersData $migrationInstance */
         $migrationInstance = Mage::getModel('M2ePro/Upgrade_Migration_ToVersion611_OrdersData');

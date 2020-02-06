@@ -2,17 +2,12 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
 {
-    // M2ePro_TRANSLATIONS
-    // Duplicated Amazon orders with ID #%id%.
-
-    const INSTRUCTION_INITIATOR = 'order_builder';
-
     const STATUS_NOT_MODIFIED = 0;
     const STATUS_NEW          = 1;
     const STATUS_UPDATED      = 2;
@@ -20,33 +15,38 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
     const UPDATE_STATUS = 'status';
     const UPDATE_EMAIL  = 'email';
 
-    /** @var $_helper Ess_M2ePro_Model_Amazon_Order_Helper */
-    protected $_helper = null;
+    // M2ePro_TRANSLATIONS
+    // Duplicated Amazon orders with ID #%id%.
+
+    //########################################
+
+    /** @var $helper Ess_M2ePro_Model_Amazon_Order_Helper */
+    private $helper = NULL;
 
     /** @var $order Ess_M2ePro_Model_Account */
-    protected $_account = null;
+    private $account = NULL;
 
-    /** @var $_order Ess_M2ePro_Model_Order */
-    protected $_order = null;
+    /** @var $order Ess_M2ePro_Model_Order */
+    private $order = NULL;
 
-    protected $_status = self::STATUS_NOT_MODIFIED;
+    private $status = self::STATUS_NOT_MODIFIED;
 
-    protected $_items = array();
+    private $items = array();
 
-    protected $_updates = array();
+    private $updates = array();
 
     //########################################
 
     public function __construct()
     {
-        $this->_helper = Mage::getSingleton('M2ePro/Amazon_Order_Helper');
+        $this->helper = Mage::getSingleton('M2ePro/Amazon_Order_Helper');
     }
 
     //########################################
 
     public function initialize(Ess_M2ePro_Model_Account $account, array $data = array())
     {
-        $this->_account = $account;
+        $this->account = $account;
 
         $this->initializeData($data);
         $this->initializeOrder();
@@ -54,19 +54,17 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
 
     //########################################
 
-    protected function initializeData(array $data = array())
+    private function initializeData(array $data = array())
     {
         // Init general data
         // ---------------------------------------
-        $this->setData('account_id', $this->_account->getId());
+        $this->setData('account_id', $this->account->getId());
         $this->setData('amazon_order_id', $data['amazon_order_id']);
-        $this->setData('seller_order_id', $data['seller_order_id']);
         $this->setData('marketplace_id', $data['marketplace_id']);
 
-        $this->setData('status', $this->_helper->getStatus($data['status']));
+        $this->setData('status', $this->helper->getStatus($data['status']));
         $this->setData('is_afn_channel', $data['is_afn_channel']);
         $this->setData('is_prime', $data['is_prime']);
-        $this->setData('is_business', $data['is_business']);
 
         $this->setData('purchase_update_date', $data['purchase_update_date']);
         $this->setData('purchase_create_date', $data['purchase_create_date']);
@@ -75,8 +73,8 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
         // Init sale data
         // ---------------------------------------
         $this->setData('paid_amount', (float)$data['paid_amount']);
-        $this->setData('tax_details', Mage::helper('M2ePro')->jsonEncode($data['tax_details']));
-        $this->setData('discount_details', Mage::helper('M2ePro')->jsonEncode($data['discount_details']));
+        $this->setData('tax_details', json_encode($data['tax_details']));
+        $this->setData('discount_details', json_encode($data['discount_details']));
         $this->setData('currency', $data['currency']);
         $this->setData('qty_shipped', $data['qty_shipped']);
         $this->setData('qty_unshipped', $data['qty_unshipped']);
@@ -89,21 +87,21 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
         $this->setData('shipping_service', $data['shipping_service']);
         $this->setData('shipping_address', $data['shipping_address']);
         $this->setData('shipping_price', (float)$data['shipping_price']);
-        $this->setData('shipping_dates', Mage::helper('M2ePro')->jsonEncode($data['shipping_dates']));
+        $this->setData('shipping_dates', json_encode($data['shipping_dates']));
         // ---------------------------------------
 
-        $this->_items = $data['items'];
+        $this->items = $data['items'];
     }
 
     //########################################
 
-    protected function initializeOrder()
+    private function initializeOrder()
     {
-        $this->_status = self::STATUS_NOT_MODIFIED;
+        $this->status = self::STATUS_NOT_MODIFIED;
 
         $existOrders = Mage::helper('M2ePro/Component_Amazon')
             ->getCollection('Order')
-            ->addFieldToFilter('account_id', $this->_account->getId())
+            ->addFieldToFilter('account_id', $this->account->getId())
             ->addFieldToFilter('amazon_order_id', $this->getData('amazon_order_id'))
             ->setOrder('id', Varien_Data_Collection_Db::SORT_ORDER_DESC)
             ->getItems();
@@ -133,30 +131,27 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
                 $orderForRemove->deleteInstance();
             }
         }
-
         // ---------------------------------------
 
         // New order
         // ---------------------------------------
         if ($existOrdersNumber == 0) {
-            $this->_status = self::STATUS_NEW;
-            $this->_order  = Mage::helper('M2ePro/Component_Amazon')->getModel('Order');
-            $this->_order->setStatusUpdateRequired(true);
+            $this->status = self::STATUS_NEW;
+            $this->order = Mage::helper('M2ePro/Component_Amazon')->getModel('Order');
+            $this->order->setStatusUpdateRequired(true);
 
             return;
         }
-
         // ---------------------------------------
 
         // Already exist order
         // ---------------------------------------
-        $this->_order  = reset($existOrders);
-        $this->_status = self::STATUS_UPDATED;
+        $this->order = reset($existOrders);
+        $this->status = self::STATUS_UPDATED;
 
-        if ($this->_order->getMagentoOrderId() === null) {
-            $this->_order->setStatusUpdateRequired(true);
+        if (is_null($this->order->getMagentoOrderId())) {
+            $this->order->setStatusUpdateRequired(true);
         }
-
         // ---------------------------------------
     }
 
@@ -183,25 +178,25 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
             $this->processMagentoOrderUpdates();
         }
 
-        return $this->_order;
+        return $this->order;
     }
 
     //########################################
 
-    protected function createOrUpdateItems()
+    private function createOrUpdateItems()
     {
-        $itemsCollection = $this->_order->getItemsCollection();
+        $itemsCollection = $this->order->getItemsCollection();
         $itemsCollection->load();
 
-        foreach ($this->_items as $itemData) {
-            $itemData['order_id'] = $this->_order->getId();
+        foreach ($this->items as $itemData) {
+            $itemData['order_id'] = $this->order->getId();
 
             /** @var $itemBuilder Ess_M2ePro_Model_Amazon_Order_Item_Builder */
             $itemBuilder = Mage::getModel('M2ePro/Amazon_Order_Item_Builder');
             $itemBuilder->initialize($itemData);
 
             $item = $itemBuilder->process();
-            $item->setOrder($this->_order);
+            $item->setOrder($this->order);
 
             $itemsCollection->removeItemByKey($item->getId());
             $itemsCollection->addItem($item);
@@ -213,17 +208,17 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
     /**
      * @return bool
      */
-    protected function isNew()
+    private function isNew()
     {
-        return $this->_status == self::STATUS_NEW;
+        return $this->status == self::STATUS_NEW;
     }
 
     /**
      * @return bool
      */
-    protected function isUpdated()
+    private function isUpdated()
     {
-        return $this->_status == self::STATUS_UPDATED;
+        return $this->status == self::STATUS_UPDATED;
     }
 
     //########################################
@@ -231,57 +226,53 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
     /**
      * @return Ess_M2ePro_Model_Order
      */
-    protected function createOrUpdateOrder()
+    private function createOrUpdateOrder()
     {
         if (!$this->isNew() && $this->getData('status') == Ess_M2ePro_Model_Amazon_Order::STATUS_CANCELED) {
-            $this->_order->setData('status', Ess_M2ePro_Model_Amazon_Order::STATUS_CANCELED);
-            $this->_order->setData('purchase_update_date', $this->getData('purchase_update_date'));
+            $this->order->setData('status', Ess_M2ePro_Model_Amazon_Order::STATUS_CANCELED);
+            $this->order->setData('purchase_update_date', $this->getData('purchase_update_date'));
         } else {
-            $this->setData(
-                'shipping_address',
-                Mage::helper('M2ePro')->jsonEncode($this->getData('shipping_address'))
-            );
-            $this->_order->addData($this->getData());
+            $this->setData('shipping_address', json_encode($this->getData('shipping_address')));
+            $this->order->addData($this->getData());
         }
 
-        $this->_order->save();
-        $this->_order->setAccount($this->_account);
+        $this->order->save();
+        $this->order->setAccount($this->account);
 
-        if ($this->_order->getChildObject()->isCanceled() && $this->_order->getReserve()->isPlaced()) {
-            $this->_order->getReserve()->cancel();
+        if ($this->order->getChildObject()->isCanceled() && $this->order->getReserve()->isPlaced()) {
+            $this->order->getReserve()->cancel();
         }
     }
 
     //########################################
 
-    protected function checkUpdates()
+    private function checkUpdates()
     {
         if ($this->hasUpdatedStatus()) {
-            $this->_updates[] = self::UPDATE_STATUS;
+            $this->updates[] = self::UPDATE_STATUS;
         }
-
         if ($this->hasUpdatedEmail()) {
-            $this->_updates[] = self::UPDATE_EMAIL;
+            $this->updates[] = self::UPDATE_EMAIL;
         }
     }
 
-    protected function hasUpdatedStatus()
+    private function hasUpdatedStatus()
     {
         if (!$this->isUpdated()) {
             return false;
         }
 
-        return $this->getData('status') != $this->_order->getData('status');
+        return $this->getData('status') != $this->order->getData('status');
     }
 
-    protected function hasUpdatedEmail()
+    private function hasUpdatedEmail()
     {
         if (!$this->isUpdated()) {
             return false;
         }
 
         $newEmail = $this->getData('buyer_email');
-        $oldEmail = $this->_order->getData('buyer_email');
+        $oldEmail = $this->order->getData('buyer_email');
 
         if ($newEmail == $oldEmail) {
             return false;
@@ -292,52 +283,52 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
 
     //########################################
 
-    protected function hasUpdates()
+    private function hasUpdates()
     {
-        return !empty($this->_updates);
+        return !empty($this->updates);
     }
 
-    protected function hasUpdate($update)
+    private function hasUpdate($update)
     {
-        return in_array($update, $this->_updates);
+        return in_array($update, $this->updates);
     }
 
-    protected function processMagentoOrderUpdates()
+    private function processMagentoOrderUpdates()
     {
-        if (!$this->hasUpdates() || $this->_order->getMagentoOrder() === null) {
+        if (!$this->hasUpdates() || is_null($this->order->getMagentoOrder())) {
             return;
         }
 
-        if ($this->hasUpdate(self::UPDATE_STATUS) && $this->_order->getChildObject()->isCanceled()) {
+        if ($this->hasUpdate(self::UPDATE_STATUS) && $this->order->getChildObject()->isCanceled()) {
             $this->cancelMagentoOrder();
             return;
         }
 
         /** @var $magentoOrderUpdater Ess_M2ePro_Model_Magento_Order_Updater */
         $magentoOrderUpdater = Mage::getModel('M2ePro/Magento_Order_Updater');
-        $magentoOrderUpdater->setMagentoOrder($this->_order->getMagentoOrder());
+        $magentoOrderUpdater->setMagentoOrder($this->order->getMagentoOrder());
 
         if ($this->hasUpdate(self::UPDATE_STATUS)) {
-            $this->_order->setStatusUpdateRequired(true);
+            $this->order->setStatusUpdateRequired(true);
 
-            $this->_order->getProxy()->setStore($this->_order->getStore());
+            $this->order->getProxy()->setStore($this->order->getStore());
 
-            $shippingData = $this->_order->getProxy()->getShippingData();
+            $shippingData = $this->order->getProxy()->getShippingData();
             $magentoOrderUpdater->updateShippingDescription(
                 $shippingData['carrier_title'].' - '.$shippingData['shipping_method']
             );
         }
 
         if ($this->hasUpdate(self::UPDATE_EMAIL)) {
-            $magentoOrderUpdater->updateCustomerEmail($this->_order->getChildObject()->getBuyerEmail());
+            $magentoOrderUpdater->updateCustomerEmail($this->order->getChildObject()->getBuyerEmail());
         }
 
         $magentoOrderUpdater->finishUpdate();
     }
 
-    protected function cancelMagentoOrder()
+    private function cancelMagentoOrder()
     {
-        if (!$this->_order->canCancelMagentoOrder()) {
+        if (!$this->order->canCancelMagentoOrder()) {
             return;
         }
 
@@ -345,31 +336,31 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
         $magentoOrderComments[] = '<b>Attention!</b> Order was canceled on Amazon.';
 
         try {
-            $this->_order->cancelMagentoOrder();
+            $this->order->cancelMagentoOrder();
         } catch (Exception $e) {
             $magentoOrderComments[] = 'Order cannot be canceled in Magento. Reason: ' . $e->getMessage();
         }
 
         /** @var $magentoOrderUpdater Ess_M2ePro_Model_Magento_Order_Updater */
         $magentoOrderUpdater = Mage::getModel('M2ePro/Magento_Order_Updater');
-        $magentoOrderUpdater->setMagentoOrder($this->_order->getMagentoOrder());
+        $magentoOrderUpdater->setMagentoOrder($this->order->getMagentoOrder());
         $magentoOrderUpdater->updateComments($magentoOrderComments);
         $magentoOrderUpdater->finishUpdate();
     }
 
     //########################################
 
-    protected function processListingsProductsUpdates()
+    private function processListingsProductsUpdates()
     {
         $logger = Mage::getModel('M2ePro/Listing_Log');
         $logger->setComponentMode(Ess_M2ePro_Helper_Component_Amazon::NICK);
 
-        $logsActionId = Mage::getModel('M2ePro/Listing_Log')->getResource()->getNextActionId();
+        $logsActionId = Mage::getModel('M2ePro/Listing_Log')->getNextActionId();
 
         $parentsForProcessing = array();
 
-        foreach ($this->_items as $orderItem) {
-            /** @var Ess_M2ePro_Model_Resource_Listing_Product_Collection $listingProductCollection */
+        foreach ($this->items as $orderItem) {
+            /** @var Ess_M2ePro_Model_Mysql4_Listing_Product_Collection $listingProductCollection */
             $listingProductCollection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Product');
             $listingProductCollection->getSelect()->join(
                 array('l' => Mage::getModel('M2ePro/Listing')->getResource()->getMainTable()),
@@ -377,7 +368,7 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
                 array('account_id')
             );
             $listingProductCollection->addFieldToFilter('sku', $orderItem['sku']);
-            $listingProductCollection->addFieldToFilter('l.account_id', $this->_account->getId());
+            $listingProductCollection->addFieldToFilter('l.account_id', $this->account->getId());
 
             /** @var Ess_M2ePro_Model_Listing_Product[] $listingsProducts */
             $listingsProducts = $listingProductCollection->getItems();
@@ -386,6 +377,7 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
             }
 
             foreach ($listingsProducts as $listingProduct) {
+
                 if (!$listingProduct->isListed() && !$listingProduct->isStopped()) {
                     continue;
                 }
@@ -397,13 +389,6 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
                     continue;
                 }
 
-                $currentOnlineQty = $listingProduct->getData('online_qty');
-
-                // if product was linked by sku during list action
-                if ($listingProduct->isStopped() && $currentOnlineQty === null) {
-                    continue;
-                }
-
                 $variationManager = $amazonListingProduct->getVariationManager();
 
                 if ($variationManager->isRelationChildType()) {
@@ -411,18 +396,11 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
                     $parentsForProcessing[$parentListingProduct->getId()] = $parentListingProduct;
                 }
 
-                $instruction = Mage::getModel('M2ePro/Listing_Product_Instruction');
-                $instruction->setData(
-                    array(
-                    'listing_product_id' => $listingProduct->getId(),
-                    'component'          => Ess_M2ePro_Helper_Component_Amazon::NICK,
-                    'type'               =>
-                        Ess_M2ePro_Model_Amazon_Listing_Product::INSTRUCTION_TYPE_CHANNEL_QTY_CHANGED,
-                    'initiator'          => self::INSTRUCTION_INITIATOR,
-                    'priority'           => 80,
-                    )
+                Mage::getModel('M2ePro/ProductChange')->addUpdateAction(
+                    $listingProduct->getProductId(), Ess_M2ePro_Model_ProductChange::INITIATOR_SYNCHRONIZATION
                 );
-                $instruction->save();
+
+                $currentOnlineQty = $listingProduct->getData('online_qty');
 
                 if ($currentOnlineQty > $orderItem['qty_purchased']) {
                     $listingProduct->setData('online_qty', $currentOnlineQty - $orderItem['qty_purchased']);
@@ -475,9 +453,6 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
                         );
                     }
 
-                    $listingProduct->setData(
-                        'status_changer', Ess_M2ePro_Model_Listing_Product::STATUS_CHANGER_COMPONENT
-                    );
                     $listingProduct->setData('status', Ess_M2ePro_Model_Listing_Product::STATUS_STOPPED);
                 }
 
@@ -499,27 +474,29 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
             }
         }
 
-        if (!empty($parentsForProcessing)) {
-            $massProcessor = Mage::getModel(
-                'M2ePro/Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Mass'
-            );
-            $massProcessor->setListingsProducts($parentsForProcessing);
-            $massProcessor->execute();
+        if (empty($parentsForProcessing)) {
+            return;
         }
+
+        $massProcessor = Mage::getModel(
+            'M2ePro/Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Mass'
+        );
+        $massProcessor->setListingsProducts($parentsForProcessing);
+        $massProcessor->execute();
     }
 
-    protected function processOtherListingsUpdates()
+    private function processOtherListingsUpdates()
     {
         $logger = Mage::getModel('M2ePro/Listing_Other_Log');
         $logger->setComponentMode(Ess_M2ePro_Helper_Component_Amazon::NICK);
 
-        $logsActionId = Mage::getModel('M2ePro/Listing_Other_Log')->getResource()->getNextActionId();
+        $logsActionId = Mage::getModel('M2ePro/Listing_Other_Log')->getNextActionId();
 
-        foreach ($this->_items as $orderItem) {
-            /** @var Ess_M2ePro_Model_Resource_Listing_Product_Collection $listingOtherCollection */
+        foreach ($this->items as $orderItem) {
+            /** @var Ess_M2ePro_Model_Mysql4_Listing_Product_Collection $listingOtherCollection */
             $listingOtherCollection = Mage::helper('M2ePro/Component_Amazon')->getCollection('Listing_Other');
             $listingOtherCollection->addFieldToFilter('sku', $orderItem['sku']);
-            $listingOtherCollection->addFieldToFilter('account_id', $this->_account->getId());
+            $listingOtherCollection->addFieldToFilter('account_id', $this->account->getId());
 
             /** @var Ess_M2ePro_Model_Listing_Other[] $otherListings */
             $otherListings = $listingOtherCollection->getItems();
@@ -528,6 +505,7 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
             }
 
             foreach ($otherListings as $otherListing) {
+
                 if (!$otherListing->isListed() && !$otherListing->isStopped()) {
                     continue;
                 }
@@ -589,9 +567,6 @@ class Ess_M2ePro_Model_Amazon_Order_Builder extends Mage_Core_Model_Abstract
                         );
                     }
 
-                    $otherListing->setData(
-                        'status_changer', Ess_M2ePro_Model_Listing_Product::STATUS_CHANGER_COMPONENT
-                    );
                     $otherListing->setData('status', Ess_M2ePro_Model_Listing_Product::STATUS_STOPPED);
                 }
 

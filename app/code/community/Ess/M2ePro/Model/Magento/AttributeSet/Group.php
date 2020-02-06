@@ -2,22 +2,22 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_AttributeSet_Group
 {
     /** @var Mage_Eav_Model_Entity_Attribute_Group */
-    protected $_groupObj = null;
+    private $groupObj = null;
 
     /** @var Mage_Eav_Model_Entity_Attribute_Set */
-    protected $_attributeSetObj = null;
+    private $attributeSetObj = null;
 
-    protected $_name;
-    protected $_attributeSetId;
+    private $name;
+    private $attributeSetId;
 
-    protected $_params = array();
+    private $params = array();
 
     //########################################
 
@@ -27,62 +27,63 @@ class Ess_M2ePro_Model_Magento_AttributeSet_Group
         return $this->saveGroup();
     }
 
-    protected function init()
+    private function init()
     {
-        if (!($this->_attributeSetObj instanceof Mage_Eav_Model_Entity_Attribute_Set)) {
-            $attributeSet = Mage::getModel('eav/entity_attribute_set')->load($this->_attributeSetId);
-            $attributeSet->getId() && $this->_attributeSetObj = $attributeSet;
+        if (!($this->attributeSetObj instanceof Mage_Eav_Model_Entity_Attribute_Set)) {
+
+            $attributeSet = Mage::getModel('eav/entity_attribute_set')->load($this->attributeSetId);
+            $attributeSet->getId() && $this->attributeSetObj = $attributeSet;
         }
 
         $tempCollection = Mage::getModel('eav/entity_attribute_group')->getCollection()
-              ->addFieldToFilter('attribute_group_name', $this->_name)
-              ->addFieldToFilter('attribute_set_id', $this->_attributeSetId);
+              ->addFieldToFilter('attribute_group_name', $this->name)
+              ->addFieldToFilter('attribute_set_id', $this->attributeSetId);
 
         $tempCollection->getSelect()->limit(1);
-        $this->_groupObj = $tempCollection->getFirstItem();
+        $this->groupObj = $tempCollection->getFirstItem();
     }
 
     // ---------------------------------------
 
-    protected function saveGroup()
+    private function saveGroup()
     {
-        if ($this->_groupObj->getId()) {
+        if ($this->groupObj->getId()) {
             return array('result' => true);
         }
 
-        if (!$this->_attributeSetObj) {
-            return array('result' => false, 'error' => "Attribute Set '{$this->_attributeSetId}' is not found.");
+        if (!$this->attributeSetObj) {
+            return array('result' => false, 'error' => "Attribute Set '{$this->attributeSetId}' is not found.");
         }
 
-        $this->_groupObj->setAttributeGroupName($this->_name);
-        $this->_groupObj->setAttributeSetId($this->_attributeSetId);
+        $this->groupObj->setAttributeGroupName($this->name);
+        $this->groupObj->setAttributeSetId($this->attributeSetId);
 
         try {
-            $this->_groupObj->save();
+            $this->groupObj->save();
         } catch (Exception $e) {
             return array('result' => false, 'error' => $e->getMessage());
         }
 
-        return array('result' => true, 'obj' => $this->_groupObj);
+        return array('result' => true, 'obj' => $this->groupObj);
     }
 
     //########################################
 
     public function setGroupName($value)
     {
-        $this->_name = $value;
+        $this->name = $value;
         return $this;
     }
 
     public function setAttributeSetId($value)
     {
-        $this->_attributeSetId = $value;
+        $this->attributeSetId = $value;
         return $this;
     }
 
     public function setParams(array $value = array())
     {
-        $this->_params = $value;
+        $this->params = $value;
         return $this;
     }
 
@@ -94,8 +95,8 @@ class Ess_M2ePro_Model_Magento_AttributeSet_Group
      */
     public function setAttributeSetObj(Mage_Eav_Model_Entity_Attribute_Set $obj)
     {
-        $this->_attributeSetObj = $obj;
-        $this->_attributeSetId  = $obj->getId();
+        $this->attributeSetObj = $obj;
+        $this->attributeSetId = $obj->getId();
 
         return $this;
     }

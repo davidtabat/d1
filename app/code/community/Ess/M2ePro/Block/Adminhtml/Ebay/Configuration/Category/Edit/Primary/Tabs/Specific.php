@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -32,6 +32,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Category_Edit_Primary_Tabs_S
         $uniqueIdCounter = 0;
 
         if (!empty($categoryData['templates'])) {
+
             foreach ($categoryData['templates'] as $template) {
                 $uniqueId = 'sb' . $uniqueIdCounter;
 
@@ -44,7 +45,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Category_Edit_Primary_Tabs_S
 
                 $uniqueIdCounter++;
             }
+
         } else {
+
             $specificsSets = $this->getSpecificsSets();
             uasort($specificsSets, array($this, 'specificsSetsSortCallback'));
 
@@ -76,7 +79,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Category_Edit_Primary_Tabs_S
 
     //########################################
 
-    protected function createSpecificsBlock($specifics, $uniqueId)
+    private function createSpecificsBlock($specifics, $uniqueId)
     {
         $categoryData = Mage::helper('M2ePro/Data_Global')->getValue('chooser_data');
 
@@ -96,7 +99,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Configuration_Category_Edit_Primary_Tabs_S
 
     // ---------------------------------------
 
-    protected function getSpecificsSets()
+    private function getSpecificsSets()
     {
         $categoryData = Mage::helper('M2ePro/Data_Global')->getValue('chooser_data');
         $tcTable = Mage::getModel('M2ePro/Ebay_Template_Category')->getResource()->getMainTable();

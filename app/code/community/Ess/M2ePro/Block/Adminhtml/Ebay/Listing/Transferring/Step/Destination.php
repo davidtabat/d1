@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -77,8 +77,8 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Step_Destination exte
 
         // ---------------------------------------
         $collection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Marketplace')
-            ->setOrder('sorder', 'ASC')
-            ->setOrder('title', 'ASC');
+            ->setOrder('sorder','ASC')
+            ->setOrder('title','ASC');
 
         $countAvailableTranslationMarketplaces = 0;
         $countNotAvailableTranslationMarketplaces = 0;
@@ -142,9 +142,9 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Step_Destination exte
 
         $listingProducts = Mage::helper('M2ePro/Component_Ebay')->getCollection('Listing_Product')
             ->addFieldToFilter('id', array('in' => $productsIds))
-            ->addFieldToFilter($paymentTemplateColumnName, Ess_M2ePro_Model_Ebay_Template_Manager::MODE_PARENT)
+            ->addFieldToFilter($paymentTemplateColumnName,  Ess_M2ePro_Model_Ebay_Template_Manager::MODE_PARENT)
             ->addFieldToFilter($shippingTemplateColumnName, Ess_M2ePro_Model_Ebay_Template_Manager::MODE_PARENT)
-            ->addFieldToFilter($returnTemplateColumnName, Ess_M2ePro_Model_Ebay_Template_Manager::MODE_PARENT);
+            ->addFieldToFilter($returnTemplateColumnName,   Ess_M2ePro_Model_Ebay_Template_Manager::MODE_PARENT);
 
         return (int)$listingProducts->getSize() != count($productsIds);
     }
@@ -175,7 +175,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Step_Destination exte
 
     //########################################
 
-    protected function _isMarketplaceTranslationAvailable($targetMarketplace, $sourceMarketplace)
+    private function _isMarketplaceTranslationAvailable($targetMarketplace, $sourceMarketplace)
     {
         $targetEbayMarketplace = $targetMarketplace->getChildObject();
         $sourceEbayMarketplace = $sourceMarketplace->getChildObject();
@@ -186,6 +186,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Step_Destination exte
             ($sourceEbayMarketplace->isTranslationServiceModeFrom() ||
                 $sourceEbayMarketplace->isTranslationServiceModeBoth())        &&
             $targetEbayMarketplace->getLanguageCode() != $sourceEbayMarketplace->getLanguageCode()) {
+
             return true;
         }
 
@@ -194,7 +195,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Step_Destination exte
 
     //########################################
 
-    protected function _getStore()
+    private function _getStore()
     {
         $listing = $this->_getEbayListing();
 
@@ -208,13 +209,13 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Listing_Transferring_Step_Destination exte
 
     //########################################
 
-    protected function _getEbayListing()
+    private function _getEbayListing()
     {
         if (!$listingId = $this->getData('listing_id')) {
             throw new Ess_M2ePro_Model_Exception('Listing is not defined');
         }
 
-        return Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing', (int)$listingId)->getChildObject();
+        return Mage::helper('M2ePro/Component_Ebay')->getCachedObject('Listing',(int)$listingId)->getChildObject();
     }
 
     //########################################

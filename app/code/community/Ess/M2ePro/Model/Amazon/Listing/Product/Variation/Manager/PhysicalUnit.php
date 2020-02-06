@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -42,12 +42,13 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
     {
         $currentOptions = $this->getProductOptions();
 
-        $currentOptions = array_change_key_case(array_map('strtolower', $currentOptions), CASE_LOWER);
+        $currentOptions = array_change_key_case(array_map('strtolower',$currentOptions), CASE_LOWER);
         $magentoVariations = $this->getListingProduct()->getMagentoProduct()
                                                        ->getVariationInstance()
                                                        ->getVariationsTypeStandard();
 
         foreach ($magentoVariations['variations'] as $magentoVariation) {
+
             $magentoOptions = array();
 
             foreach ($magentoVariation as $magentoOption) {
@@ -84,7 +85,7 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
 
         $this->setProductOptions($options, false);
 
-        $this->getListingProduct()->setData('is_variation_product_matched', 1);
+        $this->getListingProduct()->setData('is_variation_product_matched',1);
 
         if ($this->getListingProduct()->getStatus() != Ess_M2ePro_Model_Listing_Product::STATUS_NOT_LISTED) {
             $this->createChannelItem($options);
@@ -126,7 +127,7 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
     {
         $productOptions = $this->getListingProduct()->getSetting('additional_data', 'variation_product_options', null);
         if (empty($productOptions)) {
-            return array();
+            return NULL;
         }
 
         return $productOptions;
@@ -134,13 +135,13 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
 
     // ---------------------------------------
 
-    protected function setProductOptions(array $options, $save = true)
+    private function setProductOptions(array $options, $save = true)
     {
         $this->getListingProduct()->setSetting('additional_data', 'variation_product_options', $options);
         $save && $this->getListingProduct()->save();
     }
 
-    protected function resetProductOptions($save = true)
+    private function resetProductOptions($save = true)
     {
         $options = array_fill_keys($this->getMagentoAttributes(), null);
         $this->setProductOptions($options, $save);
@@ -186,6 +187,7 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
 
         foreach ($currentVariation->getOptions(true) as $currentOption) {
             foreach ($magentoVariation as $magentoOption) {
+
                 if ($currentOption->getAttribute() != $magentoOption['attribute'] ||
                     $currentOption->getOption() != $magentoOption['option']) {
                     continue;
@@ -203,25 +205,24 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
 
     //########################################
 
-    protected function removeStructure()
+    private function removeStructure()
     {
         foreach ($this->getListingProduct()->getVariations(true) as $variation) {
-            /** @var $variation Ess_M2ePro_Model_Listing_Product_Variation */
+            /* @var $variation Ess_M2ePro_Model_Listing_Product_Variation */
             $variation->deleteInstance();
         }
     }
 
-    protected function createStructure(array $variation)
+    private function createStructure(array $variation)
     {
         $variationId = Mage::helper('M2ePro/Component_Amazon')
                                 ->getModel('Listing_Product_Variation')
-                                ->addData(
-                                    array(
+                                ->addData(array(
                                     'listing_product_id' => $this->getListingProduct()->getId()
-                                    )
-                                )->save()->getId();
+                                ))->save()->getId();
 
         foreach ($variation as $option) {
+
             $tempData = array(
                 'listing_product_variation_id' => $variationId,
                 'product_id'   => $option['product_id'],
@@ -237,23 +238,23 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
 
     // ---------------------------------------
 
-    protected function removeChannelItems()
+    private function removeChannelItems()
     {
         $items = Mage::getModel('M2ePro/Amazon_Item')->getCollection()
-                            ->addFieldToFilter('account_id', $this->getListing()->getAccountId())
-                            ->addFieldToFilter('marketplace_id', $this->getListing()->getMarketplaceId())
-                            ->addFieldToFilter('sku', $this->getAmazonListingProduct()->getSku())
-                            ->addFieldToFilter('product_id', $this->getListingProduct()->getProductId())
-                            ->addFieldToFilter('store_id', $this->getListing()->getStoreId())
+                            ->addFieldToFilter('account_id',$this->getListing()->getAccountId())
+                            ->addFieldToFilter('marketplace_id',$this->getListing()->getMarketplaceId())
+                            ->addFieldToFilter('sku',$this->getAmazonListingProduct()->getSku())
+                            ->addFieldToFilter('product_id',$this->getListingProduct()->getProductId())
+                            ->addFieldToFilter('store_id',$this->getListing()->getStoreId())
                             ->getItems();
 
         foreach ($items as $item) {
-            /** @var $item Ess_M2ePro_Model_Amazon_Item */
+            /* @var $item Ess_M2ePro_Model_Amazon_Item */
             $item->deleteInstance();
         }
     }
 
-    protected function createChannelItem(array $options)
+    private function createChannelItem(array $options)
     {
         $data = array(
             'account_id' => (int)$this->getListing()->getAccountId(),
@@ -261,7 +262,7 @@ abstract class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Physica
             'sku' => $this->getAmazonListingProduct()->getSku(),
             'product_id' => (int)$this->getListingProduct()->getProductId(),
             'store_id' => (int)$this->getListing()->getStoreId(),
-            'variation_product_options' => Mage::helper('M2ePro')->jsonEncode($options),
+            'variation_product_options' => json_encode($options),
         );
 
         Mage::getModel('M2ePro/Amazon_Item')->setData($data)->save();

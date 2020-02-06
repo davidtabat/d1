@@ -2,13 +2,10 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
-/**
- * @method Ess_M2ePro_Model_Marketplace getParentObject()
- */
 class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child_Ebay_Abstract
 {
     const TRANSLATION_SERVICE_NO       = 0;
@@ -16,7 +13,7 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
     const TRANSLATION_SERVICE_YES_FROM = 2;
     const TRANSLATION_SERVICE_YES_BOTH = 3;
 
-    protected $_info = null;
+    private $info = NULL;
 
     //########################################
 
@@ -30,14 +27,33 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
 
     public function getEbayItems($asObjects = false, array $filters = array())
     {
-        return $this->getRelatedSimpleItems('Ebay_Item', 'marketplace_id', $asObjects, $filters);
+        return $this->getRelatedSimpleItems('Ebay_Item','marketplace_id',$asObjects,$filters);
     }
 
     //########################################
 
-    public function getCurrency()
+    public function getCurrencies()
     {
         return $this->getData('currency');
+    }
+
+    public function getCurrency()
+    {
+        $currency = (string)$this->getData('currency');
+
+        if (strpos($currency,',') === false) {
+            return $currency;
+        }
+
+        $currency = explode(',', $currency);
+
+        if (!is_null($setting = Mage::helper('M2ePro/Module')->getConfig()
+                                ->getGroupValue('/ebay/selling/currency/',$this->getParentObject()->getCode()))
+            && in_array($setting, $currency)) {
+            return $setting;
+        }
+
+        return array_shift($currency);
     }
 
     public function getOriginCountry()
@@ -88,6 +104,14 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
     public function isTranslationServiceModeBoth()
     {
         return $this->getTranslationServiceMode() == self::TRANSLATION_SERVICE_YES_BOTH;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMultiCurrencyEnabled()
+    {
+        return (bool)(int)$this->getData('is_multi_currency');
     }
 
     /**
@@ -221,41 +245,9 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
     /**
      * @return bool
      */
-    public function isInStorePickupEnabled()
+    public function isHolidayReturnEnabled()
     {
-        return (bool)(int)$this->getData('is_in_store_pickup');
-    }
-
-    /**
-     * @return bool
-     */
-    public function isReturnDescriptionEnabled()
-    {
-        return (bool)(int)$this->getData('is_return_description');
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEpidEnabled()
-    {
-        return (bool)(int)$this->getData('is_epid');
-    }
-
-    /**
-     * @return bool
-     */
-    public function isKtypeEnabled()
-    {
-        return (bool)(int)$this->getData('is_ktype');
-    }
-
-    /**
-     * @return bool
-     */
-    public function isMultiMotorsEnabled()
-    {
-        return $this->isEpidEnabled() && $this->isKtypeEnabled();
+        return (bool)(int)$this->getData('is_holiday_return');
     }
 
     //########################################
@@ -266,31 +258,29 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
      */
     public function getCategory($categoryId)
     {
-        $tableCategories = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_category');
+        $tableCategories = Mage::getSingleton('core/resource')->getTableName('m2epro_ebay_dictionary_category');
 
         $dbSelect = Mage::getResourceModel('core/config')->getReadConnection()
                              ->select()
-                             ->from($tableCategories, '*')
-                             ->where('`marketplace_id` = ?', (int)$this->getId())
-                             ->where('`category_id` = ?', (int)$categoryId);
+                             ->from($tableCategories,'*')
+                             ->where('`marketplace_id` = ?',(int)$this->getId())
+                             ->where('`category_id` = ?',(int)$categoryId);
 
         $categories = Mage::getResourceModel('core/config')
                                 ->getReadConnection()
                                 ->fetchAll($dbSelect);
 
-        return !empty($categories) ? $categories[0] : array();
+        return count($categories) > 0 ? $categories[0] : array();
     }
 
     public function getChildCategories($parentId)
     {
-        $tableCategories = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_category');
+        $tableCategories = Mage::getSingleton('core/resource')->getTableName('m2epro_ebay_dictionary_category');
 
         $dbSelect = Mage::getResourceModel('core/config')->getReadConnection()
                              ->select()
-                             ->from($tableCategories, array('category_id','title','is_leaf'))
-                             ->where('`marketplace_id` = ?', (int)$this->getId())
+                             ->from($tableCategories,array('category_id','title','is_leaf'))
+                             ->where('`marketplace_id` = ?',(int)$this->getId())
                              ->order(array('title ASC'));
 
         empty($parentId) ? $dbSelect->where('parent_category_id IS NULL')
@@ -310,36 +300,34 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
      */
     public function getInfo()
     {
-        if ($this->_info !== null) {
-            return $this->_info;
+        if (!is_null($this->info)) {
+            return $this->info;
         }
 
         /** @var $connRead Varien_Db_Adapter_Pdo_Mysql */
         $coreResource = Mage::getSingleton('core/resource');
         $connRead = Mage::getSingleton('core/resource')->getConnection('core_read');
 
-        $tableDictMarketplace = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_marketplace');
-        $tableDictShipping = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_shipping');
+        $tableDictMarketplace = $coreResource->getTableName('m2epro_ebay_dictionary_marketplace');
+        $tableDictShipping = $coreResource->getTableName('m2epro_ebay_dictionary_shipping');
 
         // table m2epro_ebay_dictionary_marketplace
         // ---------------------------------------
         $dbSelect = $connRead->select()
-                             ->from($tableDictMarketplace, '*')
-                             ->where('`marketplace_id` = ?', (int)$this->getId());
+                             ->from($tableDictMarketplace,'*')
+                             ->where('`marketplace_id` = ?',(int)$this->getId());
         $data = $connRead->fetchRow($dbSelect);
         // ---------------------------------------
 
         if (!$data) {
-            return $this->_info = array();
+            return $this->info = array();
         }
 
         // table m2epro_ebay_dictionary_shipping
         // ---------------------------------------
         $dbSelect = $connRead->select()
-                             ->from($tableDictShipping, '*')
-                             ->where('`marketplace_id` = ?', (int)$this->getId())
+                             ->from($tableDictShipping,'*')
+                             ->where('`marketplace_id` = ?',(int)$this->getId())
                              ->order(array('title ASC'));
         $shippingMethods = $connRead->fetchAll($dbSelect);
         // ---------------------------------------
@@ -350,10 +338,11 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
 
         $categoryShippingMethods = array();
         foreach ($shippingMethods as $shippingMethod) {
-            $category = Mage::helper('M2ePro')->jsonDecode($shippingMethod['category']);
+
+            $category = json_decode($shippingMethod['category'], true);
 
             if (empty($category)) {
-                $shippingMethod['data'] = Mage::helper('M2ePro')->jsonDecode($shippingMethod['data']);
+                $shippingMethod['data'] = json_decode($shippingMethod['data'], true);
                 $categoryShippingMethods['']['methods'][] = $shippingMethod;
                 continue;
             }
@@ -365,23 +354,23 @@ class Ess_M2ePro_Model_Ebay_Marketplace extends Ess_M2ePro_Model_Component_Child
                 );
             }
 
-            $shippingMethod['data'] = Mage::helper('M2ePro')->jsonDecode($shippingMethod['data']);
+            $shippingMethod['data'] = json_decode($shippingMethod['data'], true);
             $categoryShippingMethods[$category['ebay_id']]['methods'][] = $shippingMethod;
         }
 
         // ---------------------------------------
 
-        return $this->_info = array(
-            'dispatch'                   => Mage::helper('M2ePro')->jsonDecode($data['dispatch']),
-            'packages'                   => Mage::helper('M2ePro')->jsonDecode($data['packages']),
-            'return_policy'              => Mage::helper('M2ePro')->jsonDecode($data['return_policy']),
-            'listing_features'           => Mage::helper('M2ePro')->jsonDecode($data['listing_features']),
-            'payments'                   => Mage::helper('M2ePro')->jsonDecode($data['payments']),
-            'charities'                  => Mage::helper('M2ePro')->jsonDecode($data['charities']),
+        return $this->info = array(
+            'dispatch'                   => json_decode($data['dispatch'], true),
+            'packages'                   => json_decode($data['packages'], true),
+            'return_policy'              => json_decode($data['return_policy'], true),
+            'listing_features'           => json_decode($data['listing_features'], true),
+            'payments'                   => json_decode($data['payments'], true),
+            'charities'                  => json_decode($data['charities'], true),
             'shipping'                   => $categoryShippingMethods,
-            'shipping_locations'         => Mage::helper('M2ePro')->jsonDecode($data['shipping_locations']),
-            'shipping_locations_exclude' => Mage::helper('M2ePro')->jsonDecode($data['shipping_locations_exclude']),
-            'tax_categories'             => Mage::helper('M2ePro')->jsonDecode($data['tax_categories'])
+            'shipping_locations'         => json_decode($data['shipping_locations'], true),
+            'shipping_locations_exclude' => json_decode($data['shipping_locations_exclude'], true),
+            'tax_categories'             => json_decode($data['tax_categories'], true)
         );
     }
 

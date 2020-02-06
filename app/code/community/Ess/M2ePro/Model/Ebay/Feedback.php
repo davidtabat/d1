@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -18,7 +18,7 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
     /**
      * @var Ess_M2ePro_Model_Account
      */
-    protected $_accountModel = null;
+    private $accountModel = NULL;
 
     //########################################
 
@@ -33,7 +33,7 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
     public function deleteInstance()
     {
         $temp = parent::deleteInstance();
-        $temp && $this->_accountModel = null;
+        $temp && $this->accountModel = NULL;
         return $temp;
     }
 
@@ -44,13 +44,13 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
      */
     public function getAccount()
     {
-        if ($this->_accountModel === null) {
-            $this->_accountModel = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
-                'Account', $this->getData('account_id')
+        if (is_null($this->accountModel)) {
+            $this->accountModel = Mage::helper('M2ePro/Component_Ebay')->getCachedObject(
+                'Account',$this->getData('account_id')
             );
         }
 
-        return $this->_accountModel;
+        return $this->accountModel;
     }
 
     /**
@@ -58,7 +58,7 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
      */
     public function setAccount(Ess_M2ePro_Model_Account $instance)
     {
-         $this->_accountModel = $instance;
+         $this->accountModel = $instance;
     }
 
     //########################################
@@ -104,33 +104,14 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
 
         try {
 
-            /** @var Ess_M2ePro_Model_Connector_Command_RealTime_Virtual $connectorObj */
-            $dispatcherObj = Mage::getModel('M2ePro/Ebay_Connector_Dispatcher');
-            $connectorObj = $dispatcherObj->getVirtualConnector(
-                'feedback', 'add', 'entity',
-                $paramsConnector, NULL, NULL,
-                $this->getAccount()
-            );
+            $dispatcherObj = Mage::getModel('M2ePro/Connector_Ebay_Dispatcher');
+            $connectorObj = $dispatcherObj->getVirtualConnector('feedback', 'add', 'entity',
+                                                                $paramsConnector, NULL, NULL,
+                                                                $this->getAccount());
 
-            $dispatcherObj->process($connectorObj);
-            $response = $connectorObj->getResponseData();
+            $response = $dispatcherObj->process($connectorObj);
 
-            if ($connectorObj->getResponse()->getMessages()->hasErrorEntities()) {
-                throw new Ess_M2ePro_Model_Exception(
-                    $connectorObj->getResponse()->getMessages()->getCombinedErrorsString()
-                );
-            }
         } catch (Exception $e) {
-            $synchronizationLog = Mage::getModel('M2ePro/Synchronization_Log');
-            $synchronizationLog->setComponentMode(Ess_M2ePro_Helper_Component_Ebay::NICK);
-            $synchronizationLog->setSynchronizationTask(Ess_M2ePro_Model_Synchronization_Log::TASK_OTHER);
-
-            $synchronizationLog->addMessage(
-                Mage::helper('M2ePro')->__($e->getMessage()),
-                Ess_M2ePro_Model_Log_Abstract::TYPE_ERROR,
-                Ess_M2ePro_Model_Log_Abstract::PRIORITY_HIGH
-            );
-
             Mage::helper('M2ePro/Module_Exception')->process($e);
             return false;
         }
@@ -154,7 +135,7 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
      */
     public function getOrder()
     {
-        /** @var $collection Ess_M2ePro_Model_Resource_Order_Collection */
+        /** @var $collection Ess_M2ePro_Model_Mysql4_Order_Collection */
         $collection = Mage::helper('M2ePro/Component_Ebay')->getCollection('Order');
         $collection->getSelect()
             ->join(
@@ -176,7 +157,7 @@ class Ess_M2ePro_Model_Ebay_Feedback extends Ess_M2ePro_Model_Component_Abstract
 
         $order = $collection->getFirstItem();
 
-        return $order->getId() !== null ? $order : NULL;
+        return !is_null($order->getId()) ? $order : NULL;
     }
 
     //########################################

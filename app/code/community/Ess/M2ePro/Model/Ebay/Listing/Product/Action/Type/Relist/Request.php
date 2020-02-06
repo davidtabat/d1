@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -11,60 +11,51 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Relist_Request
 {
     //########################################
 
-    protected function beforeBuildDataEvent()
-    {
-        parent::beforeBuildDataEvent();
-
-        $additionalData = $this->getListingProduct()->getAdditionalData();
-
-        unset($additionalData['item_duplicate_action_required']);
-
-        $this->getListingProduct()->setSettings('additional_data', $additionalData);
-        $this->getListingProduct()->setData('is_duplicate', 0);
-
-        $this->getListingProduct()->save();
-    }
-
-    //########################################
-
     /**
      * @return array
      */
     public function getActionData()
     {
-        if (!$uuid = $this->getEbayListingProduct()->getItemUUID()) {
-            $uuid = $this->getEbayListingProduct()->generateItemUUID();
-            $this->getEbayListingProduct()->setData('item_uuid', $uuid)->save();
-        }
-
         $data = array_merge(
             array(
-                'item_id'   => $this->getEbayListingProduct()->getEbayItemIdReal(),
-                'item_uuid' => $uuid
+                'item_id' => $this->getEbayListingProduct()->getEbayItemIdReal()
             ),
-            $this->getQtyData(),
-            $this->getPriceData(),
-            $this->getVariationsData()
+            $this->getRequestVariations()->getData()
         );
 
         if ($this->getConfigurator()->isGeneralAllowed()) {
-            $data['sku'] = $this->getSku();
+
+            $data['sku'] = $this->getEbayListingProduct()->getSku();
+
+            $data = array_merge(
+
+                $data,
+
+                $this->getRequestCategories()->getData(),
+
+                $this->getRequestPayment()->getData(),
+                $this->getRequestReturn()->getData(),
+                $this->getRequestShipping()->getData()
+            );
         }
 
-        return $data;
+        return array_merge(
+            $data,
+            $this->getRequestSelling()->getData(),
+            $this->getRequestDescription()->getData()
+        );
     }
 
     protected function prepareFinalData(array $data)
     {
         $data = $this->addConditionIfItIsNecessary($data);
-        $data = $this->removePriceFromVariationsIfNotAllowed($data);
-
+        $data = $this->removeImagesIfThereAreNoChanges($data);
         return parent::prepareFinalData($data);
     }
 
     //########################################
 
-    protected function addConditionIfItIsNecessary(array $data)
+    private function addConditionIfItIsNecessary(array $data)
     {
         $additionalData = $this->getListingProduct()->getAdditionalData();
 
@@ -74,9 +65,26 @@ class Ess_M2ePro_Model_Ebay_Listing_Product_Action_Type_Relist_Request
             return $data;
         }
 
-        $descriptionData = $this->getDescriptionData();
+        $data = array_merge($data, $this->getRequestDescription()->getConditionData());
 
-        $data['item_condition'] = $descriptionData['item_condition'];
+        return $data;
+    }
+
+    private function removeImagesIfThereAreNoChanges(array $data)
+    {
+        $additionalData = $this->getListingProduct()->getAdditionalData();
+
+        $key = 'ebay_product_images_hash';
+        if (!empty($additionalData[$key]) && isset($data['images']['images']) &&
+            $additionalData[$key] == Mage::helper('M2ePro/Component_Ebay')->getImagesHash($data['images']['images'])) {
+            unset($data['images']['images']);
+        }
+
+        $key = 'ebay_product_variation_images_hash';
+        if (!empty($additionalData[$key]) && isset($data['variation_image']) &&
+            $additionalData[$key] == Mage::helper('M2ePro/Component_Ebay')->getImagesHash($data['variation_image'])) {
+            unset($data['variation_image']);
+        }
 
         return $data;
     }

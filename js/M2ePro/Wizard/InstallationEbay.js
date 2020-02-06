@@ -52,8 +52,6 @@ WizardInstallationEbay = Class.create(CommonHandler, {
 
         this.copyValuesFromPopup();
         this.closePopupAction();
-
-        this.licenseForm.validate();
     },
 
     // ---------------------------------------
@@ -108,7 +106,7 @@ WizardInstallationEbay = Class.create(CommonHandler, {
                 }
 
                 if (!response['url']) {
-                    MagentoMessageObj.addError(M2ePro.translator.translate('An error during of Extension Key creation occurred.'));
+                    MagentoMessageObj.addError(M2ePro.translator.translate('An error during of license creation occurred.'));
                     return CommonHandlerObj.scroll_page_to_top();
                 }
 
@@ -124,8 +122,6 @@ WizardInstallationEbay = Class.create(CommonHandler, {
         if (this.licenseForm.validate()) {
             return true;
         }
-
-        $('edit_license').show();
 
         $('edit_license').simulate('click');
         $('license_popup_confirm_button').click();

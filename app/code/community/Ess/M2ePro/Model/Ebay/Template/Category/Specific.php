@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -23,15 +23,17 @@ class Ess_M2ePro_Model_Ebay_Template_Category_Specific extends Ess_M2ePro_Model_
     const RENDER_TYPE_SELECT_ONE_OR_TEXT = 'select_one_or_text';
     const RENDER_TYPE_SELECT_MULTIPLE_OR_TEXT = 'select_multiple_or_text';
 
+    //########################################
+
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Category
      */
-    protected $_categoryTemplateModel = null;
+    private $categoryTemplateModel = NULL;
 
     /**
      * @var Ess_M2ePro_Model_Ebay_Template_Category_Specific_Source[]
      */
-    protected $_categorySpecificSourceModels = array();
+    private $categorySpecificSourceModels = array();
 
     //########################################
 
@@ -46,8 +48,8 @@ class Ess_M2ePro_Model_Ebay_Template_Category_Specific extends Ess_M2ePro_Model_
     public function deleteInstance()
     {
         $temp = parent::deleteInstance();
-        $temp && $this->_categoryTemplateModel = null;
-        $temp && $this->_categorySpecificSourceModels = array();
+        $temp && $this->categoryTemplateModel = NULL;
+        $temp && $this->categorySpecificSourceModels = array();
         return $temp;
     }
 
@@ -58,13 +60,14 @@ class Ess_M2ePro_Model_Ebay_Template_Category_Specific extends Ess_M2ePro_Model_
      */
     public function getCategoryTemplate()
     {
-        if ($this->_categoryTemplateModel === null) {
-            $this->_categoryTemplateModel = Mage::helper('M2ePro')->getCachedObject(
-                'Ebay_Template_Category', $this->getTemplateCategoryId(), null, array('template')
+        if (is_null($this->categoryTemplateModel)) {
+
+            $this->categoryTemplateModel = Mage::helper('M2ePro')->getCachedObject(
+                'Ebay_Template_Category', $this->getTemplateCategoryId(), NULL, array('template')
             );
         }
 
-        return $this->_categoryTemplateModel;
+        return $this->categoryTemplateModel;
     }
 
     /**
@@ -72,7 +75,7 @@ class Ess_M2ePro_Model_Ebay_Template_Category_Specific extends Ess_M2ePro_Model_
      */
     public function setCategoryTemplate(Ess_M2ePro_Model_Ebay_Template_Category $instance)
     {
-         $this->_categoryTemplateModel = $instance;
+         $this->categoryTemplateModel = $instance;
     }
 
     // ---------------------------------------
@@ -85,17 +88,17 @@ class Ess_M2ePro_Model_Ebay_Template_Category_Specific extends Ess_M2ePro_Model_
     {
         $productId = $magentoProduct->getProductId();
 
-        if (!empty($this->_categorySpecificSourceModels[$productId])) {
-            return $this->_categorySpecificSourceModels[$productId];
+        if (!empty($this->categorySpecificSourceModels[$productId])) {
+            return $this->categorySpecificSourceModels[$productId];
         }
 
-        $this->_categorySpecificSourceModels[$productId] = Mage::getModel(
+        $this->categorySpecificSourceModels[$productId] = Mage::getModel(
             'M2ePro/Ebay_Template_Category_Specific_Source'
         );
-        $this->_categorySpecificSourceModels[$productId]->setMagentoProduct($magentoProduct);
-        $this->_categorySpecificSourceModels[$productId]->setCategorySpecificTemplate($this);
+        $this->categorySpecificSourceModels[$productId]->setMagentoProduct($magentoProduct);
+        $this->categorySpecificSourceModels[$productId]->setCategorySpecificTemplate($this);
 
-        return $this->_categorySpecificSourceModels[$productId];
+        return $this->categorySpecificSourceModels[$productId];
     }
 
     //########################################
@@ -193,7 +196,7 @@ class Ess_M2ePro_Model_Ebay_Template_Category_Specific extends Ess_M2ePro_Model_
     /**
      * @return array
      */
-    public function getValueAttributes()
+    public function getUsedAttributes()
     {
         $attributes = array();
 

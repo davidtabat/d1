@@ -2,24 +2,26 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor
 {
-    /** @var Ess_M2ePro_Model_Listing_Product $_listingProduct */
-    protected $_listingProduct = null;
+    //########################################
 
-    protected $_marketplaceId = null;
+    /** @var Ess_M2ePro_Model_Listing_Product $listingProduct */
+    private $listingProduct = null;
 
-    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent $_typeModel */
-    protected $_typeModel = null;
+    private $marketplaceId = null;
 
-    /** @var Ess_M2ePro_Model_Template_Description $_descriptionTemplate */
-    protected $_descriptionTemplate = null;
+    /** @var Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent $typeModel */
+    private $typeModel = null;
 
-    protected $_possibleThemes = null;
+    /** @var Ess_M2ePro_Model_Amazon_Template_Description $descriptionTemplate */
+    private $descriptionTemplate = null;
+
+    private $possibleThemes = null;
 
     //########################################
 
@@ -28,7 +30,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getListingProduct()
     {
-        return $this->_listingProduct;
+        return $this->listingProduct;
     }
 
     /**
@@ -45,18 +47,15 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function setListingProduct($listingProduct)
     {
-        $this->_listingProduct = $listingProduct;
+        $this->listingProduct = $listingProduct;
         return $this;
     }
 
     //########################################
 
-    /**
-     * @throws Ess_M2ePro_Model_Exception
-     */
     public function process()
     {
-        if ($this->_listingProduct === null) {
+        if (is_null($this->listingProduct)) {
             throw new Ess_M2ePro_Model_Exception('Listing Product was not set.');
         }
 
@@ -66,14 +65,14 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
             $this->getProcessorModel($processor)->process();
         }
 
-        $this->_listingProduct->setData('variation_parent_need_processor', 0);
+        $this->listingProduct->setData('variation_parent_need_processor', 0);
 
-        $this->_listingProduct->save();
+        $this->listingProduct->save();
     }
 
     //########################################
 
-    protected function getSortedProcessors()
+    private function getSortedProcessors()
     {
         return array(
             'Template',
@@ -91,7 +90,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      * @param  string $processorName
      * @return Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Sub_Abstract
      */
-    protected function getProcessorModel($processorName)
+    private function getProcessorModel($processorName)
     {
         $model = Mage::getModel(
             'M2ePro/Amazon_Listing_Product_Variation_Manager_Type_Relation_Parent_Processor_Sub_'.$processorName
@@ -145,13 +144,13 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getTypeModel()
     {
-        if ($this->_typeModel !== null) {
-            return $this->_typeModel;
+        if (!is_null($this->typeModel)) {
+            return $this->typeModel;
         }
 
-        return $this->_typeModel = $this->getAmazonListingProduct()
-                                        ->getVariationManager()
-                                        ->getTypeModel();
+        return $this->typeModel = $this->getAmazonListingProduct()
+            ->getVariationManager()
+            ->getTypeModel();
     }
 
     //########################################
@@ -182,11 +181,11 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getDescriptionTemplate()
     {
-        if ($this->_descriptionTemplate !== null) {
-            return $this->_descriptionTemplate;
+        if (!is_null($this->descriptionTemplate)) {
+            return $this->descriptionTemplate;
         }
 
-        return $this->_descriptionTemplate = $this->getAmazonListingProduct()->getDescriptionTemplate();
+        return $this->descriptionTemplate = $this->getAmazonListingProduct()->getDescriptionTemplate();
     }
 
     /**
@@ -204,8 +203,8 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getPossibleThemes()
     {
-        if ($this->_possibleThemes !== null) {
-            return $this->_possibleThemes;
+        if (!is_null($this->possibleThemes)) {
+            return $this->possibleThemes;
         }
 
         $marketPlaceId = $this->getMarketplaceId();
@@ -228,7 +227,7 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
             }
         }
 
-        return $this->_possibleThemes = array_merge($usedThemes, $possibleThemes);
+        return $this->possibleThemes = array_merge($usedThemes, $possibleThemes);
     }
 
     /**
@@ -236,11 +235,11 @@ class Ess_M2ePro_Model_Amazon_Listing_Product_Variation_Manager_Type_Relation_Pa
      */
     public function getMarketplaceId()
     {
-        if ($this->_marketplaceId !== null) {
-            return $this->_marketplaceId;
+        if (!is_null($this->marketplaceId)) {
+            return $this->marketplaceId;
         }
 
-        return $this->_marketplaceId = $this->getListingProduct()->getListing()->getMarketplaceId();
+        return $this->marketplaceId = $this->getListingProduct()->getListing()->getMarketplaceId();
     }
 
     //########################################

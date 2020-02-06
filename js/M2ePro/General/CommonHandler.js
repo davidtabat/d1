@@ -9,70 +9,59 @@ CommonHandler.prototype = {
 
     initCommonValidators: function()
     {
-        var self = this;
         Validation.add('M2ePro-required-when-visible', M2ePro.translator.translate('This is a required field.'), function(value, el) {
 
-            if (self.isElementHiddenFromPage(el)) {
-                return true;
+            var hidden = false;
+            hidden = !$(el).visible();
+
+            while (!hidden) {
+                el = $(el).up();
+                hidden = !el.visible();
+                if ($(el).up() == document || el.hasClassName('entry-edit')) {
+                    break;
+                }
             }
 
-            if (typeof value === 'string') {
-                value = value.trim();
-            }
-
-            return value != null && value.length > 0;
+            return hidden ? true : value != null && value.length > 0;
         });
 
         Validation.add('M2ePro-required-when-visible-and-enabled', M2ePro.translator.translate('This is a required field.'), function(value, el) {
 
-            if (self.isElementHiddenFromPage(el)) {
+            var hidden = false;
+            var disabled = false;
+            hidden = !$(el).visible();
+            disabled = !$(el).disabled;
+
+            while (!hidden) {
+                el = $(el).up();
+                hidden = !el.visible();
+                if (el == document || el.hasClassName('entry-edit')) {
+                    break;
+                }
+            }
+
+            if (disabled) {
                 return true;
             }
 
-            if (!$(el).disabled) {
-                return true;
-            }
-
-            return value != null && value.length > 0;
+            return hidden ? true : value != null && value.length > 0;
         });
 
-        Validation.add('M2ePro-validation-int', M2ePro.translator.translate('Invalid input data. Integer value required. Example 12'), function(value, el) {
+        Validation.add('M2ePro-validation-float', M2ePro.translator.translate('Invalid input data. Decimal value required. Example 12.05'), function(value, element) {
 
-            if (self.isElementHiddenFromPage(el)) {
+            if (!element.visible()) {
                 return true;
             }
 
-            if (value === '') {
+            if (element.parentNode && !element.parentNode.visible()) {
                 return true;
             }
 
-            if (!value.match(/^\d+$/g)) {
-                return false;
-            }
-
-            return parseInt(value) >= 0;
-        });
-
-        Validation.add('M2ePro-validation-float', M2ePro.translator.translate('Invalid input data. Decimal value required. Example 12.05'), function(value, el) {
-
-            if (self.isElementHiddenFromPage(el)) {
+            if (element.up('tr') && !element.up('tr').visible()) {
                 return true;
             }
 
-            if (value === '') {
-                return true;
-            }
-
-            if (!value.match(/^\d+[.]?\d*?$/g)) {
-                return false;
-            }
-
-            return parseFloat(value) >= 0;
-        });
-
-        Validation.add('M2ePro-validate-greater-than', M2ePro.translator.translate('Please enter a valid number value in a specified range.'), function(value, el) {
-
-            if (self.isElementHiddenFromPage(el)) {
+            if (element.up('.entry-edit') && !element.up('.entry-edit').visible()) {
                 return true;
             }
 
@@ -80,55 +69,8 @@ CommonHandler.prototype = {
                 return true;
             }
 
-            value = str_replace(',', '.', value);
-
-            if (value.match(/[^\d.]+/g) || value < 0) {
-                return false;
-            }
-
-            return value >= el.getAttribute('min_value');
+            return value.match(/^\d+[.]?\d*?$/g);
         });
-
-        Validation.add('M2ePro-input-datetime', M2ePro.translator.translate('Invalid date time format string.'), function(value, el) {
-
-            if (self.isElementHiddenFromPage(el)) {
-                return true;
-            }
-
-            if (value == '') {
-                return true;
-            }
-
-            return value.match(/^\d{4}-\d{2}-\d{1,2}\s\d{2}:\d{2}(:\d{2})?$/g);
-        });
-
-        Validation.add('M2ePro-input-date', M2ePro.translator.translate('Invalid date format string.'), function(value, el) {
-
-            if (self.isElementHiddenFromPage(el)) {
-                return true;
-            }
-
-            if (value == '') {
-                return true;
-            }
-
-            return value.match(/^\d{4}-\d{2}-\d{1,2}$/g);
-        });
-    },
-
-    isElementHiddenFromPage: function(el)
-    {
-        var hidden = !$(el).visible();
-
-        while (!hidden) {
-            el = $(el).up();
-            hidden = !el.visible();
-            if ($(el).up() == document || el.hasClassName('entry-edit')) {
-                break;
-            }
-        }
-
-        return hidden;
     },
 
     // ---------------------------------------
@@ -307,13 +249,11 @@ CommonHandler.prototype = {
 
     // ---------------------------------------
 
-    autoHeightFix: function(maxHeight)
+    autoHeightFix: function()
     {
-        maxHeight = maxHeight || 600;
-
         setTimeout(function() {
             Windows.getFocusedWindow().content.style.height = '';
-            Windows.getFocusedWindow().content.style.maxHeight = maxHeight + 'px';
+            Windows.getFocusedWindow().content.style.maxHeight = '650px';
         }, 50);
     }
 

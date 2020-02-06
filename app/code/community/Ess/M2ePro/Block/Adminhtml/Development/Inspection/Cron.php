@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -41,27 +41,16 @@ class Ess_M2ePro_Block_Adminhtml_Development_Inspection_Cron
         $this->cronGet = 'GET '.$baseUrl.'cron.php';
 
         $cronLastRunTime = Mage::helper('M2ePro/Module_Cron')->getLastRun();
-        if ($cronLastRunTime !== null) {
+        if (!is_null($cronLastRunTime)) {
             $this->cronLastRunTime = $cronLastRunTime;
-            $this->cronIsNotWorking = Mage::helper('M2ePro/Module_Cron')->isLastRunMoreThan(12, true);
+            $this->cronIsNotWorking = Mage::helper('M2ePro/Module_Cron')->isLastRunMoreThan(12,true);
         }
 
-        $cronServiceIps = array();
+        $serviceHostName = $moduleConfig->getGroupValue('/cron/service/', 'hostname');
+        $this->cronServiceIp = gethostbyname($serviceHostName);
 
-        for ($i = 1; $i < 100; $i++) {
-            $serviceHostName = $moduleConfig->getGroupValue('/cron/service/', 'hostname_'.$i);
-
-            if ($serviceHostName === null) {
-                break;
-            }
-
-            $cronServiceIps[] = gethostbyname($serviceHostName);
-        }
-
-        $this->cronServiceIps = implode(', ', $cronServiceIps);
-
-        $this->isMagentoCronDisabled = (bool)(int)$moduleConfig->getGroupValue('/cron/magento/', 'disabled');
-        $this->isServiceCronDisabled = (bool)(int)$moduleConfig->getGroupValue('/cron/service/', 'disabled');
+        $this->isMagentoCronDisabled = (bool)(int)$moduleConfig->getGroupValue('/cron/magento/','disabled');
+        $this->isServiceCronDisabled = (bool)(int)$moduleConfig->getGroupValue('/cron/service/','disabled');
 
         return parent::_beforeToHtml();
     }

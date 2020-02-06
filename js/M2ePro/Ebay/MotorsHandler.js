@@ -631,7 +631,7 @@ EbayMotorsHandler.prototype = Object.extend(new CommonHandler(), {
         });
 
         new Ajax.Request(M2ePro.url.get('adminhtml_ebay_motor/updateMotorsData'), {
-            method: 'post',
+            postmethod: 'post',
             parameters: {
                 listing_id: self.listingId,
                 'listing_products_ids[]': self.addPopUp.listingProductsIds,
@@ -712,14 +712,6 @@ EbayMotorsHandler.prototype = Object.extend(new CommonHandler(), {
 
     removeCustomMotorsRecord: function(motorsType, keyId)
     {
-        var self = this;
-
-        var index = self.selectedData.items.indexOf(''+keyId);
-
-        if (index > -1) {
-            self.selectedData.items.splice(index, 1);
-        }
-
         new Ajax.Request(M2ePro.url.get('adminhtml_ebay_motor/removeCustomMotorsRecord'), {
             method: 'post',
             asynchronous: true,
@@ -735,9 +727,7 @@ EbayMotorsHandler.prototype = Object.extend(new CommonHandler(), {
                     return alert(result.message);
                 }
 
-                self.updateSelectedData();
                 EbayMotorAddItemGridHandlerObj.unselectAllAndReload();
-                EbayMotorAddGroupGridHandlerObj.unselectAllAndReload();
             }
         });
     },

@@ -2,26 +2,26 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_Attribute_Relation
 {
     /** @var Mage_Eav_Model_Entity_Attribute */
-    protected $_attributeObj = null;
+    private $attributeObj = null;
 
     /** @var Mage_Eav_Model_Entity_Attribute_Set */
-    protected $_attributeSetObj = null;
+    private $attributeSetObj = null;
 
-    protected $_code;
+    private $code;
 
-    protected $_setId;
-    protected $_groupName;
+    private $setId;
+    private $groupName;
 
-    protected $_entityTypeId;
+    private $entityTypeId;
 
-    protected $_params = array();
+    private $params = array();
 
     //########################################
 
@@ -33,31 +33,33 @@ class Ess_M2ePro_Model_Magento_Attribute_Relation
 
     // ---------------------------------------
 
-    protected function init()
+    private function init()
     {
-        if ($this->_entityTypeId === null) {
-            $this->_entityTypeId = Mage::getModel('catalog/product')->getResource()->getTypeId();
+        if (is_null($this->entityTypeId)) {
+            $this->entityTypeId = Mage::getModel('catalog/product')->getResource()->getTypeId();
         }
 
-        if (!($this->_attributeObj instanceof Mage_Eav_Model_Entity_Attribute)) {
-            $attribute = Mage::getModel('eav/entity_attribute')->loadByCode($this->_entityTypeId, $this->_code);
-            $attribute->getId() && $this->_attributeObj = $attribute;
+        if (!($this->attributeObj instanceof Mage_Eav_Model_Entity_Attribute)) {
+
+            $attribute = Mage::getModel('eav/entity_attribute')->loadByCode($this->entityTypeId, $this->code);
+            $attribute->getId() && $this->attributeObj = $attribute;
         }
 
-        if (!($this->_attributeSetObj instanceof Mage_Eav_Model_Entity_Attribute_Set)) {
-            $attributeSet = Mage::getModel('eav/entity_attribute_set')->load($this->_setId);
-            $attributeSet->getId() && $this->_attributeSetObj = $attributeSet;
+        if (!($this->attributeSetObj instanceof Mage_Eav_Model_Entity_Attribute_Set)) {
+
+            $attributeSet = Mage::getModel('eav/entity_attribute_set')->load($this->setId);
+            $attributeSet->getId() && $this->attributeSetObj = $attributeSet;
         }
     }
 
-    protected function saveRelation()
+    private function saveRelation()
     {
-        if (!$this->_attributeObj) {
-            return array('result' => false, 'error' => "Attribute '{$this->_code}' is not found.");
+        if (!$this->attributeObj) {
+            return array('result' => false, 'error' => "Attribute '{$this->code}' is not found.");
         }
 
-        if (!$this->_attributeSetObj) {
-            return array('result' => false, 'error' => "Attribute Set '{$this->_setId}' is not found.");
+        if (!$this->attributeSetObj) {
+            return array('result' => false, 'error' => "Attribute Set '{$this->setId}' is not found.");
         }
 
         if ($this->checkIsAlreadyInSet()) {
@@ -65,21 +67,23 @@ class Ess_M2ePro_Model_Magento_Attribute_Relation
         }
 
         $groupId = $this->getGroupId();
-        $sortOrder = !empty($this->_params['sorder']) ? $this->_params['sorder']
+        $sortOrder = !empty($this->params['sorder']) ? $this->params['sorder']
                                                      : $this->getMaxSortOrderByGroup($groupId) + 1;
 
-        !empty($this->_params['sorder_ofset']) && $sortOrder += $this->_params['sorder_ofset'];
+        !empty($this->params['sorder_ofset']) && $sortOrder += $this->params['sorder_ofset'];
 
-        /** @var $collection Mage_Eav_Model_Resource_Entity_Attribute */
+        /* @var $collection Mage_Eav_Model_Resource_Entity_Attribute */
         $relation = Mage::getModel('eav/entity_attribute');
-        $relation->setEntityTypeId($this->_attributeSetObj->getEntityTypeId())
-                 ->setAttributeSetId($this->_attributeSetObj->getId())
+        $relation->setEntityTypeId($this->attributeSetObj->getEntityTypeId())
+                 ->setAttributeSetId($this->attributeSetObj->getId())
                  ->setAttributeGroupId($groupId)
-                 ->setAttributeId($this->_attributeObj->getId())
+                 ->setAttributeId($this->attributeObj->getId())
                  ->setSortOrder($sortOrder);
 
         try {
+
             $relation->save();
+
         } catch (Exception $e) {
             return array('result' => false, 'error' => $e->getMessage());
         }
@@ -89,26 +93,26 @@ class Ess_M2ePro_Model_Magento_Attribute_Relation
 
     //########################################
 
-    protected function checkIsAlreadyInSet()
+    private function checkIsAlreadyInSet()
     {
-        /** @var $collection Mage_Eav_Model_Resource_Entity_Attribute_Collection */
+        /* @var $collection Mage_Eav_Model_Resource_Entity_Attribute_Collection */
         $collection = Mage::getModel('eav/entity_attribute')->getResourceCollection()
-              ->setAttributeSetFilter($this->_setId)
-              ->addFieldToFilter('entity_attribute.attribute_id', $this->_attributeObj->getId());
+              ->setAttributeSetFilter($this->setId)
+              ->addFieldToFilter('entity_attribute.attribute_id', $this->attributeObj->getId());
 
         return $collection->getSize() > 0;
     }
 
-    protected function getGroupId()
+    private function getGroupId()
     {
-        if (!$this->_groupName) {
-            return $this->_attributeSetObj->getDefaultGroupId();
+        if (!$this->groupName) {
+            return $this->attributeSetObj->getDefaultGroupId();
         }
 
-        /** @var $collection Mage_Catalog_Model_Resource_Collection_Abstract */
+        /* @var $collection Mage_Catalog_Model_Resource_Collection_Abstract */
         $collection = Mage::getModel('eav/entity_attribute_group')->getCollection();
-        $collection->addFieldToFilter('attribute_group_name', $this->_groupName);
-        $collection->addFieldToFilter('attribute_set_id', $this->_setId);
+        $collection->addFieldToFilter('attribute_group_name', $this->groupName);
+        $collection->addFieldToFilter('attribute_set_id', $this->setId);
 
         $firstItem = $collection->getFirstItem();
 
@@ -116,14 +120,14 @@ class Ess_M2ePro_Model_Magento_Attribute_Relation
             return $firstItem->getId();
         }
 
-        return $this->_attributeSetObj->getDefaultGroupId();
+        return $this->attributeSetObj->getDefaultGroupId();
     }
 
-    protected function getMaxSortOrderByGroup($groupId)
+    private function getMaxSortOrderByGroup($groupId)
     {
-        /** @var $collection Mage_Eav_Model_Resource_Entity_Attribute_Collection */
+        /* @var $collection Mage_Eav_Model_Resource_Entity_Attribute_Collection */
         $collection = Mage::getModel('eav/entity_attribute')->getResourceCollection();
-        $collection->setAttributeSetFilter($this->_setId);
+        $collection->setAttributeSetFilter($this->setId);
         $collection->setAttributeGroupFilter($groupId);
         $collection->setOrder('sort_order', 'DESC');
 
@@ -138,31 +142,31 @@ class Ess_M2ePro_Model_Magento_Attribute_Relation
 
     public function setCode($value)
     {
-        $this->_code = $value;
+        $this->code = $value;
         return $this;
     }
 
     public function setAttributeSetId($value)
     {
-        $this->_setId = $value;
+        $this->setId = $value;
         return $this;
     }
 
     public function setGroupName($value)
     {
-        $this->_groupName = $value;
+        $this->groupName = $value;
         return $this;
     }
 
     public function setParams(array $value = array())
     {
-        $this->_params = $value;
+        $this->params = $value;
         return $this;
     }
 
     public function setEntityTypeId($value)
     {
-        $this->_entityTypeId = $value;
+        $this->entityTypeId = $value;
         return $this;
     }
 
@@ -170,16 +174,16 @@ class Ess_M2ePro_Model_Magento_Attribute_Relation
 
     public function setAttributeObj(Mage_Eav_Model_Entity_Attribute $obj)
     {
-        $this->_attributeObj = $obj;
-        $this->_code         = $obj->getAttributeCode();
+        $this->attributeObj = $obj;
+        $this->code = $obj->getAttributeCode();
 
         return $this;
     }
 
     public function setAttributeSetObj(Mage_Eav_Model_Entity_Attribute_Set $obj)
     {
-        $this->_attributeSetObj = $obj;
-        $this->_setId           = $obj->getId();
+        $this->attributeSetObj = $obj;
+        $this->setId = $obj->getId();
 
         return $this;
     }

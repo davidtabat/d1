@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -26,18 +26,12 @@ class Ess_M2ePro_Block_Adminhtml_Support_ContactForm extends Mage_Adminhtml_Bloc
 
     protected function _prepareForm()
     {
-        $form = new Varien_Data_Form(
-            array(
+        $form = new Varien_Data_Form(array(
             'id'      => 'edit_form',
-            'action'  => $this->getUrl(
-                '*/adminhtml_support/save', array(
-                'referrer' => $this->getRequest()->getParam('referrer', NULl)
-                )
-            ),
+            'action'  => $this->getUrl('*/adminhtml_support/save'),
             'method'  => 'post',
             'enctype' => 'multipart/form-data'
-            )
-        );
+        ));
 
         $form->setUseContainer(true);
         $this->setForm($form);
@@ -54,7 +48,7 @@ class Ess_M2ePro_Block_Adminhtml_Support_ContactForm extends Mage_Adminhtml_Bloc
             'class'   => 'more_attachments'
         );
         $buttonBlock = $this->getLayout()->createBlock('adminhtml/widget_button')->setData($data);
-        $this->setChild('more_attachments', $buttonBlock);
+        $this->setChild('more_attachments',$buttonBlock);
         // ---------------------------------------
 
         // ---------------------------------------
@@ -64,7 +58,7 @@ class Ess_M2ePro_Block_Adminhtml_Support_ContactForm extends Mage_Adminhtml_Bloc
             'class'   => 'send_form'
         );
         $buttonBlock = $this->getLayout()->createBlock('adminhtml/widget_button')->setData($data);
-        $this->setChild('send_form', $buttonBlock);
+        $this->setChild('send_form',$buttonBlock);
         // ---------------------------------------
 
         return parent::_beforeToHtml();

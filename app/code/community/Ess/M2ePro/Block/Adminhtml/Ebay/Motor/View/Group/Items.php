@@ -2,15 +2,15 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_View_Group_Items
     extends Mage_Adminhtml_Block_Template
 {
-    protected $_group;
-    protected $_groupId;
+    private $group;
+    private $groupId;
 
     //########################################
 
@@ -50,7 +50,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_View_Group_Items
      */
     public function getGroupId()
     {
-        return $this->_groupId;
+        return $this->groupId;
     }
 
     /**
@@ -58,7 +58,7 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_View_Group_Items
      */
     public function setGroupId($groupId)
     {
-        $this->_groupId = $groupId;
+        $this->groupId = $groupId;
     }
 
     /**
@@ -66,11 +66,11 @@ class Ess_M2ePro_Block_Adminhtml_Ebay_Motor_View_Group_Items
      */
     public function getGroup()
     {
-        if ($this->_group === null) {
-            $this->_group = Mage::getModel('M2ePro/Ebay_Motor_Group')->load($this->getGroupId());
+        if (is_null($this->group)) {
+            $this->group = Mage::getModel('M2ePro/Ebay_Motor_Group')->load($this->getGroupId());
         }
 
-        return $this->_group;
+        return $this->group;
     }
 
     //########################################

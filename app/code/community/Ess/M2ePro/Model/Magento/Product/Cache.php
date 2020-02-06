@@ -2,27 +2,25 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Product
 {
-    protected $_isCacheEnabled = false;
+    private $isCacheEnabled = false;
 
     //########################################
 
     public function getCacheValue($key)
     {
-        $key = Mage::helper('M2ePro')->jsonEncode($key);
-        $key = sha1('magento_product_'.$this->getProductId().'_'.$this->getStoreId().'_'.$key);
+        $key = sha1('magento_product_'.$this->getProductId().'_'.$this->getStoreId().'_'.json_encode($key));
         return Mage::helper('M2ePro/Data_Cache_Session')->getValue($key);
     }
 
     public function setCacheValue($key, $value)
     {
-        $key = Mage::helper('M2ePro')->jsonEncode($key);
-        $key = sha1('magento_product_'.$this->getProductId().'_'.$this->getStoreId().'_'.$key);
+        $key = sha1('magento_product_'.$this->getProductId().'_'.$this->getStoreId().'_'.json_encode($key));
         $tags = array(
             'magento_product',
             'magento_product_'.$this->getProductId().'_'.$this->getStoreId()
@@ -45,7 +43,7 @@ class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Pr
      */
     public function isCacheEnabled()
     {
-        return $this->_isCacheEnabled;
+        return $this->isCacheEnabled;
     }
 
     /**
@@ -53,7 +51,7 @@ class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Pr
      */
     public function enableCache()
     {
-        $this->_isCacheEnabled = true;
+        $this->isCacheEnabled = true;
         return $this;
     }
 
@@ -62,7 +60,7 @@ class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Pr
      */
     public function disableCache()
     {
-        $this->_isCacheEnabled = false;
+        $this->isCacheEnabled = false;
         return $this;
     }
 
@@ -167,18 +165,18 @@ class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Pr
 
     //########################################
 
-    public function getThumbnailImage()
+    public function getThumbnailImageLink()
     {
         return $this->getMethodData(__FUNCTION__);
     }
 
-    public function getImage($attribute = 'image')
+    public function getImageLink($attribute = 'image')
     {
         $args = func_get_args();
         return $this->getMethodData(__FUNCTION__, $args);
     }
 
-    public function getGalleryImages($limitImages = 0)
+    public function getGalleryImagesLinks($limitImages = 0)
     {
         $args = func_get_args();
         return $this->getMethodData(__FUNCTION__, $args);
@@ -186,9 +184,16 @@ class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Pr
 
     //########################################
 
+    public function hasRequiredOptions()
+    {
+        return $this->getMethodData(__FUNCTION__);
+    }
+
+    // ---------------------------------------
+
     public function getVariationInstance()
     {
-        if ($this->_variationInstance !== null) {
+        if (!is_null($this->_variationInstance)) {
             return $this->_variationInstance;
         }
 
@@ -205,17 +210,17 @@ class Ess_M2ePro_Model_Magento_Product_Cache extends Ess_M2ePro_Model_Magento_Pr
             $methodName,
         );
 
-        if ($params !== null) {
+        if (!is_null($params)) {
             $cacheKey[] = $params;
         }
 
         $cacheResult = $this->getCacheValue($cacheKey);
 
-        if ($this->isCacheEnabled() && $cacheResult !== null) {
+        if ($this->isCacheEnabled() && !is_null($cacheResult)) {
             return $cacheResult;
         }
 
-        if ($params !== null) {
+        if (!is_null($params)) {
             $data = call_user_func_array(array('parent', $methodName), $params);
         } else {
             $data = call_user_func(array('parent', $methodName));

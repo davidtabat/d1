@@ -2,14 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_Processing
 {
     /** @var Ess_M2ePro_Model_Upgrade_MySqlSetup */
-    protected $_installer = null;
+    private $installer = NULL;
 
     //########################################
 
@@ -18,7 +18,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_Processing
      */
     public function getInstaller()
     {
-        return $this->_installer;
+        return $this->installer;
     }
 
     /**
@@ -26,7 +26,7 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_Processing
      */
     public function setInstaller(Ess_M2ePro_Model_Upgrade_MySqlSetup $installer)
     {
-        $this->_installer = $installer;
+        $this->installer = $installer;
     }
 
     //########################################
@@ -41,10 +41,9 @@ class Ess_M2ePro_Model_Upgrade_Migration_ToVersion630_Processing
 
     //########################################
 
-    protected function clearUnnecessaryLockedObjects()
+    private function clearUnnecessaryLockedObjects()
     {
-        $this->_installer->run(
-            <<<SQL
+        $this->installer->run(<<<SQL
 
 DELETE FROM `m2epro_locked_object`
   WHERE model_name = 'M2ePro/Account'
@@ -54,11 +53,11 @@ SQL
         );
     }
 
-    protected function processReceiveItems()
+    private function processReceiveItems()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $processingTable = $this->_installer->getTable('m2epro_processing_request');
+        $processingTable = $this->installer->getTable('m2epro_processing_request');
 
         $responserModels = array(
             '\'M2ePro/Amazon_Synchronization_Defaults_UpdateListingsProducts_Responser\'',
@@ -67,12 +66,10 @@ SQL
             '\'M2ePro/Play_Synchronization_OtherListings_Responser\'',
         );
 
-        $oldProcessingRows = $connection->query(
-            "
+        $oldProcessingRows = $connection->query("
             SELECT * FROM `{$processingTable}`
             WHERE responser_model IN (".implode(',', $responserModels).")
-        "
-        )->fetchAll();
+        ")->fetchAll();
 
         $newProcessingRows = array();
         foreach ($oldProcessingRows as $row) {
@@ -88,18 +85,16 @@ SQL
         }
     }
 
-    protected function processSearch()
+    private function processSearch()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $processingTable = $this->_installer->getTable('m2epro_processing_request');
+        $processingTable = $this->installer->getTable('m2epro_processing_request');
 
-        $processingRows = $connection->query(
-            "
+        $processingRows = $connection->query("
             SELECT `hash` FROM `{$processingTable}`
             WHERE responser_model LIKE 'M2ePro/Amazon_Search_%'
-        "
-        )->fetchAll();
+        ")->fetchAll();
 
         $hashes = array();
         foreach ($processingRows as $row) {
@@ -112,8 +107,7 @@ SQL
 
         $hashes = implode(',', $hashes);
 
-        $this->getInstaller()->run(
-            <<<SQL
+        $this->getInstaller()->run(<<<SQL
 
     DELETE FROM `m2epro_locked_object`
       WHERE `related_hash` IN ($hashes);
@@ -122,25 +116,25 @@ SQL
       WHERE `hash` IN ($hashes);
 
 SQL
+
         );
     }
 
-    protected function processProductActions()
+    private function processProductActions()
     {
-        $connection = $this->_installer->getConnection();
+        $connection = $this->installer->getConnection();
 
-        $processingTable = $this->_installer->getTable('m2epro_processing_request');
+        $processingTable = $this->installer->getTable('m2epro_processing_request');
 
-        $oldProcessingRows = $connection->query(
-            "
+        $oldProcessingRows = $connection->query("
             SELECT * FROM `{$processingTable}`
             WHERE responser_model REGEXP '^M2ePro\/Connector_(Amazon|Buy|Play){1}_Product_*'
-        "
-        )->fetchAll();
+        ")->fetchAll();
 
         $newProcessingRows = array();
 
         foreach ($oldProcessingRows as $row) {
+
             $responserParams = $row['responser_params'] ? json_decode($row['responser_params'], true) : array();
 
             if (empty($responserParams)) {
@@ -190,7 +184,7 @@ SQL
 
     //########################################
 
-    protected function getActionType($actionIdentifier)
+    private function getActionType($actionIdentifier)
     {
         switch (strtolower($actionIdentifier)) {
             case 'list':

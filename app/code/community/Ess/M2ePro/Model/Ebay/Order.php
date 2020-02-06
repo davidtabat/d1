@@ -2,20 +2,16 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 /**
  * @method Ess_M2ePro_Model_Order getParentObject()
- * @method Ess_M2ePro_Model_Resource_Ebay_Order getResource()
+ * @method Ess_M2ePro_Model_Mysql4_Ebay_Order getResource()
  */
 class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_Abstract
 {
-    // M2ePro_TRANSLATIONS
-    // Magento Order was canceled.
-    // Magento Order cannot be canceled.
-
     const ORDER_STATUS_ACTIVE     = 0;
     const ORDER_STATUS_COMPLETED  = 1;
     const ORDER_STATUS_CANCELLED  = 2;
@@ -33,12 +29,20 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
     const SHIPPING_STATUS_PROCESSING   = 1;
     const SHIPPING_STATUS_COMPLETED    = 2;
 
-    /** @var $_externalTransactionsCollection Ess_M2ePro_Model_Resource_Ebay_Order_ExternalTransaction_Collection */
-    protected $_externalTransactionsCollection = null;
+    //########################################
 
-    protected $_subTotalPrice = null;
+    // M2ePro_TRANSLATIONS
+    // Magento Order was canceled.
+    // Magento Order cannot be canceled.
 
-    protected $_grandTotalPrice = null;
+    //########################################
+
+    /** @var $externalTransactionsCollection Ess_M2ePro_Model_Mysql4_Ebay_Order_ExternalTransaction_Collection */
+    private $externalTransactionsCollection = NULL;
+
+    private $subTotalPrice = NULL;
+
+    private $grandTotalPrice = NULL;
 
     //########################################
 
@@ -71,17 +75,17 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
     //########################################
 
     /**
-     * @return Ess_M2ePro_Model_Resource_Ebay_Order_ExternalTransaction_Collection
+     * @return Ess_M2ePro_Model_Mysql4_Ebay_Order_ExternalTransaction_Collection
      */
     public function getExternalTransactionsCollection()
     {
-        if ($this->_externalTransactionsCollection === null) {
-            $this->_externalTransactionsCollection = Mage::getModel('M2ePro/Ebay_Order_ExternalTransaction')
-                                                         ->getCollection()
-                                                         ->addFieldToFilter('order_id', $this->getData('order_id'));
+        if (is_null($this->externalTransactionsCollection)) {
+            $this->externalTransactionsCollection = Mage::getModel('M2ePro/Ebay_Order_ExternalTransaction')
+                ->getCollection()
+                ->addFieldToFilter('order_id', $this->getData('order_id'));
         }
 
-        return $this->_externalTransactionsCollection;
+        return $this->externalTransactionsCollection;
     }
 
     /**
@@ -89,7 +93,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
      */
     public function hasExternalTransactions()
     {
-        return $this->getExternalTransactionsCollection()->getSize() > 0;
+        return $this->getExternalTransactionsCollection()->count() > 0;
     }
 
     //########################################
@@ -337,18 +341,21 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
             $trackingDetails = array_merge($trackingDetails, $item->getChildObject()->getTrackingDetails());
         }
 
-        $existedTrackingNumbers = array();
+        return $trackingDetails;
+    }
 
-        foreach ($trackingDetails as $key => $trackingDetail) {
-            if (in_array($trackingDetail['number'], $existedTrackingNumbers)) {
-                unset($trackingDetails[$key]);
-                continue;
+    public function isShippingTrackingNumberExists($number)
+    {
+        /** @var Ess_M2ePro_Model_Order_Item[] $items */
+        $items = $this->getParentObject()->getItemsCollection()->getItems();
+
+        foreach ($items as $item) {
+            if ($item->getChildObject()->isTrackingNumberExists($number)) {
+                return true;
             }
-
-            $existedTrackingNumbers[] = $trackingDetail['number'];
         }
 
-        return $trackingDetails;
+        return false;
     }
 
     /**
@@ -367,7 +374,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
      */
     public function isUseGlobalShippingProgram()
     {
-        return !empty($this->getGlobalShippingDetails());
+        return count($this->getGlobalShippingDetails()) > 0;
     }
 
     /**
@@ -387,8 +394,6 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
             ->setData($warehouseAddress);
     }
 
-    // ---------------------------------------
-
     /**
      * @return bool
      */
@@ -407,25 +412,6 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
 
         return isset($shippingDetails['click_and_collect_details'])
             ? $shippingDetails['click_and_collect_details'] : array();
-    }
-
-    // ---------------------------------------
-
-    /**
-     * @return bool
-     */
-    public function isUseInStorePickup()
-    {
-        $inStorePickupDetails = $this->getInStorePickupDetails();
-        return !empty($inStorePickupDetails);
-    }
-
-    public function getInStorePickupDetails()
-    {
-        $shippingDetails = $this->getShippingDetails();
-
-        return isset($shippingDetails['in_store_pickup_details'])
-            ? $shippingDetails['in_store_pickup_details'] : array();
     }
 
     // ---------------------------------------
@@ -567,7 +553,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
      */
     public function getSubtotalPrice()
     {
-        if ($this->_subTotalPrice === null) {
+        if (is_null($this->subTotalPrice)) {
             $subtotal = 0;
 
             foreach ($this->getParentObject()->getItemsCollection() as $item) {
@@ -575,10 +561,10 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
                 $subtotal += $item->getChildObject()->getPrice() * $item->getChildObject()->getQtyPurchased();
             }
 
-            $this->_subTotalPrice = $subtotal;
+            $this->subTotalPrice = $subtotal;
         }
 
-        return $this->_subTotalPrice;
+        return $this->subTotalPrice;
     }
 
     /**
@@ -586,14 +572,14 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
      */
     public function getGrandTotalPrice()
     {
-        if ($this->_grandTotalPrice === null) {
-            $this->_grandTotalPrice = $this->getSubtotalPrice();
-            $this->_grandTotalPrice += round((float)$this->getShippingPrice(), 2);
-            $this->_grandTotalPrice += round((float)$this->getTaxAmount(), 2);
-            $this->_grandTotalPrice += round((float)$this->getWasteRecyclingFee(), 2);
+        if (is_null($this->grandTotalPrice)) {
+            $this->grandTotalPrice = $this->getSubtotalPrice();
+            $this->grandTotalPrice += round((float)$this->getShippingPrice(), 2);
+            $this->grandTotalPrice += round((float)$this->getTaxAmount(), 2);
+            $this->grandTotalPrice += round((float)$this->getWasteRecyclingFee(), 2);
         }
 
-        return $this->_grandTotalPrice;
+        return $this->grandTotalPrice;
     }
 
     //########################################
@@ -619,7 +605,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
 
         $channelItems = $this->getParentObject()->getChannelItems();
 
-        if (empty($channelItems)) {
+        if (count($channelItems) == 0) {
             // 3rd party order
             // ---------------------------------------
             $storeId = $this->getEbayAccount()->getMagentoOrdersListingsOtherStoreId();
@@ -633,7 +619,6 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
                 $firstChannelItem = reset($channelItems);
                 $storeId = $firstChannelItem->getStoreId();
             }
-
             // ---------------------------------------
         }
 
@@ -667,14 +652,6 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
             return false;
         }
 
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isReservable()
-    {
         return true;
     }
 
@@ -721,7 +698,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
         }
 
         $magentoOrder = $this->getParentObject()->getMagentoOrder();
-        if ($magentoOrder === null) {
+        if (is_null($magentoOrder)) {
             return false;
         }
 
@@ -771,7 +748,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
         }
 
         $magentoOrder = $this->getParentObject()->getMagentoOrder();
-        if ($magentoOrder === null) {
+        if (is_null($magentoOrder)) {
             return false;
         }
 
@@ -826,7 +803,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
         }
 
         $magentoOrder = $this->getParentObject()->getMagentoOrder();
-        if ($magentoOrder === null) {
+        if (is_null($magentoOrder)) {
             return false;
         }
 
@@ -866,12 +843,12 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
     public function canCreateTracks()
     {
         $trackingDetails = $this->getShippingTrackingDetails();
-        if (empty($trackingDetails)) {
+        if (count($trackingDetails) == 0) {
             return false;
         }
 
         $magentoOrder = $this->getParentObject()->getMagentoOrder();
-        if ($magentoOrder === null) {
+        if (is_null($magentoOrder)) {
             return false;
         }
 
@@ -907,7 +884,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
             );
         }
 
-        if (!empty($tracks)) {
+        if (count($tracks) > 0) {
             $this->getParentObject()->addSuccessLog('Tracking details were imported.');
         }
 
@@ -915,6 +892,16 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
     }
 
     //########################################
+
+    private function processConnector($action, array $params = array())
+    {
+        /** @var $dispatcher Ess_M2ePro_Model_Connector_Ebay_Order_Dispatcher */
+        $dispatcher = Mage::getModel('M2ePro/Connector_Ebay_Order_Dispatcher');
+
+        return $dispatcher->process($action, $this->getParentObject(), $params);
+    }
+
+    // ---------------------------------------
 
     /**
      * @return bool
@@ -938,14 +925,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
         if (!$this->canUpdatePaymentStatus()) {
             return false;
         }
-
-        $action    = Ess_M2ePro_Model_Order_Change::ACTION_UPDATE_PAYMENT;
-        $creator   = $this->getParentObject()->getLog()->getInitiator();
-        $component = Ess_M2ePro_Helper_Component_Ebay::NICK;
-
-        Mage::getModel('M2ePro/Order_Change')->create($this->getId(), $action, $creator, $component, $params);
-
-        return true;
+        return $this->processConnector(Ess_M2ePro_Model_Connector_Ebay_Order_Dispatcher::ACTION_PAY, $params);
     }
 
     // ---------------------------------------
@@ -956,7 +936,7 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
      */
     public function canUpdateShippingStatus(array $trackingDetails = array())
     {
-        if ($this->isShippingStatusUnknown()) {
+        if (!$this->isPaymentCompleted() || $this->isShippingStatusUnknown()) {
             return false;
         }
 
@@ -969,6 +949,11 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
             return false;
         }
 
+        if (isset($trackingDetails['tracking_number']) &&
+            $this->isShippingTrackingNumberExists($trackingDetails['tracking_number'])) {
+            return false;
+        }
+
         return true;
     }
 
@@ -978,46 +963,30 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
      */
     public function updateShippingStatus(array $trackingDetails = array())
     {
-        if (!$this->canUpdateShippingStatus($trackingDetails)) {
-            return false;
-        }
-
         $params = array();
+        $action = Ess_M2ePro_Model_Connector_Ebay_Order_Dispatcher::ACTION_SHIP;
 
-        if (!empty($trackingDetails['carrier_code'])) {
-            $trackingDetails['carrier_title'] = Mage::helper('M2ePro/Component_Ebay')->getCarrierTitle(
-                $trackingDetails['carrier_code'],
-                isset($trackingDetails['carrier_title']) ? $trackingDetails['carrier_title'] : ''
+        if (!empty($trackingDetails['tracking_number'])) {
+            $action = Ess_M2ePro_Model_Connector_Ebay_Order_Dispatcher::ACTION_SHIP_TRACK;
+
+            // Prepare tracking information
+            // ---------------------------------------
+            $params['tracking_number'] = $trackingDetails['tracking_number'];
+            $params['carrier_code'] = Mage::helper('M2ePro/Component_Ebay')->getCarrierTitle(
+                $trackingDetails['carrier_code'], $trackingDetails['carrier_title']
             );
-        }
-
-        if (!empty($trackingDetails['carrier_title'])) {
-            if ($trackingDetails['carrier_title'] == Ess_M2ePro_Model_Order_Shipment_Handler::CUSTOM_CARRIER_CODE &&
-                !empty($trackingDetails['shipping_method']))
-            {
-                $trackingDetails['carrier_title'] = $trackingDetails['shipping_method'];
-            }
 
             // remove unsupported by eBay symbols
-            $trackingDetails['carrier_title'] = str_replace(
-                array('\'', '"', '+', '(', ')'), array(), $trackingDetails['carrier_title']
-            );
+            $params['carrier_code'] = str_replace(array('\'', '"', '+', '(', ')'), array(), $params['carrier_code']);
+            // ---------------------------------------
         }
 
-        $params = array_merge($params, $trackingDetails);
-
-        $action    = Ess_M2ePro_Model_Order_Change::ACTION_UPDATE_SHIPPING;
-        $creator   = $this->getParentObject()->getLog()->getInitiator();
-        $component = Ess_M2ePro_Helper_Component_Ebay::NICK;
-
-        Mage::getModel('M2ePro/Order_Change')->create($this->getId(), $action, $creator, $component, $params);
-
-        return true;
+        return $this->processConnector($action, $params);
     }
 
     //########################################
 
-    protected function getBuyerInfo()
+    private function getBuyerInfo()
     {
         /** @var Ess_M2ePro_Model_Order_Item $firstItem */
         $firstItem = $this->getParentObject()->getItemsCollection()->getFirstItem();
@@ -1027,15 +996,12 @@ class Ess_M2ePro_Model_Ebay_Order extends Ess_M2ePro_Model_Component_Child_Ebay_
             'transaction_id' => $firstItem->getChildObject()->getTransactionId(),
         );
 
-        $dispatcherObj = Mage::getModel('M2ePro/Ebay_Connector_Dispatcher');
-        $connectorObj = $dispatcherObj->getVirtualConnector(
-            'orders', 'get', 'itemTransactions',
-            $params, 'buyer_info',
-            NULL, $this->getParentObject()->getAccount(), NULL
-        );
+        $dispatcherObj = Mage::getModel('M2ePro/Connector_Ebay_Dispatcher');
+        $connectorObj = $dispatcherObj->getVirtualConnector('orders', 'get', 'itemTransactions',
+                                                            $params, 'buyer_info',
+                                                            NULL, $this->getParentObject()->getAccount(), NULL);
 
-        $dispatcherObj->process($connectorObj);
-        $buyerInfo = $connectorObj->getResponseData();
+        $buyerInfo = $dispatcherObj->process($connectorObj);
 
         return $buyerInfo;
     }

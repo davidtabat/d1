@@ -2,14 +2,14 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Model_Component_Abstract
 {
-    protected $_childMode   = null;
-    protected $_childObject = null;
+    protected $childMode = NULL;
+    protected $childObject = NULL;
 
     //########################################
 
@@ -35,24 +35,24 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
     public function setChildMode($mode)
     {
         $mode = strtolower((string)$mode);
-        $mode && $this->_childMode = $mode;
+        $mode && $this->childMode = $mode;
         return $this;
     }
 
     public function getChildMode()
     {
-        return $this->_childMode;
+        return $this->childMode;
     }
 
     // ---------------------------------------
 
     public function setChildObject(Ess_M2ePro_Model_Component_Child_Abstract $object)
     {
-        if ($object->getId() === null) {
+        if (is_null($object->getId())) {
             return;
         }
 
-        $this->_childObject = $object;
+        $this->childObject = $object;
     }
 
     /**
@@ -61,18 +61,18 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
      */
     public function getChildObject()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        if ($this->_childObject !== null) {
-            return $this->_childObject;
+        if (!is_null($this->childObject)) {
+            return $this->childObject;
         }
 
         $tempMode = NULL;
 
-        if ($this->_childMode !== null) {
-            $tempMode = $this->_childMode;
+        if (!is_null($this->childMode)) {
+            $tempMode = $this->childMode;
         } else {
             $tempMode = $this->getComponentMode();
         }
@@ -81,21 +81,21 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
             throw new Ess_M2ePro_Model_Exception_Logic('Component Mode is not defined.');
         }
 
-        $modelName          = str_replace('M2ePro/', ucwords($tempMode).'_', $this->_resourceName);
-        $this->_childObject = Mage::helper('M2ePro')->getModel($modelName);
+        $modelName = str_replace('M2ePro/',ucwords($tempMode).'_',$this->_resourceName);
+        $this->childObject = Mage::helper('M2ePro')->getModel($modelName);
 
-        $this->_childObject->loadInstance($this->getId());
-        $this->_childObject->addData($this->getData());
-        $this->_childObject->setParentObject($this);
+        $this->childObject->loadInstance($this->getId());
+        $this->childObject->addData($this->getData());
+        $this->childObject->setParentObject($this);
 
-        return $this->_childObject;
+        return $this->childObject;
     }
 
     //########################################
 
     public function getComponentMode()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
@@ -114,9 +114,9 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
         return $this->getComponentMode() == Ess_M2ePro_Helper_Component_Amazon::NICK;
     }
 
-    public function isComponentModeWalmart()
+    public function isComponentModeBuy()
     {
-        return $this->getComponentMode() == Ess_M2ePro_Helper_Component_Walmart::NICK;
+        return $this->getComponentMode() == Ess_M2ePro_Helper_Component_Buy::NICK;
     }
 
     // ---------------------------------------
@@ -131,6 +131,10 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
             return Mage::helper('M2ePro/Component_Amazon')->getTitle();
         }
 
+        if ($this->isComponentModeBuy()) {
+            return Mage::helper('M2ePro/Component_Buy')->getTitle();
+        }
+
         return '';
     }
 
@@ -138,7 +142,7 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
 
     public function isLocked()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
@@ -148,7 +152,7 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
 
         $childObject = $this->getChildObject();
 
-        if ($childObject === null) {
+        if (is_null($childObject)) {
             return false;
         }
 
@@ -161,7 +165,7 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
 
     public function deleteInstance()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
@@ -179,13 +183,13 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
 
     protected function deleteChildInstance()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
         $childObject = $this->getChildObject();
 
-        if ($childObject === null || !($childObject instanceof Ess_M2ePro_Model_Abstract)) {
+        if (is_null($childObject) || !($childObject instanceof Ess_M2ePro_Model_Abstract)) {
             return;
         }
 
@@ -196,24 +200,24 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
 
     public function save()
     {
-        if ($this->_childMode !== null && $this->getData('component_mode') === null) {
-            $this->setData('component_mode', $this->_childMode);
+        if (!is_null($this->childMode) && is_null($this->getData('component_mode'))) {
+            $this->setData('component_mode',$this->childMode);
         }
 
-        $temp               = parent::save();
-        $this->_childObject = NULL;
+        $temp = parent::save();
+        $this->childObject = NULL;
         return $temp;
     }
 
     public function delete()
     {
-        if ($this->getId() === null) {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
-        $temp               = parent::delete();
-        $this->_childMode   = NULL;
-        $this->_childObject = NULL;
+        $temp = parent::delete();
+        $this->childMode = NULL;
+        $this->childObject = NULL;
         return $temp;
     }
 
@@ -228,39 +232,35 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
      * @return array
      * @throws Ess_M2ePro_Model_Exception_Logic
      */
-    protected function getRelatedComponentItems(
-        $modelName,
-        $fieldName,
-        $asObjects = false,
-        array $filters = array(),
-        array $sort = array()
-    ) {
-        if ($this->getId() === null) {
+    protected function getRelatedComponentItems($modelName, $fieldName, $asObjects = false,
+                                                array $filters = array(), array $sort = array())
+    {
+        if (is_null($this->getId())) {
             throw new Ess_M2ePro_Model_Exception_Logic('Method require loaded instance first');
         }
 
         $tempMode = NULL;
 
-        if ($this->_childMode !== null) {
-            $tempMode = $this->_childMode;
+        if (!is_null($this->childMode)) {
+            $tempMode = $this->childMode;
         } else {
             $tempMode = $this->getComponentMode();
         }
 
-        $tempModel = Mage::helper('M2ePro/Component')->getComponentModel($tempMode, $modelName);
+        $tempModel = Mage::helper('M2ePro/Component')->getComponentModel($tempMode,$modelName);
 
-        if ($tempModel === null || !($tempModel instanceof Ess_M2ePro_Model_Abstract)) {
+        if (is_null($tempModel) || !($tempModel instanceof Ess_M2ePro_Model_Abstract)) {
             return array();
         }
 
-        return $this->getRelatedItems($tempModel, $fieldName, $asObjects, $filters, $sort);
+        return $this->getRelatedItems($tempModel,$fieldName,$asObjects,$filters,$sort);
     }
 
     //########################################
 
     protected function _getResource()
     {
-        if ($this->_childMode === null) {
+        if (is_null($this->childMode)) {
             return parent::_getResource();
         }
 
@@ -269,10 +269,10 @@ abstract class Ess_M2ePro_Model_Component_Parent_Abstract extends Ess_M2ePro_Mod
         }
 
         $arguments = array(
-            'child_mode' => $this->_childMode
+            'child_mode' => $this->childMode
         );
 
-        return Mage::getResourceModel($this->_resourceName, $arguments);
+        return Mage::getResourceModel($this->_resourceName,$arguments);
     }
 
     //########################################

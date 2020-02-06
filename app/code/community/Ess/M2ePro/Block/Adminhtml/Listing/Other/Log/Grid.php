@@ -2,13 +2,13 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
 abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2ePro_Block_Adminhtml_Log_Grid_Abstract
 {
-    protected $_viewComponentHelper = null;
+    protected $viewComponentHelper = NULL;
 
     //########################################
 
@@ -18,8 +18,8 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
 
         // Initialize view
         // ---------------------------------------
-        $view                       = Mage::helper('M2ePro/View')->getCurrentView();
-        $this->_viewComponentHelper = Mage::helper('M2ePro/View')->getComponentHelper($view);
+        $view = Mage::helper('M2ePro/View')->getCurrentView();
+        $this->viewComponentHelper = Mage::helper('M2ePro/View')->getComponentHelper($view);
         // ---------------------------------------
 
         $channel = $this->getRequest()->getParam('channel');
@@ -52,18 +52,16 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
         // Join amazon_listings_table
         // ---------------------------------------
         $collection->getSelect()
-            ->joinLeft(
-                array('lo' => Mage::getResourceModel('M2ePro/Listing_Other')->getMainTable()),
-                '(`main_table`.listing_other_id = `lo`.id)',
-                array(
+            ->joinLeft(array('lo' => Mage::getResourceModel('M2ePro/Listing_Other')->getMainTable()),
+                       '(`main_table`.listing_other_id = `lo`.id)',
+                       array(
                            'account_id'     => 'lo.account_id',
                            'marketplace_id' => 'lo.marketplace_id'
                        )
             )
-            ->joinLeft(
-                array('ea' => Mage::getResourceModel('M2ePro/Ebay_Account')->getMainTable()),
-                '(`lo`.account_id = `ea`.account_id)',
-                array('account_mode' => 'ea.mode')
+            ->joinLeft(array('ea' => Mage::getResourceModel('M2ePro/Ebay_Account')->getMainTable()),
+                             '(`lo`.account_id = `ea`.account_id)',
+                             array('account_mode' => 'ea.mode')
             );
         // ---------------------------------------
 
@@ -72,23 +70,19 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
         if (isset($listingData['id'])) {
             $collection->addFieldToFilter('main_table.listing_other_id', $listingData['id']);
         }
-
         // ---------------------------------------
 
         // prepare components
         // ---------------------------------------
         $channel = $this->getRequest()->getParam('channel');
-        if (!empty($channel)) {
+        if (!empty($channel) && $channel != Ess_M2ePro_Block_Adminhtml_Common_Log_Tabs::CHANNEL_ID_ALL) {
             $collection->getSelect()->where('main_table.component_mode = ?', $channel);
         } else {
-            $components = $this->_viewComponentHelper->getActiveComponents();
+            $components = $this->viewComponentHelper->getActiveComponents();
             $collection->getSelect()
-                ->where(
-                    'main_table.component_mode IN(\''.implode('\',\'', $components).'\')
-                        OR main_table.component_mode IS NULL'
-                );
+                ->where('main_table.component_mode IN(\''.implode('\',\'',$components).'\')
+                        OR main_table.component_mode IS NULL');
         }
-
         // ---------------------------------------
 
         // we need sort by id also, because create_date may be same for some adjacents entries
@@ -96,7 +90,6 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
         if ($this->getRequest()->getParam('sort', 'create_date') == 'create_date') {
             $collection->setOrder('id', $this->getRequest()->getParam('dir', 'DESC'));
         }
-
         // ---------------------------------------
 
         // Set collection to grid
@@ -109,8 +102,7 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
     {
         $columnTitles = $this->getColumnTitles();
 
-        $this->addColumn(
-            'create_date', array(
+        $this->addColumn('create_date', array(
             'header'    => $columnTitles['create_date'],
             'align'     => 'left',
             'type'      => 'datetime',
@@ -118,11 +110,9 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
             'width'     => '150px',
             'index'     => 'create_date',
             'filter_index' => 'main_table.create_date',
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'action', array(
+        $this->addColumn('action', array(
             'header'    => $columnTitles['action'],
             'align'     => 'left',
             'width'     => '250px',
@@ -131,11 +121,9 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
             'sortable'  => false,
             'filter_index' => 'main_table.action',
             'options' => $this->getActionTitles(),
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'identifier', array(
+        $this->addColumn('identifier', array(
             'header' => $columnTitles['identifier'],
             'align'  => 'left',
             'width'  => '100px',
@@ -143,33 +131,27 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
             'index'  => 'identifier',
             'filter_index' => 'main_table.identifier',
             'frame_callback' => array($this, 'callbackColumnIdentifier')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'title', array(
+        $this->addColumn('title', array(
             'header'    => $columnTitles['title'],
             'align'     => 'left',
             'type'      => 'text',
             'index'     => 'title',
             'filter_index' => 'main_table.title',
             'frame_callback' => array($this, 'callbackColumnTitle')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'description', array(
+        $this->addColumn('description', array(
             'header'    => $columnTitles['description'],
             'align'     => 'left',
             'type'      => 'text',
             'index'     => 'description',
             'filter_index' => 'main_table.description',
             'frame_callback' => array($this, 'callbackDescription')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'initiator', array(
+        $this->addColumn('initiator', array(
             'header'=> $columnTitles['initiator'],
             'width' => '80px',
             'index' => 'initiator',
@@ -178,11 +160,9 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
             'sortable'  => false,
             'options' => $this->_getLogInitiatorList(),
             'frame_callback' => array($this, 'callbackColumnInitiator')
-            )
-        );
+        ));
 
-        $this->addColumn(
-            'type', array(
+        $this->addColumn('type', array(
             'header'=> $columnTitles['type'],
             'width' => '80px',
             'index' => 'type',
@@ -191,8 +171,7 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
             'sortable'  => false,
             'options' => $this->_getLogTypeList(),
             'frame_callback' => array($this, 'callbackColumnType')
-            )
-        );
+        ));
 
         return parent::_prepareColumns();
     }
@@ -212,7 +191,7 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
     {
         $identifier = Mage::helper('M2ePro')->__('N/A');
 
-        if ($value === null || $value === '') {
+        if (is_null($value) || $value === '') {
             return $identifier;
         }
 
@@ -230,11 +209,9 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
                 $identifier = '<a href="' . $url . '" target="_blank">' . $value . '</a>';
                 break;
 
-            case Ess_M2ePro_Helper_Component_Walmart::NICK:
-                $identifier = $value;
-                if ($channelUrl = $row->getSetting('additional_data', 'channel_url', null)) {
-                    $identifier = '<a href="' . $channelUrl . '" target="_blank">' . $value . '</a>';
-                }
+            case Ess_M2ePro_Helper_Component_Buy::NICK:
+                $url = Mage::helper('M2ePro/Component_Buy')->getItemUrl($value);
+                $identifier = '<a href="' . $url . '" target="_blank">' . $value . '</a>';
                 break;
         }
 
@@ -243,7 +220,7 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
 
     public function callbackColumnTitle($value, $row, $column, $isExport)
     {
-        if ($value === null || $value === '') {
+        if (is_null($value) || $value === '') {
             return Mage::helper('M2ePro')->__('N/A');
         }
 
@@ -254,12 +231,10 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
 
     public function getGridUrl()
     {
-        return $this->getUrl(
-            '*/*/listingOtherGrid', array(
+        return $this->getUrl('*/*/listingOtherGrid', array(
             '_current'=>true,
             'channel' => $this->getRequest()->getParam('channel')
-            )
-        );
+        ));
     }
 
     public function getRowUrl($row)
@@ -273,10 +248,7 @@ abstract class Ess_M2ePro_Block_Adminhtml_Listing_Other_Log_Grid extends Ess_M2e
 
     //########################################
 
-    protected function getActionTitles()
-    {
-        return Mage::helper('M2ePro/Module_Log')->getActionsTitlesByClass('Listing_Other_Log');
-    }
+    abstract protected function getActionTitles();
 
     //########################################
 }

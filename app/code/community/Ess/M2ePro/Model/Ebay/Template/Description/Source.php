@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -12,14 +12,14 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
     const VARIATION_IMAGES_COUNT_MAX = 12;
 
     /**
-     * @var $_magentoProduct Ess_M2ePro_Model_Magento_Product
+     * @var $magentoProduct Ess_M2ePro_Model_Magento_Product
      */
-    protected $_magentoProduct = null;
+    private $magentoProduct = null;
 
     /**
-     * @var $_descriptionTemplateModel Ess_M2ePro_Model_Template_Description
+     * @var $descriptionTemplateModel Ess_M2ePro_Model_Template_Description
      */
-    protected $_descriptionTemplateModel = null;
+    private $descriptionTemplateModel = null;
 
     //########################################
 
@@ -29,7 +29,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
      */
     public function setMagentoProduct(Ess_M2ePro_Model_Magento_Product $magentoProduct)
     {
-        $this->_magentoProduct = $magentoProduct;
+        $this->magentoProduct = $magentoProduct;
         return $this;
     }
 
@@ -38,7 +38,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
      */
     public function getMagentoProduct()
     {
-        return $this->_magentoProduct;
+        return $this->magentoProduct;
     }
 
     // ---------------------------------------
@@ -49,7 +49,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
      */
     public function setDescriptionTemplate(Ess_M2ePro_Model_Template_Description $instance)
     {
-        $this->_descriptionTemplateModel = $instance;
+        $this->descriptionTemplateModel = $instance;
         return $this;
     }
 
@@ -58,7 +58,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
      */
     public function getDescriptionTemplate()
     {
-        return $this->_descriptionTemplateModel;
+        return $this->descriptionTemplateModel;
     }
 
     /**
@@ -110,6 +110,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
         $src = $this->getEbayDescriptionTemplate()->getSubTitleSource();
 
         if ($src['mode'] == Ess_M2ePro_Model_Ebay_Template_Description::SUBTITLE_MODE_CUSTOM) {
+
             $subTitle = Mage::helper('M2ePro/Module_Renderer_Description')
                 ->parseTemplate($src['template'], $this->getMagentoProduct());
 
@@ -143,9 +144,8 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
                 break;
 
             case Ess_M2ePro_Model_Ebay_Template_Description::DESCRIPTION_MODE_CUSTOM:
-                $description = Mage::helper('M2ePro/Module_Renderer_Description')->parseTemplate(
-                    $src['template'], $this->getMagentoProduct()
-                );
+                $description = Mage::helper('M2ePro/Module_Renderer_Description')
+                    ->parseTemplate($src['template'], $this->getMagentoProduct());
                 $this->addWatermarkForCustomDescription($description);
                 break;
 
@@ -215,30 +215,30 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
     //########################################
 
     /**
-     * @return Ess_M2ePro_Model_Magento_Product_Image|null
+     * @return string
      */
-    public function getMainImage()
+    public function getMainImageLink()
     {
-        $image = null;
+        $imageLink = '';
 
         if ($this->getEbayDescriptionTemplate()->isImageMainModeProduct()) {
-            $image = $this->getMagentoProduct()->getImage('image');
+            $imageLink = $this->getMagentoProduct()->getImageLink('image');
         }
 
         if ($this->getEbayDescriptionTemplate()->isImageMainModeAttribute()) {
             $src = $this->getEbayDescriptionTemplate()->getImageMainSource();
-            $image = $this->getMagentoProduct()->getImage($src['attribute']);
+            $imageLink = $this->getMagentoProduct()->getImageLink($src['attribute']);
         }
 
-        if ($image) {
-            $this->addWatermarkIfNeed($image);
+        if (empty($imageLink)) {
+            return $imageLink;
         }
 
-        return $image;
+        return $this->addWatermarkIfNeed($imageLink);
     }
 
     /**
-     * @return Ess_M2ePro_Model_Magento_Product_Image[]
+     * @return array|string
      */
     public function getGalleryImages()
     {
@@ -246,20 +246,21 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
             return array();
         }
 
-        if (!$mainImage = $this->getMainImage()) {
-            $defaultImageUrl = $this->getEbayDescriptionTemplate()->getDefaultImageUrl();
-            if (empty($defaultImageUrl)) {
-                return array();
+        $mainImage = $this->getMainImageLink();
+
+        if ($mainImage == '') {
+            $defaultImage = $this->getEbayDescriptionTemplate()->getDefaultImageUrl();
+            if (!empty($defaultImage)) {
+                return array($defaultImage);
             }
 
-            $image = new Ess_M2ePro_Model_Magento_Product_Image($defaultImageUrl);
-            $image->setStoreId($this->getMagentoProduct()->getStoreId());
-
-            return array($image);
+            return array();
         }
 
+        $mainImage = array($mainImage);
+
         if ($this->getEbayDescriptionTemplate()->isGalleryImagesModeNone()) {
-            return array($mainImage);
+            return $mainImage;
         }
 
         $galleryImages = array();
@@ -268,18 +269,11 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
         if ($this->getEbayDescriptionTemplate()->isGalleryImagesModeProduct()) {
             $limitGalleryImages = (int)$gallerySource['limit'];
-            $galleryImagesTemp = $this->getMagentoProduct()->getGalleryImages((int)$gallerySource['limit']+1);
-
-            foreach ($galleryImagesTemp as $image) {
-                if (array_key_exists($image->getHash(), $galleryImages)) {
-                    continue;
-                }
-
-                $galleryImages[$image->getHash()] = $image;
-            }
+            $galleryImages = $this->getMagentoProduct()->getGalleryImagesLinks((int)$gallerySource['limit']+1);
         }
 
         if ($this->getEbayDescriptionTemplate()->isGalleryImagesModeAttribute()) {
+
             $limitGalleryImages = self::GALLERY_IMAGES_COUNT_MAX;
 
             $galleryImagesTemp = $this->getMagentoProduct()->getAttributeValue($gallerySource['attribute']);
@@ -287,43 +281,33 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
             foreach ($galleryImagesTemp as $tempImageLink) {
                 $tempImageLink = trim($tempImageLink);
-                if (empty($tempImageLink)) {
-                    continue;
+                if (!empty($tempImageLink)) {
+                    $galleryImages[] = $tempImageLink;
                 }
-
-                $image = new Ess_M2ePro_Model_Magento_Product_Image($tempImageLink);
-                $image->setStoreId($this->getMagentoProduct()->getStoreId());
-
-                if (array_key_exists($image->getHash(), $galleryImages)) {
-                    continue;
-                }
-
-                $galleryImages[$image->getHash()] = $image;
             }
         }
 
-        if (empty($galleryImages)) {
-            return array($mainImage);
+        $galleryImages = array_unique($galleryImages);
+
+        if (count($galleryImages) <= 0) {
+            return $mainImage;
         }
 
-        foreach ($galleryImages as $key => $image) {
-            /** @var Ess_M2ePro_Model_Magento_Product_Image $image */
-
-            $this->addWatermarkIfNeed($image);
-
-            if ($image->getHash() == $mainImage->getHash()) {
-                unset($galleryImages[$key]);
-            }
+        foreach ($galleryImages as &$image) {
+            $image = $this->addWatermarkIfNeed($image);
         }
 
-        $galleryImages = array_slice($galleryImages, 0, $limitGalleryImages);
-        array_unshift($galleryImages, $mainImage);
+        $mainImagePosition = array_search($mainImage[0], $galleryImages);
+        if ($mainImagePosition !== false) {
+            unset($galleryImages[$mainImagePosition]);
+        }
 
-        return $galleryImages;
+        $galleryImages = array_slice($galleryImages,0,$limitGalleryImages);
+        return array_merge($mainImage, $galleryImages);
     }
 
     /**
-     * @return Ess_M2ePro_Model_Magento_Product_Image[]
+     * @return array
      */
     public function getVariationImages()
     {
@@ -338,18 +322,11 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
         if ($this->getEbayDescriptionTemplate()->isVariationImagesModeProduct()) {
             $limitVariationImages = (int)$variationSource['limit'];
-            $variationImagesTemp = $this->getMagentoProduct()->getGalleryImages((int)$variationSource['limit']);
-
-            foreach ($variationImagesTemp as $image) {
-                if (array_key_exists($image->getHash(), $variationImages)) {
-                    continue;
-                }
-
-                $variationImages[$image->getHash()] = $image;
-            }
+            $variationImages = $this->getMagentoProduct()->getGalleryImagesLinks((int)$variationSource['limit']);
         }
 
         if ($this->getEbayDescriptionTemplate()->isVariationImagesModeAttribute()) {
+
             $limitVariationImages = self::VARIATION_IMAGES_COUNT_MAX;
 
             $variationImagesTemp = $this->getMagentoProduct()->getAttributeValue($variationSource['attribute']);
@@ -357,28 +334,20 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
             foreach ($variationImagesTemp as $tempImageLink) {
                 $tempImageLink = trim($tempImageLink);
-                if (empty($tempImageLink)) {
-                    continue;
+                if (!empty($tempImageLink)) {
+                    $variationImages[] = $tempImageLink;
                 }
-
-                $image = new Ess_M2ePro_Model_Magento_Product_Image($tempImageLink);
-                $image->setStoreId($this->getMagentoProduct()->getStoreId());
-
-                if (array_key_exists($image->getHash(), $variationImages)) {
-                    continue;
-                }
-
-                $variationImages[$image->getHash()] = $image;
             }
         }
 
-        if (empty($variationImages)) {
+        $variationImages = array_unique($variationImages);
+
+        if (count($variationImages) <= 0) {
             return array();
         }
 
-        foreach ($variationImages as $image) {
-            /** @var Ess_M2ePro_Model_Magento_Product_Image $image */
-            $this->addWatermarkIfNeed($image);
+        foreach ($variationImages as &$image) {
+            $image = $this->addWatermarkIfNeed($image);
         }
 
         return array_slice($variationImages, 0, $limitVariationImages);
@@ -391,7 +360,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
      * @param int $length
      * @return string
      */
-    protected function cutLongTitles($str, $length = 80)
+    private function cutLongTitles($str, $length = 80)
     {
         $str = trim($str);
 
@@ -404,34 +373,71 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
     // ---------------------------------------
 
-    /**
-     * @param Ess_M2ePro_Model_Magento_Product_Image $imageObj
-     */
-    public function addWatermarkIfNeed($imageObj)
+    private function imageLinkToPath($imageLink)
+    {
+        $imageLink = str_replace('%20', ' ', $imageLink);
+
+        $baseMediaUrl = Mage::app()->getStore($this->getMagentoProduct()->getStoreId())
+                                   ->getBaseUrl(
+                                       Mage_Core_Model_Store::URL_TYPE_MEDIA,
+                                       Mage::helper('M2ePro/Magento')->shouldBeSecure(
+                                           $this->getMagentoProduct()->getStoreId()
+                                       )
+                                   ).'catalog/product';
+
+        $imageLink = preg_replace('/^http(s)?:\/\//i', '', $imageLink);
+        $baseMediaUrl = preg_replace('/^http(s)?:\/\//i', '', $baseMediaUrl);
+
+        $baseMediaPath = Mage::getSingleton('catalog/product_media_config')->getBaseMediaPath();
+
+        $imagePath = str_replace($baseMediaUrl, $baseMediaPath, $imageLink);
+        $imagePath = str_replace('/', DS, $imagePath);
+        $imagePath = str_replace('\\', DS, $imagePath);
+
+        return $imagePath;
+    }
+
+    private function pathToImageLink($path)
+    {
+        $baseMediaUrl = Mage::app()->getStore($this->getMagentoProduct()->getStoreId())
+                                   ->getBaseUrl(
+                                       Mage_Core_Model_Store::URL_TYPE_MEDIA,
+                                       Mage::helper('M2ePro/Magento')->shouldBeSecure(
+                                           $this->getMagentoProduct()->getStoreId()
+                                       )
+                                   ).'catalog/product';
+
+        $baseMediaPath = Mage::getSingleton('catalog/product_media_config')->getBaseMediaPath();
+
+        $imageLink = str_replace($baseMediaPath, $baseMediaUrl, $path);
+        $imageLink = str_replace(DS, '/', $imageLink);
+
+        return str_replace(' ', '%20', $imageLink);
+    }
+
+    // ---------------------------------------
+
+    public function addWatermarkIfNeed($imageLink)
     {
         if (!$this->getEbayDescriptionTemplate()->isWatermarkEnabled()) {
-            return;
+            return $imageLink;
         }
 
-        if (!$imageObj->isSelfHosted()) {
-            return;
+        $imagePath = $this->imageLinkToPath($imageLink);
+        if (!is_file($imagePath)) {
+            return $imageLink;
         }
 
-        $fileExtension = pathinfo($imageObj->getPath(), PATHINFO_EXTENSION);
-        $pathWithoutExtension = preg_replace('/\.'.$fileExtension.'$/', '', $imageObj->getPath());
+        $fileExtension = pathinfo($imagePath, PATHINFO_EXTENSION);
+        $pathWithoutExtension = preg_replace('/\.'.$fileExtension.'$/', '', $imagePath);
 
         $markingImagePath = $pathWithoutExtension.'-'.$this->getEbayDescriptionTemplate()->getWatermarkHash()
                             .'.'.$fileExtension;
-
         if (is_file($markingImagePath)) {
             $currentTime = Mage::helper('M2ePro')->getCurrentGmtDate(true);
             if (filemtime($markingImagePath) + Ess_M2ePro_Model_Ebay_Template_Description::WATERMARK_CACHE_TIME >
                 $currentTime) {
-                $imageObj->setPath($markingImagePath)
-                         ->setUrl($imageObj->getUrlByPath())
-                         ->resetHash();
-
-                return;
+                return $this->pathToImageLink($markingImagePath);
             }
 
             @unlink($markingImagePath);
@@ -439,16 +445,13 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
         $prevMarkingImagePath = $pathWithoutExtension.'-'
                                 .$this->getEbayDescriptionTemplate()->getWatermarkPreviousHash().'.'.$fileExtension;
-
         if (is_file($prevMarkingImagePath)) {
             @unlink($prevMarkingImagePath);
         }
 
-        $varDir = new Ess_M2ePro_Model_VariablesDir(
-            array(
+        $varDir = new Ess_M2ePro_Model_VariablesDir(array(
             'child_folder' => 'ebay/template/description/watermarks'
-            )
-        );
+        ));
         $watermarkPath = $varDir->getPath().$this->getEbayDescriptionTemplate()->getId().'.png';
         if (!is_file($watermarkPath)) {
             $varDir->create();
@@ -464,7 +467,7 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
                                                                 Varien_Image_Adapter_Abstract::POSITION_BOTTOM_RIGHT
         );
 
-        $image = new Varien_Image($imageObj->getPath());
+        $image = new Varien_Image($imagePath);
         $imageOriginalHeight = $image->getOriginalHeight();
         $imageOriginalWidth = $image->getOriginalWidth();
         $image->open();
@@ -515,16 +518,10 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
         $image->watermark($watermarkPath);
         $image->save($markingImagePath);
 
-        if (!is_file($markingImagePath)) {
-            return;
-        }
-
-        $imageObj->setPath($markingImagePath)
-                 ->setUrl($imageObj->getUrlByPath())
-                 ->resetHash();
+        return $this->pathToImageLink($markingImagePath);
     }
 
-    protected function addWatermarkForCustomDescription(&$description)
+    private function addWatermarkForCustomDescription(&$description)
     {
         if (strpos($description, 'm2e_watermark') !== false) {
             preg_match_all('/<(img|a) [^>]*\bm2e_watermark[^>]*>/i', $description, $tagsArr);
@@ -540,25 +537,13 @@ class Ess_M2ePro_Model_Ebay_Template_Description_Source
 
                 $newTag = str_replace(' m2e_watermark="1"', '', $tags[$i]);
                 if ($tagsNames[$i] === 'a') {
-                    $imageUrl = $tag->getAttribute('href');
-
-                    $image = new Ess_M2ePro_Model_Magento_Product_Image($imageUrl);
-                    $image->setStoreId($this->getMagentoProduct()->getStoreId());
-                    $this->addWatermarkIfNeed($image);
-
-                    $newTag = str_replace($imageUrl, $image->getUrl(), $newTag);
+                    $newTag = str_replace($tag->getAttribute('href'),
+                        $this->addWatermarkIfNeed($tag->getAttribute('href')), $newTag);
                 }
-
                 if ($tagsNames[$i] === 'img') {
-                    $imageUrl = $tag->getAttribute('src');
-
-                    $image = new Ess_M2ePro_Model_Magento_Product_Image($imageUrl);
-                    $image->setStoreId($this->getMagentoProduct()->getStoreId());
-                    $this->addWatermarkIfNeed($image);
-
-                    $newTag = str_replace($imageUrl, $image->getUrl(), $newTag);
+                    $newTag = str_replace($tag->getAttribute('src'),
+                        $this->addWatermarkIfNeed($tag->getAttribute('src')), $newTag);
                 }
-
                 $description = str_replace($tags[$i], $newTag, $description);
             }
         }

@@ -17,9 +17,9 @@ EbayListingTransferringActionHandler.prototype = {
     new_listing_id : null,
     templates  : {},
 
-    productsInPart  : 100,
-    successProducts : [],
-    errorsCount     : 0,
+    productsInPart    : 100,
+    successProducts   : [],
+    failedProducts    : [],
 
     allFailedTranslationProducts : false,
 
@@ -58,7 +58,7 @@ EbayListingTransferringActionHandler.prototype = {
         this.templates  = {};
 
         this.successProducts = [];
-        this.errorsCount = 0;
+        this.failedProducts = [];
 
         this.needToSetCatalogPolicy = false;
 
@@ -457,16 +457,21 @@ EbayListingTransferringActionHandler.prototype = {
         return this.successProducts.length > 0;
     },
 
-    updateErrorsCount: function(errorsCount)
+    addFailedProducts: function(failedProducts)
     {
-        if (errorsCount) {
-            this.errorsCount = this.errorsCount + errorsCount;
+        if (failedProducts != undefined) {
+            this.failedProducts = this.failedProducts.concat(failedProducts);
         }
     },
 
-    getErrorsCount: function()
+    getFailedProducts: function()
     {
-        return this.errorsCount;
+        return this.failedProducts;
+    },
+
+    hasFailedProducts: function()
+    {
+        return this.failedProducts.length > 0;
     },
 
     // ---------------------------------------
@@ -485,6 +490,11 @@ EbayListingTransferringActionHandler.prototype = {
     {
         setLocation(M2ePro.url.get('adminhtml_ebay_listing_categorySettings/index',
             {listing_id: this.getTargetListing(), without_back: true}));
+    },
+
+    isMigrationSuccess: function()
+    {
+        return this.hasTargetListing() && this.hasSuccessProducts();
     },
 
     hasAllFailedTranslationProducts: function()
@@ -521,9 +531,6 @@ EbayListingTransferringActionHandler.prototype = {
     getRemainingAmount: function(el)
     {
         var prepaid = $('translation_account_balance') && parseFloat($('translation_account_balance').innerHTML);
-        if (isNaN(prepaid)) {
-            prepaid = 0;
-        }
         var remainingAmount = this.getEstimatedAmount(el) - parseFloat(prepaid);
 
         return remainingAmount.toFixed(2);
@@ -533,7 +540,6 @@ EbayListingTransferringActionHandler.prototype = {
     {
         var selectedIndex = el.selectedIndex;
         var avgCost = el.options[selectedIndex].getAttribute('data');
-        avgCost = isNaN(parseFloat(avgCost)) ? 0 : parseFloat(avgCost);
         var productsAmount = this.getProductsIds().length;
 
         if (this.getCurTranslationType(el) === 'silver') {
@@ -763,30 +769,29 @@ EbayListingTransferringActionHandler.prototype = {
             return;
         }
 
-        var isLastPart  = parts.length === 1 ? 1 : 0;
-        var part = parts.splice(0, 1);
+        var part = parts.splice(0,1);
         part = part[0];
-        var partString = implode(',', part);
+        var partString = implode(',',part);
 
         new Ajax.Request(M2ePro.url.get('adminhtml_ebay_listing_transferring/addProducts'), {
             method: 'post',
             parameters: {
-                products         : partString,
-                target_listing_id: self.getTargetListing(),
-                is_last_part     : isLastPart,
-                total_errors_count: this.getErrorsCount()
+                products                   : partString,
+                target_listing_id          : self.getTargetListing(),
+                is_need_to_set_catalog_policy : self.isNeedToSetCatalogPolicy()
             },
             onSuccess: function(transport) {
 
                 var response = transport.responseText.evalJSON();
 
                 if (response['result'] != 'success') {
-                    self.clear();
-                    return location.reload();
+
+                    return this.ajaxError();
+
                 }
 
                 self.addSuccessProducts(response['success_products']);
-                self.updateErrorsCount(response['errors_count']);
+                self.addFailedProducts(response['failed_products']);
 
                 var percents =
                     ((100 - self.progressBarObj.getPercents()) / parts.length) + self.progressBarObj.getPercents();

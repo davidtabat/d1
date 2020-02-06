@@ -2,7 +2,7 @@
 
 /*
  * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
+ * @copyright  2011-2015 ESS-UA [M2E Pro]
  * @license    Commercial use is forbidden
  */
 
@@ -59,6 +59,7 @@ class Ess_M2ePro_Model_Ebay_Order_Helper
     public function getPaymentStatus($paymentMethod, $paymentDate, $paymentStatusEbay)
     {
         if ($paymentMethod == self::EBAY_PAYMENT_METHOD_NONE) {
+
             if ($paymentDate) {
                 return Ess_M2ePro_Model_Ebay_Order::PAYMENT_STATUS_COMPLETED;
             }
@@ -66,7 +67,9 @@ class Ess_M2ePro_Model_Ebay_Order_Helper
             if ($paymentStatusEbay == self::EBAY_PAYMENT_STATUS_SUCCEEDED) {
                 return Ess_M2ePro_Model_Ebay_Order::PAYMENT_STATUS_NOT_SELECTED;
             }
+
         } else {
+
             if ($paymentStatusEbay == self::EBAY_PAYMENT_STATUS_SUCCEEDED) {
                 return $paymentDate
                     ? Ess_M2ePro_Model_Ebay_Order::PAYMENT_STATUS_COMPLETED
@@ -98,8 +101,7 @@ class Ess_M2ePro_Model_Ebay_Order_Helper
 
         /** @var $connRead Varien_Db_Adapter_Pdo_Mysql */
         $connRead = Mage::getSingleton('core/resource')->getConnection('core_read');
-        $tableDictMarketplace = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_marketplace');
+        $tableDictMarketplace = Mage::getSingleton('core/resource')->getTableName('m2epro_ebay_dictionary_marketplace');
 
         $dbSelect = $connRead->select()
             ->from($tableDictMarketplace, 'payments')
@@ -110,7 +112,7 @@ class Ess_M2ePro_Model_Ebay_Order_Helper
             return $code;
         }
 
-        $payments = (array)Mage::helper('M2ePro')->jsonDecode($marketplace['payments']);
+        $payments = (array)json_decode($marketplace['payments'], true);
 
         foreach ($payments as $payment) {
             if ($payment['ebay_id'] == $code) {
@@ -129,8 +131,7 @@ class Ess_M2ePro_Model_Ebay_Order_Helper
 
         /** @var $connRead Varien_Db_Adapter_Pdo_Mysql */
         $connRead          = Mage::getSingleton('core/resource')->getConnection('core_read');
-        $tableDictShipping = Mage::helper('M2ePro/Module_Database_Structure')
-            ->getTableNameWithPrefix('m2epro_ebay_dictionary_shipping');
+        $tableDictShipping = Mage::getSingleton('core/resource')->getTableName('m2epro_ebay_dictionary_shipping');
 
         $dbSelect = $connRead->select()
             ->from($tableDictShipping, 'title')

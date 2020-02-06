@@ -1,30 +1,28 @@
 <?php
-/*
- * @author     M2E Pro Developers Team
- * @copyright  M2E LTD
- * @license    Commercial use is forbidden
- */
-
-// @codingStandardsIgnoreFile
-
-/** @var Ess_M2ePro_Block_Adminhtml_Renderer_Description_Image $this */
-
-$data = $this->getData();
-
+    /** @var Ess_M2ePro_Block_Adminhtml_Renderer_Description_Image $this */
+    $data = $this->getData();
 ?>
 
-<style>
+    <style>
 
-    #m2e-description-image-<?php echo $this->getImageId(); ?> {
-        <?php if ($data['width'] != 0) : echo "width: {$data['width']}px;"; endif; ?>
-        <?php if ($data['height'] != 0) : echo "height: {$data['height']}px;"; endif; ?>
-        <?php if ($data['margin'] != 0) : echo "margin: {$data['margin']}px;"; endif; ?>
-    }
+        #m2e-description-image-<?php echo $this->getImageId(); ?> {
+            <?php if ($data['width'] != 0) : echo "width: {$data['width']}px;"; endif; ?>
+            <?php if ($data['height'] != 0) : echo "height: {$data['height']}px;"; endif; ?>
+            <?php if ($data['margin'] != 0) : echo "margin-bottom: {$data['margin']}px; margin-right: {$data['margin']}px;"; endif; ?>
+        }
 
-</style>
+    </style>
+
+<?php if ($this->isLinkMode()) { ?>
+    <a href="<?php echo $data['src']; ?>" target="_blank"<?php if ($data['watermark'] != 0): echo ' m2e_watermark="1"'; endif; ?> style="cursor: pointer;">
+<?php } ?>
 
 <img src="<?php echo $data['src']; ?>"
      border="0"
      <?php if ($data['watermark'] != 0): echo ' m2e_watermark="1"'; endif; ?>
      id="m2e-description-image-<?php echo $this->getImageId(); ?>"
 />
+
+<?php if ($this->isLinkMode()) { ?>
+    </a>
+<?php } ?>
